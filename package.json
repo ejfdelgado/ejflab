@@ -5,11 +5,11 @@
   "main": "app.mjs",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
+    "angular": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "run": "node app.mjs"
+    "start": "node app.mjs"
   },
   "engines": {
     "node": ">=14.0.0"
