@@ -1,0 +1,37 @@
+ng new proyecto001
+
+ng serve -o
+
+ng generate component selectornumerico
+
+ng generate module elementos
+
+ng generate component elementos/dado
+
+ng generate pipe letras
+
+revert:
+gcloud config set account edelgado@panal.co
+gcloud config set project panal-comunidad-app
+
+
+https://spring-gcp.saturnism.me/getting-started/helloworld/app-engine
+
+gcloud auth list
+
+gcloud config set account edgar.jose.fernando.delgado@gmail.com
+
+gcloud config list project
+
+gcloud config set project ejfexperiments
+
+
+cd $HOME
+git clone https://github.com/saturnism/jvm-helloworld-by-example
+cd jvm-helloworld-by-example/helloworld-springboot-tomcat
+
+./mvnw package
+
+gcloud app deploy target/helloworld.jar --appyaml app.yaml
+
+./mvnw spring-boot:run
