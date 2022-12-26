@@ -4,6 +4,7 @@ ng serve -o
 
 ng generate component selectornumerico
 
+ng generate module home --route home --module app.module
 ng generate module elementos
 
 ng generate component elementos/dado
