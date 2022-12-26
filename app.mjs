@@ -1,8 +1,14 @@
 "use strict";
 
 import express from "express";
+import path from 'path';
+import cookieParser from "cookie-parser";
+import { TestSrv } from "./srv/TestSrv.mjs";
+import { commonHeaders, handleErrorsDecorator } from "./srv/Network.mjs";
 
 const app = express();
+
+app.get('/srv/test/test', [commonHeaders, express.json(), handleErrorsDecorator(TestSrv.prueba)]);
 
 app.use('/', express.static('dist/bundle'));
 
