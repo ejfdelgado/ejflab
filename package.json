@@ -9,7 +9,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "start": "node app.mjs"
+    "start": "node app.mjs",
+    "deploy": "gcloud app deploy --quiet app.yaml"
   },
   "engines": {
     "node": ">=14.0.0"

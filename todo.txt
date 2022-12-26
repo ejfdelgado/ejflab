@@ -1,8 +1,8 @@
-- Firebase Authentication
-- Permitir tener N modelos por usuarios.
-- Permitir compartir los modelos a otros usuarios por correo.
+- Firebase Authentication (opcional).
+- Permitir tener N modelos por usuarios, poder luego abrir uno específico.
+- Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso. 
 - Permitir enviar correos, usar templates para los correos.
-- Desplegar en appengine
 - Subir archivos al storage
 - Permitir descargarlos igualmente
 - Permitir hacer thumbnails con sharp
+- Crear servicio de búsqueda

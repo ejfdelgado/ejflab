@@ -1,7 +1,18 @@
 runtime: nodejs14
+service: default
 
 handlers:
-- url: /.*
-  script: auto
-  secure: optional
-  redirect_http_response_code: 301
+  - url: /.*
+    script: auto
+    secure: optional
+    redirect_http_response_code: 301
+
+  - url: /
+    static_files: dist/bundle/index.html
+    upload: dist/bundle/index.html
+    secure: optional
+
+  - url: /(.*)
+    static_files: dist/bundle/\1
+    upload: dist/bundle/(.*)
+    secure: optional
