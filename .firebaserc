@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "paistv": {
+      "hosting": {
+        "ejflab1": [
+          "paistv"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "paistv"
+  }
+}

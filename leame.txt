@@ -38,3 +38,13 @@ cd jvm-helloworld-by-example/helloworld-springboot-tomcat
 gcloud app deploy target/helloworld.jar --appyaml app.yaml
 
 ./mvnw spring-boot:run
+
+sudo chmod -R 777 ./
+
+npm i -D firebase-tools
+sudo ng add @angular/fire
+
+firebase logout
+firebase login
+firebase init
+firebase projects:list
