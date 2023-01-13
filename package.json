@@ -10,7 +10,9 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",
-    "deploy": "gcloud app deploy --quiet  -v v1 app.yaml"
+    "deploy": "gcloud app deploy --quiet  -v v1 app.yaml",
+    "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments",
+    "end": "gcloud config set account edelgado@panal.co && gcloud config set project panal-comunidad-app"
   },
   "engines": {
     "node": ">=14.0.0"

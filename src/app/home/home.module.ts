@@ -3,21 +3,19 @@ import { CommonModule } from '@angular/common';
 
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from './home.component';
-import { LoginPageComponent } from './pages/login-page/login-page.component';
-import { LoginFormComponent } from './components/login-form/login-form.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
-import { RegisterPageComponent } from './pages/register-page/register-page.component';
 import { MatToolbarModule } from '@angular/material/toolbar';
+import { LoginpopupComponent } from './components/loginpopup/loginpopup.component';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
     HomeComponent,
-    LoginPageComponent,
-    LoginFormComponent,
-    RegisterPageComponent,
+    LoginpopupComponent,
   ],
   imports: [
     CommonModule,
@@ -27,6 +25,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
     MatFormFieldModule,
     MatButtonModule,
     MatToolbarModule,
+    MatDialogModule,
+    MatIconModule,
   ],
 })
 export class HomeModule {}

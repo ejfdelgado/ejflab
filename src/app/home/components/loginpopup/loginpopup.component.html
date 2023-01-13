@@ -1,0 +1,55 @@
+<div mat-dialog-title *ngIf="currentView == 'inicio'">
+    <h1 class="centrado">Inicia sesión para continuar</h1>
+    <span class="boton_cerrar" [mat-dialog-close]>x</span>
+</div>
+<mat-dialog-content class="mat-typography" *ngIf="currentView == 'inicio'">
+    <p class="texto_descripcion">Personaliza esta aplicación web para cuando regreses.</p>
+    <div class="form-container layout_columna">
+        <button mat-raised-button (click)="loginWithGoogle()">
+            Iniciar sesión con Google
+        </button>
+        <div class="o_intermedia">
+            <span>o</span>
+        </div>
+        <button mat-raised-button color="primary" (click)="mostrarFormulario()">
+            Iniciar sesión con email
+        </button>
+    </div>
+</mat-dialog-content>
+
+<div mat-dialog-title *ngIf="currentView == 'formulario'">
+    <h1 class="centrado">Iniciar sesión con email</h1>
+    <span class="boton_cerrar" [mat-dialog-close]>x</span>
+</div>
+<mat-dialog-content class="mat-typography con_form" *ngIf="currentView == 'formulario'">
+    <p class="texto_descripcion">Personaliza esta aplicación web para cuando regreses.</p>
+    <form class="form-container layout_columna" [formGroup]="form" (ngSubmit)="onSubmit()">
+        <mat-form-field class="form-control">
+            <mat-label>Correo</mat-label>
+            <input matInput formControlName="email" type="text" required />
+            <mat-error *ngIf="email?.hasError('required')">
+                El correo es requerido
+            </mat-error>
+            <mat-error *ngIf="email?.hasError('email')">
+                El correo no es válido
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-control">
+            <mat-label>Contraseña</mat-label>
+            <input matInput formControlName="password" type="password" required />
+            <mat-error *ngIf="password?.hasError('required')">
+                Se requiere la contraseña
+            </mat-error>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid" (click)="ingresar()">
+            Ingresar
+        </button>
+        <button mat-raised-button color="accent" [disabled]="form.invalid" (click)="crearCuenta()">
+            Crear cuenta
+        </button>
+        <button mat-raised-button (click)="regresar()">
+            Cancelar
+        </button>
+    </form>
+</mat-dialog-content>

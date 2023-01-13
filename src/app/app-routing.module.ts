@@ -13,22 +13,22 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectLoggedInToHome },
+    //canActivate: [AuthGuard],
+    //data: { authGuardPipe: redirectLoggedInToHome },
   },
   {
     path: 'customers',
     loadChildren: () =>
       import('./customers/customers.module').then((m) => m.CustomersModule),
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    //canActivate: [AuthGuard],
+    //data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: 'orders',
     loadChildren: () =>
       import('./orders/orders.module').then((m) => m.OrdersModule),
-    canActivate: [AuthGuard],
-    data: { authGuardPipe: redirectUnauthorizedToLogin },
+    //canActivate: [AuthGuard],
+    //data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
     path: '**',

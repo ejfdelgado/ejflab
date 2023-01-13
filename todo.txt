@@ -1,3 +1,6 @@
+- feedback activity indicator
+- feedback messages
+
 - Firebase Authentication (opcional).
 - Permitir tener N modelos por usuarios, poder luego abrir uno específico.
 - Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso. 

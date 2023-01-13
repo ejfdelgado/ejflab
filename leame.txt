@@ -7,7 +7,7 @@ ng generate component selectornumerico
 ng generate module home --route home --module app.module
 ng generate module elementos
 
-ng generate component elementos/dado
+ng generate component home/components/loginpopup
 
 ng generate pipe letras
 
@@ -16,6 +16,8 @@ https://angular.io/guide/lazy-loading-ngmodules
 revert:
 gcloud config set account edelgado@panal.co
 gcloud config set project panal-comunidad-app
+
+apply
 
 
 https://spring-gcp.saturnism.me/getting-started/helloworld/app-engine
