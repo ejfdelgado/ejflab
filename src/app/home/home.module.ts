@@ -11,11 +11,15 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { LoginpopupComponent } from './components/loginpopup/loginpopup.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
+import { AlertComponent } from './components/alert/alert.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
 
 @NgModule({
   declarations: [
     HomeComponent,
     LoginpopupComponent,
+    AlertComponent,
+    ConfirmComponent,
   ],
   imports: [
     CommonModule,

@@ -5,7 +5,7 @@
 <mat-dialog-content class="mat-typography" *ngIf="currentView == 'inicio'">
     <p class="texto_descripcion">Personaliza esta aplicación web para cuando regreses.</p>
     <div class="form-container layout_columna">
-        <button mat-raised-button (click)="loginWithGoogle()">
+        <button mat-raised-button (click)="loginWithGoogle($event)">
             Iniciar sesión con Google
         </button>
         <div class="o_intermedia">
@@ -42,13 +42,13 @@
             </mat-error>
         </mat-form-field>
 
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid" (click)="ingresar()">
+        <button mat-raised-button color="primary" type="button" [disabled]="form.invalid" (click)="ingresar($event)">
             Ingresar
         </button>
-        <button mat-raised-button color="accent" [disabled]="form.invalid" (click)="crearCuenta()">
+        <button mat-raised-button color="accent" type="button" [disabled]="form.invalid" (click)="crearCuenta($event)">
             Crear cuenta
         </button>
-        <button mat-raised-button (click)="regresar()">
+        <button mat-raised-button type="button" (click)="regresar()">
             Cancelar
         </button>
     </form>

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter } from '@angular/core';
 import {
   Auth,
   createUserWithEmailAndPassword,
@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  User,
 } from '@angular/fire/auth';
 import { LoginData } from 'core/interfaces/login-data.interface';
 
@@ -13,7 +14,33 @@ import { LoginData } from 'core/interfaces/login-data.interface';
   providedIn: 'root',
 })
 export class AuthService {
-  constructor(private auth: Auth) {}
+  evento: EventEmitter<User | null>;
+  promesa: Promise<User | null>;
+
+  constructor(private auth: Auth) {
+    this.evento = new EventEmitter<User | null>();
+    this.promesa = new Promise((resolve) => {
+      auth.onAuthStateChanged((user) => {
+        if (user) {
+          this.evento.emit(user);
+          resolve(user);
+          this.promesa = Promise.resolve(user);
+        } else {
+          this.evento.emit(null);
+          resolve(null);
+          this.promesa = Promise.resolve(null);
+        }
+      });
+    });
+  }
+
+  getLoginEvent() {
+    return this.evento;
+  }
+
+  getCurrentUser() {
+    return this.promesa;
+  }
 
   login({ email, password }: LoginData) {
     return signInWithEmailAndPassword(this.auth, email, password);
@@ -27,7 +54,8 @@ export class AuthService {
     return signInWithPopup(this.auth, new GoogleAuthProvider());
   }
 
-  logout() {
-    return signOut(this.auth);
+  async logout() {
+    await signOut(this.auth);
+    this.promesa = Promise.resolve(null);
   }
 }
