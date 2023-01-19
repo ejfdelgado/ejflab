@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AlertComponent } from 'src/app/home/components/alert/alert.component';
-import { ConfirmComponent } from 'src/app/home/components/confirm/confirm.component';
+import { AlertComponent } from '../app/home/components/alert/alert.component';
+import { ConfirmComponent } from '../app/home/components/confirm/confirm.component';
 
 @Injectable({
   providedIn: 'root',

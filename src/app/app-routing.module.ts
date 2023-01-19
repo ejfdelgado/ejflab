@@ -24,9 +24,9 @@ const routes: Routes = [
     //data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
-    path: 'orders',
+    path: 'customers/:id',
     loadChildren: () =>
-      import('./orders/orders.module').then((m) => m.OrdersModule),
+      import('./customers/customers.module').then((m) => m.CustomersModule),
     //canActivate: [AuthGuard],
     //data: { authGuardPipe: redirectUnauthorizedToLogin },
   },

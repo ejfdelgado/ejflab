@@ -6,4 +6,19 @@ class MyError extends Error {
     }
 }
 
-export { MyError }
+class NoAutorizadoException extends MyError { }
+class NoExisteException extends MyError { }
+class ParametrosIncompletosException extends MyError { }
+class NoHayUsuarioException extends MyError { }
+class MalaPeticionException extends MyError { }
+class InesperadoException extends MyError { }
+
+export {
+    MyError,
+    NoAutorizadoException,
+    NoExisteException,
+    ParametrosIncompletosException,
+    NoHayUsuarioException,
+    MalaPeticionException,
+    InesperadoException
+}

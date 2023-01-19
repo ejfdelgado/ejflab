@@ -3,14 +3,18 @@
 import express from "express";
 import path from 'path';
 import cookieParser from "cookie-parser";
-import { TestSrv } from "./srv/TestSrv.mjs";
-import { commonHeaders, handleErrorsDecorator } from "./srv/Network.mjs";
+import { PageSrv } from "./srv/PageSrv.mjs";
+import { cors, commonHeaders, handleErrorsDecorator } from "./srv/Network.mjs";
+import { MainHandler } from "./srv/MainHandler.mjs";
+import { checkAuthenticatedSilent } from "./srv/common/FirebasConfig.mjs";
 
 const app = express();
 
-app.get('/srv/test/test', [commonHeaders, express.json(), handleErrorsDecorator(TestSrv.prueba)]);
-
-app.use('/', express.static('dist/bundle'));
+app.use(cors);
+app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
+app.use(MainHandler.addGetUrl);
+app.use("/", MainHandler.handle);
+//app.use('/', express.static('dist/bundle'));
 
 app.use((error, req, res, next) => {
     return res.status(500).json({ error: error.toString() });

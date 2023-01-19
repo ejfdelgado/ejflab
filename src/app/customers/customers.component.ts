@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from 'core/services/auth.service';
+import { ActivatedRoute } from '@angular/router';
+import { BackendPageService } from 'src/services/backendPage.service';
 
 @Component({
   selector: 'app-customers',
@@ -8,14 +8,20 @@ import { AuthService } from 'core/services/auth.service';
   styleUrls: ['./customers.component.css'],
 })
 export class CustomersComponent implements OnInit {
-  constructor(private authService: AuthService, private router: Router) {}
+  page: any;
+  constructor(
+    private route: ActivatedRoute,
+    private pageService: BackendPageService
+  ) {}
 
-  ngOnInit(): void {}
-
-  logout() {
-    this.authService
-      .logout()
-      .then(() => this.router.navigate(['/']))
-      .catch((e) => console.log(e.message));
+  async ngOnInit() {
+    this.page = await this.pageService.getCurrentPage();
+    console.log(this.page);
+    this.route.params.subscribe((params) => {
+      if ('id' in params) {
+        const id = params['id'];
+        console.log(`id = ${id}`);
+      }
+    });
   }
 }

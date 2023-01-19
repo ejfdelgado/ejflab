@@ -17,6 +17,8 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { JwtInterceptor } from 'src/interceptors/JwtInterceptor';
 
 @NgModule({
   declarations: [AppComponent],
@@ -30,9 +32,14 @@ import { MatDialogModule } from '@angular/material/dialog';
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
     NoopAnimationsModule,
-    MatDialogModule
+    MatDialogModule,
+    HttpClientModule,
   ],
-  providers: [ScreenTrackingService, UserTrackingService],
+  providers: [
+    ScreenTrackingService,
+    UserTrackingService,
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

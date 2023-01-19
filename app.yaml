@@ -16,3 +16,6 @@ handlers:
     static_files: dist/bundle/\1
     upload: dist/bundle/(.*)
     secure: optional
+
+env_variables:
+  ENV: pro

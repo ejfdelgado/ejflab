@@ -7,8 +7,9 @@ import {
   signInWithPopup,
   signOut,
   User,
+  getIdToken,
 } from '@angular/fire/auth';
-import { LoginData } from 'core/interfaces/login-data.interface';
+import { LoginData } from '../interfaces/login-data.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -36,6 +37,15 @@ export class AuthService {
 
   getLoginEvent() {
     return this.evento;
+  }
+
+  async getIdToken() {
+    let user = await this.getCurrentUser();
+    if (user != null) {
+      return getIdToken(user);
+    } else {
+      return null;
+    }
   }
 
   getCurrentUser() {

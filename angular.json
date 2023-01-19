@@ -103,8 +103,8 @@
             "prerender": false,
             "ssr": false,
             "browserTarget": "ejflab1:build:production",
-            "firebaseProject": "paistv",
-            "firebaseHostingSite": "paistv"
+            "firebaseProject": "ejfexperiments",
+            "firebaseHostingSite": "ejfexperiments"
           }
         }
       }

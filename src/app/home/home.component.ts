@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from 'core/services/auth.service';
-import { ModalService } from 'core/services/modal.service';
+import { AuthService } from 'src/services/auth.service';
+import { ModalService } from 'src/services/modal.service';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginpopupComponent } from './components/loginpopup/loginpopup.component';
 import { User } from '@angular/fire/auth';

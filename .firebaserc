@@ -1,14 +1,14 @@
 {
   "targets": {
-    "paistv": {
+    "ejfexperiments": {
       "hosting": {
         "ejflab1": [
-          "paistv"
+          "ejfexperiments"
         ]
       }
     }
   },
   "projects": {
-    "default": "paistv"
+    "default": "ejfexperiments"
   }
 }

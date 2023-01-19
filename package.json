@@ -11,8 +11,10 @@
     "test": "ng test",
     "start": "node app.mjs",
     "deploy": "gcloud app deploy --quiet  -v v1 app.yaml",
-    "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments",
-    "end": "gcloud config set account edelgado@panal.co && gcloud config set project panal-comunidad-app"
+    "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments && npm run credentials_paistv",
+    "end": "gcloud config set account edelgado@panal.co && gcloud config set project panal-comunidad-app && npm run credentials_comunidad",
+    "credentials_paistv": "export ENV=pro && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json",
+    "credentials_comunidad": "export ENV=dev && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/panal/comunidad/keys/panal-comunidad-app-7da87eb73391.json"
   },
   "engines": {
     "node": ">=14.0.0"
@@ -29,10 +31,16 @@
   "homepage": "https://github.com/ejfdelgado/ejflab#readme",
   "private": false,
   "dependencies": {
+    "@google-cloud/firestore": "^6.4.2",
+    "@google-cloud/storage": "^6.9.0",
+    "axios": "^1.2.3",
     "cookie-parser": "^1.4.6",
     "express": "^4.18.2",
+    "firebase-admin": "^11.5.0",
     "md5": "^2.3.0",
+    "readable-stream-clone": "0.0.7",
     "rxjs": "~7.5.0",
+    "sharp": "^0.31.3",
     "tslib": "^2.3.0",
     "zone.js": "~0.11.4"
   },
