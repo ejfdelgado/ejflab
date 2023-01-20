@@ -4,6 +4,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { PageData } from 'src/interfaces/login-data.interface';
 import { BackendPageService } from 'src/services/backendPage.service';
+import { ModalService } from 'src/services/modal.service';
 
 @Component({
   selector: 'app-pagepopup',
@@ -17,7 +18,8 @@ export class PagepopupComponent implements OnInit {
   constructor(
     private dialogRef: MatDialogRef<PagepopupComponent>,
     private fb: FormBuilder,
-    private backendPageSrv: BackendPageService
+    private backendPageSrv: BackendPageService,
+    private modalSrv: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -60,13 +62,20 @@ export class PagepopupComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
-  guardar() {
+  async guardar() {
     const valores = {
       tit: this.form.value.title,
       desc: this.form.value.description,
     };
     if (this.pageData.id) {
-      this.backendPageSrv.savePage(this.pageData.id, valores);
+      try {
+        await this.backendPageSrv.savePage(this.pageData.id, valores);
+        await this.modalSrv.alert({
+          title: 'Listo',
+          txt: 'Guardado correctamente',
+        });
+        this.dialogRef.close(false);
+      } catch (err) {}
     }
   }
 }

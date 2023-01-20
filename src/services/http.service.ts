@@ -46,7 +46,7 @@ export class HttpService {
       });
       return respuesta;
     } catch (err) {
-      return null;
+      throw err;
     } finally {
       if (wait != null) {
         wait.done();
@@ -85,7 +85,7 @@ export class HttpService {
       });
       return respuesta;
     } catch (err) {
-      return null;
+      throw err;
     } finally {
       if (wait != null) {
         wait.done();

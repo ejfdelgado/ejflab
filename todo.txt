@@ -1,7 +1,6 @@
-
-- hacer un editor de los datos de la página.
-- averiguar como hacer el handle de errores en http angular HttpResponse
 - cuando carga los datos de la página desde angular, debe asignar los valores title, og:... dinamicamente.
+
+- cache en page srv y actualizar cuando el dato regresa
 - evitar tener que cambiar la url en Constants
 
 - Permitir tener N modelos por usuarios, poder luego abrir uno específico.

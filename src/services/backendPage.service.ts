@@ -17,10 +17,15 @@ export class BackendPageService {
   ) {}
 
   async getCurrentPage(): Promise<PageData | null> {
-    return this.httpSrv.get<PageData>('srv/pg');
+    if (location.pathname == '/') {
+      //The home has no Page representation in DB
+      return null;
+    } else {
+      return this.httpSrv.get<PageData>('srv/pg');
+    }
   }
 
-  async savePage(id: string, datos: PageData): Promise<any> {
+  async savePage(id: string, datos: PageData): Promise<PageData | null> {
     return this.httpSrv.post<PageData>('srv/pg', { id, datos });
   }
 }

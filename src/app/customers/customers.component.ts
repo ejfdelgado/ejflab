@@ -1,26 +1,34 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
+import { BaseComponent } from '../components/base/base.component';
 
 @Component({
   selector: 'app-customers',
   templateUrl: './customers.component.html',
   styleUrls: ['./customers.component.css'],
 })
-export class CustomersComponent implements OnInit {
-  page: any;
+export class CustomersComponent
+  extends BaseComponent
+  implements OnInit, OnDestroy
+{
   constructor(
-    private route: ActivatedRoute,
-    private pageService: BackendPageService
-  ) {}
+    public override route: ActivatedRoute,
+    public override pageService: BackendPageService,
+    public override cdr: ChangeDetectorRef,
+    public override authService: AuthService,
+    public override dialog: MatDialog
+  ) {
+    super(route, pageService, cdr, authService, dialog);
+  }
 
-  async ngOnInit() {
-    this.page = await this.pageService.getCurrentPage();
-    this.route.params.subscribe((params) => {
-      if ('id' in params) {
-        const id = params['id'];
-        console.log(`id = ${id}`);
-      }
-    });
+  override async ngOnInit() {
+    await super.ngOnInit();
+  }
+
+  override ngOnDestroy() {
+    super.ngOnDestroy();
   }
 }
