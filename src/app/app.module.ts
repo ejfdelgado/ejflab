@@ -19,9 +19,13 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor } from 'src/interceptors/JwtInterceptor';
+import { IndicatorComponent } from './components/indicator/indicator.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [
+    AppComponent, 
+    IndicatorComponent
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

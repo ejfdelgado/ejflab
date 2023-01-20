@@ -1,9 +1,8 @@
-- feedback activity indicator.
-- bug cuando llega a home no recarga el estado de logeado.
-- cuando carga los datos de la página desde angular, debe asignar los valores title, og:... dinamicamente.
-- hacer un editor de los datos de la página.
-- evitar tener que cambiar la url.
+- servicio de login/logout
 - permitir disparar las ventanas de logeo deslogeo, propiedades de la página con comandos
+- hacer un editor de los datos de la página.
+- cuando carga los datos de la página desde angular, debe asignar los valores title, og:... dinamicamente.
+- evitar tener que cambiar la url en Constants
 
 - Permitir tener N modelos por usuarios, poder luego abrir uno específico.
 - Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso.

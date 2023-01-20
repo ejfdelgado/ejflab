@@ -1,10 +1,4 @@
 <button type="button" routerLink="/customers">Customers</button>
 <button type="button" routerLink="">Home</button>
-<div class="btp-overlay" *ngIf="isLoading">
-    <div class="loading_indicator_container">
-        <div>
-            <img src="/assets/img/spiner.gif" alt="sistema ocupado">
-        </div>
-    </div>
-  </div>
+<app-indicator></app-indicator>
 <router-outlet></router-outlet>
