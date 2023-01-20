@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalService } from 'src/services/modal.service';
+import { IndicatorService } from 'src/services/indicator.service';
 
 @Component({
   selector: 'app-loginpopup',
@@ -19,7 +20,8 @@ export class LoginpopupComponent implements OnInit {
     private readonly authService: AuthService,
     private readonly router: Router,
     public dialogRef: MatDialogRef<LoginpopupComponent>,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private indicator: IndicatorService
   ) {}
 
   ngOnInit(): void {
@@ -37,8 +39,12 @@ export class LoginpopupComponent implements OnInit {
     return this.form.get('password');
   }
 
+  mostrarFormulario() {
+    this.currentView = 'formulario';
+  }
+
   loginWithGoogle(event: any) {
-    event.stopPropagation();
+    const wait = this.indicator.start();
     this.authService
       .loginWithGoogle()
       .then(() => {
@@ -67,17 +73,14 @@ export class LoginpopupComponent implements OnInit {
         } else {
           this.modalService.error(e);
         }
+      })
+      .finally(() => {
+        wait.done();
       });
   }
 
-  mostrarFormulario() {
-    this.currentView = 'formulario';
-  }
-
   ingresar(event?: any) {
-    if (event) {
-      event.stopPropagation();
-    }
+    const wait = this.indicator.start();
     this.authService
       .login(this.form.value)
       .then(() => {
@@ -101,11 +104,14 @@ export class LoginpopupComponent implements OnInit {
         } else {
           this.modalService.error(e);
         }
+      })
+      .finally(() => {
+        wait.done();
       });
   }
 
   crearCuenta(event: any) {
-    event.stopPropagation();
+    const wait = this.indicator.start();
     this.authService
       .register(this.form.value)
       .then(() => {
@@ -130,6 +136,9 @@ export class LoginpopupComponent implements OnInit {
         } else {
           this.modalService.error(e);
         }
+      })
+      .finally(() => {
+        wait.done();
       });
   }
 

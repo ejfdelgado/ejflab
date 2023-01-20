@@ -1,5 +1,4 @@
-- servicio de login/logout
-- permitir disparar las ventanas de logeo deslogeo, propiedades de la página con comandos
+
 - hacer un editor de los datos de la página.
 - cuando carga los datos de la página desde angular, debe asignar los valores title, og:... dinamicamente.
 - evitar tener que cambiar la url en Constants
