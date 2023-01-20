@@ -29,7 +29,8 @@ export class JwtInterceptor implements HttpInterceptor {
         } else {
           const headers = request.headers
             .append('Authorization', 'Bearer ' + token)
-            .append('HTTP_REFERER', location.href);
+            .append('X-Referer', location.href)
+            .append('X-Host', location.origin);
           const requestClone = request.clone({
             headers,
           });
