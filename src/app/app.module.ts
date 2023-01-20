@@ -20,11 +20,23 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor } from 'src/interceptors/JwtInterceptor';
 import { IndicatorComponent } from './components/indicator/indicator.component';
+import { AlertComponent } from './components/alert/alert.component';
+import { ConfirmComponent } from './components/confirm/confirm.component';
+import { LoginpopupComponent } from './components/loginpopup/loginpopup.component';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatButtonModule } from '@angular/material/button';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
-    AppComponent, 
-    IndicatorComponent
+    AppComponent,
+    IndicatorComponent,
+    AlertComponent,
+    ConfirmComponent,
+    LoginpopupComponent,
   ],
   imports: [
     BrowserModule,
@@ -38,6 +50,13 @@ import { IndicatorComponent } from './components/indicator/indicator.component';
     NoopAnimationsModule,
     MatDialogModule,
     HttpClientModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatFormFieldModule,
+    MatButtonModule,
+    MatToolbarModule,
+    MatDialogModule,
+    MatIconModule,
   ],
   providers: [
     ScreenTrackingService,

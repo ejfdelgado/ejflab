@@ -1,9 +1,6 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
-import { ModalService } from 'src/services/modal.service';
 import { MatDialog } from '@angular/material/dialog';
-import { LoginpopupComponent } from './components/loginpopup/loginpopup.component';
 import { User } from '@angular/fire/auth';
 import { Subscription } from 'rxjs';
 
@@ -18,8 +15,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   constructor(
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
-    private modalService: ModalService,
-    private router: Router,
     public dialog: MatDialog
   ) {}
 
@@ -41,26 +36,5 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.loginSubscription.unsubscribe();
-  }
-
-  async login() {
-    const usuario = await this.authService.getCurrentUser();
-    if (usuario) {
-      this.modalService.alert({ txt: 'Ya hay un usuario autenticado' });
-    } else {
-      this.dialog.open(LoginpopupComponent);
-    }
-  }
-
-  async logout() {
-    const usuario = await this.authService.getCurrentUser();
-    if (usuario) {
-      this.authService
-        .logout()
-        .then(() => this.router.navigate(['/']))
-        .catch(this.modalService.error);
-    } else {
-      this.modalService.alert({ txt: 'No hay usuario autenticado' });
-    }
   }
 }

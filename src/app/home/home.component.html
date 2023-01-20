@@ -3,5 +3,3 @@
     <h2>{{ currentUser.email }}</h2>
     <img [src]="currentUser.photoURL" height="26"/>
 </div>
-<button type="button" (click)="logout()" *ngIf="currentUser !== null">Logout</button>
-<button type="button" (click)="login()">Login</button>
