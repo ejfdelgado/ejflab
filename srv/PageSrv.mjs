@@ -1,5 +1,9 @@
 import { MyRoutes } from "../srcJs/MyRoutes.js"
+import { MyStore } from "./common/MyStore.mjs";
 import { Utilidades } from "./common/Utilidades.mjs";
+import { NoExisteException } from "./MyError.mjs";
+
+const PAGE_TYPE = "page";
 
 export class PageSrv {
     static async loadCurrentPage(pageType, pageId, usuario = null) {
@@ -7,29 +11,43 @@ export class PageSrv {
         if (usuario == null && pageId == null) {
             return {};
         }
-        if (typeof pageId == "number") {
+        if (typeof pageId == "string") {
             // Si hay id se debe buscar con Id y listo
-
+            const response = await MyStore.readById(PAGE_TYPE, pageId);
+            if (response) {
+                return response;
+            } else {
+                throw new NoExisteException(`Does not exists ${pageId}`);
+            }
         } else {
             if (usuario) {
-                const elUsuario = usuario.metadatos.uid;
+                const elUsuario = usuario.metadatos.email;
+                const where = [
+                    { key: "usr", oper: "==", value: elUsuario },
+                    { key: "path", oper: "==", value: pageType },
+                ];
+                const max = 1;
                 // Si no hay id pero hay usuario logeado se debe buscar por aut y pageType
-                // Si no existe lo crea y devuelve el valor por defecto
+                const response = await MyStore.paginate(PAGE_TYPE, [{ name: "act", dir: 'desc' }], 0, max, where);
+                if (response.length > 0) {
+                    return response[0];
+                } else {
+                    // Si no existe lo crea y devuelve el valor por defecto
+                    const nueva = {
+                        usr: elUsuario,
+                        path: pageType,
+                        date: AHORA,
+                        act: AHORA,
+                        tit: "Título",
+                        desc: "Descripción",
+                        img: "",
+                        kw: "",
+                    };
+                    await MyStore.create(PAGE_TYPE, nueva);
+                    return nueva;
+                }
             }
         }
-        return {
-            id: null,
-            act: null,
-            aut: "google.com/edgar.jose.fernando.delgado@gmail.com",
-            date: null,
-            desc: "Es mi descripción",
-            img: "Es una imagen",
-            kw: "my key words",
-            path: "/customers",
-            q: null,
-            tit: "Es un título",
-            usr: null,
-        };
     }
     static async getCurrentPage(req, res, next) {
         const user = res.locals.user;

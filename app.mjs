@@ -4,7 +4,7 @@ import express from "express";
 import path from 'path';
 import cookieParser from "cookie-parser";
 import { PageSrv } from "./srv/PageSrv.mjs";
-import { cors, commonHeaders, handleErrorsDecorator } from "./srv/Network.mjs";
+import { cors, commonHeaders, handleErrorsDecorator, handleErrors } from "./srv/Network.mjs";
 import { MainHandler } from "./srv/MainHandler.mjs";
 import { checkAuthenticatedSilent } from "./srv/common/FirebasConfig.mjs";
 
@@ -16,9 +16,7 @@ app.use(MainHandler.addGetUrl);
 app.use("/", MainHandler.handle);
 //app.use('/', express.static('dist/bundle'));
 
-app.use((error, req, res, next) => {
-    return res.status(500).json({ error: error.toString() });
-});
+app.use(handleErrors);
 
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {

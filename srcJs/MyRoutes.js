@@ -1,7 +1,7 @@
 
 class MyRoutes {
     static splitPageData(path) {
-        const partes = /(\/[^/]+)(\/\d+|\/)?/ig.exec(path);
+        const partes = /(\/[^/]+)(\/[^/]+|\/)?/ig.exec(path);
         if (partes == null) {
             return {
                 pageId: null,
@@ -10,7 +10,7 @@ class MyRoutes {
         }
         let pageId = null;
         if (typeof partes[2] == "string") {
-            pageId = parseInt(partes[2].replace("/", ""));
+            pageId = (partes[2].replace("/", ""));
         }
         return {
             pageId,

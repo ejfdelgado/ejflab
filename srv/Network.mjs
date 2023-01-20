@@ -1,6 +1,7 @@
 import md5 from "md5";
 import { Buffer } from "buffer";
 import { MyError } from "./MyError.mjs";
+import { MyUtilities } from "../srcJs/MyUtilities.js";
 
 function stringify(circ) {
     var cache = [];
@@ -79,9 +80,7 @@ async function handleErrors(error, req, res, next) {
     const response = {
         message: error.message,
     };
-    if (process.env.ENV == "dev") {
-        response.request = JSON.parse(utils.stringify(req));
-    }
+    //response.request = JSON.parse(MyUtilities.stringify(req));
     res.send(response);
 }
 

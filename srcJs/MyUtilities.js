@@ -1,4 +1,16 @@
 class MyUtilities {
+    static stringify(circ) {
+        var cache = [];
+        const text = JSON.stringify(circ, (key, value) => {
+            if (typeof value === 'object' && value !== null) {
+                if (cache.includes(value)) return;
+                cache.push(value);
+            }
+            return value;
+        });
+        cache = null;
+        return text;
+    };
     static htmlEntities(str) {
         return String(str)
             .replace(/&/g, "&amp;")

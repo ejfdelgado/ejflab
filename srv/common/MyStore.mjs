@@ -53,11 +53,13 @@ export class MyStore {
     }
 
     static async create(collection, payload, firestoreInstance = null) {
-        const elDoc = firestore.collection(`${process.env.ENV}-${collection}`).doc();
         if (firestoreInstance == null) {
-            await elDoc.set(payload);
+            const elDoc = await firestore.collection(`${process.env.ENV}-${collection}`).add(payload);
+            payload.id = elDoc.id;
+            return payload;
         } else {
-            firestoreInstance.set(elDoc, payload);// no retorna promesa, sino la misma instancia
+            // Please check it later, could not work
+            firestoreInstance.add(elDoc, payload);
         }
     }
 

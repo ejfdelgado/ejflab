@@ -7,7 +7,11 @@ class MyError extends Error {
 }
 
 class NoAutorizadoException extends MyError { }
-class NoExisteException extends MyError { }
+class NoExisteException extends MyError {
+    constructor(message) {
+        super(message, 204);
+    }
+}
 class ParametrosIncompletosException extends MyError { }
 class NoHayUsuarioException extends MyError { }
 class MalaPeticionException extends MyError { }
