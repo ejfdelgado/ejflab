@@ -20,3 +20,8 @@ export interface HttpOptionsData {
   showIndicator?: boolean;
   showError?: boolean;
 }
+
+export interface BaseComponentData {
+  loadUser?: boolean;
+  loadPage?: boolean;
+}

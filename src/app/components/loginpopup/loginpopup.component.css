@@ -60,3 +60,8 @@ mat-form-field {
 mat-dialog-content.con_form {
   min-height: 315px;
 }
+
+.icono_google {
+  height: 17px;
+  margin-right: 5px;
+}

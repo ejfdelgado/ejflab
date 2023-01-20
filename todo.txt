@@ -1,4 +1,8 @@
-- cuando carga los datos de la página desde angular, debe asignar los valores title, og:... dinamicamente.
+
+- cargar la imagen de la página (storage integration)
+- crear la representacion de DB de usuario
+- cargar la imagen de la persona logeada
+- Editar los datos del usuario
 
 - cache en page srv y actualizar cuando el dato regresa
 - evitar tener que cambiar la url en Constants
@@ -10,3 +14,13 @@
 - Permitir descargarlos igualmente
 - Permitir hacer thumbnails con sharp
 - Crear servicio de búsqueda
+
+
+<div *ngIf="currentUser !== null">
+    <h1>{{ currentUser.displayName }}</h1>
+    <h2>{{ currentUser.email }}</h2>
+    <img [src]="currentUser.photoURL" height="26"/>
+</div>
+
+<button type="button" routerLink="/customers">Customers</button>
+<button type="button" routerLink="">Home</button>

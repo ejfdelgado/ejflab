@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
-import { Router } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalService } from 'src/services/modal.service';
@@ -19,7 +18,6 @@ export class LoginpopupComponent implements OnInit {
   constructor(
     private modalService: ModalService,
     private readonly authService: AuthService,
-    private readonly router: Router,
     public dialogRef: MatDialogRef<LoginpopupComponent>,
     private fb: FormBuilder,
     private indicator: IndicatorService

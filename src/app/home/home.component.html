@@ -1,5 +1,121 @@
-<div *ngIf="currentUser !== null">
-    <h1>{{ currentUser.displayName }}</h1>
-    <h2>{{ currentUser.email }}</h2>
-    <img [src]="currentUser.photoURL" height="26"/>
+<div class="pagina">
+    <div class="header" style="background-image: url('/assets/img/background.jpg')">
+        <div class="top_menu">
+            <div class="relleno"></div>
+            <div class="usuario_container"></div>
+        </div>
+        <div class="top_items">
+            <div class="wrapper">
+                <div class="box big big1" (click)="navegar('customers')">
+                    <div class="box_image" style="background-image: url('/assets/img/app1.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app2.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app3.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app4.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app5.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app5.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="header">
+        <div class="top_items">
+            <div class="wrapper">
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app1.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app2.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app3.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app4.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+                <div class="box">
+                    <div class="box_image" style="background-image: url('/assets/img/app5.jpg')"></div>
+                    <div class="box_texto">
+                        <div class="box_icon">
+                            <fa-icon [icon]="faGamepad"></fa-icon>
+                        </div>
+                        <div class="box_titulo">Mi nombre</div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div class="footer"></div>
 </div>

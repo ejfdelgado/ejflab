@@ -13,9 +13,10 @@ import { BackendPageService } from 'src/services/backendPage.service';
   styles: [],
 })
 export class BaseComponent implements OnInit, OnDestroy {
-  page: PageData | null;
+  page: PageData | null = null;
   currentUser: User | null = null;
   loginSubscription: Subscription;
+  pageSubscription: Subscription;
   constructor(
     public route: ActivatedRoute,
     public pageService: BackendPageService,
@@ -29,8 +30,20 @@ export class BaseComponent implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  private updateDinamicallyOgData(page: PageData | null) {
+    if (page != null) {
+      if (page.tit) {
+        document.title = page.tit;
+      }
+    }
+  }
+
   async ngOnInit() {
     const promesas: Array<Promise<any>> = [];
+    const updateDinamicallyOgDataThis = this.updateDinamicallyOgData.bind(this);
+    this.pageSubscription = this.pageService.evento.subscribe(
+      updateDinamicallyOgDataThis
+    );
     promesas.push(this.pageService.getCurrentPage());
     promesas.push(this.authService.getCurrentUser());
 
@@ -53,6 +66,11 @@ export class BaseComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.loginSubscription.unsubscribe();
+    if (this.loginSubscription) {
+      this.loginSubscription.unsubscribe();
+    }
+    if (this.pageSubscription) {
+      this.pageSubscription.unsubscribe();
+    }
   }
 }

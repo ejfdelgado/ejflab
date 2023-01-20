@@ -16,7 +16,7 @@ class Wait {
   evento: EventEmitter<WaitPayload>;
   subscription: Subscription;
   constructor(escucha: Function, desc?: string) {
-    this.evento = new EventEmitter<WaitPayload>();
+    this.evento = new EventEmitter();
     this.desc = desc;
     this.subscribe(escucha);
   }
