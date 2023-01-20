@@ -1,20 +1,18 @@
 "use strict";
 
 import express from "express";
-import path from 'path';
-import cookieParser from "cookie-parser";
 import { PageSrv } from "./srv/PageSrv.mjs";
 import { cors, commonHeaders, handleErrorsDecorator, handleErrors } from "./srv/Network.mjs";
 import { MainHandler } from "./srv/MainHandler.mjs";
-import { checkAuthenticatedSilent } from "./srv/common/FirebasConfig.mjs";
+import { checkAuthenticated, checkAuthenticatedSilent } from "./srv/common/FirebasConfig.mjs";
 
 const app = express();
 
 app.use(cors);
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
+app.post('/srv/pg', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(PageSrv.savePage)]);
 app.use(MainHandler.addGetUrl);
 app.use("/", MainHandler.handle);
-//app.use('/', express.static('dist/bundle'));
 
 app.use(handleErrors);
 

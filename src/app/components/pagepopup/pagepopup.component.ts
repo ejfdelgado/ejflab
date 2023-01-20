@@ -13,6 +13,7 @@ import { BackendPageService } from 'src/services/backendPage.service';
 export class PagepopupComponent implements OnInit {
   faXmark = faXmark;
   form: FormGroup;
+  pageData: PageData;
   constructor(
     private dialogRef: MatDialogRef<PagepopupComponent>,
     private fb: FormBuilder,
@@ -26,7 +27,12 @@ export class PagepopupComponent implements OnInit {
     });
     this.backendPageSrv
       .getCurrentPage()
-      .then((data: PageData) => {
+      .then((data: PageData | null) => {
+        if (!data) {
+          this.dialogRef.close(false);
+          return;
+        }
+        this.pageData = data;
         this.form.setValue({
           title: data.tit,
           description: data.desc,
@@ -54,5 +60,13 @@ export class PagepopupComponent implements OnInit {
     this.dialogRef.close(false);
   }
 
-  guardar() {}
+  guardar() {
+    const valores = {
+      tit: this.form.value.title,
+      desc: this.form.value.description,
+    };
+    if (this.pageData.id) {
+      this.backendPageSrv.savePage(this.pageData.id, valores);
+    }
+  }
 }

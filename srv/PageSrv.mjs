@@ -1,11 +1,44 @@
 import { MyRoutes } from "../srcJs/MyRoutes.js"
+import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
 import { Utilidades } from "./common/Utilidades.mjs";
-import { NoExisteException } from "./MyError.mjs";
+import { MalaPeticionException, NoExisteException } from "./MyError.mjs";
 
 const PAGE_TYPE = "page";
 
 export class PageSrv {
+    static async savePage(req, res, next) {
+        const respuesta = {};
+        const pageId = parseInt(General.readParam(req, "id"));
+        const datos = General.readParam(req, "datos");
+        if (!pageId) {
+            throw new MalaPeticionException("Falta el id");
+        }
+        if (!datos || !(typeof datos == "object")) {
+            throw new MalaPeticionException("Falta datos");
+        }
+        const response = await MyStore.readById(PAGE_TYPE, pageId);
+        if (response) {
+            const { tit, desc } = datos;
+            await MyStore.updateById(PAGE_TYPE, pageId, {
+                tit,
+                desc,
+            });
+            response.tit = tit;
+            response.desc = desc;
+            respuesta = response;
+        } else {
+            throw new NoExisteException(`Does not exists ${pageId}`);
+        }
+        res.status(200).send(respuesta);
+    }
+    static async getCurrentPage(req, res, next) {
+        const user = res.locals.user;
+        const elpath = Utilidades.leerRefererPath(req);
+        const partes = MyRoutes.splitPageData(elpath);
+        const respuesta = await PageSrv.loadCurrentPage(partes.pageType, partes.pageId, user);
+        res.status(200).send(respuesta);
+    }
     static async loadCurrentPage(pageType, pageId, usuario = null) {
         const AHORA = new Date().getTime() / 1000;
         if (usuario == null && pageId == null) {
@@ -48,12 +81,5 @@ export class PageSrv {
                 }
             }
         }
-    }
-    static async getCurrentPage(req, res, next) {
-        const user = res.locals.user;
-        const elpath = Utilidades.leerRefererPath(req);
-        const partes = MyRoutes.splitPageData(elpath);
-        const respuesta = await PageSrv.loadCurrentPage(partes.pageType, partes.pageId, user);
-        res.status(200).send(respuesta);
     }
 }
