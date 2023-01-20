@@ -1,30 +1,47 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { ModalService } from 'src/services/modal.service';
 import { MatDialog } from '@angular/material/dialog';
 import { LoginpopupComponent } from './components/loginpopup/loginpopup.component';
 import { User } from '@angular/fire/auth';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.css'],
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
   currentUser: User | null = null;
+  loginSubscription: Subscription;
   constructor(
+    private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private modalService: ModalService,
     private router: Router,
     public dialog: MatDialog
-  ) {
-    authService.getLoginEvent().subscribe((user) => {
-      this.currentUser = user;
-    });
+  ) {}
+
+  private setCurrentUser(user: User | null) {
+    this.currentUser = user;
+    this.cdr.detectChanges();
   }
 
-  ngOnInit(): void {}
+  ngOnInit() {
+    this.authService.getCurrentUser().then((user) => {
+      this.setCurrentUser(user);
+    });
+    this.loginSubscription = this.authService
+      .getLoginEvent()
+      .subscribe((user: User) => {
+        this.setCurrentUser(user);
+      });
+  }
+
+  ngOnDestroy() {
+    this.loginSubscription.unsubscribe();
+  }
 
   async login() {
     const usuario = await this.authService.getCurrentUser();

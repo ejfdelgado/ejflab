@@ -1,9 +1,12 @@
-- feedback activity indicator
-- feedback messages
+- feedback activity indicator.
+- bug cuando llega a home no recarga el estado de logeado.
+- cuando carga los datos de la página desde angular, debe asignar los valores title, og:... dinamicamente.
+- hacer un editor de los datos de la página.
+- evitar tener que cambiar la url.
+- permitir disparar las ventanas de logeo deslogeo, propiedades de la página con comandos
 
-- Firebase Authentication (opcional).
 - Permitir tener N modelos por usuarios, poder luego abrir uno específico.
-- Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso. 
+- Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso.
 - Permitir enviar correos, usar templates para los correos.
 - Subir archivos al storage
 - Permitir descargarlos igualmente
