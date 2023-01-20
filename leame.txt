@@ -12,6 +12,7 @@ ng generate component home/components/confirm
 ng generate component home/components/loginpopup
 
 ng generate component components/indicator
+ng generate component components/pagepopup
 
 ng generate pipe letras
 

@@ -10,10 +10,9 @@
 [mat-dialog-title] .boton_cerrar {
   cursor: pointer;
   color: rgb(158, 158, 158);
-  margin-left: 30px;
   position: relative;
-  top: -13px;
-  left: 4px;
+  top: -5px;
+  left: 0;
 }
 
 [mat-dialog-title] .boton_cerrar:hover {

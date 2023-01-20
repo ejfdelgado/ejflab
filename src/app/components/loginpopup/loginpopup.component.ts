@@ -5,6 +5,7 @@ import { AuthService } from 'src/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ModalService } from 'src/services/modal.service';
 import { IndicatorService } from 'src/services/indicator.service';
+import { faXmark } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-loginpopup',
@@ -14,7 +15,7 @@ import { IndicatorService } from 'src/services/indicator.service';
 export class LoginpopupComponent implements OnInit {
   currentView = 'inicio';
   form: FormGroup;
-
+  faXmark = faXmark;
   constructor(
     private modalService: ModalService,
     private readonly authService: AuthService,

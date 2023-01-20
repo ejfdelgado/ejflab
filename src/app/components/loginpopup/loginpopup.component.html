@@ -1,6 +1,6 @@
 <div mat-dialog-title *ngIf="currentView == 'inicio'">
     <h1 class="centrado">Inicia sesión para continuar</h1>
-    <span class="boton_cerrar" [mat-dialog-close]>x</span>
+    <span class="boton_cerrar" [mat-dialog-close]><fa-icon [icon]="faXmark"></fa-icon></span>
 </div>
 <mat-dialog-content class="mat-typography" *ngIf="currentView == 'inicio'">
     <p class="texto_descripcion">Personaliza esta aplicación web para cuando regreses.</p>
@@ -19,7 +19,7 @@
 
 <div mat-dialog-title *ngIf="currentView == 'formulario'">
     <h1 class="centrado">Iniciar sesión con email</h1>
-    <span class="boton_cerrar" [mat-dialog-close]>x</span>
+    <span class="boton_cerrar" [mat-dialog-close]><fa-icon [icon]="faXmark"></fa-icon></span>
 </div>
 <mat-dialog-content class="mat-typography con_form" *ngIf="currentView == 'formulario'">
     <p class="texto_descripcion">Personaliza esta aplicación web para cuando regreses.</p>

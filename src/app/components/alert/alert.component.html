@@ -1,5 +1,6 @@
 <div mat-dialog-title>
-    <h1 class="">{{ title }}</h1>
+    <h1 class="centrado">{{ title }}</h1>
+    <span class="boton_cerrar" [mat-dialog-close]><fa-icon [icon]="faXmark"></fa-icon></span>
 </div>
 <p>{{ text }}</p>
 <div class="bottom_buttons">

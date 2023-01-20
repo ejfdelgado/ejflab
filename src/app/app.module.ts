@@ -11,6 +11,7 @@ import {
   ScreenTrackingService,
   UserTrackingService,
 } from '@angular/fire/analytics';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
@@ -29,6 +30,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
+import { PagepopupComponent } from './components/pagepopup/pagepopup.component';
 
 @NgModule({
   declarations: [
@@ -37,10 +39,12 @@ import { MatIconModule } from '@angular/material/icon';
     AlertComponent,
     ConfirmComponent,
     LoginpopupComponent,
+    PagepopupComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
+    FontAwesomeModule,
     provideFirebaseApp(() => initializeApp(environment.firebase)),
     provideAnalytics(() => getAnalytics()),
     provideAuth(() => getAuth()),
