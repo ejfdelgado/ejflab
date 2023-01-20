@@ -2,12 +2,12 @@
 export class Utilidades {
   static leerRefererPath(myrequest) {
     let urlTotal = Utilidades.leerHeader(myrequest, [
-      "referer",
+      //"referer",
       "X-Referer",
     ]);
     let elhost = Utilidades.leerHeader(myrequest, [
-      "host",
-      "Host",
+      //"host",
+      //"Host",
       "X-Host",
     ]);
     if (urlTotal == null || elhost == null) {

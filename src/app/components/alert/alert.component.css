@@ -21,6 +21,7 @@
   position: relative;
   top: -5px;
   left: 0;
+  margin-left: 10px;
 }
 
 [mat-dialog-title] .boton_cerrar:hover {

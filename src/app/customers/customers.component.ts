@@ -16,7 +16,6 @@ export class CustomersComponent implements OnInit {
 
   async ngOnInit() {
     this.page = await this.pageService.getCurrentPage();
-    console.log(this.page);
     this.route.params.subscribe((params) => {
       if ('id' in params) {
         const id = params['id'];

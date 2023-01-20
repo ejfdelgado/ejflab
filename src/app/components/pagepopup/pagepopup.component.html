@@ -1,1 +1,37 @@
-<p>pagepopup works!</p>
+<div mat-dialog-title>
+    <h1 class="centrado">Editar página</h1>
+    <span class="boton_cerrar" [mat-dialog-close]>
+        <fa-icon [icon]="faXmark"></fa-icon>
+    </span>
+</div>
+<mat-dialog-content class="mat-typography con_form">
+    <p class="texto_descripcion">Personaliza esta aplicación web para cuando regreses.</p>
+    <form class="form-container layout_columna" [formGroup]="form" (ngSubmit)="guardar()">
+        <mat-form-field class="form-control">
+            <mat-label>Título</mat-label>
+            <input matInput formControlName="title" type="text" required />
+            <mat-error *ngIf="title?.hasError('required')">
+                El título es requerido.
+            </mat-error>
+            <mat-error *ngIf="title?.hasError('maxlength')">
+                {{ getMaxLengthMessage("", title?.errors) }}
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="example-full-width">
+            <mat-label>Descripción</mat-label>
+            <textarea matInput formControlName="description" placeholder="Recuerdame..." cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="3" cdkAutosizeMaxRows="8"></textarea>
+            <mat-error *ngIf="description?.hasError('maxlength')">
+                {{ getMaxLengthMessage("", description?.errors) }}
+            </mat-error>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<div class="bottom_buttons">
+    <button mat-raised-button color="" (click)="cancelar()">
+        Cancelar
+    </button>
+    <button mat-raised-button color="primary" (click)="guardar()">
+        Guardar
+    </button>
+</div>
