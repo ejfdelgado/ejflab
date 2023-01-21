@@ -20,10 +20,7 @@ export class CardComponent implements OnInit {
   };
 
   constructor(private readonly router: Router) {}
-  ngOnInit(): void {
-    //this.isBig = true;
-    //this.isBig1 = true;
-  }
+  ngOnInit(): void {}
 
   ngOnChanges(changes: any) {
     if (changes.data) {

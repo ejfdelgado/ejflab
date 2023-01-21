@@ -2,13 +2,13 @@ import axios from "axios";
 import sharp from "sharp";
 import { Buffer } from 'buffer';
 import { Storage } from '@google-cloud/storage';
-import { General } from '../utils/General.mjs'
-import { CONSTANTES } from "../Constants.mjs"
 import ReadableStreamClone from 'readable-stream-clone'
+import { MyConstants } from "../srcJs/MyConstants.js";
+import { General } from "./common/General.mjs";
 
 const storage = new Storage();
 
-const defaultBucket = storage.bucket(CONSTANTES.BUCKET.PUBLIC);
+const defaultBucket = storage.bucket(MyConstants.BUCKET.PUBLIC);
 
 export class MyFileService {
 
@@ -61,7 +61,7 @@ export class MyFileService {
         const file = defaultBucket.file(keyName);
         await MyFileService.sendFile2Bucket(stream, file);
         await file.makePublic();
-        const uri = `${CONSTANTES.BUCKET.URL_BASE}/${CONSTANTES.BUCKET.PUBLIC}/${keyName}`;
+        const uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
         return uri;
     }
 
@@ -89,6 +89,14 @@ export class MyFileService {
     }
 
     static async uploadFile(req, res, next) {
+
+        if (!req.headers.filename) {
+            if (typeof next != "undefined") {
+                next();// use await??
+                return;
+            }
+        }
+
         const token = res.locals.token;
 
         const extra = req.headers.extra;
@@ -151,9 +159,9 @@ export class MyFileService {
         await MyFileService.sendFile2Bucket(readClone2.pipe(smallImage), fileXs);
         await fileXs.makePublic();
 
-        res.locals.bucket = CONSTANTES.BUCKET.PUBLIC;
+        res.locals.bucket = MyConstants.BUCKET.PUBLIC;
         res.locals.key = `${keyName}`;
-        const uri = `${CONSTANTES.BUCKET.URL_BASE}/${CONSTANTES.BUCKET.PUBLIC}/${keyName}`;
+        const uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
         res.locals.uri = uri;
 
         if (typeof next != "undefined") {

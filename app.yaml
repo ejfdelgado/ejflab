@@ -17,5 +17,10 @@ handlers:
     upload: dist/bundle/(.*)
     secure: optional
 
+  - url: /assets/(.*)
+    static_files: src/assets/\1
+    upload: src/assets/(.*)
+    secure: optional
+
 env_variables:
   ENV: pro

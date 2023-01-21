@@ -31,6 +31,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { PagepopupComponent } from './components/pagepopup/pagepopup.component';
+import { MycommonModule } from './mycommon/mycommon.module';
 
 @NgModule({
   declarations: [
@@ -61,6 +62,7 @@ import { PagepopupComponent } from './components/pagepopup/pagepopup.component';
     MatToolbarModule,
     MatDialogModule,
     MatIconModule,
+    MycommonModule,
   ],
   providers: [
     ScreenTrackingService,

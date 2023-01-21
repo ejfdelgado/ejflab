@@ -40,4 +40,9 @@ form {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  margin-bottom: 20px;
+}
+
+app-imagepicker {
+  height: 200px;
 }

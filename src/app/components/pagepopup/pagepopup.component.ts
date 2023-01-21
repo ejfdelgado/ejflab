@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
+import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/imagepicker.component';
 import { PageData } from 'src/interfaces/login-data.interface';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { ModalService } from 'src/services/modal.service';
@@ -15,6 +16,11 @@ export class PagepopupComponent implements OnInit {
   faXmark = faXmark;
   form: FormGroup;
   pageData: PageData;
+  changedImageValue: string;
+  imageOptions: ImagepickerOptionsData = {
+    isEditable: true,
+    isRounded: false,
+  };
   constructor(
     private dialogRef: MatDialogRef<PagepopupComponent>,
     private fb: FormBuilder,
@@ -51,6 +57,10 @@ export class PagepopupComponent implements OnInit {
     return this.form.get('description');
   }
 
+  changedImage(imagenBase64: string) {
+    this.changedImageValue = imagenBase64;
+  }
+
   getMaxLengthMessage(label: string, error: any | null): string {
     if (error && error.maxlength) {
       return `Máximo ${error.maxlength.requiredLength} letras. Actualmente hay ${error.maxlength.actualLength}.`;
@@ -66,6 +76,7 @@ export class PagepopupComponent implements OnInit {
     const valores = {
       tit: this.form.value.title,
       desc: this.form.value.description,
+      image: this.changedImageValue,
     };
     if (this.pageData.id) {
       try {

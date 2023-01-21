@@ -1,0 +1,35 @@
+.myImage {
+  position: relative;
+  cursor: pointer;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.myImage .blur {
+  background-size: cover !important;
+  background-position: center !important;
+  filter: blur(10px);
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.myImage img {
+  height: 100%;
+  z-index: 2;
+}
+
+.myImage input {
+  display: none;
+}
+
+.myImage.rounded {
+  border-radius: 50%;
+}

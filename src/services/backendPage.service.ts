@@ -32,11 +32,20 @@ export class BackendPageService {
   }
 
   async savePage(id: string, datos: PageData): Promise<PageData | null> {
-    const actual = await this.httpSrv.post<PageData>('srv/pg', {
+    let actual: PageData | null = null;
+    const payload = {
       id,
       datos,
-    });
-    this.evento.emit(actual);
+    };
+    const URL = 'srv/pg';
+    if (datos.image) {
+      const image = datos.image;
+      delete datos.image;
+      await this.httpSrv.postWithFile(image, URL, payload);
+    } else {
+      actual = await this.httpSrv.post<PageData>(URL, payload);
+      this.evento.emit(actual);
+    }
     return actual;
   }
 }

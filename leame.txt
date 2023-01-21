@@ -17,7 +17,7 @@ ng generate component home/components/loginpopup
 ng generate component components/indicator
 ng generate component components/pagepopup
 
-ng generate component components/card
+ng generate component mycommon/imagepicker
 
 ng generate pipe letras
 

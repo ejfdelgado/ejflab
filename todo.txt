@@ -1,5 +1,4 @@
 
-- Converytir en componente el card.
 - Cargar la imagen de la página (storage integration)
 - Crear la representacion de DB de usuario
 - Fetch de la imagen de la persona logeada

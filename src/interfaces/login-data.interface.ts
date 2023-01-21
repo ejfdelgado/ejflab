@@ -14,6 +14,7 @@ export interface PageData {
   path?: string;
   img?: string;
   id?: string;
+  image?: string;
 }
 
 export interface HttpOptionsData {
@@ -27,9 +28,9 @@ export interface BaseComponentData {
 }
 
 export interface CardComponentData {
-  imageUrl?: string,
-  title?: string,
-  icon?: string,
-  href?: string,
-  bigColumn?: number,
+  imageUrl?: string;
+  title?: string;
+  icon?: string;
+  href?: string;
+  bigColumn?: number;
 }

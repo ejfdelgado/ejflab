@@ -1,0 +1,5 @@
+<div class="myImage" [ngClass]="{'rounded': options.isRounded}" (click)="options.isEditable ? imageInput.click() : ''">
+    <div class="blur" [ngStyle]="{'background' : 'url('+localImage+')'}"></div>
+    <img [src]="localImage">
+    <input #imageInput type="file" accept="image/*" (change)="processFile(imageInput)">
+</div>
