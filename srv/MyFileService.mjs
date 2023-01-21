@@ -85,6 +85,7 @@ export class MyFileService {
         } else {
             keyName = `${folder}/${token.email}${fileName}`;
         }
+        keyName = keyName.replace(/[\/]{2,}/g, "/");
         return keyName;
     }
 
@@ -116,8 +117,8 @@ export class MyFileService {
 
         let folderType = "FIRST_YEAR_MONTH";
 
-        if (req.headers.folder_type) {
-            folderType = req.headers.folder_type;
+        if (req.headers.foldertype) {
+            folderType = req.headers.foldertype;
         }
 
         const keyName = MyFileService.getKeyBucketPath(
@@ -134,14 +135,14 @@ export class MyFileService {
         let sizeBig = 1024;
         let sizeSmall = 256;
 
-        if (req.headers.size_big) {
-            const numero = parseInt(req.headers.size_big);
+        if (req.headers.sizebig) {
+            const numero = parseInt(req.headers.sizebig);
             if (!isNaN(numero)) {
                 sizeBig = numero;
             }
         }
-        if (req.headers.size_small) {
-            const numero = parseInt(req.headers.size_small);
+        if (req.headers.sizesmall) {
+            const numero = parseInt(req.headers.sizesmall);
             if (!isNaN(numero)) {
                 sizeSmall = numero;
             }
@@ -164,10 +165,7 @@ export class MyFileService {
         const uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
         res.locals.uri = uri;
 
-        if (typeof next != "undefined") {
-            await next();
-        } else {
-            res.status(200).send({ uri: res.locals.uri, key: res.locals.key, bucket: res.locals.bucket });
-        }
+        next();
+        //res.status(200).send({ headers: req.headers, uri: res.locals.uri, key: res.locals.key, bucket: res.locals.bucket });
     }
 }

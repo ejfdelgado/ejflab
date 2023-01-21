@@ -6,7 +6,7 @@
   "scripts": {
     "ng": "ng",
     "angular": "ng serve",
-    "build": "ng build",
+    "build": "ng build --output-hashing=bundles",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",

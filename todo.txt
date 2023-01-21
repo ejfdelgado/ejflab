@@ -1,9 +1,9 @@
-
-- Cargar la imagen de la página (storage integration)
 - Crear la representacion de DB de usuario
 - Fetch de la imagen de la persona logeada
 - Editar los datos del usuario
 - Streaming de audio
+
+- recuperar contraseña
 
 - menu hamburguesa:
  - Crear nuevo documento

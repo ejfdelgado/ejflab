@@ -71,7 +71,7 @@ function getEnvVariables() {
     };
 }
 
-async function handleErrors(error, req, res) {
+function handleErrors(error, res) {
     if (error instanceof MyError && typeof error.httpCode == "number") {
         res.status(error.httpCode);
     } else {
@@ -80,7 +80,6 @@ async function handleErrors(error, req, res) {
     const response = {
         message: error.message,
     };
-    //response.request = JSON.parse(MyUtilities.stringify(req));
     res.send(response);
 }
 
@@ -93,7 +92,8 @@ function handleErrorsDecorator(someFun) {
             if (error.response && error.response.body) {
                 console.log(JSON.stringify(error.response.body));
             }
-            handleErrors(error, req, res);
+            res.locals.myerror = error;
+            handleErrors(error, res);
         }
     };
 }

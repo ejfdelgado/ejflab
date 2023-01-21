@@ -87,13 +87,13 @@ export class HttpService {
           req.setRequestHeader('folder', loadOptions.folder);
         }
         if (loadOptions?.sizeBig != null) {
-          req.setRequestHeader('size_big', loadOptions.sizeBig);
+          req.setRequestHeader('sizebig', loadOptions.sizeBig);
         }
         if (loadOptions?.sizeSmall != null) {
-          req.setRequestHeader('size_small', loadOptions.sizeSmall);
+          req.setRequestHeader('sizesmall', loadOptions.sizeSmall);
         }
         if (loadOptions?.folderType != null) {
-          req.setRequestHeader('folder_type', loadOptions.folderType);
+          req.setRequestHeader('foldertype', loadOptions.folderType);
         }
         req.setRequestHeader('extra', extraText);
         req.onload = (event) => {
