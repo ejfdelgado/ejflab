@@ -71,7 +71,7 @@ function getEnvVariables() {
     };
 }
 
-async function handleErrors(error, req, res, next) {
+async function handleErrors(error, req, res) {
     if (error instanceof MyError && typeof error.httpCode == "number") {
         res.status(error.httpCode);
     } else {
@@ -93,7 +93,7 @@ function handleErrorsDecorator(someFun) {
             if (error.response && error.response.body) {
                 console.log(JSON.stringify(error.response.body));
             }
-            next(error);
+            handleErrors(error, req, res);
         }
     };
 }

@@ -11,8 +11,9 @@ const app = express();
 app.use(cors);
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
 app.post('/srv/pg', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(PageSrv.savePage)]);
+app.use('/assets', express.static('src/assets'));
 app.use(MainHandler.addGetUrl);
-app.use("/", MainHandler.handle);
+app.use("/", handleErrorsDecorator(MainHandler.handle));
 
 app.use(handleErrors);
 

@@ -1,8 +1,25 @@
 
-- cargar la imagen de la página (storage integration)
-- crear la representacion de DB de usuario
-- cargar la imagen de la persona logeada
+- Converytir en componente el card.
+- Cargar la imagen de la página (storage integration)
+- Crear la representacion de DB de usuario
+- Fetch de la imagen de la persona logeada
 - Editar los datos del usuario
+- Streaming de audio
+
+- menu hamburguesa:
+ - Crear nuevo documento
+ - Mis documentos
+ - Todos los documentos
+ - Salir
+
+- menu usuario:
+ - Editar mi perfil
+ - Cerrar sesión
+
+- Apps:
+ - Juego de buscar algo en el mapa del mundo.
+ - Juego de actores y marionetas.
+ - Canvas compartido.
 
 - cache en page srv y actualizar cuando el dato regresa
 - evitar tener que cambiar la url en Constants

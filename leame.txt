@@ -8,6 +8,7 @@ ng generate component selectornumerico
 
 ng generate module home --route home --module app.module
 ng generate module elementos
+ng generate module common
 
 ng generate component home/components/alert
 ng generate component home/components/confirm
@@ -15,6 +16,8 @@ ng generate component home/components/loginpopup
 
 ng generate component components/indicator
 ng generate component components/pagepopup
+
+ng generate component components/card
 
 ng generate pipe letras
 

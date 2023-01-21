@@ -1,0 +1,9 @@
+<div class="box" (click)="navegar(data.href)">
+    <div class="box_image" [ngStyle]="{'background' : 'url('+data.imageUrl+')'}"></div>
+    <div class="box_texto">
+        <div class="box_icon" *ngIf="data.icon">
+            <fa-icon [icon]="getIcon(data.icon)"></fa-icon>
+        </div>
+        <div class="box_titulo">{{ data.title }}</div>
+    </div>
+</div>

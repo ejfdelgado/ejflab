@@ -25,3 +25,11 @@ export interface BaseComponentData {
   loadUser?: boolean;
   loadPage?: boolean;
 }
+
+export interface CardComponentData {
+  imageUrl?: string,
+  title?: string,
+  icon?: string,
+  href?: string,
+  bigColumn?: number,
+}

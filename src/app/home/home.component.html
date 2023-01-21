@@ -6,113 +6,15 @@
         </div>
         <div class="top_items">
             <div class="wrapper">
-                <div class="box big big1" (click)="navegar('customers')">
-                    <div class="box_image" style="background-image: url('/assets/img/app1.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app2.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app3.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app4.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app5.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app5.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
+                <app-card *ngFor="let oneCard of topCards; index as i;" [data]="oneCard"></app-card>
             </div>
-
         </div>
     </div>
 
     <div class="header">
         <div class="top_items">
             <div class="wrapper">
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app1.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app2.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app3.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app4.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
-                <div class="box">
-                    <div class="box_image" style="background-image: url('/assets/img/app5.jpg')"></div>
-                    <div class="box_texto">
-                        <div class="box_icon">
-                            <fa-icon [icon]="faGamepad"></fa-icon>
-                        </div>
-                        <div class="box_titulo">Mi nombre</div>
-                    </div>
-                </div>
+                <app-card *ngFor="let oneCard of secondCards; index as i;" [data]="oneCard"></app-card>
             </div>
 
         </div>
