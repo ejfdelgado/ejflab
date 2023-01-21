@@ -41,7 +41,19 @@ export class BackendPageService {
     if (datos.image) {
       const image = datos.image;
       delete datos.image;
-      await this.httpSrv.postWithFile(image, URL, payload);
+      await this.httpSrv.postWithFile(
+        image,
+        URL,
+        payload,
+        {},
+        {
+          folder: 'page',
+          fileName: `/${id}/front.jpg`,
+          folderType: 'own',
+          sizeBig: '512',
+          sizeSmall: '256',
+        }
+      );
     } else {
       actual = await this.httpSrv.post<PageData>(URL, payload);
       this.evento.emit(actual);

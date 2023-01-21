@@ -11,7 +11,7 @@ export interface IndicatorPayload {
   loading: boolean;
 }
 
-class Wait {
+export class Wait {
   desc: string | undefined;
   evento: EventEmitter<WaitPayload>;
   subscription: Subscription;
