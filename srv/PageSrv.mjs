@@ -20,12 +20,15 @@ export class PageSrv {
         const response = await MyStore.readById(PAGE_TYPE, pageId);
         if (response) {
             const { tit, desc } = datos;
-            await MyStore.updateById(PAGE_TYPE, pageId, {
+            const updated = {
                 tit,
                 desc,
-            });
-            response.tit = tit;
-            response.desc = desc;
+            };
+            if (res.locals && res.locals.uri) {
+                updated.img = res.locals.uri;
+            }
+            await MyStore.updateById(PAGE_TYPE, pageId, updated);
+            Object.assign(response, updated);
             respuesta = response;
         } else {
             throw new NoExisteException(`Does not exists ${pageId}`);

@@ -4,6 +4,7 @@
   flex-direction: row;
   gap: 10px;
   justify-content: right;
+  margin-top: 10px;
 }
 
 [mat-dialog-title] {

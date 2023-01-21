@@ -25,7 +25,7 @@
                 {{ getMaxLengthMessage("", description?.errors) }}
             </mat-error>
         </mat-form-field>
-        <app-imagepicker [options]="imageOptions" (changedImage)="changedImage($event)" [url]="'/assets/img/app1.jpg'">
+        <app-imagepicker [options]="imageOptions" (changedImage)="changedImage($event)" [url]="getPageImage()">
         </app-imagepicker>
     </form>
 </mat-dialog-content>

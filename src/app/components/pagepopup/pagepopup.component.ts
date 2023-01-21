@@ -6,6 +6,7 @@ import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/
 import { PageData } from 'src/interfaces/login-data.interface';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { ModalService } from 'src/services/modal.service';
+import { MyConstants } from 'srcJs/MyConstants';
 
 @Component({
   selector: 'app-pagepopup',
@@ -17,6 +18,7 @@ export class PagepopupComponent implements OnInit {
   form: FormGroup;
   pageData: PageData;
   changedImageValue: string;
+  ahora: number;
   imageOptions: ImagepickerOptionsData = {
     isEditable: true,
     isRounded: false,
@@ -26,7 +28,9 @@ export class PagepopupComponent implements OnInit {
     private fb: FormBuilder,
     private backendPageSrv: BackendPageService,
     private modalSrv: ModalService
-  ) {}
+  ) {
+    this.ahora = new Date().getTime();
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -59,6 +63,17 @@ export class PagepopupComponent implements OnInit {
 
   changedImage(imagenBase64: string) {
     this.changedImageValue = imagenBase64;
+  }
+
+  getPageImage(): string {
+    if (
+      this.pageData &&
+      typeof this.pageData.img == 'string' &&
+      this.pageData.img.length > 0
+    ) {
+      return this.pageData.img + `?t=${this.ahora}`;
+    }
+    return MyConstants.PAGE.DEFAULT_IMAGE;
   }
 
   getMaxLengthMessage(label: string, error: any | null): string {
