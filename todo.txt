@@ -5,16 +5,6 @@
 
 - recuperar contraseña
 
-- menu hamburguesa:
- - Crear nuevo documento
- - Mis documentos
- - Todos los documentos
- - Salir
-
-- menu usuario:
- - Editar mi perfil
- - Cerrar sesión
-
 - Apps:
  - Juego de buscar algo en el mapa del mundo.
  - Juego de actores y marionetas.

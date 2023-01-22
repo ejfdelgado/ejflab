@@ -1,9 +1,6 @@
 <div class="pagina">
     <div class="header" style="background-image: url('/assets/img/background.jpg')">
-        <div class="top_menu">
-            <div class="relleno"></div>
-            <div class="usuario_container"></div>
-        </div>
+        <app-statusbar></app-statusbar>
         <div class="top_items">
             <div class="wrapper">
                 <app-card *ngFor="let oneCard of topCards; index as i;" [data]="oneCard"></app-card>

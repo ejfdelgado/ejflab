@@ -1,0 +1,52 @@
+<div class="top_menu">
+    <div class="relleno">
+        <div class="usuario_container">
+            <div class="menu_icon_user_parent" [matMenuTriggerFor]="mainMenu" aria-label="Menú principal">
+                <div class="menu_icon_user">
+                    <fa-icon [icon]="faBurgerIcon"></fa-icon>
+                </div>
+            </div>
+            <mat-menu #mainMenu="matMenu">
+                <button mat-menu-item>
+                    <mat-icon>edit</mat-icon>
+                    <span>Editar documento</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>add</mat-icon>
+                    <span>Crear nuevo documento</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>search</mat-icon>
+                    <span>Ver mis documentos</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>close</mat-icon>
+                    <span>Salir</span>
+                </button>
+                <button mat-menu-item>
+                    <mat-icon>logout</mat-icon>
+                    <span>Salir y cerrar sesión</span>
+                </button>
+            </mat-menu>
+
+        </div>
+        <div class="relleno"></div>
+    </div>
+    <div class="usuario_container">
+        <div class="menu_icon_user_parent" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
+            <div class="menu_icon_user">
+                <fa-icon [icon]="faUserIcon"></fa-icon>
+            </div>
+        </div>
+        <mat-menu #userMenu="matMenu">
+            <button mat-menu-item>
+                <mat-icon>edit</mat-icon>
+                <span>Editar usuario</span>
+            </button>
+            <button mat-menu-item>
+                <mat-icon>logout</mat-icon>
+                <span>Cerrar sesión</span>
+            </button>
+        </mat-menu>
+    </div>
+</div>

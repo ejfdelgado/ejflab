@@ -3,10 +3,13 @@ import { CommonModule } from '@angular/common';
 import { CardComponent } from './components/card/card.component';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { ImagepickerComponent } from './components/imagepicker/imagepicker.component';
+import { StatusbarComponent } from './components/statusbar/statusbar.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatMenuModule } from '@angular/material/menu';
 
 @NgModule({
-  declarations: [CardComponent, ImagepickerComponent],
-  imports: [FontAwesomeModule, CommonModule],
-  exports: [CardComponent, ImagepickerComponent],
+  declarations: [CardComponent, ImagepickerComponent, StatusbarComponent],
+  imports: [FontAwesomeModule, CommonModule, MatIconModule, MatMenuModule],
+  exports: [CardComponent, ImagepickerComponent, StatusbarComponent],
 })
 export class MycommonModule {}

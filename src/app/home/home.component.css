@@ -4,16 +4,6 @@
   flex-direction: column;
 }
 
-.top_menu {
-  height: 50px;
-  width: 100%;
-  display: flex;
-}
-
-.relleno {
-  flex: 1;
-}
-
 .header {
   margin-bottom: 50px;
 }
@@ -21,83 +11,31 @@
 .footer {
   width: 100%;
   height: 300px;
-  background-color: #02B040;
+  background-color: #02b040;
   margin-top: 50px;
-}
-
-.usuario_container {
-  width: 50px;
-  height: 50px;
-  background-color: #444;
 }
 
 .top_items {
   display: flex;
   flex-direction: row;
-  justify-content: center;
   position: relative;
+  padding: 0 5vw;
 }
 
 .wrapper {
   grid-template-columns: 25% 25% 25% 25%;
   grid-auto-rows: 15vw;
 
-  width: 60vw;
   display: grid;
-  grid-gap: 20px;
   color: #444;
   position: relative;
   top: 42px;
-  left: -30px;
-}
 
-.box {
-  cursor: pointer;
-  -webkit-user-select: none; /* Safari */
-  -ms-user-select: none; /* IE 10 and IE 11 */
-  user-select: none; /* Standard syntax */
   width: 100%;
-  height: 100%;
-  border-radius: 10px;
-  background-color: #fff;
-  box-shadow: 0px 4px 4px 0px rgb(0 0 0 / 15%);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
 }
 
-.box_image {
-  background-size: cover;
-  flex: 1;
-}
-
-.box_texto {
-  width: 100%;
-  padding: 20px;
-  position: relative;
-}
-
-.box_titulo {
-  font-size: 1.2em;
-  font-weight: 400;
-}
-
-.box_icon {
-  width: 40px;
-  height: 40px;
-  right: 60px;
-  top: -20px;
-  font-size: 1em;
-
-  color: #00c9e3;
-  position: absolute;
-  background-color: white;
-  text-align: center;
-  border-radius: 50%;
-  box-shadow: 1px 1px 4px 1px #c7c8ca;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.wrapper app-card {
+  padding: 10px;
 }
 
 .box.big .box_icon {
@@ -121,4 +59,11 @@
 .box.big3 {
   grid-column: 3 / span 2;
   grid-row: 1 / span 2;
+}
+
+@media only screen and (max-width: 992px) {
+  .wrapper {
+    grid-template-columns: 50% 50%;
+    grid-auto-rows: 30vw;
+  }
 }

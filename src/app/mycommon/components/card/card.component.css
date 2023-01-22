@@ -69,3 +69,19 @@
   grid-column: 3 / span 2;
   grid-row: 1 / span 2;
 }
+
+@media only screen and (max-width: 992px) {
+  .box_titulo {
+    padding: 15px;
+    font-size: 1em;
+    font-weight: 400;
+  }
+
+  .box_icon {
+    width: 30px;
+    height: 30px;
+    right: 10px;
+    top: -15px;
+    font-size: 1em;
+  }
+}

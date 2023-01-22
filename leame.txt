@@ -1,6 +1,10 @@
 https://material.angular.io/components/menu/examples
 https://material.angular.io/components/input/overview
 
+
+https://fonts.google.com/icons
+
+
 ng new proyecto001
 
 ng serve -o
@@ -18,7 +22,8 @@ ng generate component home/components/loginpopup
 ng generate component components/indicator
 ng generate component components/pagepopup
 
-ng generate component mycommon/imagepicker
+ng generate component mycommon/components/imagepicker
+ng generate component mycommon/components/statusbar
 
 ng generate pipe letras
 
