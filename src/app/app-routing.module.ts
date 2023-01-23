@@ -31,6 +31,11 @@ const routes: Routes = [
     //data: { authGuardPipe: redirectUnauthorizedToLogin },
   },
   {
+    path: 'callgame',
+    loadChildren: () =>
+      import('./callgame/callgame.module').then((m) => m.CallgameModule),
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full',

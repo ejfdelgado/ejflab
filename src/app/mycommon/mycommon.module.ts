@@ -6,10 +6,21 @@ import { ImagepickerComponent } from './components/imagepicker/imagepicker.compo
 import { StatusbarComponent } from './components/statusbar/statusbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
+import { StreamingComponent } from './components/streaming/streaming.component';
 
 @NgModule({
-  declarations: [CardComponent, ImagepickerComponent, StatusbarComponent],
+  declarations: [
+    CardComponent,
+    ImagepickerComponent,
+    StatusbarComponent,
+    StreamingComponent,
+  ],
   imports: [FontAwesomeModule, CommonModule, MatIconModule, MatMenuModule],
-  exports: [CardComponent, ImagepickerComponent, StatusbarComponent],
+  exports: [
+    CardComponent,
+    ImagepickerComponent,
+    StatusbarComponent,
+    StreamingComponent,
+  ],
 })
 export class MycommonModule {}

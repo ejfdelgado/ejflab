@@ -8,9 +8,12 @@ import { PageSrv } from "./PageSrv.mjs";
 
 export class MainHandler {
     static LOCAL_FOLDER = path.resolve() + "/dist/bundle";
-    static async handle(req, res) {
+    static async handle(req, res, next) {
         const originalUrl = req.getUrl();
         const theUrl = url.parse(originalUrl);
+        if (theUrl.pathname == "/socket.io/") {
+            return next();
+        }
         const rutas = MainHandler.decodeUrl(theUrl);
         const encoding = req.query.encoding;
         const rta = await MainHandler.resolveLocalFile(rutas, encoding);

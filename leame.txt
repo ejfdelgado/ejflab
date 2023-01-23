@@ -11,6 +11,7 @@ ng serve -o
 
 ng generate component selectornumerico
 
+ng generate module callgame --route callgame --module app.module
 ng generate module home --route home --module app.module
 ng generate module elementos
 ng generate module common
@@ -24,6 +25,7 @@ ng generate component components/pagepopup
 
 ng generate component mycommon/components/imagepicker
 ng generate component mycommon/components/statusbar
+ng generate component mycommon/components/streaming
 
 ng generate pipe letras
 
