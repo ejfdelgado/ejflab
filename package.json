@@ -10,7 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",
-    "deploy": "gcloud app deploy --quiet  -v v1 app.yaml",
+    "deploy": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml",
     "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments && npm run credentials_paistv",
     "end": "gcloud config set account edelgado@panal.co && gcloud config set project panal-comunidad-app && npm run credentials_comunidad",
     "credentials_paistv": "export ENV=pro && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json",

@@ -1,11 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 
+//https://developers.google.com/codelabs/webrtc-web#5
+
 const pcConfig = {
   iceServers: [
     {
       urls: 'stun:stun.l.google.com:19302',
-      credential: '',
+    },
+    {
+      urls: 'stun:stun1.l.google.com:19302',
+    },
+    {
+      urls: 'stun:stun2.l.google.com:19302',
+    },
+    {
+      urls: 'stun:stun3.l.google.com:19302',
+    },
+    {
+      urls: 'stun:stun4.l.google.com:19302',
+    },
+    {
+      urls: 'stun1.voiceeclipse.net:3478',
     },
   ],
 };
@@ -190,7 +206,7 @@ export class StreamingComponent implements OnInit {
     const handleRemoteStreamRemovedThis =
       this.handleRemoteStreamRemoved.bind(this);
     try {
-      this.pc = new RTCPeerConnection();
+      this.pc = new RTCPeerConnection(pcConfig);
       this.mySocketStream.setPC(this.pc);
       this.pc.onicecandidate = handleIceCandidateThis;
       this.pc.addEventListener('addstream', handleRemoteStreamAddedThis);
@@ -306,7 +322,7 @@ export class StreamingComponent implements OnInit {
           console.log('Got TURN server: ', turnServer);
           pcConfig.iceServers.push({
             urls: 'turn:' + turnServer.username + '@' + turnServer.turn,
-            credential: turnServer.password,
+            //credential: turnServer.password,
           });
           this.turnReady = true;
         }
