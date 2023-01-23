@@ -33,28 +33,38 @@ io.on('connection', (socket) => {
     socket.on('message', function (message) {
         log('Client said: ', message);
         // for a real app, would be room-only (not broadcast)
+        if (message == "bye") {
+            console.log('received bye');
+            socket.leave(room);
+        }
         socket.broadcast.emit('message', message);
     });
 
     socket.on('create or join', function (room) {
         log('Received request to create or join room ' + room);
 
-        var clientsInRoom = io.sockets.adapter.rooms[room];
-        var numClients = clientsInRoom ? Object.keys(clientsInRoom.sockets).length : 0;
+        console.log(io.sockets.adapter.rooms);
+
+        var clientsInRoom = io.sockets.adapter.rooms.get(room);
+        var numClients = clientsInRoom ? clientsInRoom.size : 0;
+
         log('Room ' + room + ' now has ' + numClients + ' client(s)');
 
         if (numClients === 0) {
+            console.log("I'm alone");
             socket.join(room);
             log('Client ID ' + socket.id + ' created room ' + room);
             socket.emit('created', room, socket.id);
 
         } else if (numClients === 1) {
+            console.log("I'm the second");
             log('Client ID ' + socket.id + ' joined room ' + room);
             io.sockets.in(room).emit('join', room);
             socket.join(room);
             socket.emit('joined', room, socket.id);
             io.sockets.in(room).emit('ready');
         } else { // max two clients
+            console.log("I'm another!");
             socket.emit('full', room);
         }
     });
@@ -69,6 +79,14 @@ io.on('connection', (socket) => {
             });
         }
     });
+
+    /*
+    socket.on('bye', function () {
+        console.log('received bye');
+        socket.leave(room);
+        io.sockets.in(room).emit('bye', socket.id);
+    });
+    */
 });
 
 const PORT = process.env.PORT || 8081;
