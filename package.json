@@ -17,7 +17,7 @@
     "credentials_comunidad": "export ENV=dev && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/panal/comunidad/keys/panal-comunidad-app-7da87eb73391.json"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": "14.20.0"
   },
   "repository": {
     "type": "git",

@@ -21,7 +21,7 @@ const pcConfig = {
       urls: 'stun:stun4.l.google.com:19302',
     },
     {
-      urls: 'stun1.voiceeclipse.net:3478',
+      urls: 'stun:stun1.voiceeclipse.net:3478',
     },
   ],
 };
