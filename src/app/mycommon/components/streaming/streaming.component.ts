@@ -7,6 +7,9 @@ import { MyConstants } from 'srcJs/MyConstants';
 // https://jameshfisher.com/2017/01/17/webrtc-datachannel-reliability/
 
 const pcConfig = {
+  ordered: true,
+  maxPacketLifeTime: null,
+  maxRetransmits: null,
   iceServers: [
     {
       urls: 'stun:stun.l.google.com:19302',
@@ -108,16 +111,20 @@ export class MySocketStreaming {
         this.socket.on('message', (message: any) => {
           //console.log('Client received message:', message);
           if (message === 'got user media') {
+            console.log(`Received: got user media`);
             this.maybeStart();
           } else if (message.type === 'offer') {
+            console.log(`Received: offer`);
             if (!this.isInitiator && !this.isStarted) {
               this.maybeStart();
             }
             this.pc.setRemoteDescription(new RTCSessionDescription(message));
             this.doAnswer();
-          } else if (message.type === 'answer' && this.isStarted) {
+          } else if (this.isStarted && message.type === 'answer') {
+            console.log(`Received: answer`);
             this.pc.setRemoteDescription(new RTCSessionDescription(message));
-          } else if (message.type === 'candidate' && this.isStarted) {
+          } else if (this.isStarted && message.type === 'candidate') {
+            console.log(`Received: candidate`);
             var candidate = new RTCIceCandidate({
               sdpMLineIndex: message.label,
               candidate: message.candidate,
@@ -222,7 +229,6 @@ export class StreamingComponent implements OnInit {
       this.mySocketStream.isChannelReady &&
       typeof this.localStream !== 'undefined'
     ) {
-      console.log('>>>>>> creating peer connection');
       const handleIceCandidateThis = this.handleIceCandidate.bind(this);
       const handleRemoteStreamAddedThis =
         this.handleRemoteStreamAdded.bind(this);
@@ -231,13 +237,14 @@ export class StreamingComponent implements OnInit {
       try {
         this.pc = new RTCPeerConnection(pcConfig);
         this.mySocketStream.setPC(this.pc);
-        this.pc.onicecandidate = handleIceCandidateThis;
+        // Events for webrtc
+        this.pc.addEventListener('icecandidate', handleIceCandidateThis);
         this.pc.addEventListener('addstream', handleRemoteStreamAddedThis);
         this.pc.addEventListener('removestream', handleRemoteStreamRemovedThis);
-        console.log('Created RTCPeerConnnection');
       } catch (e: any) {
-        console.log('Failed to create PeerConnection, exception: ' + e.message);
-        alert('Cannot create RTCPeerConnection object.');
+        this.modalService.error(
+          new Error('Cannot create RTCPeerConnection object. ' + e.message)
+        );
         return;
       }
       if (this.pc) {
@@ -269,31 +276,30 @@ export class StreamingComponent implements OnInit {
     }
   }
 
-  handleCreateOfferError(event: any) {
-    console.log('createOffer() error: ', event);
-  }
-
   doCall() {
-    console.log('Sending offer to peer');
+    console.log('doCall()');
     const setLocalAndSendMessageThis = this.setLocalAndSendMessage.bind(this);
-    const handleCreateOfferErrorThis = this.handleCreateOfferError.bind(this);
     if (this.pc) {
       this.pc
         .createOffer()
         .then(setLocalAndSendMessageThis)
-        .catch(handleCreateOfferErrorThis);
+        .catch((event) => {
+          console.log('createOffer() error: ', event);
+        });
     }
   }
 
   doAnswer() {
-    console.log('Sending answer to peer.');
+    console.log('doAnswer()');
     const setLocalAndSendMessageThis = this.setLocalAndSendMessage.bind(this);
-    const onCreateSessionDescriptionErrorThis =
-      this.onCreateSessionDescriptionError.bind(this);
     if (this.pc) {
       this.pc
         .createAnswer()
-        .then(setLocalAndSendMessageThis, onCreateSessionDescriptionErrorThis);
+        .then(setLocalAndSendMessageThis, (error: Error) => {
+          console.log(
+            'Failed to create session description: ' + error.toString()
+          );
+        });
     }
   }
 
@@ -303,10 +309,6 @@ export class StreamingComponent implements OnInit {
       //console.log('setLocalAndSendMessage sending message', sessionDescription);
       this.mySocketStream.sendMessage(sessionDescription);
     }
-  }
-
-  onCreateSessionDescriptionError(error: Error) {
-    console.log('Failed to create session description: ' + error.toString());
   }
 
   handleRemoteStreamAdded(event: any) {
@@ -343,35 +345,6 @@ export class StreamingComponent implements OnInit {
         this.pc.close();
         this.pc = null;
       }
-    }
-  }
-
-  requestTurn(turnURL: string) {
-    var turnExists = false;
-    for (var i in pcConfig.iceServers) {
-      if (pcConfig.iceServers[i].urls.substr(0, 5) === 'turn:') {
-        turnExists = true;
-        this.turnReady = true;
-        break;
-      }
-    }
-    if (!turnExists) {
-      console.log('Getting TURN server from ', turnURL);
-      // No TURN server. Get one from computeengineondemand.appspot.com:
-      var xhr = new XMLHttpRequest();
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          var turnServer = JSON.parse(xhr.responseText);
-          console.log('Got TURN server: ', turnServer);
-          pcConfig.iceServers.push({
-            urls: 'turn:' + turnServer.username + '@' + turnServer.turn,
-            //credential: turnServer.password,
-          });
-          this.turnReady = true;
-        }
-      };
-      xhr.open('GET', turnURL, true);
-      xhr.send();
     }
   }
 
