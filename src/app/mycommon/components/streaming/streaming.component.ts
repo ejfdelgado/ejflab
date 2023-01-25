@@ -102,11 +102,11 @@ export class MySocketStreaming {
         });
 
         this.socket.on('log', (array: Array<any>) => {
-          console.log.apply(console, array);
+          //console.log.apply(console, array);
         });
 
         this.socket.on('message', (message: any) => {
-          console.log('Client received message:', message);
+          //console.log('Client received message:', message);
           if (message === 'got user media') {
             this.maybeStart();
           } else if (message.type === 'offer') {
@@ -149,7 +149,7 @@ export class MySocketStreaming {
   }
 
   sendMessage(message: any) {
-    console.log('Client sending message: ', message);
+    //console.log('Client sending message: ', message);
     this.socket.emit('message', message);
   }
 
@@ -199,12 +199,9 @@ export class StreamingComponent implements OnInit {
   }
 
   gotStreamSend() {
-    console.log(`gotStreamSend ...`);
     if (this.localStream && this.mySocketStream) {
-      console.log(`gotStreamSend 1 ok`);
       this.mySocketStream.sendMessage('got user media');
       if (this.mySocketStream.isInitiator) {
-        console.log(`gotStreamSend 2 ok`);
         this.maybeStart();
       }
     }
@@ -212,16 +209,18 @@ export class StreamingComponent implements OnInit {
 
   maybeStart() {
     console.log(
-      '>>>>>>> maybeStart() ',
-      `isStarted = ${this.mySocketStream?.isStarted} ==? false. `,
-      `isChannelReady =${this.mySocketStream?.isChannelReady} ==? true. `,
-      this.localStream
+      'maybeStart()\n',
+      `isStarted(${this.mySocketStream?.isStarted}) ==? false.\n`,
+      `isChannelReady(${this.mySocketStream?.isChannelReady}) ==? true.\n`,
+      `(typeof this.localStream !== 'undefined')(${
+        typeof this.localStream !== 'undefined'
+      }) ==? true`
     );
     if (
       this.mySocketStream &&
       !this.mySocketStream.isStarted &&
-      typeof this.localStream !== 'undefined' &&
-      this.mySocketStream.isChannelReady
+      this.mySocketStream.isChannelReady &&
+      typeof this.localStream !== 'undefined'
     ) {
       console.log('>>>>>> creating peer connection');
       const handleIceCandidateThis = this.handleIceCandidate.bind(this);
@@ -248,7 +247,6 @@ export class StreamingComponent implements OnInit {
         }
       }
       this.mySocketStream.isStarted = true;
-      console.log('isInitiator', this.mySocketStream.isInitiator);
       if (this.mySocketStream.isInitiator) {
         this.doCall();
       }
@@ -256,7 +254,7 @@ export class StreamingComponent implements OnInit {
   }
 
   handleIceCandidate(event: any) {
-    console.log('icecandidate event: ', event);
+    //console.log('icecandidate event: ', event);
     if (this.mySocketStream) {
       if (event.candidate) {
         this.mySocketStream.sendMessage({
@@ -302,7 +300,7 @@ export class StreamingComponent implements OnInit {
   setLocalAndSendMessage(sessionDescription: any) {
     if (this.mySocketStream && this.pc) {
       this.pc.setLocalDescription(sessionDescription);
-      console.log('setLocalAndSendMessage sending message', sessionDescription);
+      //console.log('setLocalAndSendMessage sending message', sessionDescription);
       this.mySocketStream.sendMessage(sessionDescription);
     }
   }
@@ -312,17 +310,17 @@ export class StreamingComponent implements OnInit {
   }
 
   handleRemoteStreamAdded(event: any) {
-    console.log('Remote stream added.');
+    console.log('handleRemoteStreamAdded()');
     this.remoteStream = event.stream;
     this.remoteVideo.srcObject = this.remoteStream;
   }
 
   handleRemoteStreamRemoved(event: any) {
-    console.log('Remote stream removed. Event: ', event);
+    console.log('handleRemoteStreamRemoved()');
   }
 
   hangup() {
-    console.log('Hanging up.');
+    console.log('hangup()');
     if (this.mySocketStream) {
       this.stop();
       this.mySocketStream.sayBye();
@@ -330,14 +328,15 @@ export class StreamingComponent implements OnInit {
   }
 
   handleRemoteHangup() {
-    console.log('Session terminated.');
+    console.log('handleRemoteHangup()');
     if (this.mySocketStream) {
       this.stop();
-      this.mySocketStream.isInitiator = false;
+      //this.mySocketStream.isInitiator = false;
     }
   }
 
   stop() {
+    console.log('stop()');
     if (this.mySocketStream) {
       this.mySocketStream.isStarted = false;
       if (this.pc) {
@@ -391,10 +390,8 @@ export class StreamingComponent implements OnInit {
     promesas.push(this.joinRoom());
     promesas.push(this.getLocalMedia());
 
-    console.log('hola');
     await Promise.all(promesas);
 
-    console.log('gotStreamSend?');
     this.gotStreamSend();
   }
 
@@ -404,7 +401,6 @@ export class StreamingComponent implements OnInit {
         .getUserMedia(constraints)
         .then((media) => {
           this.gotStream(media);
-          console.log(`getLocalMedia resolved`);
           resolve(media);
         })
         .catch(function (e) {
@@ -425,9 +421,7 @@ export class StreamingComponent implements OnInit {
         doAnswerThis,
         handleRemoteHangupThis
       );
-      console.log('configure started');
       await this.mySocketStream.configure();
-      console.log('configure ended');
     } catch (error) {}
     return;
   }
