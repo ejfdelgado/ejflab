@@ -1,3 +1,9 @@
-<p>streaming works!</p>
+<pre>isWebSocketOk: {{ mySocketStream?.isWebSocketOk | json }}</pre>
+<pre>isChannelReady: {{ mySocketStream?.isChannelReady | json }}</pre>
+<pre>isInitiator: {{ mySocketStream?.isInitiator | json }}</pre>
+<pre>isStarted: {{ mySocketStream?.isStarted | json }}</pre>
+
+<button type="button" (click)="startAll()">startAll</button>
+<button type="button" (click)="leaveRoom()">leaveRoom</button>
 <video id="localVideo" autoplay muted></video>
 <video id="remoteVideo" autoplay></video>

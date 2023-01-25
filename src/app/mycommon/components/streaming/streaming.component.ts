@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
+import { ModalService } from 'src/services/modal.service';
+import { MyConstants } from 'srcJs/MyConstants';
 
-//https://developers.google.com/codelabs/webrtc-web#5
+// https://developers.google.com/codelabs/webrtc-web#5
+// https://jameshfisher.com/2017/01/17/webrtc-datachannel-reliability/
 
 const pcConfig = {
   iceServers: [
@@ -39,22 +42,98 @@ interface ServerToClientEvents {
   joined: (room: string, clientId: any) => void;
   log: (array: Array<any>) => void;
   message: (message: any) => void;
+  byeresponse: (clientId: any) => void;
 }
 
 interface ClientToServerEvents {
   'create or join': (room: string) => void;
   message: (message: any) => void;
+  bye: (room: string) => void;
 }
 
 export class MySocketStreaming {
+  room: string;
+  maybeStart: Function;
+  doAnswer: Function;
+  handleRemoteHangup: Function;
   pc: RTCPeerConnection;
-  isChannelReady: boolean = false;
-  isInitiator: boolean = false;
-  isStarted: boolean = false;
-  socket: Socket<ServerToClientEvents, ClientToServerEvents> = io();
+  isWebSocketOk: boolean = false; //si el websocket está ok
+  isChannelReady: boolean = false; // si se hizo el join
+  isInitiator: boolean = false; //si fue quien creó la sala
+  isStarted: boolean = false; //si está transmitiendo webrtc
+  socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
+    MyConstants.SRV_ROOT
+  );
 
   setPC(pc: RTCPeerConnection) {
     this.pc = pc;
+  }
+
+  async configure() {
+    return new Promise<void>((resolve) => {
+      this.socket.on('disconnect', () => {
+        this.isWebSocketOk = false;
+      });
+      this.socket.on('connect', () => {
+        this.isWebSocketOk = true;
+        this.socket.emit('create or join', this.room);
+
+        this.socket.on('created', (room, clientId) => {
+          this.isInitiator = true;
+        });
+
+        this.socket.on('full', (room) => {
+          console.log('Room ' + room + ' is full');
+        });
+
+        this.socket.on('ipaddr', (ipaddr) => {
+          console.log('Message from client: Server IP address is ' + ipaddr);
+        });
+
+        this.socket.on('join', (room: string) => {
+          console.log(`join ${room}`);
+          this.isChannelReady = true;
+        });
+
+        this.socket.on('joined', (room, clientId) => {
+          console.log(`joined ${room} ${clientId}`);
+          //this.isInitiator = false;
+          this.isChannelReady = true;
+        });
+
+        this.socket.on('log', (array: Array<any>) => {
+          console.log.apply(console, array);
+        });
+
+        this.socket.on('message', (message: any) => {
+          console.log('Client received message:', message);
+          if (message === 'got user media') {
+            this.maybeStart();
+          } else if (message.type === 'offer') {
+            if (!this.isInitiator && !this.isStarted) {
+              this.maybeStart();
+            }
+            this.pc.setRemoteDescription(new RTCSessionDescription(message));
+            this.doAnswer();
+          } else if (message.type === 'answer' && this.isStarted) {
+            this.pc.setRemoteDescription(new RTCSessionDescription(message));
+          } else if (message.type === 'candidate' && this.isStarted) {
+            var candidate = new RTCIceCandidate({
+              sdpMLineIndex: message.label,
+              candidate: message.candidate,
+            });
+            this.pc.addIceCandidate(candidate);
+          }
+        });
+
+        this.socket.on('byeresponse', (whoId: string) => {
+          if (this.isStarted) {
+            this.handleRemoteHangup();
+          }
+        });
+      });
+      resolve();
+    });
   }
 
   constructor(
@@ -63,69 +142,21 @@ export class MySocketStreaming {
     doAnswer: Function,
     handleRemoteHangup: Function
   ) {
-    console.log(`Starting MySocketStreaming ${room}`);
-    if (room !== '') {
-      console.log('Message from client: Asking to join room ' + room);
-      this.socket.emit('create or join', room);
-    }
-
-    this.socket.on('created', (room, clientId) => {
-      this.isInitiator = true;
-    });
-
-    this.socket.on('full', (room) => {
-      console.log('Room ' + room + ' is full');
-    });
-
-    this.socket.on('ipaddr', (ipaddr) => {
-      console.log('Message from client: Server IP address is ' + ipaddr);
-    });
-
-    this.socket.on('join', (room: string) => {
-      console.log('Another peer made a request to join room ' + room);
-      console.log('This peer is the initiator of room ' + room + '!');
-      this.isChannelReady = true;
-      console.log(`this.isChannelReady = ${this.isChannelReady}`);
-    });
-
-    this.socket.on('joined', (room, clientId) => {
-      console.log('joined: ' + room);
-      //this.isInitiator = false;
-      this.isChannelReady = true;
-      console.log(`this.isChannelReady = ${this.isChannelReady}`);
-    });
-
-    this.socket.on('log', (array: Array<any>) => {
-      console.log.apply(console, array);
-    });
-
-    this.socket.on('message', (message: any) => {
-      console.log('Client received message:', message);
-      if (message === 'got user media') {
-        maybeStart();
-      } else if (message.type === 'offer') {
-        if (!this.isInitiator && !this.isStarted) {
-          maybeStart();
-        }
-        this.pc.setRemoteDescription(new RTCSessionDescription(message));
-        doAnswer();
-      } else if (message.type === 'answer' && this.isStarted) {
-        this.pc.setRemoteDescription(new RTCSessionDescription(message));
-      } else if (message.type === 'candidate' && this.isStarted) {
-        var candidate = new RTCIceCandidate({
-          sdpMLineIndex: message.label,
-          candidate: message.candidate,
-        });
-        this.pc.addIceCandidate(candidate);
-      } else if (message === 'bye' && this.isStarted) {
-        handleRemoteHangup();
-      }
-    });
+    this.room = room;
+    this.maybeStart = maybeStart;
+    this.doAnswer = doAnswer;
+    this.handleRemoteHangup = handleRemoteHangup;
   }
 
   sendMessage(message: any) {
     console.log('Client sending message: ', message);
     this.socket.emit('message', message);
+  }
+
+  sayBye() {
+    this.socket.emit('bye', this.room);
+    this.socket;
+    this.socket.close();
   }
 }
 
@@ -140,7 +171,7 @@ const constraints = {
   styleUrls: ['./streaming.component.css'],
 })
 export class StreamingComponent implements OnInit {
-  mySocketStream: MySocketStreaming;
+  mySocketStream: MySocketStreaming | null = null;
   // The video element where the stream is displayed
   pc: RTCPeerConnection | null = null;
   localVideo: HTMLVideoElement;
@@ -152,7 +183,7 @@ export class StreamingComponent implements OnInit {
   remotePeerConnection: RTCPeerConnection | null = null;
   startTime: number | null = null;
   turnReady: boolean = false;
-  constructor() {}
+  constructor(private modalService: ModalService) {}
 
   getVideoById(id: string): HTMLVideoElement {
     const temp = document.getElementById(id);
@@ -163,29 +194,53 @@ export class StreamingComponent implements OnInit {
   }
 
   gotStream(stream: MediaStream) {
-    console.log('Adding local stream.');
     this.localStream = stream;
     this.localVideo.srcObject = stream;
-    this.mySocketStream.sendMessage('got user media');
-    if (this.mySocketStream.isInitiator) {
-      this.maybeStart();
+  }
+
+  gotStreamSend() {
+    console.log(`gotStreamSend ...`);
+    if (this.localStream && this.mySocketStream) {
+      console.log(`gotStreamSend 1 ok`);
+      this.mySocketStream.sendMessage('got user media');
+      if (this.mySocketStream.isInitiator) {
+        console.log(`gotStreamSend 2 ok`);
+        this.maybeStart();
+      }
     }
   }
 
   maybeStart() {
     console.log(
       '>>>>>>> maybeStart() ',
-      `isStarted = ${this.mySocketStream.isStarted} ==? false. `,
-      `isChannelReady =${this.mySocketStream.isChannelReady} ==? true. `,
+      `isStarted = ${this.mySocketStream?.isStarted} ==? false. `,
+      `isChannelReady =${this.mySocketStream?.isChannelReady} ==? true. `,
       this.localStream
     );
     if (
+      this.mySocketStream &&
       !this.mySocketStream.isStarted &&
       typeof this.localStream !== 'undefined' &&
       this.mySocketStream.isChannelReady
     ) {
       console.log('>>>>>> creating peer connection');
-      this.createPeerConnection();
+      const handleIceCandidateThis = this.handleIceCandidate.bind(this);
+      const handleRemoteStreamAddedThis =
+        this.handleRemoteStreamAdded.bind(this);
+      const handleRemoteStreamRemovedThis =
+        this.handleRemoteStreamRemoved.bind(this);
+      try {
+        this.pc = new RTCPeerConnection(pcConfig);
+        this.mySocketStream.setPC(this.pc);
+        this.pc.onicecandidate = handleIceCandidateThis;
+        this.pc.addEventListener('addstream', handleRemoteStreamAddedThis);
+        this.pc.addEventListener('removestream', handleRemoteStreamRemovedThis);
+        console.log('Created RTCPeerConnnection');
+      } catch (e: any) {
+        console.log('Failed to create PeerConnection, exception: ' + e.message);
+        alert('Cannot create RTCPeerConnection object.');
+        return;
+      }
       if (this.pc) {
         const videoTracks = this.localStream.getVideoTracks();
         if (videoTracks.length > 0) {
@@ -200,36 +255,19 @@ export class StreamingComponent implements OnInit {
     }
   }
 
-  createPeerConnection() {
-    const handleIceCandidateThis = this.handleIceCandidate.bind(this);
-    const handleRemoteStreamAddedThis = this.handleRemoteStreamAdded.bind(this);
-    const handleRemoteStreamRemovedThis =
-      this.handleRemoteStreamRemoved.bind(this);
-    try {
-      this.pc = new RTCPeerConnection(pcConfig);
-      this.mySocketStream.setPC(this.pc);
-      this.pc.onicecandidate = handleIceCandidateThis;
-      this.pc.addEventListener('addstream', handleRemoteStreamAddedThis);
-      this.pc.addEventListener('removestream', handleRemoteStreamRemovedThis);
-      console.log('Created RTCPeerConnnection');
-    } catch (e: any) {
-      console.log('Failed to create PeerConnection, exception: ' + e.message);
-      alert('Cannot create RTCPeerConnection object.');
-      return;
-    }
-  }
-
   handleIceCandidate(event: any) {
     console.log('icecandidate event: ', event);
-    if (event.candidate) {
-      this.mySocketStream.sendMessage({
-        type: 'candidate',
-        label: event.candidate.sdpMLineIndex,
-        id: event.candidate.sdpMid,
-        candidate: event.candidate.candidate,
-      });
-    } else {
-      console.log('End of candidates.');
+    if (this.mySocketStream) {
+      if (event.candidate) {
+        this.mySocketStream.sendMessage({
+          type: 'candidate',
+          label: event.candidate.sdpMLineIndex,
+          id: event.candidate.sdpMid,
+          candidate: event.candidate.candidate,
+        });
+      } else {
+        console.log('End of candidates.');
+      }
     }
   }
 
@@ -262,7 +300,7 @@ export class StreamingComponent implements OnInit {
   }
 
   setLocalAndSendMessage(sessionDescription: any) {
-    if (this.pc) {
+    if (this.mySocketStream && this.pc) {
       this.pc.setLocalDescription(sessionDescription);
       console.log('setLocalAndSendMessage sending message', sessionDescription);
       this.mySocketStream.sendMessage(sessionDescription);
@@ -285,21 +323,27 @@ export class StreamingComponent implements OnInit {
 
   hangup() {
     console.log('Hanging up.');
-    this.stop();
-    this.mySocketStream.sendMessage('bye');
+    if (this.mySocketStream) {
+      this.stop();
+      this.mySocketStream.sayBye();
+    }
   }
 
   handleRemoteHangup() {
     console.log('Session terminated.');
-    this.stop();
-    this.mySocketStream.isInitiator = false;
+    if (this.mySocketStream) {
+      this.stop();
+      this.mySocketStream.isInitiator = false;
+    }
   }
 
   stop() {
-    this.mySocketStream.isStarted = false;
-    if (this.pc) {
-      this.pc.close();
-      this.pc = null;
+    if (this.mySocketStream) {
+      this.mySocketStream.isStarted = false;
+      if (this.pc) {
+        this.pc.close();
+        this.pc = null;
+      }
     }
   }
 
@@ -332,39 +376,65 @@ export class StreamingComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
-    const maybeStartThis = this.maybeStart.bind(this);
-    const doAnswerThis = this.doAnswer.bind(this);
-    const handleRemoteHangupThis = this.handleRemoteHangup.bind(this);
-
-    this.mySocketStream = new MySocketStreaming(
-      roomName,
-      maybeStartThis,
-      doAnswerThis,
-      handleRemoteHangupThis
-    );
-
-    const gotStreamThis = this.gotStream.bind(this);
+  async ngOnInit(): Promise<void> {
     this.localVideo = this.getVideoById('localVideo');
     this.remoteVideo = this.getVideoById('remoteVideo');
 
-    navigator.mediaDevices
-      .getUserMedia(constraints)
-      .then(gotStreamThis)
-      .catch(function (e) {
-        alert('getUserMedia() error: ' + e.name);
-      });
-
-    /*
-    if (location.hostname !== 'localhost') {
-      this.requestTurn(
-        'https://computeengineondemand.appspot.com/turn?username=41784574&key=4080218913'
-      );
-    }
-    */
-
     window.onbeforeunload = () => {
-      this.mySocketStream.sendMessage('bye');
+      this.leaveRoom();
     };
+  }
+
+  async startAll() {
+    const promesas = [];
+
+    promesas.push(this.joinRoom());
+    promesas.push(this.getLocalMedia());
+
+    console.log('hola');
+    await Promise.all(promesas);
+
+    console.log('gotStreamSend?');
+    this.gotStreamSend();
+  }
+
+  async getLocalMedia() {
+    return new Promise((resolve, reject) => {
+      navigator.mediaDevices
+        .getUserMedia(constraints)
+        .then((media) => {
+          this.gotStream(media);
+          console.log(`getLocalMedia resolved`);
+          resolve(media);
+        })
+        .catch(function (e) {
+          reject(e);
+        });
+    });
+  }
+
+  async joinRoom() {
+    try {
+      const maybeStartThis = this.maybeStart.bind(this);
+      const doAnswerThis = this.doAnswer.bind(this);
+      const handleRemoteHangupThis = this.handleRemoteHangup.bind(this);
+
+      this.mySocketStream = new MySocketStreaming(
+        roomName,
+        maybeStartThis,
+        doAnswerThis,
+        handleRemoteHangupThis
+      );
+      console.log('configure started');
+      await this.mySocketStream.configure();
+      console.log('configure ended');
+    } catch (error) {}
+    return;
+  }
+
+  leaveRoom() {
+    if (this.mySocketStream) {
+      this.mySocketStream.sayBye();
+    }
   }
 }
