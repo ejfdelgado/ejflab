@@ -3,7 +3,8 @@
 <pre>isInitiator: {{ mySocketStream?.isInitiator | json }}</pre>
 <pre>isStarted: {{ mySocketStream?.isStarted | json }}</pre>
 
-<button type="button" (click)="startAll()">startAll</button>
-<button type="button" (click)="leaveRoom()">leaveRoom</button>
+<button type="button" (click)="startAll(true)">Master Join</button>
+<button type="button" (click)="slaveJoin()">Slave Join</button>
+<button type="button" (click)="leaveRoom()">Leave</button>
 <video id="localVideo" autoplay muted></video>
 <video id="remoteVideo" autoplay></video>

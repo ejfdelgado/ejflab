@@ -49,6 +49,8 @@ interface ServerToClientEvents {
 }
 
 interface ClientToServerEvents {
+  create: (room: string) => void;
+  join: (room: string) => void;
   'create or join': (room: string) => void;
   message: (message: any) => void;
   bye: (room: string) => void;
@@ -72,14 +74,18 @@ export class MySocketStreaming {
     this.pc = pc;
   }
 
-  async configure() {
+  async configure(creator: boolean = false) {
     return new Promise<void>((resolve) => {
       this.socket.on('disconnect', () => {
         this.isWebSocketOk = false;
       });
       this.socket.on('connect', () => {
         this.isWebSocketOk = true;
-        this.socket.emit('create or join', this.room);
+        if (creator) {
+          this.socket.emit('create', this.room);
+        } else {
+          this.socket.emit('join', this.room);
+        }
 
         this.socket.on('created', (room, clientId) => {
           this.isInitiator = true;
@@ -357,10 +363,10 @@ export class StreamingComponent implements OnInit {
     };
   }
 
-  async startAll() {
+  async startAll(isCreator: boolean = false) {
     const promesas = [];
 
-    promesas.push(this.joinRoom());
+    promesas.push(this.joinRoom(isCreator));
     promesas.push(this.getLocalMedia());
 
     await Promise.all(promesas);
@@ -382,7 +388,7 @@ export class StreamingComponent implements OnInit {
     });
   }
 
-  async joinRoom() {
+  async joinRoom(isCreator: boolean = false) {
     try {
       const maybeStartThis = this.maybeStart.bind(this);
       const doAnswerThis = this.doAnswer.bind(this);
@@ -394,9 +400,14 @@ export class StreamingComponent implements OnInit {
         doAnswerThis,
         handleRemoteHangupThis
       );
-      await this.mySocketStream.configure();
+      await this.mySocketStream.configure(isCreator);
     } catch (error) {}
     return;
+  }
+
+  async slaveJoin() {
+    this.leaveRoom();
+    await this.startAll(false);
   }
 
   leaveRoom() {

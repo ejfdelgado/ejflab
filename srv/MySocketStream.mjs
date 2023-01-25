@@ -21,23 +21,46 @@ export class MySocketStream {
                 //io.sockets.in(room).emit('ready');
             });
 
+            socket.on('create', function (room) {
+                const clientsInRoom = io.sockets.adapter.rooms.get(room);
+                // vacío el room
+                if (clientsInRoom) {
+                    console.log("Vaciando room...");
+                    io.in(room).socketsLeave(room);
+                }
+                console.log("master");
+                socket.join(room);
+                log('Client ID ' + socket.id + ' created room ' + room);
+                socket.emit('created', room, socket.id);
+                console.log("create", io.sockets.adapter.rooms);
+            });
+
+            socket.on('join', function (room) {
+                const clientsInRoom = io.sockets.adapter.rooms.get(room);
+                var numClients = clientsInRoom ? clientsInRoom.size : 0;
+                if (numClients === 1) {
+                    console.log("slave");
+                    log('Client ID ' + socket.id + ' joined room ' + room);
+                    io.sockets.in(room).emit('join', room);
+                    socket.join(room);
+                    socket.emit('joined', room, socket.id);
+                    io.sockets.in(room).emit('ready');
+                } else { // max two clients
+                    console.log("full");
+                    socket.emit('full', room);
+                }
+                console.log("join", io.sockets.adapter.rooms);
+            });
+
             socket.on('create or join', function (room) {
                 log('Received request to create or join room ' + room);
-
-                console.log("-------------------------------------------------------");
-                console.log("inicial", io.sockets.adapter.rooms);
-
                 var clientsInRoom = io.sockets.adapter.rooms.get(room);
                 var numClients = clientsInRoom ? clientsInRoom.size : 0;
-
-                log('Room ' + room + ' now has ' + numClients + ' client(s)');
-
                 if (numClients === 0) {
                     console.log("Soy el primero");
                     socket.join(room);
                     log('Client ID ' + socket.id + ' created room ' + room);
                     socket.emit('created', room, socket.id);
-
                 } else if (numClients === 1) {
                     console.log("Soy el segundo");
                     log('Client ID ' + socket.id + ' joined room ' + room);
@@ -50,7 +73,7 @@ export class MySocketStream {
                     socket.emit('full', room);
                 }
 
-                console.log("final", io.sockets.adapter.rooms);
+                console.log("create or join", io.sockets.adapter.rooms);
             });
 
             socket.on('ipaddr', function () {
@@ -65,12 +88,9 @@ export class MySocketStream {
             });
 
             socket.on('bye', function (room) {
-                console.log("-------------------------------------------------------");
-                console.log(`${socket.id} se va de ${room}`);
-                console.log("inicial", io.sockets.adapter.rooms);
                 socket.leave(room);
                 io.sockets.in(room).emit('byeresponse', socket.id);
-                console.log("final", io.sockets.adapter.rooms);
+                console.log("bye", io.sockets.adapter.rooms);
             });
         };
     }
