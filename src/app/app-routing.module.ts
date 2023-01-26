@@ -35,6 +35,7 @@ const routes: Routes = [
     loadChildren: () =>
       import('./callgame/callgame.module').then((m) => m.CallgameModule),
   },
+  { path: 'calendar', loadChildren: () => import('./calendar/calendar.module').then(m => m.CalendarModule) },
   {
     path: '**',
     redirectTo: '',

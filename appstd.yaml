@@ -1,0 +1,26 @@
+runtime: nodejs14
+service: default
+
+handlers:
+  - url: /.*
+    script: auto
+    secure: always
+    redirect_http_response_code: 301
+
+  - url: /
+    static_files: dist/bundle/index.html
+    upload: dist/bundle/index.html
+    secure: always
+
+  - url: /(.*)
+    static_files: dist/bundle/\1
+    upload: dist/bundle/(.*)
+    secure: always
+
+  - url: /assets/(.*)
+    static_files: src/assets/\1
+    upload: src/assets/(.*)
+    secure: always
+
+env_variables:
+  ENV: pro
