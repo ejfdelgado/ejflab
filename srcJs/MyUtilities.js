@@ -1,6 +1,6 @@
 class MyUtilities {
     static stringify(circ) {
-        var cache = [];
+        const cache = [];
         const text = JSON.stringify(circ, (key, value) => {
             if (typeof value === 'object' && value !== null) {
                 if (cache.includes(value)) return;

@@ -30,3 +30,10 @@
 
 <button type="button" routerLink="/customers">Customers</button>
 <button type="button" routerLink="">Home</button>
+
+
+navigator.geolocation.getCurrentPosition((position) => { 
+  console.log("Got position", position.coords);
+  this.lat = position.coords.latitude; 
+  this.lon = position.coords.longitude;
+});
