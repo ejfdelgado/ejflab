@@ -111,10 +111,126 @@ class MyTuples {
         });
     }
     static getBuilder() {
+        const START_BACKOFF = 0;
+        const BACK_OFF_MULTIPLIER = 500;
+        const MAX_SEND_SIZE = 2;// Cuántas tuplas se pueden afectar en un llamado
+        const LOW_PRESSURE_MS = 1000;
+
         let resultado = {};
         let myFreeze = null;
         let pending = [];
+        let procesor = null;
+        let listeners = [];
+        let ultimaFechaInicio = null;
+        let isProcessing = false;
+
+        const addActivityListener = (a) => {
+            if (!(a in listeners)) {
+                listeners.push(a);
+            }
+            return () => {
+                const indice = listeners.indexOf(a);
+                listeners.splice(indice, 1);
+            };
+        };
+        const setActivityStatus = (value) => {
+            for (let i = 0; i < listeners.length; i++) {
+                const listener = listeners[i];
+                if (typeof listener == "function") {
+                    listener(value);
+                }
+            }
+        };
+
+        const startProcess = () => {
+            // Single execution
+            if (isProcessing) {
+                return;
+            }
+            if (typeof procesor != "function") {
+                setActivityStatus(false);
+                return;
+            }
+            // Low pressure
+            const ahora = new Date().getTime();
+            ultimaFechaInicio = ahora;
+            setTimeout(async () => {
+                if (ultimaFechaInicio == ahora) {
+                    isProcessing = true;
+                    // Notify
+                    setActivityStatus(isProcessing);
+                    // Then try process
+                    const processAll = async () => {
+                        if (pending.length > 0) {
+                            const ultimo = JSON.parse(JSON.stringify(pending.splice(pending.length - 1, 1)[0]));
+                            //Se deben partir los cambios en grupos de MAX_SEND_SIZE
+                            const crearBatch = () => {
+                                const batch = {
+                                    "+": [],
+                                    "-": [],
+                                    "*": [],
+                                    total: 0,
+                                };
+                                const pasarElemento = (simbolo) => {
+                                    const lista = ultimo[simbolo];
+                                    if (lista.length > 0) {
+                                        batch[simbolo].push(lista.splice(lista.length - 1, 1)[0]);
+                                        batch.total += 1;
+                                        return true;
+                                    }
+                                    return false;
+                                };
+                                const pasarAlgunElemento = () => {
+                                    return pasarElemento("-") || pasarElemento("+") || pasarElemento("*");
+                                };
+                                const pasarElementos = () => {
+                                    let pasoAlgo = false;
+                                    do {
+                                        pasoAlgo = pasarAlgunElemento();
+                                    } while (pasoAlgo && batch.total < MAX_SEND_SIZE);
+                                };
+                                pasarElementos();
+                                return batch;
+                            };
+
+                            let unBatch;
+                            do {
+                                unBatch = crearBatch();
+                                const reintentos = () => {
+                                    let backOffCount = START_BACKOFF;
+                                    return new Promise((resolve) => {
+                                        const unIntento = () => {
+                                            // Retry infinitelly with linear backoff
+                                            const delay = backOffCount * BACK_OFF_MULTIPLIER;
+                                            //console.log(`unIntento delay ${delay}`);
+                                            setTimeout(async () => {
+                                                try {
+                                                    const theResponse = await procesor(unBatch);
+                                                    resolve(theResponse);
+                                                } catch (error) {
+                                                    backOffCount += 1;
+                                                    unIntento();
+                                                }
+                                            }, delay);
+                                        };
+                                        unIntento();
+                                    });
+                                };
+                                if (unBatch.total > 0) {
+                                    await reintentos();
+                                }
+                            } while (unBatch.total > 0);
+                        }
+                    };
+                    await processAll();
+                    isProcessing = false;
+                    setActivityStatus(isProcessing);
+                }
+            }, LOW_PRESSURE_MS);
+        };
+
         return {
+            addActivityListener,
             build: (buffer) => {
                 resultado = MyTuples.getObject(buffer, resultado);
             },
@@ -124,6 +240,31 @@ class MyTuples {
                 }
                 myFreeze = JSON.stringify(resultado.t);
                 return JSON.parse(myFreeze);
+            },
+            affect: (batch) => {
+                const tuplas1 = MyTuples.getTuples(JSON.parse(myFreeze));
+                const llavesBorrar = batch["-"];
+                const llavesNuevasModificadas = batch["*"].concat(batch["+"]);
+
+                //Borro las tuplas
+                for (let i = 0; i < llavesBorrar.length; i++) {
+                    const llaveBorrar = llavesBorrar[i].k;
+                    delete tuplas1[llaveBorrar];
+                }
+                //Reemplazo las tuplas
+                for (let i = 0; i < llavesNuevasModificadas.length; i++) {
+                    const nuevaModificar = llavesNuevasModificadas[i];
+                    tuplas1[nuevaModificar.k] = nuevaModificar.v;
+                }
+                const resultado = MyTuples.getObject(tuplas1, {});
+                if (!resultado.t) {
+                    resultado.t = {};
+                }
+                myFreeze = JSON.stringify(resultado.t);
+                return JSON.parse(myFreeze);
+            },
+            setProcesor: (p) => {
+                procesor = p;
             },
             trackDifferences: (nuevo) => {
                 const tuplas2 = MyTuples.getTuples(nuevo);
@@ -160,7 +301,15 @@ class MyTuples {
                 }
                 for (let i = 0; i < modificadas.length; i++) {
                     const llave = modificadas[i];
-                    if (JSON.stringify(tuplas1[llave]) != JSON.stringify(tuplas2[llave])) {
+                    let valor1 = tuplas1[llave];
+                    let valor2 = tuplas2[llave];
+                    if (typeof valor1 == "object" && valor1 != null) {
+                        valor1 = JSON.stringify(valor1);
+                    }
+                    if (typeof valor2 == "object" && valor2 != null) {
+                        valor2 = JSON.stringify(valor2);
+                    }
+                    if (valor1 !== valor2) {
                         batch["*"].push({
                             k: llave,
                             v: tuplas2[llave],
@@ -170,6 +319,7 @@ class MyTuples {
 
                 myFreeze = JSON.stringify(nuevo);
                 pending.push(batch);
+                startProcess();
                 return batch;
             }
         };
@@ -204,10 +354,11 @@ class MyTuples {
             }
         }
     }
-    static test() {
+    static async test() {
         const BATCH_SIZE = 3;
         const reverse = false;
         const show = false;
+        const useProcessor = ["good", "bad", "none"][1];
         const pruebas = [
             {
                 f: { a: 2 },
@@ -266,8 +417,8 @@ class MyTuples {
             },
             {
                 f: { a: [5, 6, 7], b: { n: true, h: false, ert: "dzfgfsdgfsdg" }, c: [{ g: 5 }, { g: 6 }, { g: 7 }] },
-                i: { a: [5, 6, 7], b: { n: true, h: false, ert: "dzfgfsdgfsdg" }, c: [{ g: 5 }, { g: 6 }, { g: 7 }] },
-                e: { "+": [], "-": [], "*": [] },
+                i: { a: [5, 6, 7], b: { n: true, h: false, ert: "dzfggfsdg" }, c: [{ g: 6 }, { g: 7 }] },
+                e: { "*": [{ "k": "b.ert", "v": "dzfgfsdgfsdg" }, { "k": "c.0.g", "v": 5 }, { "k": "c.1.g", "v": 6 }], "+": [{ "k": "c.2", "v": {} }, { "k": "c.2.g", "v": 7 }], "-": [] },
             },
             {
                 f: { a: { 1: 6, 4: 5 } },
@@ -276,18 +427,57 @@ class MyTuples {
             }, //esto no se debe guardar porque pasará a ser un arreglo
         ];
 
+        const mockProcessorGood = (payload) => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    console.log(`Processing ${JSON.stringify(payload, null, 4)} OK`);
+                    resolve();
+                }, 0);
+            });
+        };
+
+        const getBadProcessor = () => {
+            let count = 0;
+            let maxCount = 3;
+            const mockProcessorBad = (payload) => {
+                return new Promise((resolve, reject) => {
+                    setTimeout(() => {
+                        if (count < maxCount) {
+                            console.log(`Processing ${JSON.stringify(payload, null, 4)} ERROR`);
+                            reject();
+                            count++;
+                        } else {
+                            console.log(`Processing ${JSON.stringify(payload, null, 4)} OK`);
+                            resolve();
+                            count = 0;
+                        }
+
+                    }, 500);
+                });
+            };
+            return mockProcessorBad;
+        };
+
         // Las funciones se deben ignorar
         pruebas[0].i.p = function () { };
         // Los loops se deben ignorar
         pruebas[5].i.loop = pruebas[5].i;
 
         for (let i = 0; i < pruebas.length; i++) {
+            console.log(`Prueba ${i + 1} ----------------------------------------------`);
             const prueba = pruebas[i];
             const tuplas = MyTuples.getTuples(prueba.i);
             const referencia = sortify(prueba.i);
             const intercambio = sortify(tuplas);
             let buffer = {};
             const builder = MyTuples.getBuilder();
+            const builder2 = MyTuples.getBuilder();
+            if (useProcessor == "bad") {
+                builder.setProcesor(getBadProcessor());
+            }
+            if (useProcessor == "good") {
+                builder.setProcesor(mockProcessorGood);
+            }
             let llaves1 = Object.keys(tuplas);
             if (reverse) {
                 llaves1 = llaves1.reverse();
@@ -296,16 +486,33 @@ class MyTuples {
                 buffer[element] = tuplas[element];
                 if (Object.keys(buffer).length >= BATCH_SIZE) {
                     builder.build(buffer);
+                    builder2.build(buffer);
                     buffer = {};
                 }
             });
             if (Object.keys(buffer).length > 0) {
                 builder.build(buffer);
+                builder2.build(buffer);
                 buffer = {};
             }
             const resultadoTxt = sortify(builder.end());
+            builder2.end();
 
+            const indicadorActividad = new Promise((resolve) => {
+                builder.addActivityListener((status) => {
+                    if (!status) {
+                        resolve();
+                        console.log("Terminado...");
+                    } else {
+                        console.log("Esperando...");
+                    }
+                });
+            });
             const differences = builder.trackDifferences(prueba.f);
+            await indicadorActividad;
+
+            const afectado = builder2.affect(differences);
+
             const differencesTxt = sortify(differences);
 
             if (show) {
@@ -320,13 +527,20 @@ class MyTuples {
             }
 
             if (sortify(prueba.e) != differencesTxt) {
-                throw Error(`Modificación fallida ${JSON.stringify(prueba)}`);
+                throw Error(`Modificación fallida ${JSON.stringify(prueba)}\n${differencesTxt}`);
             }
+
+            if (sortify(prueba.f) != sortify(afectado)) {
+                throw Error(`Afectación fallida ${JSON.stringify(prueba)}`);
+            }
+            console.log(`Prueba ${i + 1} OK`);
         }
     }
 }
 
-MyTuples.test();
+MyTuples.test().catch((error) => {
+    console.log(error);
+});
 MyTuples.testArray();
 
 module.exports = {
