@@ -9,6 +9,7 @@ import { MyFileService } from "./srv/MyFileService.mjs";
 import * as http from 'http'
 import { Server } from "socket.io";
 import { MySocketStream } from "./srv/MySocketStream.mjs";
+import { TupleSrv } from "./srv/TupleSrv.mjs";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -26,6 +27,8 @@ app.use('/assets', express.static('src/assets'));
 // Services
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
 app.post('/srv/pg', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(PageSrv.savePage)]);
+app.get('/srv/tup', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(TupleSrv.read)]);
+app.post('/srv/tup', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(TupleSrv.save)]);
 app.use("/", handleErrorsDecorator(MainHandler.handle));
 io.on('connection', MySocketStream.handle(io));
 

@@ -9,7 +9,32 @@ firestore.settings({
 export class MyStore {
     // https://www.npmjs.com/package/@google-cloud/firestore
     static async runTransaction(theFunction) {
+        /**
+         * Con las bibliotecas cliente de Cloud Firestore, puede agrupar 
+         * varias operaciones en una sola transacción. Las transacciones 
+         * son útiles cuando desea actualizar el valor de un campo según 
+         * su valor actual o el valor de algún otro campo. Una transacción 
+         * consta de cualquier cantidad de operaciones get() seguidas de 
+         * cualquier cantidad de operaciones de escritura, como set() , 
+         * update() o delete() . En el caso de una edición simultánea, 
+         * Cloud Firestore vuelve a ejecutar toda la transacción. 
+         * Por ejemplo, si una transacción lee documentos y otro cliente 
+         * modifica cualquiera de esos documentos, Cloud Firestore vuelve 
+         * a intentar la transacción. Esta función garantiza que la 
+         * transacción se ejecute con datos actualizados y coherentes.
+         */
         return await firestore.runTransaction(theFunction);
+    }
+
+    static getBatch() {
+        /**
+         * Si no necesita leer ningún documento en su conjunto de operaciones, 
+         * puede ejecutar varias operaciones de escritura como un solo lote que 
+         * contiene cualquier combinación de operaciones set() , update() o delete() . 
+         * Un lote de escrituras se completa de forma atómica y puede escribir en 
+         * varios documentos.
+         */
+        return firestore.batch();
     }
 
     static async readByIds(collection, ids, firestoreInstance = null) {

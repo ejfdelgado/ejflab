@@ -1,7 +1,7 @@
 import md5 from 'md5';
 
 export class General {
-    static readParam(req, name) {
+    static readParam(req, name, pred = null) {
         if (req.body && name in req.body) {
             return req.body[name];
         } else if (req.query && name in req.query) {
@@ -11,7 +11,7 @@ export class General {
                 return req.locals.extra[name];
             }
         }
-        return null;
+        return pred;
     }
     static getSuffixPath(keyName, suffix) {
         const keyNameXs = keyName.replace(/^(.+)\.([^./]+)$/ig, `$1${suffix}.$2`);
