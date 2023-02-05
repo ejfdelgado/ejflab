@@ -20,16 +20,7 @@ export class TupleSrv {
         const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id, offset, max
         const pageId = General.readParam(req, "id");
-        const offsetR = parseInt(General.readParam(req, "offset"));
-        const maxR = parseInt(General.readParam(req, "max"));
-        let offset = 0;
-        if (!isNaN(offsetR)) {
-            offset = Math.max(0, offsetR);
-        }
-        let max = 0;
-        if (!isNaN(maxR)) {
-            max = Math.min(MAX_READ_SIZE, maxR);
-        }
+        const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
 
         if (!pageId) {
             throw new MalaPeticionException("Falta el id");

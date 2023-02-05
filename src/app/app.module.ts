@@ -32,6 +32,8 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { PagepopupComponent } from './components/pagepopup/pagepopup.component';
 import { MycommonModule } from './mycommon/mycommon.module';
+import { AuthorizationpopupComponent } from './components/authorizationpopup/authorizationpopup.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -41,8 +43,10 @@ import { MycommonModule } from './mycommon/mycommon.module';
     ConfirmComponent,
     LoginpopupComponent,
     PagepopupComponent,
+    AuthorizationpopupComponent,
   ],
   imports: [
+    FormsModule,
     BrowserModule,
     AppRoutingModule,
     FontAwesomeModule,

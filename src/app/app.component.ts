@@ -1,4 +1,5 @@
 import { Component, HostListener } from '@angular/core';
+import { AuthorizationService } from 'src/services/authorization.service';
 import { LoginService } from 'src/services/login.service';
 import { PageService } from 'src/services/page.service';
 
@@ -8,7 +9,11 @@ import { PageService } from 'src/services/page.service';
   styleUrls: ['./app.component.css'],
 })
 export class AppComponent {
-  constructor(private loginSrv: LoginService, private pageSrv: PageService) {}
+  constructor(
+    private loginSrv: LoginService,
+    private pageSrv: PageService,
+    private authorizationSrv: AuthorizationService
+  ) {}
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //console.log(event);
@@ -22,6 +27,9 @@ export class AppComponent {
           break;
         case 'KeyB':
           this.pageSrv.edit();
+          break;
+        case 'Semicolon':
+          this.authorizationSrv.edit();
           break;
         default:
           console.log(event.code);

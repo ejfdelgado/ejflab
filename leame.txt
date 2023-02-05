@@ -29,6 +29,7 @@ ng generate component home/components/loginpopup
 
 ng generate component components/indicator
 ng generate component components/pagepopup
+ng generate component components/authorizationpopup
 
 ng generate component mycommon/components/imagepicker
 ng generate component mycommon/components/statusbar

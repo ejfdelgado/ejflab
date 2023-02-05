@@ -1,7 +1,12 @@
+- modulo de permisos
+  - cada recurso debe poder tener N+1 registros de permisos
+  - cada usuario debe tener un registro por cada recurso
+  - debe haber un interceptor que busque y agregue los permisos para el recurso y el usuario
+
 - Crear la representacion de DB de usuario
 - Fetch de la imagen de la persona logeada
 - Editar los datos del usuario
-- Streaming de audio
+- Streaming de audio wip
 
 - recuperar contraseña
 
@@ -16,9 +21,6 @@
 - Permitir tener N modelos por usuarios, poder luego abrir uno específico.
 - Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso.
 - Permitir enviar correos, usar templates para los correos.
-- Subir archivos al storage
-- Permitir descargarlos igualmente
-- Permitir hacer thumbnails con sharp
 - Crear servicio de búsqueda
 
 

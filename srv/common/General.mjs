@@ -1,6 +1,22 @@
 import md5 from 'md5';
 
 export class General {
+    static readMaxOffset(req, MAX_READ_SIZE) {
+        const offsetR = parseInt(General.readParam(req, "offset"));
+        const maxR = parseInt(General.readParam(req, "max"));
+        let offset = 0;
+        if (!isNaN(offsetR)) {
+            offset = Math.max(0, offsetR);
+        }
+        let max = 0;
+        if (!isNaN(maxR)) {
+            max = Math.min(MAX_READ_SIZE, maxR);
+        }
+        return {
+            max,
+            offset,
+        };
+    }
     static readParam(req, name, pred = null) {
         if (req.body && name in req.body) {
             return req.body[name];
