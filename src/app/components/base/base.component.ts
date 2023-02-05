@@ -69,7 +69,7 @@ export class BaseComponent implements OnInit, OnDestroy {
       // Try to read tuples, should be optional
       this.tupleServiceInstance = this.tupleService.getReader(this.page.id);
       this.tupleServiceInstance.evento.subscribe((evento) => {
-        console.log(JSON.stringify(evento));
+        //console.log(JSON.stringify(evento));
         if (evento.status == 'read_wip') {
           // Show read indicator
         } else if (evento.status == 'read_done') {

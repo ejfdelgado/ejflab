@@ -78,7 +78,7 @@ export class TupleServiceInstance {
         subscription.unsubscribe();
         let maxTime = evento.t;
         const checkNews = (cutTime: number) => {
-          console.log(`checkNews cutTime:${cutTime}`);
+          //console.log(`checkNews cutTime:${cutTime}`);
           const myCollection = collection(firestore, 'pro-tuple-temp');
           const consulta = query(
             myCollection,
