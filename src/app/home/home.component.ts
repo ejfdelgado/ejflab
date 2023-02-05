@@ -8,6 +8,7 @@ import { faGamepad } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { CardComponentData } from 'src/interfaces/login-data.interface';
 import { HttpService } from 'src/services/http.service';
+import { TupleService } from 'src/services/tuple.service';
 
 @Component({
   selector: 'app-home',
@@ -25,9 +26,10 @@ export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     public override authService: AuthService,
     public override dialog: MatDialog,
     private readonly router: Router,
-    private readonly httpSrv: HttpService
+    private readonly httpSrv: HttpService,
+    public override tupleService: TupleService
   ) {
-    super(route, pageService, cdr, authService, dialog);
+    super(route, pageService, cdr, authService, dialog, tupleService);
   }
 
   navegar(ruta: string) {

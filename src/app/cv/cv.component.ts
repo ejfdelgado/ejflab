@@ -7,14 +7,11 @@ import { TupleService } from 'src/services/tuple.service';
 import { BaseComponent } from '../components/base/base.component';
 
 @Component({
-  selector: 'app-customers',
-  templateUrl: './customers.component.html',
-  styleUrls: ['./customers.component.css'],
+  selector: 'app-cv',
+  templateUrl: './cv.component.html',
+  styleUrls: ['./cv.component.css'],
 })
-export class CustomersComponent
-  extends BaseComponent
-  implements OnInit, OnDestroy
-{
+export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
@@ -24,6 +21,14 @@ export class CustomersComponent
     public override tupleService: TupleService
   ) {
     super(route, pageService, cdr, authService, dialog, tupleService);
+  }
+
+  setTime() {
+    if (!this.tupleModel) {
+      return;
+    }
+    this.tupleModel.t = [new Date().getTime()];
+    super.saveTuple();
   }
 
   override async ngOnInit() {

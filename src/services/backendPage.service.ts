@@ -1,9 +1,7 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { MyConstants } from '../../srcJs/MyConstants';
 import { IndicatorService } from './indicator.service';
 import { PageData } from 'src/interfaces/login-data.interface';
-import { catchError, of } from 'rxjs';
 import { HttpService } from './http.service';
 
 @Injectable({

@@ -77,6 +77,7 @@ export class TupleSrv {
                 act: AHORA,
                 cre: AHORA,
                 pg: pageId,
+                k: actual.k,
             };
             MyStore.createById(TUPLE_TYPE, `${pageId}:${actual.k}`, payload, batch);
         }
@@ -89,7 +90,7 @@ export class TupleSrv {
                 v: actual.v,
                 act: AHORA,
             };
-            MyStore.createById(TUPLE_TYPE, `${pageId}:${actual.k}`, payload, batch);
+            MyStore.updateById(TUPLE_TYPE, `${pageId}:${actual.k}`, payload, batch);
         }
 
         // Commit the batch

@@ -6,6 +6,7 @@ import { Subscription } from 'rxjs';
 import { PageData } from 'src/interfaces/login-data.interface';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
+import { TupleService, TupleServiceInstance } from 'src/services/tuple.service';
 
 @Component({
   selector: 'app-base',
@@ -13,16 +14,19 @@ import { BackendPageService } from 'src/services/backendPage.service';
   styles: [],
 })
 export class BaseComponent implements OnInit, OnDestroy {
+  tupleModel: any | null = null;
   page: PageData | null = null;
   currentUser: User | null = null;
   loginSubscription: Subscription;
   pageSubscription: Subscription;
+  tupleServiceInstance: TupleServiceInstance | null;
   constructor(
     public route: ActivatedRoute,
     public pageService: BackendPageService,
     public cdr: ChangeDetectorRef,
     public authService: AuthService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    public tupleService: TupleService
   ) {}
 
   private setCurrentUser(user: User | null) {
@@ -35,6 +39,12 @@ export class BaseComponent implements OnInit, OnDestroy {
       if (page.tit) {
         document.title = page.tit;
       }
+    }
+  }
+
+  public saveTuple() {
+    if (this.tupleServiceInstance) {
+      this.tupleServiceInstance.save(this.tupleModel);
     }
   }
 
@@ -55,6 +65,24 @@ export class BaseComponent implements OnInit, OnDestroy {
       .subscribe((user: User) => {
         this.setCurrentUser(user);
       });
+    if (this.page && this.page.id) {
+      // Try to read tuples, should be optional
+      this.tupleServiceInstance = this.tupleService.getReader(this.page.id);
+      this.tupleServiceInstance.evento.subscribe((evento) => {
+        console.log(JSON.stringify(evento));
+        if (evento.status == 'read_wip') {
+          // Show read indicator
+        } else if (evento.status == 'read_done') {
+          // Stop read indicator
+          this.tupleModel = evento.body;
+        } else if (evento.status == 'write_wip') {
+          // Show write indicator
+        } else if (evento.status == 'write_done') {
+          // Stop write indicator
+        }
+      });
+    }
+
     /*
     this.route.params.subscribe((params) => {
       if ('id' in params) {

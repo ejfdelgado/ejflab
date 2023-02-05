@@ -184,6 +184,40 @@ const test = async () => {
     }
 }
 
+const testConverter = () => {
+    const pruebas = [
+        {
+            i: [
+                { k: "6543:fdgfd.ghgf.t", v: 2 },
+                { k: "6543:fdgfd.ghgf", v: {} },
+                { k: "6543:fdgfd", v: {} },
+            ],
+            o: {
+                "6543:fdgfd.ghgf.t": 2,
+                "6543:fdgfd.ghgf": {},
+                "6543:fdgfd": {},
+            }
+        },
+        {
+            i: [],
+            o: {},
+        }
+    ];
+
+    for (let i = 0; i < pruebas.length; i++) {
+        const actual = pruebas[i];
+        const input = actual.i;
+        const o = actual.o;
+        const response = MyTuples.convertFromBD(input);
+
+        const oText = sortify(o);
+        const responseTxt = sortify(response);
+        if (oText != responseTxt) {
+            throw new Error(`Prueba fallida ${oText} != ${responseTxt}`);
+        }
+    }
+};
+
 const testArray = () => {
     const restas = [
         { a: [1, 3, 5], b: [3], r: [1, 5] },
@@ -215,4 +249,4 @@ const testArray = () => {
     }
 }
 
-test();
+testConverter();

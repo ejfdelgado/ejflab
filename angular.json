@@ -26,7 +26,15 @@
               "./node_modules/@angular/material/prebuilt-themes/indigo-pink.css",
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [],
+            "allowedCommonJsDependencies": [
+              "buffer",
+              "srcJs/MyConstants",
+              "srcJs/MyDates",
+              "srcJs/MyRoutes",
+              "srcJs/MyTuples",
+              "srcJs/MyUtilities"
+            ]
           },
           "configurations": {
             "production": {

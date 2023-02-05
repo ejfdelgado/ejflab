@@ -1,6 +1,13 @@
 
 class MyTuples {
     static TIPOS_BASICOS = ["string", "number", "boolean"];
+    static convertFromBD(model) {
+        const response = {};
+        model.forEach((value) => {
+            response[value.k] = value.v;
+        });
+        return response;
+    }
     static getTuples(o) {
         const response = {};
         let cache = [];
