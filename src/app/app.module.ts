@@ -34,6 +34,7 @@ import { PagepopupComponent } from './components/pagepopup/pagepopup.component';
 import { MycommonModule } from './mycommon/mycommon.module';
 import { AuthorizationpopupComponent } from './components/authorizationpopup/authorizationpopup.component';
 import { FormsModule } from '@angular/forms';
+import { AdduserrolepopupComponent } from './components/adduserrolepopup/adduserrolepopup.component';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { FormsModule } from '@angular/forms';
     LoginpopupComponent,
     PagepopupComponent,
     AuthorizationpopupComponent,
+    AdduserrolepopupComponent,
   ],
   imports: [
     FormsModule,

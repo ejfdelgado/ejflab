@@ -9,11 +9,7 @@ import { HttpService } from './http.service';
 })
 export class BackendPageService {
   evento: EventEmitter<PageData | null>;
-  constructor(
-    private httpSrv: HttpService,
-    private http: HttpClient,
-    private indicatorSrv: IndicatorService
-  ) {
+  constructor(private httpSrv: HttpService) {
     this.evento = new EventEmitter();
   }
 

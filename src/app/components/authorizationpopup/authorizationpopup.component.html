@@ -7,34 +7,41 @@
 <mat-dialog-content class="mat-typography con_form">
     <p class="texto_descripcion">Define quién puede leer, editar o administrar.</p>
     <form class="form-container layout_columna" [formGroup]="form" (ngSubmit)="guardar()">
-        <div class="list_container" [formArrayName]="'formArrayName'">
+        <div class="list_container">
             <button mat-raised-button type="button" color="primary" (click)="agregarUsuario()">
                 Agregar Usuario
             </button>
-            <div class="my_pair_element" *ngFor="let permiso of permisos; index as i;">
-                <div class="the_identity">
-                    <span>{{ permiso.who }}</span>
-                </div>
-                <div class="the_role" [formGroupName]="i">
-                    <mat-form-field appearance="fill">
-                        <mat-label>Rol</mat-label>
-                        <select matNativeControl formControlName="role" required>
-                            <option [ngValue]="'none'">Ninguno</option>
-                            <option [ngValue]="'reader'">Lector</option>
-                            <option [ngValue]="'editor'">Editor</option>
-                            <option [ngValue]="'owner'">Dueño</option>
-                        </select>
-                    </mat-form-field>
-                </div>
-                <div class="the_button" (click)="borrarUsuario(i, permiso)">
-                    <fa-icon [icon]="faTrash"></fa-icon>
+            <div class="my_pair_element" [formArrayName]="'formPublic'">
+                <mat-form-field>
+                    <mat-label>Rol Público</mat-label>
+                    <select matNativeControl formControlName="publicrole">
+                        <option *ngFor="let unRol of losRoles" [ngValue]="unRol.id">{{unRol.txt}}</option>
+                    </select>
+                </mat-form-field>
+            </div>
+            <div [formArrayName]="'formArrayName'">
+                <div class="my_pair_element" *ngFor="let permiso of permisos; index as i;">
+                    <div class="the_identity">
+                        <span>{{ permiso.who }}</span>
+                    </div>
+                    <div class="the_role" [formGroupName]="i">
+                        <mat-form-field>
+                            <mat-label>Rol</mat-label>
+                            <select matNativeControl formControlName="role" required>
+                                <option *ngFor="let unRol of losRoles" [ngValue]="unRol.id">{{unRol.txt}}</option>
+                            </select>
+                        </mat-form-field>
+                    </div>
+                    <div class="the_button" (click)="borrarUsuario(i, permiso)">
+                        <fa-icon [icon]="faTrash"></fa-icon>
+                    </div>
                 </div>
             </div>
         </div>
     </form>
 </mat-dialog-content>
 <div class="bottom_buttons">
-    <button mat-raised-button color="" (click)="cancelar()">
+    <button mat-raised-button color="" (click)="cancelar()" type="button">
         Cancelar
     </button>
     <button mat-raised-button color="primary" (click)="guardar()">
