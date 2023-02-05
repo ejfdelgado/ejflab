@@ -4,6 +4,7 @@ import { General } from "./common/General.mjs";
 import { MyDates } from "../srcJs/MyDates.js";
 
 const TUPLE_TYPE = "tuple";
+const TUPLE_TEMP_TYPE = "tuple-temp";
 const MAX_READ_SIZE = 30;
 
 /*
@@ -16,6 +17,7 @@ const MAX_READ_SIZE = 30;
 */
 export class TupleSrv {
     static async read(req, res, next) {
+        const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id, offset, max
         const pageId = General.readParam(req, "id");
         const offsetR = parseInt(General.readParam(req, "offset"));
@@ -42,13 +44,16 @@ export class TupleSrv {
         ];
         const response = await MyStore.paginate(TUPLE_TYPE, [{ name: "act", dir: 'asc' }], offset, max, where);
         res.status(200).send({
+            t: AHORA,
             payload: response,
         });
     }
     static async save(req, res, next) {
+        const token = res.locals.token;
         const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id y body
         const pageId = General.readParam(req, "id");
+        const live = General.readParam(req, "live");
         const body = General.readParam(req, "body", undefined);
 
         if (!pageId) {
@@ -91,6 +96,12 @@ export class TupleSrv {
                 act: AHORA,
             };
             MyStore.updateById(TUPLE_TYPE, `${pageId}:${actual.k}`, payload, batch);
+        }
+
+        // Place the live changes
+        if (live == "1") {
+            const nuevo = { pg: pageId, body, who: token.uid, t: AHORA };
+            MyStore.createById(TUPLE_TEMP_TYPE, `${pageId}:${token.uid}`, nuevo, batch);
         }
 
         // Commit the batch

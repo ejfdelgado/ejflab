@@ -75,6 +75,9 @@ export class BaseComponent implements OnInit, OnDestroy {
         } else if (evento.status == 'read_done') {
           // Stop read indicator
           this.tupleModel = evento.body;
+        } else if (evento.status == 'news') {
+          // Stop read indicator
+          this.tupleModel = evento.body;
         } else if (evento.status == 'write_wip') {
           // Show write indicator
         } else if (evento.status == 'write_done') {
