@@ -16,17 +16,15 @@ import { ModalService } from 'src/services/modal.service';
 import { MyConstants } from 'srcJs/MyConstants';
 import { AdduserrolepopupComponent } from '../adduserrolepopup/adduserrolepopup.component';
 import { Inject } from '@angular/core';
+import {
+  AuthorizationService,
+  PermisionData,
+} from 'src/services/authorization.service';
 
 export interface AuthorizationData {
   who: string;
   role: string;
   version: number;
-}
-
-export interface PermisionData {
-  who: string;
-  auth: string;
-  role: string;
 }
 
 @Component({
@@ -42,22 +40,18 @@ export class AuthorizationpopupComponent implements OnInit {
   losRoles = MyConstants.ROLES;
   pageCreator: string;
   pageId: string;
-  publicRoleId: string;
+  pendientesBorrar: Array<AuthorizationData> = [];
+  permisoPublicoInicial: string | null;
 
   constructor(
     private dialogRef: MatDialogRef<AuthorizationpopupComponent>,
     private fb: FormBuilder,
     private modalSrv: ModalService,
     public dialog: MatDialog,
+    public authSrv: AuthorizationService,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) {
     this.form = new FormGroup({
-      /*
-      publicrole: new FormControl({
-        value: this.publicRoleId,
-        disabled: false,
-      }),
-      */
       formPublic: this.fb.group({
         publicrole: ['', []],
       }),
@@ -86,12 +80,29 @@ export class AuthorizationpopupComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     // Cargar el modelo de base de datos
+    const respuesta = await this.authSrv.readAll(this.pageId);
+    for (let i = 0; i < respuesta.length; i++) {
+      const actual = respuesta[i];
+      if (actual.who == '') {
+        const controlGroup = this.form.get('formPublic') as FormGroup;
+        controlGroup.get('publicrole')?.setValue(actual.role);
+        this.permisoPublicoInicial = actual.role;
+      } else {
+        this.permisos.push({
+          role: actual.role,
+          who: actual.who,
+          version: 0,
+        });
+      }
+    }
+    this.buildForm();
   }
 
   get publicrole() {
-    return this.form.get('publicrole');
+    const controlGroup = this.form.get('formPublic') as FormGroup;
+    return controlGroup.get('publicrole');
   }
 
   async agregarUsuario() {
@@ -128,15 +139,85 @@ export class AuthorizationpopupComponent implements OnInit {
     if (!decision) {
       return;
     }
-    this.permisos.splice(i, 1);
+    const sacado = this.permisos.splice(i, 1)[0];
+    this.pendientesBorrar.push(sacado);
   }
 
   cancelar() {
     this.dialogRef.close(false);
   }
 
+  definirModificado(permiso: AuthorizationData) {
+    permiso.version = 1;
+  }
+
+  static getPermisionsByRole(role: string): Array<string> {
+    const roles = MyConstants.ROLES;
+    for (let i = 0; i < roles.length; i++) {
+      const rol = roles[i];
+      if (rol.id == role) {
+        return rol.auth;
+      }
+    }
+    return [];
+  }
+
   async guardar() {
-    // Se transforman
-    this.dialogRef.close(false);
+    const value = this.form.value;
+
+    const data: { id: string; lista: Array<PermisionData> } = {
+      id: this.pageId,
+      lista: [],
+    };
+
+    const publicrole: string | null | undefined = value?.formPublic?.publicrole;
+    if (
+      typeof publicrole == 'string' &&
+      publicrole.length > 0 &&
+      this.permisoPublicoInicial != publicrole
+    ) {
+      data.lista.push({
+        who: '',
+        auth: AuthorizationpopupComponent.getPermisionsByRole(publicrole),
+        role: publicrole,
+      });
+    }
+
+    const permisos = this.permisos;
+    for (let i = 0; i < permisos.length; i++) {
+      const permiso = permisos[i];
+      if (permiso.version > 0) {
+        const arregloFormulario = value.formArrayName;
+        const theRole = arregloFormulario[i].role;
+        data.lista.push({
+          who: permiso.who,
+          auth: AuthorizationpopupComponent.getPermisionsByRole(theRole),
+          role: theRole,
+        });
+      }
+    }
+
+    // Agrego los que se deben borrar
+    for (let i = 0; i < this.pendientesBorrar.length; i++) {
+      const pendiente = this.pendientesBorrar[i];
+      data.lista.push({
+        who: pendiente.who,
+        auth: [],
+        erase: true,
+        role: '',
+      });
+    }
+
+    //console.log(JSON.stringify(data, null, 4));
+    if (data.lista.length == 0) {
+      this.dialogRef.close();
+    } else {
+      try {
+        await this.authSrv.save(data);
+        this.modalSrv.alert({ tit: 'Ok!', txt: 'Guardado correctamente' });
+        this.dialogRef.close();
+        this.pendientesBorrar = [];
+      } catch (err) {}
+    }
   }
 }

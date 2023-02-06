@@ -27,7 +27,7 @@
                     <div class="the_role" [formGroupName]="i">
                         <mat-form-field>
                             <mat-label>Rol</mat-label>
-                            <select matNativeControl formControlName="role" required>
+                            <select matNativeControl formControlName="role" (change)="definirModificado(permiso)" required>
                                 <option *ngFor="let unRol of losRoles" [ngValue]="unRol.id">{{unRol.txt}}</option>
                             </select>
                         </mat-form-field>
@@ -44,7 +44,7 @@
     <button mat-raised-button color="" (click)="cancelar()" type="button">
         Cancelar
     </button>
-    <button mat-raised-button color="primary" (click)="guardar()">
+    <button mat-raised-button color="primary" (click)="guardar()" type="button">
         Guardar
     </button>
 </div>

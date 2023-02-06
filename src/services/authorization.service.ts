@@ -6,7 +6,30 @@ import { PageData } from 'src/interfaces/login-data.interface';
 
 import { AuthService } from './auth.service';
 import { BackendPageService } from './backendPage.service';
+import { HttpService } from './http.service';
 import { ModalService } from './modal.service';
+
+export interface PermisionData {
+  who: string;
+  auth: Array<string>;
+  erase?: boolean;
+  role: string;
+}
+
+export interface AuthorizationPostData {
+  id: string;
+  lista: Array<PermisionData>;
+}
+
+export interface AuthorizationGetData {
+  act: number;
+  role: string;
+  cre: number;
+  who: string;
+  rsc: string;
+  auth: Array<string>;
+  id: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +39,26 @@ export class AuthorizationService {
     private authService: AuthService,
     private modalService: ModalService,
     public dialog: MatDialog,
-    public pageService: BackendPageService
+    public pageService: BackendPageService,
+    private httpSrv: HttpService
   ) {}
+
+  async readAll(id: string): Promise<Array<AuthorizationGetData>> {
+    const response = await this.httpSrv.getAll<AuthorizationGetData>(
+      `srv/auth?id=${id}`,
+      {
+        key: 'payload',
+      }
+    );
+    return response;
+  }
+
+  async save(payload: AuthorizationPostData) {
+    await this.httpSrv.post('srv/auth', payload, {
+      showIndicator: true,
+      showError: true,
+    });
+  }
 
   async edit() {
     const promesas = [];

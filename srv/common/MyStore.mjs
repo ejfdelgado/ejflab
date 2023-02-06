@@ -56,8 +56,10 @@ export class MyStore {
         for (let j = 0; j < response.length; j++) {
             const doc = response[j];
             const data = doc.data();
-            data.id = doc.id;
-            theJson[data.id] = data;
+            if (data) {
+                data.id = doc.id;
+                theJson[data.id] = data;
+            }
         }
         return theJson;
     }

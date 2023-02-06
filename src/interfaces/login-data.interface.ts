@@ -20,6 +20,8 @@ export interface PageData {
 export interface HttpOptionsData {
   showIndicator?: boolean;
   showError?: boolean;
+  pageSize?: number;
+  key?: string;
 }
 
 export interface BaseComponentData {

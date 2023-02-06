@@ -8,6 +8,8 @@ import { ModalService } from './modal.service';
 import { AuthService } from 'src/services/auth.service';
 import { Buffer } from 'buffer';
 
+const DEFAULT_PAGE_SIZE = 30;
+
 const MAPEO_MIME_TIMES: { [key: string]: string } = {
   'image/bmp': 'bmp',
   'image/gif': 'gif',
@@ -130,6 +132,52 @@ export class HttpService {
         wait.done();
       }
     }
+  }
+
+  async getAll<Type>(
+    path: string,
+    options?: HttpOptionsData
+  ): Promise<Array<Type>> {
+    const params = {
+      max: options?.pageSize ? options?.pageSize : DEFAULT_PAGE_SIZE,
+      offset: 0,
+    };
+    let total: Array<Type> = [];
+    let actual: any | null;
+    let prefijo = '?';
+    let added: number = 0;
+    if (path.indexOf('?') >= 0) {
+      prefijo = '&';
+    }
+    do {
+      actual = await this.get<any | null>(
+        `${path}${prefijo}offset=${params.offset}&max=${params.max}`,
+        options
+      );
+      if (actual != null) {
+        let arreglo = actual;
+        if (typeof options?.key == 'string') {
+          const partes = options?.key?.split('.');
+          for (let i = 0; i < partes.length; i++) {
+            const parte = partes[i];
+            arreglo = arreglo[parte];
+            if ([null, undefined].indexOf(arreglo) >= 0) {
+              throw new Error(
+                `La ruta ${options?.key} no se encontró en la respuesta.`
+              );
+            }
+          }
+        }
+        if (arreglo instanceof Array) {
+          added = arreglo.length;
+          for (let i = 0; i < added; i++) {
+            total.push(arreglo[i]);
+          }
+          params.offset += added;
+        }
+      }
+    } while (actual != null && added > 0);
+    return total;
   }
 
   async get<Type>(

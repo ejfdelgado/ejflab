@@ -85,6 +85,7 @@ export class AuthorizationSrv {
                         promesas.push(MyStore.updateById(AUTH_TYPE, compundId, {
                             act: AHORA,
                             auth: permiso.auth,
+                            role: permiso.role,
                         }, firebaseInstance));
                     }
                 } else {
@@ -95,6 +96,7 @@ export class AuthorizationSrv {
                         rsc: idResource,
                         who: permiso.who,
                         auth: permiso.auth,
+                        role: permiso.role,
                     }, firebaseInstance));
                 }
             }
