@@ -11,6 +11,8 @@ import { Server } from "socket.io";
 import { MySocketStream } from "./srv/MySocketStream.mjs";
 import { TupleSrv } from "./srv/TupleSrv.mjs";
 import { AuthorizationSrv } from "./srv/AuthorizationSrv.mjs";
+import { UtilesSrv } from "./srv/UtilesSrv.mjs";
+import { KeysSrv } from "./srv/KeysSrv.mjs";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -26,6 +28,10 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
+app.get('/srv/keys', [commonHeaders, handleErrorsDecorator(KeysSrv.getPageKeys)]);
+app.post('/srv/cifrar', [commonHeaders, handleErrorsDecorator(KeysSrv.cifrarWeb)]);
+app.post('/srv/decifrar', [commonHeaders, handleErrorsDecorator(KeysSrv.decifrarWeb)]);
+app.get('/srv/date', [commonHeaders, handleErrorsDecorator(UtilesSrv.fecha)]);
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
 app.post('/srv/pg', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(PageSrv.savePage)]);
 app.get('/srv/tup', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(TupleSrv.read)]);

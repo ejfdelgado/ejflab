@@ -4,6 +4,8 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { TupleService } from 'src/services/tuple.service';
+import { IdGen } from 'srcJs/IdGen.js';
+import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { BaseComponent } from '../components/base/base.component';
 
 @Component({
@@ -23,12 +25,34 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     super(route, pageService, cdr, authService, dialog, tupleService);
   }
 
-  setTime() {
+  async setTime() {
     if (!this.tupleModel) {
       return;
     }
-    this.tupleModel.t = [new Date().getTime()];
+    const tiempo = await IdGen.ahora();
+    this.tupleModel.t = [tiempo];
     super.saveTuple();
+
+    const llavePublica =
+      '-----BEGIN PUBLIC KEY-----\
+MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAM+53jqSLGfawXnrz5rmRs5Beg1XfgXL\
+tLAesEEBkicPAgMBAAE=\
+-----END PUBLIC KEY-----\
+';
+    const llavePrivada =
+      '-----BEGIN PRIVATE KEY-----\
+MIHDAgEAMA0GCSqGSIb3DQEBAQUABIGuMIGrAgEAAiEAz7neOpIsZ9rBeevPmuZG\
+zkF6DVd+Bcu0sB6wQQGSJw8CAwEAAQIgBqWK39LnitcsE6ug8/LkVwxprUbTmJGt\
+helcnGpk4oECEQDxBmnsnP3xpVW2vK0ceTjBAhEA3KHSeoVNCYmawX5oraMDzwIR\
+AKdwJTXS+jdc/GauPDSDogECEQC3G9pqcu1PyBNXGUlZKlzDAhASO74AOK6q8tA2\
+1NMvWu5a\
+-----END PRIVATE KEY-----';
+    const cifrado = ModuloDatoSeguroFront.cifrar(
+      { valor: 'edgar' },
+      llavePublica
+    );
+    const decifrado = ModuloDatoSeguroFront.decifrar(cifrado, llavePrivada);
+    console.log(decifrado);
   }
 
   override async ngOnInit() {

@@ -1,4 +1,8 @@
+- módulo de llaves
+  - módulo de solicitud de llaves por página
+
 - modulo de permisos
+  - la actualización de permisos se debe hacer con + o - en vez de reemplazar todo el arreglo.
   - cada recurso debe poder tener N+1 registros de permisos
   - cada usuario debe tener un registro por cada recurso
   - debe haber un interceptor que busque y agregue los permisos para el recurso y el usuario
