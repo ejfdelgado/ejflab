@@ -50,7 +50,15 @@ export class PageService {
   getReaderAll(q: string): PageIteratorData {
     return this.getReader(q, 'srv/pg/all');
   }
-
+  async createNew(): Promise<PageData> {
+    const response = await this.httpService.post<PageData>(`srv/pg/new`, {
+      showIndicator: true,
+    });
+    if (response == null) {
+      throw Error('No se pudo crear la página');
+    }
+    return response;
+  }
   getReader(q: string, prefix: string): PageIteratorData {
     let offset = 0;
     const max = 30;

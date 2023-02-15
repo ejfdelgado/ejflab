@@ -7,6 +7,7 @@ import {
   PageIteratorData,
   PageService,
 } from 'src/services/page.service';
+import { MyRoutes } from 'srcJs/MyRoutes';
 
 @Component({
   selector: 'app-multiplepages',
@@ -16,15 +17,18 @@ import {
 export class MultiplepagesComponent implements OnInit {
   faXmark = faXmark;
   form: FormGroup;
-  cardInicial: CardComponentData = {
-    title: 'Crear nueva',
-    imageUrl: '/assets/img/app1.jpg',
-    action: this.crearNuevaPagina,
-  };
+  cardInicial: CardComponentData;
   paginas: Array<CardComponentData> = [];
   iterador: PageIteratorData | null = null;
 
-  constructor(private fb: FormBuilder, private pageSrv: PageService) {}
+  constructor(private fb: FormBuilder, private pageSrv: PageService) {
+    const crearNuevaPaginaThis = this.crearNuevaPagina.bind(this);
+    this.cardInicial = {
+      title: 'Crear nueva',
+      imageUrl: '/assets/img/app1.jpg',
+      action: crearNuevaPaginaThis,
+    };
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -38,14 +42,14 @@ export class MultiplepagesComponent implements OnInit {
 
   abrirEnPestaniaNueva(data: CardComponentData) {
     const URL = `${location.origin}${data.href}`;
-    console.log(URL);
-    //window.open(URL, '_blank');
+    window.open(URL, '_blank');
   }
 
-  crearNuevaPagina() {
-    console.log('Crear nueva página');
-    // POST
-    // Reload all page.
+  async crearNuevaPagina() {
+    const dato = await this.pageSrv.createNew();
+    const partes = MyRoutes.splitPageData(location.pathname);
+    const URL = `${location.origin}${partes.pageType}/${dato.id}`;
+    window.open(URL, '_self');
   }
 
   borrarPagina() {}
@@ -55,12 +59,13 @@ export class MultiplepagesComponent implements OnInit {
     this.iterador = this.pageSrv.getReaderMines(busqueda);
     const datos: Array<PageData> = await this.iterador.next();
     const fetch: Array<CardComponentData> = [];
+    const partes = MyRoutes.splitPageData(location.pathname);
     for (let i = 0; i < datos.length; i++) {
       const dato = datos[i];
       const nuevo: CardComponentData = {
         imageUrl: dato.img,
         title: dato.tit,
-        href: `${location.pathname}/${dato.id}`,
+        href: `${partes.pageType}/${dato.id}`,
       };
       fetch.push(nuevo);
     }

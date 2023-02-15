@@ -1,10 +1,8 @@
-- hacer módulo de crear y buscar páginas
+- agregar un switch para buscar las páginas mias/de todos, lanzar la busqueda al inicio/ paginar
 - cuando se crea una página debe darse el permiso al creador
 - proteger las rutas usando permisos de manera transversal
 - cifrar el json de firebase y mandarlo en el index.html
 - hacer lectura periódica de las llaves de la página, cifrar el firebase tuple-temp en vivo usando las llaves
-- buscar mis páginas
-- buscar las páginas de todos
 - los archivos de la página deben quedar en una ruta no publica
 - se debe ofrecer un servicio para rescatar los archivos del bucket no publico protegido con permisos
 

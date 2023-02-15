@@ -41,6 +41,25 @@ export class PageSrv {
         }
         res.status(200).send(respuesta);
     }
+    static async createNewPage(req, res, next) {
+        const AHORA = new Date().getTime() / 1000;
+        const user = res.locals.user;
+        const elpath = Utilidades.leerRefererPath(req);
+        const partes = MyRoutes.splitPageData(elpath);
+        const elUsuario = user.metadatos.email;
+        const nueva = {
+            usr: elUsuario,
+            path: partes.pageType,
+            date: AHORA,
+            act: AHORA,
+            tit: "Título",
+            desc: "Descripción",
+            img: "",
+            kw: "",
+        };
+        await MyStore.create(PAGE_TYPE, nueva);
+        res.status(200).send(nueva);
+    }
     static async getCurrentPage(req, res, next) {
         const user = res.locals.user;
         const elpath = Utilidades.leerRefererPath(req);
