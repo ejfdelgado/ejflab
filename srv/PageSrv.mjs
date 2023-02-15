@@ -1,3 +1,4 @@
+import { MyUtilities } from "../srcJs/MyUtilities.js";
 import { MyRoutes } from "../srcJs/MyRoutes.js"
 import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
@@ -5,6 +6,7 @@ import { Utilidades } from "./common/Utilidades.mjs";
 import { MalaPeticionException, NoExisteException } from "./MyError.mjs";
 
 const PAGE_TYPE = "page";
+const MAX_READ_SIZE = 30;
 
 export class PageSrv {
     static async savePage(req, res, next) {
@@ -20,9 +22,13 @@ export class PageSrv {
         const response = await MyStore.readById(PAGE_TYPE, pageId);
         if (response) {
             const { tit, desc } = datos;
+            const q = MyUtilities.partirTexto(`${typeof tit == 'string' ? tit : ''} ${typeof desc == 'string' ? desc : ''}`, true);
+            //Se agrega al buscable el correo del autor
+            q.push(response.usr);
             const updated = {
                 tit,
                 desc,
+                q,
             };
             if (res.locals && res.locals.uri) {
                 updated.img = res.locals.uri;
@@ -84,5 +90,46 @@ export class PageSrv {
                 }
             }
         }
+    }
+    static async iterateMyPages(req, res, next) {
+        const token = res.locals.token;
+        const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
+        const q = General.readParam(req, "q");
+        const path = General.readParam(req, "path");
+        if (!path) {
+            throw new MalaPeticionException("Falta el path");
+        }
+        // Que sea mio
+        const where = [
+            { key: "usr", oper: "==", value: token.email },
+            { key: "path", oper: "==", value: path },
+        ];
+        if (typeof q == 'string' && q.trim().length > 0) {
+            const partes = MyUtilities.partirTexto(q, false, true);
+            where.push({
+                key: "q", oper: "array-contains-any", value: partes
+            });
+        }
+        const response = await MyStore.paginate(PAGE_TYPE, [{ name: "act", dir: 'desc' }], offset, max, where);
+        res.status(200).send(response);
+    }
+    static async iterateAllPages(req, res, next) {
+        const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
+        const q = General.readParam(req, "q");
+        const path = General.readParam(req, "path");
+        if (!path) {
+            throw new MalaPeticionException("Falta el path");
+        }
+        const where = [
+            { key: "path", oper: "==", value: path },
+        ];
+        if (typeof q == 'string' && q.trim().length > 0) {
+            const partes = MyUtilities.partirTexto(q, false, true);
+            where.push({
+                key: "q", oper: "array-contains-any", value: partes
+            });
+        }
+        const response = await MyStore.paginate(PAGE_TYPE, [{ name: "act", dir: 'desc' }], offset, max, where);
+        res.status(200).send(response);
     }
 }

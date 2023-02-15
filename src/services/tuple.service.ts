@@ -7,8 +7,6 @@ import { ModalService } from './modal.service';
 import {
   Firestore,
   collectionData,
-  collectionChanges,
-  collectionSnapshots,
   collection,
   query,
   where,
@@ -46,18 +44,14 @@ export class TupleServiceInstance {
   evento = new EventEmitter<TupleData>();
   model: any | null = null;
   builder: any;
-  id: string;
-  httpService: HttpService;
   myLiveChanges: any;
   constructor(
-    id: string,
-    writer: Function,
-    httpService: HttpService,
-    firestore: Firestore
+    private id: string,
+    private writer: Function,
+    private httpService: HttpService,
+    private firestore: Firestore
   ) {
     this.myLiveChanges = {};
-    this.id = id;
-    this.httpService = httpService;
     this.evento = new EventEmitter<TupleData>();
     this.builder = MyTuples.getBuilder();
     this.builder.setProcesor(writer);

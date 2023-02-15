@@ -33,7 +33,9 @@
               "srcJs/MyDates",
               "srcJs/MyRoutes",
               "srcJs/MyTuples",
-              "srcJs/MyUtilities"
+              "srcJs/MyUtilities",
+              "srcJs/IdGen",
+              "srcJs/ModuloDatoSeguroFront"
             ]
           },
           "configurations": {

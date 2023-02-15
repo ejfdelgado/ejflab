@@ -2,6 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { CardComponentData } from 'src/interfaces/login-data.interface';
 import { faXmark } from '@fortawesome/free-solid-svg-icons';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  PageData,
+  PageIteratorData,
+  PageService,
+} from 'src/services/page.service';
 
 @Component({
   selector: 'app-multiplepages',
@@ -17,7 +22,9 @@ export class MultiplepagesComponent implements OnInit {
     action: this.crearNuevaPagina,
   };
   paginas: Array<CardComponentData> = [];
-  constructor(private fb: FormBuilder) {}
+  iterador: PageIteratorData | null = null;
+
+  constructor(private fb: FormBuilder, private pageSrv: PageService) {}
 
   ngOnInit(): void {
     this.form = this.fb.group({
@@ -30,7 +37,9 @@ export class MultiplepagesComponent implements OnInit {
   }
 
   abrirEnPestaniaNueva(data: CardComponentData) {
-    console.log(`abrir ${JSON.stringify(data)}`);
+    const URL = `${location.origin}${data.href}`;
+    console.log(URL);
+    //window.open(URL, '_blank');
   }
 
   crearNuevaPagina() {
@@ -43,40 +52,18 @@ export class MultiplepagesComponent implements OnInit {
 
   async buscar() {
     const busqueda = this.form.value.busqueda;
-    console.log(`buscar ${busqueda}`);
-
-    const fetch: Array<CardComponentData> = [
-      {
-        title: 'Mi título es algo bien largo que no cabe',
-        imageUrl: '/assets/img/app1.jpg',
-        href: '/customers',
-      },
-      {
-        title: 'Mi título es algo bien largo que no cabe',
-        imageUrl: '/assets/img/app2.jpg',
-        href: '/customers',
-      },
-      {
-        title: 'Mi título es algo bien largo que no cabe',
-        imageUrl: '/assets/img/app3.jpg',
-        href: '/customers',
-      },
-      {
-        title: 'Mi título es algo bien largo que no cabe',
-        imageUrl: '/assets/img/app1.jpg',
-        href: '/customers',
-      },
-      {
-        title: 'Mi título es algo bien largo que no cabe',
-        imageUrl: '/assets/img/app2.jpg',
-        href: '/customers',
-      },
-      {
-        title: 'Mi título es algo bien largo que no cabe',
-        imageUrl: '/assets/img/app3.jpg',
-        href: '/customers',
-      },
-    ];
+    this.iterador = this.pageSrv.getReaderMines(busqueda);
+    const datos: Array<PageData> = await this.iterador.next();
+    const fetch: Array<CardComponentData> = [];
+    for (let i = 0; i < datos.length; i++) {
+      const dato = datos[i];
+      const nuevo: CardComponentData = {
+        imageUrl: dato.img,
+        title: dato.tit,
+        href: `${location.pathname}/${dato.id}`,
+      };
+      fetch.push(nuevo);
+    }
     this.paginas.splice(0, this.paginas.length);
     const abrirEnPestaniaNuevaThis = this.abrirEnPestaniaNueva.bind(this);
     for (let i = 0; i < fetch.length; i++) {

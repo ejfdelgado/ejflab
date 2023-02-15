@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { TupleService } from 'src/services/tuple.service';
-import { IdGen } from 'srcJs/IdGen.js';
+import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { BaseComponent } from '../components/base/base.component';
 

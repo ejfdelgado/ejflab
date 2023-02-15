@@ -31,6 +31,8 @@ app.use('/assets', express.static('src/assets'));
 app.get('/srv/date', [commonHeaders, handleErrorsDecorator(UtilesSrv.fecha)]);
 app.get('/srv/:pageId/keys', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(KeysSrv.getPageKeys)]);
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
+app.get('/srv/pg/mines', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(PageSrv.iterateMyPages)]);
+app.get('/srv/pg/all', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.iterateAllPages)]);
 app.post('/srv/:pageId/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(PageSrv.savePage)]);
 app.get('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(TupleSrv.read)]);
 app.post('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(TupleSrv.save)]);
