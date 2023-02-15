@@ -32,7 +32,7 @@ export class AppComponent {
           this.authorizationSrv.edit();
           break;
         case 'Period':
-          console.log('...');
+          this.pageSrv.multiple();
           break;
         default:
           console.log(event.code);

@@ -53,9 +53,11 @@ export class CardComponent implements OnInit {
     return faGamepad;
   }
 
-  navegar(ruta: string | undefined | null) {
-    if (typeof ruta == 'string') {
-      this.router.navigate([ruta]);
+  navegar(data: CardComponentData) {
+    if (typeof data.action == 'function') {
+      data.action(data);
+    } else if (typeof data.href == 'string') {
+      this.router.navigate([data.href]);
     }
   }
 }

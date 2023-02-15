@@ -1,11 +1,16 @@
-- módulo de llaves
-  - módulo de solicitud de llaves por página
+- hacer módulo de crear y buscar páginas
+- cuando se crea una página debe darse el permiso al creador
+- proteger las rutas usando permisos de manera transversal
+- cifrar el json de firebase y mandarlo en el index.html
+- hacer lectura periódica de las llaves de la página, cifrar el firebase tuple-temp en vivo usando las llaves
+- buscar mis páginas
+- buscar las páginas de todos
+- los archivos de la página deben quedar en una ruta no publica
+- se debe ofrecer un servicio para rescatar los archivos del bucket no publico protegido con permisos
 
 - modulo de permisos
-  - la actualización de permisos se debe hacer con + o - en vez de reemplazar todo el arreglo.
   - cada recurso debe poder tener N+1 registros de permisos
   - cada usuario debe tener un registro por cada recurso
-  - debe haber un interceptor que busque y agregue los permisos para el recurso y el usuario
 
 - Crear la representacion de DB de usuario
 - Fetch de la imagen de la persona logeada

@@ -1,0 +1,59 @@
+.contenedor {
+  display: flex;
+  flex-direction: column;
+}
+
+[mat-dialog-title] {
+  display: flex;
+  margin: 0;
+}
+
+[mat-dialog-title] h1 {
+  flex: 1;
+}
+
+[mat-dialog-title] .boton_cerrar {
+  cursor: pointer;
+  color: rgb(158, 158, 158);
+  position: relative;
+  top: -5px;
+  left: 0;
+  margin-left: 10px;
+}
+
+[mat-dialog-title] .boton_cerrar:hover {
+  color: rgb(57, 57, 57);
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.contenedor .paginas_scroll {
+  flex: 1;
+  overflow-y: scroll;
+  max-height: 70vh;
+}
+
+.contenedor .wrapper {
+  grid-template-columns: 25% 25% 25% 25%;
+  grid-auto-rows: 15vw;
+  display: grid;
+  color: #444;
+  width: 100%;
+}
+
+.contenedor .wrapper app-card {
+  padding: 10px;
+}
+
+mat-dialog-content {
+  overflow: hidden;
+}
+
+@media only screen and (max-width: 1000px) {
+  .contenedor .wrapper {
+    grid-template-columns: 50% 50%;
+    grid-auto-rows: 30vw;
+  }
+}

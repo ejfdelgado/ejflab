@@ -34,5 +34,6 @@ export interface CardComponentData {
   title?: string;
   icon?: string;
   href?: string;
+  action?: Function;
   bigColumn?: number;
 }
