@@ -47,16 +47,16 @@ export class KeysSrv {
             payload[siguiente] = response[siguiente];
             payload[anterior] = response[anterior];
             let modificado = false;
-            if (!(actual in payload)) {
-                payload[actual] = ModuloDatoSeguro.generateKey();
+            if (!(actual in payload) || !payload[actual]) {
+                payload[actual] = ModuloDatoSeguro.generateKey(DEFAULT_KEY_SIZE);
                 modificado = true;
             }
-            if (!(siguiente in payload)) {
-                payload[siguiente] = ModuloDatoSeguro.generateKey();
+            if (!(siguiente in payload) || !payload[siguiente]) {
+                payload[siguiente] = ModuloDatoSeguro.generateKey(DEFAULT_KEY_SIZE);
                 modificado = true;
             }
-            if (!(anterior in payload)) {
-                payload[anterior] = ModuloDatoSeguro.generateKey();
+            if (!(anterior in payload) || !payload[anterior]) {
+                payload[anterior] = ModuloDatoSeguro.generateKey(DEFAULT_KEY_SIZE);
                 modificado = true;
             }
             if (modificado) {
@@ -98,21 +98,12 @@ export class KeysSrv {
     }
 
     static async getPageKeys(req, res, next) {
-        // Solo se entregan las llaves si tiene permiso
-        const pageId = General.readParam(req, "id");
+        const pageId = req.params['pageId'];
         const llavero = await KeysSrv.getOrGeneratePageKeys(pageId);
-        /*
-        const prueba = { valor: "edgar", otro: false };
-        const cifrado = await KeysSrv.cifrar(prueba, pageId);
-        const decifrado = await KeysSrv.decifrar(cifrado, pageId);
-        console.log(`cifrado=${cifrado}`);
-        console.log(`decifrado=${JSON.stringify(decifrado)}`);
-        */
         res.status(200).send(llavero);
     }
 
     static async cifrarWeb(req, res, next) {
-        // Solo se entregan las llaves si tiene permiso
         const key = General.readParam(req, "key");
         const payload = General.readParam(req, "payload");
         const resultado = ModuloDatoSeguro.cifrar(payload, key);
@@ -121,7 +112,6 @@ export class KeysSrv {
     }
 
     static async decifrarWeb(req, res, next) {
-        // Solo se entregan las llaves si tiene permiso
         const key = General.readParam(req, "key");
         const payload = General.readParam(req, "payload");
         const resultado = ModuloDatoSeguro.decifrar(payload, key);

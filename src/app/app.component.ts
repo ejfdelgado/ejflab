@@ -28,8 +28,11 @@ export class AppComponent {
         case 'KeyB':
           this.pageSrv.edit();
           break;
-        case 'Semicolon':
+        case 'Comma':
           this.authorizationSrv.edit();
+          break;
+        case 'Period':
+          console.log('...');
           break;
         default:
           console.log(event.code);

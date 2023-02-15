@@ -42,8 +42,6 @@ export interface TupleResponseData {
   t: number;
 }
 
-const URL = 'srv/tup';
-
 export class TupleServiceInstance {
   evento = new EventEmitter<TupleData>();
   model: any | null = null;
@@ -154,7 +152,7 @@ export class TupleServiceInstance {
     let response: TupleResponseData | null = null;
     do {
       response = await this.httpService.get<TupleResponseData>(
-        `${URL}?offset=${request.offset}&max=${request.max}&id=${request.id}`,
+        `srv/${request.id}/tup?offset=${request.offset}&max=${request.max}`,
         { showIndicator: true }
       );
       if (request.offset == 0 && response != null) {
@@ -191,9 +189,8 @@ export class TupleService {
     const save = async (batch: any): Promise<any> => {
       //console.log(`Guardando ${id} con ${batch} ...`);
       await this.httpService.post(
-        URL,
+        `srv/${id}/tup`,
         {
-          id: id,
           body: batch,
           live: '1',
         },

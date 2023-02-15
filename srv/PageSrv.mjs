@@ -9,7 +9,7 @@ const PAGE_TYPE = "page";
 export class PageSrv {
     static async savePage(req, res, next) {
         let respuesta = {};
-        const pageId = General.readParam(req, "id");
+        const pageId = req.params['pageId'];
         const datos = General.readParam(req, "datos");
         if (!pageId) {
             throw new MalaPeticionException("Falta el id");

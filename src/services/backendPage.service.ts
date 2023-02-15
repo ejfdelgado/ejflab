@@ -28,10 +28,9 @@ export class BackendPageService {
   async savePage(id: string, datos: PageData): Promise<PageData | null> {
     let actual: PageData | null = null;
     const payload = {
-      id,
       datos,
     };
-    const URL = 'srv/pg';
+    const URL = `srv/${id}/pg`;
     if (datos.image) {
       const image = datos.image;
       delete datos.image;

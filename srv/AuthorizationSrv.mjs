@@ -49,7 +49,7 @@ export class AuthorizationSrv {
     static async save(req, res) {
         const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se lee el id del recurso}
-        const idResource = General.readParam(req, "id");
+        const idResource = req.params['pageId'];
         const lista = General.readParam(req, "lista");
 
         if (!idResource) {
@@ -106,7 +106,7 @@ export class AuthorizationSrv {
     }
 
     static async readAll(req, res) {
-        const idResource = General.readParam(req, "id");
+        const idResource = req.params['pageId'];
 
         const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
         if (!idResource) {

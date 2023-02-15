@@ -19,7 +19,7 @@ export class TupleSrv {
     static async read(req, res, next) {
         const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id, offset, max
-        const pageId = General.readParam(req, "id");
+        const pageId = req.params['pageId'];
         const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
 
         if (!pageId) {
@@ -43,7 +43,7 @@ export class TupleSrv {
         const token = res.locals.token;
         const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id y body
-        const pageId = General.readParam(req, "id");
+        const pageId = req.params['pageId'];
         const live = General.readParam(req, "live");
         const body = General.readParam(req, "body", undefined);
 

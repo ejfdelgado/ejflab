@@ -28,16 +28,14 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
-app.get('/srv/keys', [commonHeaders, handleErrorsDecorator(KeysSrv.getPageKeys)]);
-app.post('/srv/cifrar', [commonHeaders, handleErrorsDecorator(KeysSrv.cifrarWeb)]);
-app.post('/srv/decifrar', [commonHeaders, handleErrorsDecorator(KeysSrv.decifrarWeb)]);
 app.get('/srv/date', [commonHeaders, handleErrorsDecorator(UtilesSrv.fecha)]);
+app.get('/srv/:pageId/keys', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(KeysSrv.getPageKeys)]);
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);
-app.post('/srv/pg', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(PageSrv.savePage)]);
-app.get('/srv/tup', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(TupleSrv.read)]);
-app.post('/srv/tup', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(TupleSrv.save)]);
-app.get('/srv/auth', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(AuthorizationSrv.readAll)]);
-app.post('/srv/auth', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(AuthorizationSrv.save)]);
+app.post('/srv/:pageId/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(PageSrv.savePage)]);
+app.get('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(TupleSrv.read)]);
+app.post('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(TupleSrv.save)]);
+app.get('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(AuthorizationSrv.readAll)]);
+app.post('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(AuthorizationSrv.save)]);
 app.use("/", handleErrorsDecorator(MainHandler.handle));
 io.on('connection', MySocketStream.handle(io));
 

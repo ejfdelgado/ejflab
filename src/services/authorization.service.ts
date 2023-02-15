@@ -45,7 +45,7 @@ export class AuthorizationService {
 
   async readAll(id: string): Promise<Array<AuthorizationGetData>> {
     const response = await this.httpSrv.getAll<AuthorizationGetData>(
-      `srv/auth?id=${id}`,
+      `srv/${id}/auth`,
       {
         key: 'payload',
       }
@@ -54,7 +54,7 @@ export class AuthorizationService {
   }
 
   async save(payload: AuthorizationPostData) {
-    await this.httpSrv.post('srv/auth', payload, {
+    await this.httpSrv.post(`srv/${payload.id}/auth`, payload, {
       showIndicator: true,
       showError: true,
     });
