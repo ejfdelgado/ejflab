@@ -12,16 +12,17 @@ export interface PageIteratorData {
 }
 
 export interface PageData {
-  date: number;
-  usr: string;
-  tit: string;
-  q: Array<string>;
-  path: string;
-  act: number;
-  desc: string;
-  img: string;
-  kw: string;
-  id: string;
+  date?: number;
+  usr?: string;
+  tit?: string;
+  q?: Array<string>;
+  path?: string;
+  act?: number;
+  desc?: string;
+  img?: string;
+  kw?: string;
+  id?: string;
+  profile?: string;
 }
 
 @Injectable({

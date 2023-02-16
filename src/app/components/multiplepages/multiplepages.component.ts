@@ -20,12 +20,13 @@ export class MultiplepagesComponent implements OnInit {
   cardInicial: CardComponentData;
   paginas: Array<CardComponentData> = [];
   iterador: PageIteratorData | null = null;
+  onlyMyPages: boolean = true;
 
   constructor(private fb: FormBuilder, private pageSrv: PageService) {
     const crearNuevaPaginaThis = this.crearNuevaPagina.bind(this);
     this.cardInicial = {
       title: 'Crear nueva',
-      imageUrl: '/assets/img/app1.jpg',
+      imageUrl: '/assets/img/add.jpg',
       action: crearNuevaPaginaThis,
     };
   }
@@ -34,6 +35,7 @@ export class MultiplepagesComponent implements OnInit {
     this.form = this.fb.group({
       busqueda: [''],
     });
+    this.buscar();
   }
 
   get busqueda() {
@@ -54,9 +56,33 @@ export class MultiplepagesComponent implements OnInit {
 
   borrarPagina() {}
 
-  async buscar() {
+  setOnlyMyPagesOn() {
+    if (!this.onlyMyPages) {
+      this.onlyMyPages = true;
+      this.buscar();
+    }
+  }
+  setOnlyMyPagesOff() {
+    if (this.onlyMyPages) {
+      this.onlyMyPages = false;
+      this.buscar();
+    }
+  }
+
+  actionMenuBorrar(item: any) {
+    console.log('Borrar' + JSON.stringify(item));
+  }
+
+  async buscar(iniciar = true) {
     const busqueda = this.form.value.busqueda;
-    this.iterador = this.pageSrv.getReaderMines(busqueda);
+    if (iniciar || this.iterador == null) {
+      this.paginas.splice(0, this.paginas.length);
+      if (this.onlyMyPages) {
+        this.iterador = this.pageSrv.getReaderMines(busqueda);
+      } else {
+        this.iterador = this.pageSrv.getReaderAll(busqueda);
+      }
+    }
     const datos: Array<PageData> = await this.iterador.next();
     const fetch: Array<CardComponentData> = [];
     const partes = MyRoutes.splitPageData(location.pathname);
@@ -66,14 +92,23 @@ export class MultiplepagesComponent implements OnInit {
         imageUrl: dato.img,
         title: dato.tit,
         href: `${partes.pageType}/${dato.id}`,
+        profile: '/assets/img/profile.jpeg',
       };
       fetch.push(nuevo);
     }
-    this.paginas.splice(0, this.paginas.length);
     const abrirEnPestaniaNuevaThis = this.abrirEnPestaniaNueva.bind(this);
+    const actionMenuBorrarThis = this.actionMenuBorrar.bind(this);
     for (let i = 0; i < fetch.length; i++) {
       const actual = fetch[i];
       actual.action = abrirEnPestaniaNuevaThis;
+      actual.bigColumn = 0;
+      actual.menu = [
+        {
+          action: actionMenuBorrarThis,
+          texto: 'Borrar',
+          icono: 'close',
+        },
+      ];
       this.paginas.push(actual);
     }
   }

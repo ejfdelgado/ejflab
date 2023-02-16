@@ -51,6 +51,35 @@ mat-dialog-content {
   overflow: hidden;
 }
 
+.controles_textos {
+  text-align: right;
+}
+
+.controles_textos span {
+  padding: 0 10px;
+}
+
+.controles_textos span.inactive {
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.controles_textos span.active {
+  font-weight: bold;
+}
+
+.contenedor_ver_mas {
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.contenedor_ver_mas span {
+  text-decoration: underline;
+}
+
 @media only screen and (max-width: 1000px) {
   .contenedor .wrapper {
     grid-template-columns: 50% 50%;

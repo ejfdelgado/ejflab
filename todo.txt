@@ -1,6 +1,8 @@
-- agregar un switch para buscar las páginas mias/de todos, lanzar la busqueda al inicio/ paginar
+- permitir borrar las páginas creadas por mí mismo
+- agregar fecha de actualización al card de página
 - cuando se crea una página debe darse el permiso al creador
 - proteger las rutas usando permisos de manera transversal
+
 - cifrar el json de firebase y mandarlo en el index.html
 - hacer lectura periódica de las llaves de la página, cifrar el firebase tuple-temp en vivo usando las llaves
 - los archivos de la página deben quedar en una ruta no publica

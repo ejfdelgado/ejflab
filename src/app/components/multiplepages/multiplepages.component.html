@@ -14,13 +14,22 @@
                 <mat-icon>search</mat-icon>
             </button>
         </mat-form-field>
+        <p class="controles_textos">
+            <span (click)="setOnlyMyPagesOn()" [ngClass]="{'active': onlyMyPages, 'inactive': !onlyMyPages}">Solo
+                mias</span>
+            <span (click)="setOnlyMyPagesOff()"
+                [ngClass]="{'active': !onlyMyPages, 'inactive': onlyMyPages}">Todas</span>
+        </p>
     </form>
 </mat-dialog-content>
 <div class="contenedor">
     <div class="paginas_scroll">
         <div class="wrapper">
             <app-card [data]="cardInicial"></app-card>
-            <app-card *ngFor="let oneCard of paginas; index as i;" [data]="oneCard"></app-card>
+            <app-card *ngFor="let oneCard of paginas; index as i;" [data]="oneCard" class="multiplepages"></app-card>
+            <div class="contenedor_ver_mas" (click)="buscar(false)">
+                <span>Ver más</span>
+            </div>
         </div>
     </div>
 </div>

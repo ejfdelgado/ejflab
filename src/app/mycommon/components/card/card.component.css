@@ -1,5 +1,4 @@
 .box {
-  cursor: pointer;
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
   user-select: none; /* Standard syntax */
@@ -13,20 +12,47 @@
   overflow: hidden;
 }
 
-.box_image {
+.box .box_image {
+  cursor: pointer;
+  background-position: center !important;
   background-size: cover !important;
   flex: 1;
 }
 
-.box_texto {
+.box .box_texto {
   width: 100%;
   position: relative;
 }
 
-.box_titulo {
+.box .box_texto .box_titulo {
   padding: 20px;
   font-size: 1.2em;
   font-weight: 400;
+
+  display: flex;
+  flex-direction: row;
+}
+
+.box.small .box_texto .box_titulo {
+  padding: 15px !important;
+}
+
+.box .box_texto .box_titulo .solo_texto {
+  cursor: pointer;
+  flex: 1;
+}
+
+.menu_icon {
+  width: 20px;
+  height: 20px;
+  padding: 6px;
+  text-align: center;
+  border-radius: 50%;
+  background: #ffffff;
+  margin-right: 9px;
+  cursor: pointer;
+  box-shadow: 1px 1px 4px 1px #c7c8ca;
+  color: #5a5a5a;
 }
 
 .box_icon {
@@ -45,6 +71,18 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+}
+
+.profile_icon {
+  width: 60px;
+  height: 60px;
+  right: 21px;
+  top: -32px;
+  position: absolute;
+  border-radius: 50%;
+  box-shadow: 1px 1px 4px 1px #c7c8ca;
+  background-position: center !important;
+  background-size: cover !important;
 }
 
 .box.big .box_icon {
@@ -83,5 +121,12 @@
     right: 10px;
     top: -15px;
     font-size: 1em;
+  }
+
+  .profile_icon {
+    width: 40px;
+    height: 40px;
+    right: 11px;
+    top: -20px;
   }
 }

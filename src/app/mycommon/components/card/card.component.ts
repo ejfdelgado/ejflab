@@ -2,6 +2,7 @@ import { Component, HostBinding, Input, OnInit } from '@angular/core';
 import { faGamepad, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { Router } from '@angular/router';
 import { CardComponentData } from 'src/interfaces/login-data.interface';
+import { faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-card',
@@ -10,6 +11,8 @@ import { CardComponentData } from 'src/interfaces/login-data.interface';
   host: { class: 'box' },
 })
 export class CardComponent implements OnInit {
+  faEllipsisV = faEllipsisV;
+  @HostBinding('class.small') isSmall: boolean = false;
   @HostBinding('class.big') isBig: boolean = false;
   @HostBinding('class.big1') isBig1: boolean = false;
   @HostBinding('class.big2') isBig2: boolean = false;
@@ -25,11 +28,15 @@ export class CardComponent implements OnInit {
   ngOnChanges(changes: any) {
     if (changes.data) {
       const bigColumn = changes.data.currentValue.bigColumn;
+      this.isSmall = false;
       this.isBig = false;
       this.isBig1 = false;
       this.isBig2 = false;
       this.isBig3 = false;
       switch (bigColumn) {
+        case 0:
+          this.isSmall = true;
+          break;
         case 1:
           this.isBig = true;
           this.isBig1 = true;

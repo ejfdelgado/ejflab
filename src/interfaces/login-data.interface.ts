@@ -29,11 +29,19 @@ export interface BaseComponentData {
   loadPage?: boolean;
 }
 
+export interface CardComponentMenuData {
+  icono: string;
+  texto: string;
+  action: Function;
+}
+
 export interface CardComponentData {
   imageUrl?: string;
   title?: string;
   icon?: string;
   href?: string;
   action?: Function;
+  menu?: Array<CardComponentMenuData>;
   bigColumn?: number;
+  profile?: string;
 }
