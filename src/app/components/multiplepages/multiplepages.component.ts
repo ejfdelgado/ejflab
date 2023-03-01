@@ -76,7 +76,6 @@ export class MultiplepagesComponent implements OnInit {
   async buscar(iniciar = true) {
     const busqueda = this.form.value.busqueda;
     if (iniciar || this.iterador == null) {
-      this.paginas.splice(0, this.paginas.length);
       if (this.onlyMyPages) {
         this.iterador = this.pageSrv.getReaderMines(busqueda);
       } else {
@@ -98,6 +97,10 @@ export class MultiplepagesComponent implements OnInit {
     }
     const abrirEnPestaniaNuevaThis = this.abrirEnPestaniaNueva.bind(this);
     const actionMenuBorrarThis = this.actionMenuBorrar.bind(this);
+
+    if (iniciar) {
+      this.paginas.splice(0, this.paginas.length);
+    }
     for (let i = 0; i < fetch.length; i++) {
       const actual = fetch[i];
       actual.action = abrirEnPestaniaNuevaThis;
