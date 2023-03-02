@@ -5,7 +5,8 @@ import {
 } from "./MyError.mjs";
 import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
-import { MyDates } from "../srcJs/MyDates.js";
+import MyDatesBack from "../srcJs/MyDatesBack.mjs";
+import { MyConstants } from "../srcJs/MyConstants.js";
 
 const AUTH_TYPE = "auth";
 const MAX_READ_SIZE = 30;
@@ -46,8 +47,24 @@ const MAX_READ_SIZE = 30;
  * }]
  */
 export class AuthorizationSrv {
+    static async createPagePermision(role, idPage, who = "") {
+        const AHORA = MyDatesBack.getDayAsContinuosNumberHmmSSmmm(new Date());
+        const auth = MyConstants.getAuthByRole(role);
+        if (auth.length == 0) {
+            return;
+        }
+        const compundId = `${idPage}:${who}`;
+        await MyStore.createById(AUTH_TYPE, compundId, {
+            act: AHORA,
+            cre: AHORA,
+            rsc: idPage,
+            who: who,
+            auth: auth,
+            role: role,
+        });
+    }
     static async save(req, res) {
-        const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
+        const AHORA = MyDatesBack.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se lee el id del recurso}
         const idResource = req.params['pageId'];
         const lista = General.readParam(req, "lista");
@@ -123,10 +140,60 @@ export class AuthorizationSrv {
         });
     }
 
+    static hasPagePermisions(listaOr) {
+        return async (req, res, next) => {
+            if (listaOr.length == 0) {
+                next();
+                return;
+            }
+            const pageId = req.params['pageId'];
+            let permisions = [];
+            if (res.locals.permisions instanceof Array) {
+                permisions = res.locals.permisions;
+            } else {
+                if (pageId) {
+                    // Hay página
+                    if (res.locals.user) {
+                        // Hay usuario
+                        permisions = await AuthorizationSrv.getPermisions(pageId, res.locals.user.metadatos.email);
+                    } else {
+                        // No hay usuario
+                        permisions = await AuthorizationSrv.getPermisions(pageId, null);
+                    }
+                }
+                res.locals.permisions = permisions;
+            }
+
+            let cumpleOr = false;
+            for (let i = 0; i < listaOr.length; i++) {
+                const listaAnd = listaOr[i];
+                let cumpleAnd = true;
+                for (let j = 0; j < listaAnd.length; j++) {
+                    const unPermiso = listaAnd[j];
+                    cumpleAnd = cumpleAnd && (permisions.indexOf(unPermiso) >= 0);
+                }
+                cumpleOr = cumpleOr || cumpleAnd;
+                if (cumpleOr) {
+                    break;
+                }
+            }
+            if (cumpleOr) {
+                next();
+            } else {
+                res.status(403).send({ message: "El usuario no puede hacer esa acción" });
+            }
+        }
+    }
+
     static async getPermisions(idResource, who) {
+        const listaIds = [];
         const llavePublica = `${idResource}:`;
+        listaIds.push(llavePublica);
         const llavePersonal = `${idResource}:${who}`;
-        const resultado = await MyStore.readByIds(AUTH_TYPE, [llavePublica, llavePersonal]);
+        if (who) {
+            listaIds.push(llavePersonal);
+        }
+        const resultado = await MyStore.readByIds(AUTH_TYPE, listaIds);
         let respuesta = [];
         if (llavePublica in resultado) {
             respuesta = resultado[llavePublica].auth;

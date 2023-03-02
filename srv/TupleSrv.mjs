@@ -1,7 +1,7 @@
 import { MyStore } from "./common/MyStore.mjs";
 import { MalaPeticionException, NoExisteException } from "./MyError.mjs";
 import { General } from "./common/General.mjs";
-import { MyDates } from "../srcJs/MyDates.js";
+import MyDatesBack from "../srcJs/MyDatesBack.mjs";
 
 const TUPLE_TYPE = "tuple";
 const TUPLE_TEMP_TYPE = "tuple-temp";
@@ -17,7 +17,7 @@ const MAX_READ_SIZE = 30;
 */
 export class TupleSrv {
     static async read(req, res, next) {
-        const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
+        const AHORA = MyDatesBack.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id, offset, max
         const pageId = req.params['pageId'];
         const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
@@ -41,7 +41,7 @@ export class TupleSrv {
     }
     static async save(req, res, next) {
         const token = res.locals.token;
-        const AHORA = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
+        const AHORA = MyDatesBack.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id y body
         const pageId = req.params['pageId'];
         const live = General.readParam(req, "live");

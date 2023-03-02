@@ -151,73 +151,70 @@ export class AuthorizationpopupComponent implements OnInit {
     permiso.version = 1;
   }
 
-  static getPermisionsByRole(role: string): Array<string> {
-    const roles = MyConstants.ROLES;
-    for (let i = 0; i < roles.length; i++) {
-      const rol = roles[i];
-      if (rol.id == role) {
-        return rol.auth;
-      }
-    }
-    return [];
-  }
-
   async guardar() {
-    const value = this.form.value;
+    console.log('guardar');
+    try {
+      console.log('1');
+      const value = this.form.value;
 
-    const data: { id: string; lista: Array<PermisionData> } = {
-      id: this.pageId,
-      lista: [],
-    };
-
-    const publicrole: string | null | undefined = value?.formPublic?.publicrole;
-    if (
-      typeof publicrole == 'string' &&
-      publicrole.length > 0 &&
-      this.permisoPublicoInicial != publicrole
-    ) {
-      data.lista.push({
-        who: '',
-        auth: AuthorizationpopupComponent.getPermisionsByRole(publicrole),
-        role: publicrole,
-      });
-    }
-
-    const permisos = this.permisos;
-    for (let i = 0; i < permisos.length; i++) {
-      const permiso = permisos[i];
-      if (permiso.version > 0) {
-        const arregloFormulario = value.formArrayName;
-        const theRole = arregloFormulario[i].role;
+      const data: { id: string; lista: Array<PermisionData> } = {
+        id: this.pageId,
+        lista: [],
+      };
+      console.log('2');
+      const publicrole: string | null | undefined =
+        value?.formPublic?.publicrole;
+      if (
+        typeof publicrole == 'string' &&
+        publicrole.length > 0 &&
+        this.permisoPublicoInicial != publicrole
+      ) {
         data.lista.push({
-          who: permiso.who,
-          auth: AuthorizationpopupComponent.getPermisionsByRole(theRole),
-          role: theRole,
+          who: '',
+          auth: MyConstants.getAuthByRole(publicrole),
+          role: publicrole,
         });
       }
-    }
-
-    // Agrego los que se deben borrar
-    for (let i = 0; i < this.pendientesBorrar.length; i++) {
-      const pendiente = this.pendientesBorrar[i];
-      data.lista.push({
-        who: pendiente.who,
-        auth: [],
-        erase: true,
-        role: '',
-      });
-    }
-
-    //console.log(JSON.stringify(data, null, 4));
-    if (data.lista.length == 0) {
-      this.dialogRef.close();
-    } else {
-      try {
-        await this.authSrv.save(data);
-        this.modalSrv.alert({ tit: 'Ok!', txt: 'Guardado correctamente' });
+      console.log('3');
+      const permisos = this.permisos;
+      for (let i = 0; i < permisos.length; i++) {
+        const permiso = permisos[i];
+        if (permiso.version > 0) {
+          const arregloFormulario = value.formArrayName;
+          const theRole = arregloFormulario[i].role;
+          data.lista.push({
+            who: permiso.who,
+            auth: MyConstants.getAuthByRole(theRole),
+            role: theRole,
+          });
+        }
+      }
+      console.log('4');
+      // Agrego los que se deben borrar
+      for (let i = 0; i < this.pendientesBorrar.length; i++) {
+        const pendiente = this.pendientesBorrar[i];
+        data.lista.push({
+          who: pendiente.who,
+          auth: [],
+          erase: true,
+          role: '',
+        });
+      }
+      console.log('5');
+      //console.log(JSON.stringify(data, null, 4));
+      if (data.lista.length == 0) {
         this.dialogRef.close();
-        this.pendientesBorrar = [];
-      } catch (err) {}
+      } else {
+        try {
+          await this.authSrv.save(data);
+          this.modalSrv.alert({ tit: 'Ok!', txt: 'Guardado correctamente' });
+          this.dialogRef.close();
+          this.pendientesBorrar = [];
+        } catch (err) {}
+      }
+      console.log('6');
+    } catch (err: any) {
+      this.modalSrv.alert({ tit: 'Ups', txt: err.message });
     }
   }
 }

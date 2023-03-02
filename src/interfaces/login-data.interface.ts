@@ -33,6 +33,7 @@ export interface CardComponentMenuData {
   icono: string;
   texto: string;
   action: Function;
+  onlyOwner?: boolean;
 }
 
 export interface CardComponentData {
@@ -44,4 +45,8 @@ export interface CardComponentData {
   menu?: Array<CardComponentMenuData>;
   bigColumn?: number;
   profile?: string;
+  act?: number;
+  usr?: string;
+  owner?: boolean;
+  id?: string;
 }

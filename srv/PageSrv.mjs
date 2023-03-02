@@ -4,11 +4,28 @@ import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
 import { Utilidades } from "./common/Utilidades.mjs";
 import { MalaPeticionException, NoExisteException } from "./MyError.mjs";
+import { AuthorizationSrv } from "./AuthorizationSrv.mjs";
+import { MyConstants } from "../srcJs/MyConstants.js";
 
 const PAGE_TYPE = "page";
+const PAGE_DELETE_TYPE = "page-delete";
 const MAX_READ_SIZE = 30;
 
 export class PageSrv {
+    static async deletePage(req, res, next) {
+        let respuesta = {};
+        const pageId = req.params['pageId'];
+        const ahora = new Date().getTime();
+        // Crear una entidad como evidencia de que el borrado está en proceso
+        await MyStore.createById(PAGE_DELETE_TYPE, pageId, {
+            state: 0,
+            created: ahora,
+            updated: ahora,
+        });
+        // Se borra la página como tal
+        await MyStore.deleteById(PAGE_TYPE, pageId);
+        res.status(200).send(respuesta);
+    }
     static async savePage(req, res, next) {
         let respuesta = {};
         const pageId = req.params['pageId'];
@@ -42,22 +59,11 @@ export class PageSrv {
         res.status(200).send(respuesta);
     }
     static async createNewPage(req, res, next) {
-        const AHORA = new Date().getTime() / 1000;
         const user = res.locals.user;
         const elpath = Utilidades.leerRefererPath(req);
         const partes = MyRoutes.splitPageData(elpath);
         const elUsuario = user.metadatos.email;
-        const nueva = {
-            usr: elUsuario,
-            path: partes.pageType,
-            date: AHORA,
-            act: AHORA,
-            tit: "Título",
-            desc: "Descripción",
-            img: "",
-            kw: "",
-        };
-        await MyStore.create(PAGE_TYPE, nueva);
+        const nueva = await PageSrv.commonCreateNewPage(elUsuario, partes.pageType);
         res.status(200).send(nueva);
     }
     static async getCurrentPage(req, res, next) {
@@ -66,6 +72,29 @@ export class PageSrv {
         const partes = MyRoutes.splitPageData(elpath);
         const respuesta = await PageSrv.loadCurrentPage(partes.pageType, partes.pageId, user);
         res.status(200).send(respuesta);
+    }
+    static async commonCreateNewPage(elUsuario, pageType) {
+        const AHORA = new Date().getTime() / 1000;
+        const nueva = {
+            usr: elUsuario,
+            path: pageType,
+            date: AHORA,
+            act: AHORA,
+            tit: "Título",
+            desc: "Descripción",
+            img: MyConstants.getDefaultPageImage(pageType),
+            kw: "",
+        };
+        await MyStore.create(PAGE_TYPE, nueva);
+        // Se deben agregar los permisos
+        const promesasPermisos = [];
+        promesasPermisos.push(AuthorizationSrv.createPagePermision("owner", nueva.id, elUsuario));
+        const publicRole = MyConstants.getDefaultPublicPageRole();
+        if (publicRole != "none") {
+            promesasPermisos.push(AuthorizationSrv.createPagePermision(publicRole, nueva.id));
+        }
+        await Promise.all(promesasPermisos);
+        return nueva;
     }
     static async loadCurrentPage(pageType, pageId, usuario = null) {
         const AHORA = new Date().getTime() / 1000;
@@ -94,17 +123,7 @@ export class PageSrv {
                     return response[0];
                 } else {
                     // Si no existe lo crea y devuelve el valor por defecto
-                    const nueva = {
-                        usr: elUsuario,
-                        path: pageType,
-                        date: AHORA,
-                        act: AHORA,
-                        tit: "Título",
-                        desc: "Descripción",
-                        img: "",
-                        kw: "",
-                    };
-                    await MyStore.create(PAGE_TYPE, nueva);
+                    const nueva = await PageSrv.commonCreateNewPage(elUsuario, pageType);
                     return nueva;
                 }
             }

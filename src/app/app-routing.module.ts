@@ -13,47 +13,43 @@ const routes: Routes = [
   {
     path: '',
     loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
-    //canActivate: [AuthGuard],
-    //data: { authGuardPipe: redirectLoggedInToHome },
-  },
-  {
-    path: 'customers',
-    loadChildren: () =>
-      import('./customers/customers.module').then((m) => m.CustomersModule),
-    //canActivate: [AuthGuard],
-    //data: { authGuardPipe: redirectUnauthorizedToLogin },
-  },
-  {
-    path: 'customers/:id',
-    loadChildren: () =>
-      import('./customers/customers.module').then((m) => m.CustomersModule),
-    //canActivate: [AuthGuard],
-    //data: { authGuardPipe: redirectUnauthorizedToLogin },
-  },
-  {
-    path: 'callgame',
-    loadChildren: () =>
-      import('./callgame/callgame.module').then((m) => m.CallgameModule),
-  },
-  {
-    path: 'calendar',
-    loadChildren: () =>
-      import('./calendar/calendar.module').then((m) => m.CalendarModule),
-  },
-  {
-    path: 'cv',
-    loadChildren: () => import('./cv/cv.module').then((m) => m.CvModule),
-  },
-  {
-    path: 'cv/:id',
-    loadChildren: () => import('./cv/cv.module').then((m) => m.CvModule),
-  },
-  {
-    path: '**',
-    redirectTo: '',
-    pathMatch: 'full',
   },
 ];
+
+const PAGINAS = [
+  { id: 'cv', module: 'CvModule' },
+  { id: 'calendar', module: 'CalendarModule' },
+  { id: 'callgame', module: 'CallgameModule' },
+  { id: 'customers', module: 'CustomersModule' },
+];
+
+for (let i = 0; i < PAGINAS.length; i++) {
+  const actual = PAGINAS[i];
+  routes.push({
+    path: `${actual.id}`,
+    //canActivate: [AuthGuard],
+    //data: { authGuardPipe: redirectUnauthorizedToLogin },
+    loadChildren: () =>
+      import(`./${actual.id}/${actual.id}.module`).then(
+        (m) => m[actual.module]
+      ),
+  });
+  routes.push({
+    path: `${actual.id}/:id`,
+    //canActivate: [AuthGuard],
+    //data: { authGuardPipe: redirectUnauthorizedToLogin },
+    loadChildren: () =>
+      import(`./${actual.id}/${actual.id}.module`).then(
+        (m) => m[actual.module]
+      ),
+  });
+}
+
+routes.push({
+  path: '**',
+  redirectTo: '',
+  pathMatch: 'full',
+});
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],

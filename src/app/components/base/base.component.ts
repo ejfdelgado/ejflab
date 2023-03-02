@@ -62,7 +62,7 @@ export class BaseComponent implements OnInit, OnDestroy {
     this.setCurrentUser(respuestas[1]);
     this.loginSubscription = this.authService
       .getLoginEvent()
-      .subscribe((user: User) => {
+      .subscribe((user: User | null) => {
         this.setCurrentUser(user);
       });
     if (this.page && this.page.id) {

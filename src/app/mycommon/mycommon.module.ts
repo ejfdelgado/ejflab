@@ -7,6 +7,7 @@ import { StatusbarComponent } from './components/statusbar/statusbar.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { StreamingComponent } from './components/streaming/streaming.component';
+import { FechaCardPipe } from './pipes/fecha-card.pipe';
 
 @NgModule({
   declarations: [
@@ -14,6 +15,7 @@ import { StreamingComponent } from './components/streaming/streaming.component';
     ImagepickerComponent,
     StatusbarComponent,
     StreamingComponent,
+    FechaCardPipe,
   ],
   imports: [FontAwesomeModule, CommonModule, MatIconModule, MatMenuModule],
   exports: [

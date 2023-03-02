@@ -1,6 +1,6 @@
 
 import { ModuloDatoSeguro } from "../srcJs/ModuloDatoSeguro.js";
-import { MyDates } from "../srcJs/MyDates.js";
+import MyDatesBack from "../srcJs/MyDatesBack.mjs";
 import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
 
@@ -15,9 +15,9 @@ export class KeysSrv {
         manana.setDate(manana.getDate() + 1);
         const ayer = new Date(hoy.getTime());
         ayer.setDate(ayer.getDate() - 1);
-        const actual = MyDates.getDayAsContinuosNumber(hoy);
-        const siguiente = MyDates.getDayAsContinuosNumber(manana);
-        const anterior = MyDates.getDayAsContinuosNumber(ayer);
+        const actual = MyDatesBack.getDayAsContinuosNumber(hoy);
+        const siguiente = MyDatesBack.getDayAsContinuosNumber(manana);
+        const anterior = MyDatesBack.getDayAsContinuosNumber(ayer);
         return {
             actual,
             siguiente,
@@ -68,7 +68,7 @@ export class KeysSrv {
 
     static async cifrar(objeto, pageId) {
         const llavero = await KeysSrv.getOrGeneratePageKeys(pageId);
-        const actual = MyDates.getDayAsContinuosNumber(new Date());
+        const actual = MyDatesBack.getDayAsContinuosNumber(new Date());
         const pass = llavero[actual];
         const resultado = ModuloDatoSeguro.cifrar(objeto, pass);
         return resultado;

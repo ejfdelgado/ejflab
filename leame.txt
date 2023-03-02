@@ -37,7 +37,7 @@ ng generate component mycommon/components/imagepicker
 ng generate component mycommon/components/statusbar
 ng generate component mycommon/components/streaming
 
-ng generate pipe letras
+ng generate pipe mycommon/pipes/fechaCard
 
 https://angular.io/guide/lazy-loading-ngmodules
 

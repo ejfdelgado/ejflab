@@ -40,6 +40,13 @@
 .box .box_texto .box_titulo .solo_texto {
   cursor: pointer;
   flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.box .box_texto .box_titulo .solo_fecha {
+  font-size: 0.8em;
+  font-style: italic;
 }
 
 .menu_icon {

@@ -8,6 +8,9 @@ import {
   PageService,
 } from 'src/services/page.service';
 import { MyRoutes } from 'srcJs/MyRoutes';
+import { AuthService } from 'src/services/auth.service';
+import { User } from '@angular/fire/auth';
+import { ModalService } from 'src/services/modal.service';
 
 @Component({
   selector: 'app-multiplepages',
@@ -22,7 +25,12 @@ export class MultiplepagesComponent implements OnInit {
   iterador: PageIteratorData | null = null;
   onlyMyPages: boolean = true;
 
-  constructor(private fb: FormBuilder, private pageSrv: PageService) {
+  constructor(
+    private fb: FormBuilder,
+    private pageSrv: PageService,
+    private authSrv: AuthService,
+    private modalSrv: ModalService
+  ) {
     const crearNuevaPaginaThis = this.crearNuevaPagina.bind(this);
     this.cardInicial = {
       title: 'Crear nueva',
@@ -36,6 +44,9 @@ export class MultiplepagesComponent implements OnInit {
       busqueda: [''],
     });
     this.buscar();
+    this.authSrv.getLoginEvent().subscribe((user: User | null) => {
+      this.addOwnership(user);
+    });
   }
 
   get busqueda() {
@@ -54,8 +65,6 @@ export class MultiplepagesComponent implements OnInit {
     window.open(URL, '_self');
   }
 
-  borrarPagina() {}
-
   setOnlyMyPagesOn() {
     if (!this.onlyMyPages) {
       this.onlyMyPages = true;
@@ -69,11 +78,31 @@ export class MultiplepagesComponent implements OnInit {
     }
   }
 
-  actionMenuBorrar(item: any) {
-    console.log('Borrar' + JSON.stringify(item));
+  async actionMenuBorrar(item: CardComponentData) {
+    const response = await this.modalSrv.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    await this.pageSrv.delete(item);
+    const indice = this.paginas.indexOf(item);
+    if (indice >= 0) {
+      this.paginas.splice(indice, 1);
+    }
+  }
+
+  addOwnership(user: User | null) {
+    const idUserActual = user?.email;
+    for (let i = 0; i < this.paginas.length; i++) {
+      const actual = this.paginas[i];
+      actual.owner = idUserActual == actual.usr;
+    }
   }
 
   async buscar(iniciar = true) {
+    const promesaUser = this.authSrv.getCurrentUser();
     const busqueda = this.form.value.busqueda;
     if (iniciar || this.iterador == null) {
       if (this.onlyMyPages) {
@@ -92,6 +121,10 @@ export class MultiplepagesComponent implements OnInit {
         title: dato.tit,
         href: `${partes.pageType}/${dato.id}`,
         profile: '/assets/img/profile.jpeg',
+        act: dato.act,
+        usr: dato.usr,
+        id: dato.id,
+        owner: false,
       };
       fetch.push(nuevo);
     }
@@ -105,14 +138,24 @@ export class MultiplepagesComponent implements OnInit {
       const actual = fetch[i];
       actual.action = abrirEnPestaniaNuevaThis;
       actual.bigColumn = 0;
+      // iconos buscar en https://fonts.google.com/icons?icon.query=open&icon.platform=android
       actual.menu = [
+        {
+          action: abrirEnPestaniaNuevaThis,
+          texto: 'Abrir',
+          icono: 'open_in_new',
+          onlyOwner: false,
+        },
         {
           action: actionMenuBorrarThis,
           texto: 'Borrar',
           icono: 'close',
+          onlyOwner: true,
         },
       ];
       this.paginas.push(actual);
     }
+    const user = await promesaUser;
+    this.addOwnership(user);
   }
 }

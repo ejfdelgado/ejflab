@@ -257,4 +257,44 @@ export class HttpService {
       }
     }
   }
+  async delete<Type>(
+    path: string,
+    payload: any,
+    options?: HttpOptionsData
+  ): Promise<Type | null> {
+    let wait = null;
+    if (!options || options.showIndicator !== false) {
+      wait = this.indicatorSrv.start();
+    }
+    try {
+      const respuesta = await new Promise<Type | null>((resolve, reject) => {
+        this.http
+          .delete<Type>(`${MyConstants.SRV_ROOT}${path}`, payload)
+          .pipe(
+            catchError((error) => {
+              if (!options || options.showError !== false) {
+                if (error.error) {
+                  this.modalSrv.error(error.error);
+                } else {
+                  this.modalSrv.error(error);
+                }
+              }
+              reject(error);
+              return of(null);
+            })
+          )
+          .subscribe((data) => {
+            //console.log(data);
+            resolve(null);
+          });
+      });
+      return respuesta;
+    } catch (err) {
+      throw err;
+    } finally {
+      if (wait != null) {
+        wait.done();
+      }
+    }
+  }
 }

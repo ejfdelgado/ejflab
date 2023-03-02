@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ModalService } from 'src/services/modal.service';
 import { MyConstants } from 'srcJs/MyConstants';
+import { AuthorizationData } from '../authorizationpopup/authorizationpopup.component';
 
 @Component({
   selector: 'app-adduserrolepopup',
@@ -48,9 +49,10 @@ export class AdduserrolepopupComponent implements OnInit {
   }
 
   async guardar() {
-    const valores = {
+    const valores: AuthorizationData = {
       who: this.form.value.who,
       role: this.form.value.role,
+      version: 1,
     };
     if (this.form.valid) {
       this.dialogRef.close(valores);

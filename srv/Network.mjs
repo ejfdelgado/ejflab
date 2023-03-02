@@ -19,7 +19,7 @@ function stringify(circ) {
 function cors(req, res, next) {
     if (req.method == 'OPTIONS') {
         res.setHeader('Access-Control-Allow-Origin', '*');
-        res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT');
+        res.setHeader('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE');
         res.setHeader('Access-Control-Allow-Headers', '*');
         res.setHeader('Access-Control-Max-Age', '3600');
         res.status(204).send('');
