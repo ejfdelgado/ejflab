@@ -26,6 +26,7 @@ class MyConstants {
     ];
     
     static getDefaultPageImage(pageType) {
+        pageType = pageType.replace(/^\//, '');
         if (pageType in MyConstants.PAGE.defaults) {
             const actual = MyConstants.PAGE.defaults[pageType];
             if (actual.image) {
@@ -35,6 +36,7 @@ class MyConstants {
         return MyConstants.PAGE.DEFAULT_IMAGE;
     }
     static getDefaultPublicPageRole(pageType) {
+        pageType = pageType.replace(/^\//, '');
         if (pageType in MyConstants.PAGE.defaults) {
             const actual = MyConstants.PAGE.defaults[pageType];
             if (actual.publicRole) {

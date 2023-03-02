@@ -89,7 +89,7 @@ export class PageSrv {
         // Se deben agregar los permisos
         const promesasPermisos = [];
         promesasPermisos.push(AuthorizationSrv.createPagePermision("owner", nueva.id, elUsuario));
-        const publicRole = MyConstants.getDefaultPublicPageRole();
+        const publicRole = MyConstants.getDefaultPublicPageRole(pageType);
         if (publicRole != "none") {
             promesasPermisos.push(AuthorizationSrv.createPagePermision(publicRole, nueva.id));
         }

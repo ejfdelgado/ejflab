@@ -3,23 +3,26 @@ src/app/app.component.ts
 - Que las tuplas no intenten indefinidamente la escritura si es error de 403.
 - Crear tarea programada para borrar todo (pg/tuple/bucket/page-key/auth)
 
+- BUCKET:
 - Proteger las rutas usando permisos de manera transversal.
 - Se debe ofrecer un servicio para rescatar los archivos del bucket no publico protegido con permisos.
 - Usar bucket pg/cv/idPage/idUsuario/
 - los archivos de la página deben quedar en una ruta no publica
 
-- así como se actualiza el título de la página, actualizar el id en un meta tag del html, de fomra que sea accesible.
+- así como se actualiza el título de la página, actualizar el id en un meta tag del html, de fomra que sea accesible para después que se borra la página actual, hacer reload.
 - cifrar el json de firebase y mandarlo en el index.html
 - hacer lectura periódica de las llaves de la página, cifrar el firebase tuple-temp en vivo usando las llaves
 
 - Crear la representacion de DB de usuario
 - Fetch de la imagen de la persona logeada y agregarla al Card de Page.
 - Editar los datos del usuario
-- Streaming de audio wip
 
 - recuperar contraseña
-- login con cellphone
 - QR y short-url
+
+- login con cellphone
+
+- Streaming de audio wip
 
 - Apps:
  - Juego de buscar algo en el mapa del mundo.
