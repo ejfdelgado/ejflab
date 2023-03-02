@@ -35,7 +35,8 @@
               "srcJs/MyTuples",
               "srcJs/MyUtilities",
               "srcJs/IdGen",
-              "srcJs/ModuloDatoSeguroFront"
+              "srcJs/ModuloDatoSeguroFront",
+              "srcJs/MyDatesFront"
             ]
           },
           "configurations": {

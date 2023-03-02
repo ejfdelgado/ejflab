@@ -9,20 +9,21 @@ import { General } from "./common/General.mjs";
 const storage = new Storage();
 
 const defaultBucket = storage.bucket(MyConstants.BUCKET.PUBLIC);
+const privateBucket = storage.bucket(MyConstants.BUCKET.PRIVATE);
 
 export class MyFileService {
 
-    async setFilePublic(fileName) {
-        await defaultBucket
+    async setFilePublic(bucketRef, fileName) {
+        await bucketRef
             .file(fileName)
             .makePublic();
     }
 
-    static async deleteDonationFiles(keyName) {
+    static async deleteDonationFiles(bucketRef, keyName) {
         keyName = keyName.replace(/^.*storage.googleapis.com\/[^/]+\//ig, "");
         const keyNameXs = General.getSuffixPath(keyName, "_xs");
-        const file = defaultBucket.file(keyName);
-        const fileXs = defaultBucket.file(keyNameXs);
+        const file = bucketRef.file(keyName);
+        const fileXs = bucketRef.file(keyNameXs);
         const reporte = [];
         try {
             const detalle = { url: keyName };
@@ -39,17 +40,17 @@ export class MyFileService {
         return reporte;
     }
 
-    static async cloneFile(token, orig, dest) {
+    static async cloneFile(bucketRef, token, orig, dest) {
         const origPath = MyFileService.getKeyBucketPath(token, orig.folder, orig.filename, orig.type);
         const destPath = MyFileService.getKeyBucketPath(token, dest.folder, dest.filename, dest.type);
-        const origFile = defaultBucket.file(origPath);
-        const destFile = defaultBucket.file(destPath);
+        const origFile = bucketRef.file(origPath);
+        const destFile = bucketRef.file(destPath);
         const copyOptions = {};
         await origFile.copy(destFile, copyOptions);
         await destFile.makePublic();
     }
 
-    static async fetchUrl2Bucket(url, token, folder, filename, type) {
+    static async fetchUrl2Bucket(url, token, folder, filename, type, isPrivate = false) {
         const keyName = MyFileService.getKeyBucketPath(token, folder, filename, type);
         const options = { responseType: 'stream' };
         const response = await new Promise((resolve, reject) => {
@@ -58,10 +59,15 @@ export class MyFileService {
                 .catch(error => { reject(error) });
         });
         const stream = response.data;
-        const file = defaultBucket.file(keyName);
+        let file = defaultBucket.file(keyName);
+        let uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
+        if (isPrivate) {
+            file = privateBucket.file(keyName);
+            uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PRIVATE}/${keyName}`;
+        }
         await MyFileService.sendFile2Bucket(stream, file);
         await file.makePublic();
-        const uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
+
         return uri;
     }
 
@@ -121,48 +127,74 @@ export class MyFileService {
             folderType = req.headers.foldertype;
         }
 
+        let bucketRef = defaultBucket;
+        let bucketName = MyConstants.BUCKET.PUBLIC;
+        let isPublic = true;
+        if (req.headers.isprivate) {//es undefined si no se manda
+            bucketRef = privateBucket;
+            bucketName = MyConstants.BUCKET.PRIVATE;
+            isPublic = false;
+        }
+
+        let isplainfile = false;
+        if (req.headers.isplainfile) {//es undefined si no se manda
+            isplainfile = true;
+        }
+
         const keyName = MyFileService.getKeyBucketPath(
             token,
             req.headers.folder,
             req.headers.filename,
             folderType,
         );
-        const keyNameXs = General.getSuffixPath(keyName, "_xs");
+        const file = bucketRef.file(keyName);
 
-        const file = defaultBucket.file(keyName);
-        const fileXs = defaultBucket.file(keyNameXs);
+        if (isplainfile) {
+            // Treated as simple blob
+            const readClone1 = new ReadableStreamClone(req);
+            await MyFileService.sendFile2Bucket(readClone1, file);
+            if (isPublic) {
+                await file.makePublic();
+            }
+        } else {
+            // Treated as image with thumbnail
+            const keyNameXs = General.getSuffixPath(keyName, "_xs");
+            const fileXs = bucketRef.file(keyNameXs);
+            let sizeBig = 1024;
+            let sizeSmall = 256;
+            if (req.headers.sizebig) {
+                const numero = parseInt(req.headers.sizebig);
+                if (!isNaN(numero)) {
+                    sizeBig = numero;
+                }
+            }
+            if (req.headers.sizesmall) {
+                const numero = parseInt(req.headers.sizesmall);
+                if (!isNaN(numero)) {
+                    sizeSmall = numero;
+                }
+            }
+            const bigImage = sharp().resize(null, sizeBig).withMetadata().jpeg({ mozjpeg: true });
+            const smallImage = sharp().resize(null, sizeSmall).withMetadata().jpeg({ mozjpeg: true });
 
-        let sizeBig = 1024;
-        let sizeSmall = 256;
+            const readClone1 = new ReadableStreamClone(req);
+            const readClone2 = new ReadableStreamClone(req);
 
-        if (req.headers.sizebig) {
-            const numero = parseInt(req.headers.sizebig);
-            if (!isNaN(numero)) {
-                sizeBig = numero;
+            await Promise.all([
+                MyFileService.sendFile2Bucket(readClone1.pipe(bigImage), file),
+                MyFileService.sendFile2Bucket(readClone2.pipe(smallImage), fileXs)
+            ]);
+            if (isPublic) {
+                await Promise.all([
+                    file.makePublic(),
+                    fileXs.makePublic(),
+                ]);
             }
         }
-        if (req.headers.sizesmall) {
-            const numero = parseInt(req.headers.sizesmall);
-            if (!isNaN(numero)) {
-                sizeSmall = numero;
-            }
-        }
 
-        const bigImage = sharp().resize(null, sizeBig).withMetadata().jpeg({ mozjpeg: true });
-        const smallImage = sharp().resize(null, sizeSmall).withMetadata().jpeg({ mozjpeg: true });
-
-        const readClone1 = new ReadableStreamClone(req);
-        const readClone2 = new ReadableStreamClone(req);
-
-        await MyFileService.sendFile2Bucket(readClone1.pipe(bigImage), file);
-        await file.makePublic();
-
-        await MyFileService.sendFile2Bucket(readClone2.pipe(smallImage), fileXs);
-        await fileXs.makePublic();
-
-        res.locals.bucket = MyConstants.BUCKET.PUBLIC;
+        res.locals.bucket = bucketName;
         res.locals.key = `${keyName}`;
-        const uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
+        const uri = `${MyConstants.BUCKET.URL_BASE}/${bucketName}/${keyName}`;
         res.locals.uri = uri;
 
         next();

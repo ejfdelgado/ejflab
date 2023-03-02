@@ -4,6 +4,7 @@ class MyConstants {
     static BUCKET = {
         URL_BASE: "https://storage.googleapis.com",
         PUBLIC: `labs-pro-public`,
+        PRIVATE: `labs-pro-private`,
         MAX_MB: 5,
     }
     static PAGE = {

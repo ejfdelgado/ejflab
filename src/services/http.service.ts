@@ -131,6 +131,7 @@ export class HttpService {
       if (wait != null) {
         wait.done();
       }
+      throw err;
     }
   }
 

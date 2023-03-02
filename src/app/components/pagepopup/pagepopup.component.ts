@@ -101,7 +101,12 @@ export class PagepopupComponent implements OnInit {
           txt: 'Guardado correctamente',
         });
         this.dialogRef.close(false);
-      } catch (err) {}
+      } catch (err: any) {
+        this.modalSrv.alert({
+          title: 'Ups!',
+          txt: err.message,
+        });
+      }
     }
   }
 }
