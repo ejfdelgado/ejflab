@@ -152,16 +152,13 @@ export class AuthorizationpopupComponent implements OnInit {
   }
 
   async guardar() {
-    console.log('guardar');
     try {
-      console.log('1');
       const value = this.form.value;
 
       const data: { id: string; lista: Array<PermisionData> } = {
         id: this.pageId,
         lista: [],
       };
-      console.log('2');
       const publicrole: string | null | undefined =
         value?.formPublic?.publicrole;
       if (
@@ -175,7 +172,6 @@ export class AuthorizationpopupComponent implements OnInit {
           role: publicrole,
         });
       }
-      console.log('3');
       const permisos = this.permisos;
       for (let i = 0; i < permisos.length; i++) {
         const permiso = permisos[i];
@@ -189,7 +185,6 @@ export class AuthorizationpopupComponent implements OnInit {
           });
         }
       }
-      console.log('4');
       // Agrego los que se deben borrar
       for (let i = 0; i < this.pendientesBorrar.length; i++) {
         const pendiente = this.pendientesBorrar[i];
@@ -200,8 +195,6 @@ export class AuthorizationpopupComponent implements OnInit {
           role: '',
         });
       }
-      console.log('5');
-      //console.log(JSON.stringify(data, null, 4));
       if (data.lista.length == 0) {
         this.dialogRef.close();
       } else {
@@ -212,7 +205,6 @@ export class AuthorizationpopupComponent implements OnInit {
           this.pendientesBorrar = [];
         } catch (err) {}
       }
-      console.log('6');
     } catch (err: any) {
       this.modalSrv.alert({ tit: 'Ups', txt: err.message });
     }

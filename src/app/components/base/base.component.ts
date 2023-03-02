@@ -65,35 +65,36 @@ export class BaseComponent implements OnInit, OnDestroy {
       .subscribe((user: User | null) => {
         this.setCurrentUser(user);
       });
-    if (this.page && this.page.id) {
-      // Try to read tuples, should be optional
-      this.tupleServiceInstance = this.tupleService.getReader(this.page.id);
-      this.tupleServiceInstance.evento.subscribe((evento) => {
-        //console.log(JSON.stringify(evento));
-        if (evento.status == 'read_wip') {
-          // Show read indicator
-        } else if (evento.status == 'read_done') {
-          // Stop read indicator
-          this.tupleModel = evento.body;
-        } else if (evento.status == 'news') {
-          // Stop read indicator
-          this.tupleModel = evento.body;
-        } else if (evento.status == 'write_wip') {
-          // Show write indicator
-        } else if (evento.status == 'write_done') {
-          // Stop write indicator
-        }
-      });
-    }
-
-    /*
     this.route.params.subscribe((params) => {
+      let pageId = null;
       if ('id' in params) {
-        const id = params['id'];
-        console.log(`id = ${id}`);
+        pageId = params['id'];
+      } else {
+        if (this.page && this.page.id) {
+          pageId = this.page.id;
+        }
+      }
+      if (pageId) {
+        // Try to read tuples, should be optional
+        this.tupleServiceInstance = this.tupleService.getReader(pageId);
+        this.tupleServiceInstance.evento.subscribe((evento) => {
+          //console.log(JSON.stringify(evento));
+          if (evento.status == 'read_wip') {
+            // Show read indicator
+          } else if (evento.status == 'read_done') {
+            // Stop read indicator
+            this.tupleModel = evento.body;
+          } else if (evento.status == 'news') {
+            // Stop read indicator
+            this.tupleModel = evento.body;
+          } else if (evento.status == 'write_wip') {
+            // Show write indicator
+          } else if (evento.status == 'write_done') {
+            // Stop write indicator
+          }
+        });
       }
     });
-    */
   }
 
   ngOnDestroy() {

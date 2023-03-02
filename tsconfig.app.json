@@ -7,9 +7,13 @@
   },
   "files": [
     "src/main.ts",
-    "src/polyfills.ts"
+    "src/polyfills.ts",
   ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.d.ts",
+    "src/app/cv/*.ts",
+    "src/app/calendar/*.ts",
+    "src/app/callgame/*.ts",
+    "src/app/customers/*.ts",
   ]
 }

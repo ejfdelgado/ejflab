@@ -16,6 +16,9 @@ const routes: Routes = [
   },
 ];
 
+/*
+IMPORTANTE: Cuando agregue un módulo acá, debe modificar tsconfig.app.json
+*/
 const PAGINAS = [
   { id: 'cv', module: 'CvModule' },
   { id: 'calendar', module: 'CalendarModule' },
