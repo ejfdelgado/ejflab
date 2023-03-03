@@ -22,6 +22,8 @@ export class PagepopupComponent implements OnInit {
   imageOptions: ImagepickerOptionsData = {
     isEditable: true,
     isRounded: false,
+    useBackground: true,
+    defaultImage: MyConstants.PAGE.DEFAULT_IMAGE,
   };
   constructor(
     private dialogRef: MatDialogRef<PagepopupComponent>,
@@ -65,7 +67,7 @@ export class PagepopupComponent implements OnInit {
     this.changedImageValue = imagenBase64;
   }
 
-  getPageImage(): string {
+  getPageImage(): string | null {
     if (
       this.pageData &&
       typeof this.pageData.img == 'string' &&
@@ -73,7 +75,7 @@ export class PagepopupComponent implements OnInit {
     ) {
       return this.pageData.img + `?t=${this.ahora}`;
     }
-    return MyConstants.PAGE.DEFAULT_IMAGE;
+    return null;
   }
 
   getMaxLengthMessage(label: string, error: any | null): string {

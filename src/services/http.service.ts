@@ -7,6 +7,7 @@ import { IndicatorService, Wait } from './indicator.service';
 import { ModalService } from './modal.service';
 import { AuthService } from 'src/services/auth.service';
 import { Buffer } from 'buffer';
+import { FileSaveResponseData } from './file.service';
 
 const DEFAULT_PAGE_SIZE = 30;
 
@@ -35,9 +36,11 @@ function checkMaxFileSize(myBlob: Blob, MAX_MB: number) {
 export interface LoadFileData {
   folder?: string | null; // predeterminado es general
   fileName?: string | null; // overwrite the path and file name
-  sizeBig?: string | null; // 1024
-  sizeSmall?: string | null; //256
-  folderType?: string | null; //FIRST_YEAR_MONTH|FIRST_EMAIL|own
+  sizebig?: string | null; // 1024
+  sizesmall?: string | null; //256
+  foldertype?: string | null; //FIRST_YEAR_MONTH|FIRST_EMAIL|own
+  isprivate?: string | null;
+  isplainfile?: string | null;
 }
 
 @Injectable({
@@ -76,7 +79,7 @@ export class HttpService {
       }
       const blob = await b64toBlob(myFile);
       checkMaxFileSize(blob, MyConstants.BUCKET.MAX_MB);
-      const promesa = new Promise((resolve, reject) => {
+      const promesa = new Promise<FileSaveResponseData>((resolve, reject) => {
         const req = new XMLHttpRequest();
         req.open('POST', UPLOAD_URL, true);
         req.setRequestHeader('Authorization', `Bearer ${accessToken}`);
@@ -85,17 +88,22 @@ export class HttpService {
         } else {
           req.setRequestHeader('filename', `miarchivo.${extension}`);
         }
-        if (typeof loadOptions?.folder == 'string') {
-          req.setRequestHeader('folder', loadOptions.folder);
-        }
-        if (loadOptions?.sizeBig != null) {
-          req.setRequestHeader('sizebig', loadOptions.sizeBig);
-        }
-        if (loadOptions?.sizeSmall != null) {
-          req.setRequestHeader('sizesmall', loadOptions.sizeSmall);
-        }
-        if (loadOptions?.folderType != null) {
-          req.setRequestHeader('foldertype', loadOptions.folderType);
+        const HEADERS_PASS = [
+          'folder',
+          'sizebig',
+          'sizesmall',
+          'foldertype',
+          'isplainfile',
+          'isprivate',
+        ];
+        if (loadOptions) {
+          const temp: any = loadOptions;
+          for (let i = 0; i < HEADERS_PASS.length; i++) {
+            const header = HEADERS_PASS[i];
+            if (typeof temp[header] == 'string' || temp[header] != null) {
+              req.setRequestHeader(header, temp[header]);
+            }
+          }
         }
         req.setRequestHeader('extra', extraText);
         req.onload = (event) => {

@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { CardComponentData } from 'src/interfaces/login-data.interface';
 import { HttpService } from 'src/services/http.service';
 import { TupleService } from 'src/services/tuple.service';
+import { FileService } from 'src/services/file.service';
 
 @Component({
   selector: 'app-home',
@@ -27,9 +28,18 @@ export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     public override dialog: MatDialog,
     private readonly router: Router,
     private readonly httpSrv: HttpService,
-    public override tupleService: TupleService
+    public override tupleService: TupleService,
+    public override fileService: FileService
   ) {
-    super(route, pageService, cdr, authService, dialog, tupleService);
+    super(
+      route,
+      pageService,
+      cdr,
+      authService,
+      dialog,
+      tupleService,
+      fileService
+    );
   }
 
   navegar(ruta: string) {

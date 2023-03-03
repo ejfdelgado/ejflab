@@ -9,6 +9,7 @@ class MyConstants {
     }
     static PAGE = {
         DEFAULT_IMAGE: '/assets/img/defaultPage.jpg',
+        NO_IMAGE: '/assets/img/noimage.jpg',
         defaults: {
             cv: {
                 publicRole: "reader",

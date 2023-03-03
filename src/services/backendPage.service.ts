@@ -42,9 +42,9 @@ export class BackendPageService {
         {
           folder: 'page',
           fileName: `/${id}/front.jpg`,
-          folderType: 'own',
-          sizeBig: '512',
-          sizeSmall: '256',
+          foldertype: 'own',
+          sizebig: '512',
+          sizesmall: '256',
         }
       );
     } else {

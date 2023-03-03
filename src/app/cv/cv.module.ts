@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 import { CvRoutingModule } from './cv-routing.module';
 import { CvComponent } from './cv.component';
+import { MycommonModule } from '../mycommon/mycommon.module';
 
 
 @NgModule({
@@ -11,7 +12,8 @@ import { CvComponent } from './cv.component';
   ],
   imports: [
     CommonModule,
-    CvRoutingModule
+    CvRoutingModule,
+    MycommonModule,
   ]
 })
 export class CvModule { }

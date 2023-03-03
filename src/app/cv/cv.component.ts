@@ -3,10 +3,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
+import { FileService } from 'src/services/file.service';
 import { TupleService } from 'src/services/tuple.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
+import { MyConstants } from 'srcJs/MyConstants';
 import { BaseComponent } from '../components/base/base.component';
+import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
 
 @Component({
   selector: 'app-cv',
@@ -14,15 +17,44 @@ import { BaseComponent } from '../components/base/base.component';
   styleUrls: ['./cv.component.css'],
 })
 export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
+  imageOptions: ImagepickerOptionsData = {
+    isEditable: true,
+    isRounded: false,
+    useBackground: false,
+  };
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
     public override cdr: ChangeDetectorRef,
     public override authService: AuthService,
     public override dialog: MatDialog,
-    public override tupleService: TupleService
+    public override tupleService: TupleService,
+    public override fileService: FileService
   ) {
-    super(route, pageService, cdr, authService, dialog, tupleService);
+    super(
+      route,
+      pageService,
+      cdr,
+      authService,
+      dialog,
+      tupleService,
+      fileService
+    );
+  }
+
+  override onTupleReadDone() {
+    if (!this.tupleModel.image) {
+      this.tupleModel.image = MyConstants.PAGE.NO_IMAGE;
+    }
+  }
+
+  async changedImage(imagenBase64: string) {
+    const response = await super.saveFile({
+      image: imagenBase64,
+      fileName: 'imagen.jpg',
+    });
+    this.tupleModel.image = response.key + '?t=' + new Date().getTime();
+    super.saveTuple();
   }
 
   async setTime() {

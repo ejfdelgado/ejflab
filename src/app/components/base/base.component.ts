@@ -1,4 +1,10 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+} from '@angular/core';
 import { User } from '@angular/fire/auth';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -6,7 +12,13 @@ import { Subscription } from 'rxjs';
 import { PageData } from 'src/interfaces/login-data.interface';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
-import { TupleService, TupleServiceInstance } from 'src/services/tuple.service';
+import { FileSaveData, FileService } from 'src/services/file.service';
+import {
+  TupleData,
+  TupleService,
+  TupleServiceInstance,
+} from 'src/services/tuple.service';
+import { MyConstants } from 'srcJs/MyConstants';
 
 @Component({
   selector: 'app-base',
@@ -17,8 +29,9 @@ export class BaseComponent implements OnInit, OnDestroy {
   tupleModel: any | null = null;
   page: PageData | null = null;
   currentUser: User | null = null;
-  loginSubscription: Subscription;
-  pageSubscription: Subscription;
+  loginSubscription: Subscription | null = null;
+  pageSubscription: Subscription | null = null;
+  tupleSubscription: Subscription | null = null;
   tupleServiceInstance: TupleServiceInstance | null;
   constructor(
     public route: ActivatedRoute,
@@ -26,7 +39,8 @@ export class BaseComponent implements OnInit, OnDestroy {
     public cdr: ChangeDetectorRef,
     public authService: AuthService,
     public dialog: MatDialog,
-    public tupleService: TupleService
+    public tupleService: TupleService,
+    public fileService: FileService
   ) {}
 
   private setCurrentUser(user: User | null) {
@@ -45,6 +59,12 @@ export class BaseComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  public async saveFile(options: FileSaveData) {
+    const response = await this.fileService.save(options);
+    response.key = MyConstants.SRV_ROOT + response.key;
+    return response;
   }
 
   public saveTuple() {
@@ -82,25 +102,33 @@ export class BaseComponent implements OnInit, OnDestroy {
       if (pageId) {
         // Try to read tuples, should be optional
         this.tupleServiceInstance = this.tupleService.getReader(pageId);
-        this.tupleServiceInstance.evento.subscribe((evento) => {
-          //console.log(JSON.stringify(evento));
-          if (evento.status == 'read_wip') {
-            // Show read indicator
-          } else if (evento.status == 'read_done') {
-            // Stop read indicator
-            this.tupleModel = evento.body;
-          } else if (evento.status == 'news') {
-            // Stop read indicator
-            this.tupleModel = evento.body;
-          } else if (evento.status == 'write_wip') {
-            // Show write indicator
-          } else if (evento.status == 'write_done') {
-            // Stop write indicator
+        this.tupleSubscription = this.tupleServiceInstance.evento.subscribe(
+          (evento) => {
+            //console.log(JSON.stringify(evento));
+            if (evento.status == 'read_wip') {
+              // Show read indicator
+            } else if (evento.status == 'read_done') {
+              // Stop read indicator
+              this.tupleModel = evento.body;
+              this.onTupleReadDone();
+            } else if (evento.status == 'news') {
+              // Stop read indicator
+              this.tupleModel = evento.body;
+            } else if (evento.status == 'write_wip') {
+              // Show write indicator
+            } else if (evento.status == 'write_done') {
+              // Stop write indicator
+              this.onTupleWriteDone();
+            }
           }
-        });
+        );
       }
     });
   }
+
+  onTupleReadDone() {}
+
+  onTupleWriteDone() {}
 
   ngOnDestroy() {
     if (this.loginSubscription) {
@@ -108,6 +136,9 @@ export class BaseComponent implements OnInit, OnDestroy {
     }
     if (this.pageSubscription) {
       this.pageSubscription.unsubscribe();
+    }
+    if (this.tupleSubscription) {
+      this.tupleSubscription.unsubscribe();
     }
   }
 }

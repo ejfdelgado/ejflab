@@ -3,6 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
+import { FileService } from 'src/services/file.service';
 import { TupleService } from 'src/services/tuple.service';
 import { BaseComponent } from '../components/base/base.component';
 
@@ -21,9 +22,18 @@ export class CustomersComponent
     public override cdr: ChangeDetectorRef,
     public override authService: AuthService,
     public override dialog: MatDialog,
-    public override tupleService: TupleService
+    public override tupleService: TupleService,
+    public override fileService: FileService
   ) {
-    super(route, pageService, cdr, authService, dialog, tupleService);
+    super(
+      route,
+      pageService,
+      cdr,
+      authService,
+      dialog,
+      tupleService,
+      fileService
+    );
   }
 
   override async ngOnInit() {

@@ -1,2 +1,7 @@
 <pre>{{ tupleModel | json }}</pre>
 <button (click)="setTime()">Catch Time</button>
+
+<div style="width: 500px; height: 500px;">
+    <app-imagepicker [options]="imageOptions" (changedImage)="changedImage($event)" [url]="tupleModel?.image">
+    </app-imagepicker>
+</div>

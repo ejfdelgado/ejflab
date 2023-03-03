@@ -18,10 +18,13 @@ import {
   Subscription,
   switchMap,
 } from 'rxjs';
+import { MyConstants } from 'srcJs/MyConstants';
 
 export interface ImagepickerOptionsData {
   isRounded?: boolean;
   isEditable?: boolean;
+  useBackground?: boolean;
+  defaultImage?: string;
 }
 
 @Component({
@@ -31,9 +34,9 @@ export interface ImagepickerOptionsData {
 })
 export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
   @Input() options: ImagepickerOptionsData;
-  @Input() url: string;
+  @Input() url: string | null;
   @Output() changedImage = new EventEmitter<string>();
-  private src$: BehaviorSubject<string> | null = null;
+  private src$: BehaviorSubject<string | null> | null = null;
   background: SafeUrl | null = null;
   private backgroundSubscription: Subscription | null = null;
   dataUrl$: Observable<SafeUrl> | null = null;
@@ -54,12 +57,16 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
     if (changes.url) {
       if (typeof changes.url.currentValue == 'string') {
         if (this.src$ == null) {
-          this.src$ = new BehaviorSubject<string>(this.url);
+          this.src$ = new BehaviorSubject<string | null>(this.url);
           this.dataUrl$ = this.src$.pipe(
             switchMap((url) => this.loadImage(url))
           );
           this.backgroundSubscription = this.dataUrl$.subscribe((url) => {
-            this.background = url;
+            if (this.options.useBackground) {
+              this.background = url;
+            } else {
+              this.background = null;
+            }
           });
         }
       }
@@ -78,29 +85,39 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
         this.src$.next(event.target.result);
       }
     });
-    reader.readAsDataURL(file);
+    if (file instanceof Blob) {
+      reader.readAsDataURL(file);
+    }
   }
 
-  private loadImage(url: string): Observable<SafeUrl> {
-    if (
-      /^https?:\/\/storage\.googleapis\.com/i.exec(url) != null ||
-      /^data:image/i.exec(url) != null
-    ) {
-      return of(url);
+  private loadImage(url: string | null): Observable<SafeUrl> {
+    if (url == null) {
+      if (typeof this.options.defaultImage == 'string') {
+        return of(this.options.defaultImage);
+      } else {
+        return of(MyConstants.PAGE.NO_IMAGE);
+      }
     } else {
-      return (
-        this.httpClient
-          // load the image as a blob
-          .get(url, { responseType: 'blob' })
-          // create an object url of that blob that we can use in the src attribute
-          .pipe(
-            map((e) => {
-              return this.domSanitizer.bypassSecurityTrustUrl(
-                URL.createObjectURL(e)
-              );
-            })
-          )
-      );
+      if (
+        /^https?:\/\/storage\.googleapis\.com/i.exec(url) != null ||
+        /^data:image/i.exec(url) != null
+      ) {
+        return of(url);
+      } else {
+        return (
+          this.httpClient
+            // load the image as a blob
+            .get(url, { responseType: 'blob' })
+            // create an object url of that blob that we can use in the src attribute
+            .pipe(
+              map((e) => {
+                return this.domSanitizer.bypassSecurityTrustUrl(
+                  URL.createObjectURL(e)
+                );
+              })
+            )
+        );
+      }
     }
   }
 }

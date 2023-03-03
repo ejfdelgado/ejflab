@@ -89,10 +89,87 @@ export class MyFileService {
         } else if (type == "FIRST_EMAIL") {
             keyName = `${folder}/${token.email}/${mp.year}/${mp.month}/${mp.day}/${mp.hours}/${mp.minutes}/${mp.seconds}/${mp.millis}/${fileName}`;
         } else {
-            keyName = `${folder}/${token.email}${fileName}`;
+            keyName = `${folder}/${token.email}/${fileName}`;
         }
         keyName = keyName.replace(/[\/]{2,}/g, "/");
         return keyName;
+    }
+
+    static async readBinary(bucket, filePath) {
+        filePath = filePath.replace(/^[/]/, "");
+        const file = bucket.file(filePath);
+        const contents = (await file.download())[0];
+        return contents;
+    }
+
+    static async readString(filePath, encoding = "utf8") {
+        const respuesta = await StorageHandler.readBinary(bucket, filePath);
+        if (respuesta != null) {
+            return respuesta.toString(encoding);
+        }
+        return null;
+    }
+
+    static async readFile(req, res, next) {
+        const downloadFlag = req.query ? req.query.download : false;
+        const encoding = req.query ? req.query.encoding : null;
+        const rta = await MyFileService.read(req.originalUrl, encoding);
+        res.writeHead(200, {
+            "Content-Type": rta.metadata.contentType,
+            "Content-disposition":
+                downloadFlag != undefined
+                    ? "attachment;filename=" + rta.metadata.filename
+                    : "inline",
+        });
+        res.end(rta.data);
+    }
+
+    /**
+    * @param encoding ascii, utf8 or null
+    */
+    static async read(originalUrl, encoding = null) {
+        const filePath = originalUrl.replace(/^\//, "").replace(/\?.*$/, "");
+        const fileName = /[^/]+$/.exec(filePath)[0];
+        const bucket = privateBucket;
+        const file = bucket.file(filePath);
+        const metadataPromise = file.getMetadata();
+        let contentPromise;
+        if (encoding == null) {
+            contentPromise = MyFileService.readBinary(bucket, filePath);
+        } else {
+            contentPromise = MyFileService.readString(bucket, filePath, encoding);
+        }
+        return new Promise((resolve, reject) => {
+            Promise.all([metadataPromise, contentPromise]).then(
+                function (respuesta) {
+                    const metadata = respuesta[0][0];
+                    metadata.filename = fileName;
+                    metadata.fullPath = originalUrl;
+                    const content = respuesta[1];
+                    resolve({
+                        metadata: metadata,
+                        data: content,
+                    });
+                },
+                function (err) {
+                    metadataPromise
+                        .then(() => {
+                            reject(err);
+                        })
+                        .catch((error) => {
+                            if (error.code == 404) {
+                                resolve(null);
+                            } else {
+                                reject(err);
+                            }
+                        });
+                }
+            );
+        });
+    }
+
+    static async uploadFileResponse(req, res, next) {
+        res.status(200).send({ uri: res.locals.uri, key: res.locals.key, bucket: res.locals.bucket });
     }
 
     static async uploadFile(req, res, next) {
@@ -198,6 +275,5 @@ export class MyFileService {
         res.locals.uri = uri;
 
         next();
-        //res.status(200).send({ headers: req.headers, uri: res.locals.uri, key: res.locals.key, bucket: res.locals.bucket });
     }
 }
