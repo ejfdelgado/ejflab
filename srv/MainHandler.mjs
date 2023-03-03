@@ -28,6 +28,7 @@ export class MainHandler {
             const replaces = await PageSrv.loadCurrentPage(partes.pageType, partes.pageId);
             const firebaseJson = await MainHandler.resolveLocalFileSingle("./llaves/firebase.pro.json", "utf8", path.resolve());
             // Acá se debe inyectar el password y el json se lee de local y se cifra
+            replaces.time = "" + new Date().getTime();
             replaces.pass = ModuloDatoSeguro.generateKey();
             replaces.firebase = ModuloDatoSeguro.cifrar(JSON.parse(firebaseJson), replaces.pass);
             MainReplacer.replace(rta, replaces, theUrl);

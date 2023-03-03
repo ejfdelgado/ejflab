@@ -11,6 +11,7 @@ import { MyRoutes } from 'srcJs/MyRoutes';
 import { AuthService } from 'src/services/auth.service';
 import { User } from '@angular/fire/auth';
 import { ModalService } from 'src/services/modal.service';
+import { Clipboard } from '@angular/cdk/clipboard';
 
 @Component({
   selector: 'app-multiplepages',
@@ -29,7 +30,8 @@ export class MultiplepagesComponent implements OnInit {
     private fb: FormBuilder,
     private pageSrv: PageService,
     private authSrv: AuthService,
-    private modalSrv: ModalService
+    private modalSrv: ModalService,
+    private clipboard: Clipboard
   ) {
     const crearNuevaPaginaThis = this.crearNuevaPagina.bind(this);
     this.cardInicial = {
@@ -56,6 +58,12 @@ export class MultiplepagesComponent implements OnInit {
   abrirEnPestaniaNueva(data: CardComponentData) {
     const URL = `${location.origin}${data.href}`;
     window.open(URL, '_blank');
+  }
+
+  copiarUrlPortapapeles(data: CardComponentData) {
+    const URL = `${location.origin}${data.href}`;
+    this.clipboard.copy(URL);
+    this.modalSrv.alert({ title: 'Ok!', txt: 'Enlace copiado' });
   }
 
   async crearNuevaPagina() {
@@ -135,22 +143,28 @@ export class MultiplepagesComponent implements OnInit {
       };
       fetch.push(nuevo);
     }
-    const abrirEnPestaniaNuevaThis = this.abrirEnPestaniaNueva.bind(this);
     const actionMenuBorrarThis = this.actionMenuBorrar.bind(this);
+    const copiarUrlPortapapelesThis = this.copiarUrlPortapapeles.bind(this);
 
     if (iniciar) {
       this.paginas.splice(0, this.paginas.length);
     }
     for (let i = 0; i < fetch.length; i++) {
       const actual = fetch[i];
-      actual.action = abrirEnPestaniaNuevaThis;
+      actual.action = this.abrirEnPestaniaNueva;
       actual.bigColumn = 0;
       // iconos buscar en https://fonts.google.com/icons?icon.query=open&icon.platform=android
       actual.menu = [
         {
-          action: abrirEnPestaniaNuevaThis,
+          action: this.abrirEnPestaniaNueva,
           texto: 'Abrir',
           icono: 'open_in_new',
+          onlyOwner: false,
+        },
+        {
+          action: copiarUrlPortapapelesThis,
+          texto: 'Copiar enlace',
+          icono: 'share',
           onlyOwner: false,
         },
         {

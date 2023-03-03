@@ -2,6 +2,7 @@ import { MyStore } from "./common/MyStore.mjs";
 import { MalaPeticionException, NoExisteException } from "./MyError.mjs";
 import { General } from "./common/General.mjs";
 import MyDatesBack from "../srcJs/MyDatesBack.mjs";
+import { KeysSrv } from "./KeysSrv.mjs";
 
 const TUPLE_TYPE = "tuple";
 const TUPLE_TEMP_TYPE = "tuple-temp";
@@ -45,6 +46,7 @@ export class TupleSrv {
         // Se debe leer el parametro id y body
         const pageId = req.params['pageId'];
         const live = General.readParam(req, "live");
+        const secret = General.readParam(req, "secret");
         const body = General.readParam(req, "body", undefined);
 
         if (!pageId) {
@@ -91,7 +93,13 @@ export class TupleSrv {
 
         // Place the live changes
         if (live == "1") {
-            const nuevo = { pg: pageId, body, who: token.uid, t: AHORA };
+            let nuevo = {};
+            if (secret == "1") {
+                const cifrado = await KeysSrv.cifrar(body, pageId);
+                nuevo = { pg: pageId, cifrado, who: token.uid, t: AHORA };
+            } else {
+                nuevo = { pg: pageId, body, who: token.uid, t: AHORA };
+            }
             MyStore.createById(TUPLE_TEMP_TYPE, `${pageId}:${token.uid}`, nuevo, batch);
         }
 

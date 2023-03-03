@@ -47,12 +47,26 @@ export interface LoadFileData {
   providedIn: 'root',
 })
 export class HttpService {
+  timeDifference: number = 0;
   constructor(
     private http: HttpClient,
     private indicatorSrv: IndicatorService,
     private modalSrv: ModalService,
     private auth: AuthService
-  ) {}
+  ) {
+    // Se captura la fecha del html
+    const serverTime = document
+      .getElementById('meta_time')
+      ?.getAttribute('content');
+    if (typeof serverTime == 'string' && serverTime.length > 0) {
+      this.timeDifference = new Date().getTime() - parseInt(serverTime);
+      console.log(`this.timeDifference = ${this.timeDifference}`);
+    }
+  }
+
+  getServerTime() {
+    return new Date().getTime() - this.timeDifference;
+  }
 
   async postWithFile(
     myFile: string,

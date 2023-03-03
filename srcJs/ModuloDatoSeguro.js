@@ -40,6 +40,16 @@ class ModuloDatoSeguro {
     const desencriptado = AES.decrypt(texto, llave).toString(Utf8);
     return JSON.parse(desencriptado);
   }
+  static decifrarConListaDeLlaves = function (texto, llaves) {
+    for (let i = 0; i < llaves.length; i++) {
+      try {
+        const llave = llaves[i];
+        const temp = ModuloDatoSeguro.decifrar(texto, llave);
+        return temp;
+      } catch (err) { }
+    }
+    return undefined;
+  }
 }
 
 module.exports = {

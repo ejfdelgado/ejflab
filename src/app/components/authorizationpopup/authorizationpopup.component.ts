@@ -200,13 +200,13 @@ export class AuthorizationpopupComponent implements OnInit {
       } else {
         try {
           await this.authSrv.save(data);
-          this.modalSrv.alert({ tit: 'Ok!', txt: 'Guardado correctamente' });
+          this.modalSrv.alert({ title: 'Ok!', txt: 'Guardado correctamente' });
           this.dialogRef.close();
           this.pendientesBorrar = [];
         } catch (err) {}
       }
     } catch (err: any) {
-      this.modalSrv.alert({ tit: 'Ups', txt: err.message });
+      this.modalSrv.alert({ title: 'Ups', txt: err.message });
     }
   }
 }

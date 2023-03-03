@@ -13,10 +13,13 @@ import {
   DocumentData,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { BackendPageService } from './backendPage.service';
+import { ModuloDatoSeguro } from 'srcJs/ModuloDatoSeguro';
 
 export interface TupleTempData {
   pg: string;
   body?: any;
+  cifrado?: string;
   t: number;
   who: string;
 }
@@ -49,7 +52,8 @@ export class TupleServiceInstance {
     private id: string,
     private writer: Function,
     private httpService: HttpService,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private backendPageService: BackendPageService
   ) {
     this.myLiveChanges = {};
     this.evento = new EventEmitter<TupleData>();
@@ -80,24 +84,39 @@ export class TupleServiceInstance {
 
           let changes: Observable<DocumentData[]> = collectionData(consulta);
 
-          const secondSubscription = changes.subscribe((data: Array<any>) => {
-            if (data.length > 0) {
-              secondSubscription.unsubscribe();
-              for (let i = 0; i < data.length; i++) {
-                const actual: TupleTempData = data[i];
-                const llave = `${actual.t}-${actual.who}`;
-                if (!(llave in this.myLiveChanges)) {
-                  actual.body.t = actual.t;
-                  if (actual.t > maxTime) {
-                    maxTime = actual.t;
+          const secondSubscription = changes.subscribe(
+            async (data: Array<any>) => {
+              if (data.length > 0) {
+                let llaves = null;
+                secondSubscription.unsubscribe();
+                for (let i = 0; i < data.length; i++) {
+                  const actual: TupleTempData = data[i];
+                  const llave = `${actual.t}-${actual.who}`;
+                  if (!(llave in this.myLiveChanges)) {
+                    if (!actual.body) {
+                      // Se asume cifrado
+                      if (llaves == null) {
+                        llaves = await backendPageService.getPageKeys();
+                      }
+                      actual.body = ModuloDatoSeguro.decifrarConListaDeLlaves(
+                        actual.cifrado,
+                        llaves
+                      );
+                    }
+                    if (actual.body) {
+                      actual.body.t = actual.t;
+                      if (actual.t > maxTime) {
+                        maxTime = actual.t;
+                      }
+                      this.myLiveChanges[llave] = actual.body;
+                    }
                   }
-                  this.myLiveChanges[llave] = actual.body;
                 }
+                this.applyNewChanges();
+                checkNews(maxTime);
               }
-              this.applyNewChanges();
-              checkNews(maxTime);
             }
-          });
+          );
         };
         checkNews(evento.t);
       }
@@ -176,22 +195,30 @@ export class TupleService {
     private modalService: ModalService,
     private httpService: HttpService,
     public dialog: MatDialog,
-    private firestore: Firestore
+    private firestore: Firestore,
+    private backendPageService: BackendPageService
   ) {}
 
-  getReader(id: string): TupleServiceInstance {
-    const save = async (batch: any): Promise<any> => {
-      //console.log(`Guardando ${id} con ${batch} ...`);
+  getReader(pageId: string): TupleServiceInstance {
+    const writer = async (batch: any): Promise<any> => {
+      //console.log(`Guardando ${pageId} con ${batch} ...`);
       await this.httpService.post(
-        `srv/${id}/tup`,
+        `srv/${pageId}/tup`,
         {
           body: batch,
           live: '1',
+          secret: '1',
         },
         { showIndicator: false }
       );
-      //console.log(`Guardando ${id} con ${batch} ok`);
+      //console.log(`Guardando ${pageId} con ${batch} ok`);
     };
-    return new TupleServiceInstance(id, save, this.httpService, this.firestore);
+    return new TupleServiceInstance(
+      pageId,
+      writer,
+      this.httpService,
+      this.firestore,
+      this.backendPageService
+    );
   }
 }

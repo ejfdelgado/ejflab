@@ -204,7 +204,7 @@ class MyTuples {
                                 unBatch = crearBatch();
                                 const reintentos = () => {
                                     let backOffCount = START_BACKOFF;
-                                    return new Promise((resolve) => {
+                                    return new Promise((resolve, reject) => {
                                         const unIntento = () => {
                                             // Retry infinitelly with linear backoff
                                             const delay = backOffCount * BACK_OFF_MULTIPLIER;
@@ -214,8 +214,12 @@ class MyTuples {
                                                     const theResponse = await procesor(unBatch);
                                                     resolve(theResponse);
                                                 } catch (error) {
-                                                    backOffCount += 1;
-                                                    unIntento();
+                                                    if ([403].indexOf(error.status) < 0) {
+                                                        backOffCount += 1;
+                                                        unIntento();
+                                                    } else {
+                                                        reject(error);
+                                                    }
                                                 }
                                             }, delay);
                                         };
@@ -228,7 +232,11 @@ class MyTuples {
                             } while (unBatch.total > 0);
                         }
                     };
-                    await processAll();
+                    try {
+                        await processAll();
+                    } catch (err) {
+                        // do nothing
+                    }
                     isProcessing = false;
                     setActivityStatus(isProcessing);
                 }

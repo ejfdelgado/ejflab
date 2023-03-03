@@ -58,7 +58,7 @@ export class AdduserrolepopupComponent implements OnInit {
       this.dialogRef.close(valores);
     } else {
       this.modalSrv.alert({
-        tit: 'Ups...',
+        title: 'Ups...',
         txt: 'Verifica tus datos antes de continuar.',
       });
     }

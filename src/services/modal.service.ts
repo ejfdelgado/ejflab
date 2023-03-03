@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AlertComponent } from 'src/app/components/alert/alert.component';
+import { AlertComponent, AlertData } from 'src/app/components/alert/alert.component';
 import { ConfirmComponent, ConfirmData } from 'src/app/components/confirm/confirm.component';
 
 @Injectable({
@@ -9,7 +9,7 @@ import { ConfirmComponent, ConfirmData } from 'src/app/components/confirm/confir
 export class ModalService {
   constructor(public dialog: MatDialog) {}
 
-  async alert(payload: any) {
+  async alert(payload: AlertData) {
     const dialogRef = this.dialog.open(AlertComponent, { data: payload });
     return new Promise((resolve) => {
       dialogRef.afterClosed().subscribe((result) => {

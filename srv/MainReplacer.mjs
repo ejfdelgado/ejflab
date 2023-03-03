@@ -49,6 +49,11 @@ export class MainReplacer {
                 new: `name="custom" content="${replaces.firebase}"`,
                 empty: typeof replaces.firebase != "string" || replaces.firebase.length == 0,
             },
+            {
+                old: /name="time"[\s]*content="[^"]*"/,
+                new: `name="time" content="${replaces.time}"`,
+                empty: typeof replaces.time != "string" || replaces.time.length == 0,
+            }
         ];
         if (
             rta != null &&

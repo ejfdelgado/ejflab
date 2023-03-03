@@ -59,6 +59,28 @@ class MyDates {
         masks.completo1 = 'ddd d mmm, yyyy h:MM TT';
         masks.completo2 = 'ddd d mmm h:MM TT';
     }
+    static getDates(epoch) {
+        let hoy;
+        if (typeof epoch == "number") {
+            hoy = new Date(epoch);
+        } else {
+            hoy = new Date();
+        }
+        const manana = new Date(hoy.getTime());
+        manana.setDate(manana.getDate() + 1);
+        const mananaInicio = new Date(manana.getUTCFullYear(), manana.getUTCMonth(), manana.getUTCDate());
+        const ayer = new Date(hoy.getTime());
+        ayer.setDate(ayer.getDate() - 1);
+        const actual = MyDates.getDayAsContinuosNumber(hoy);
+        const siguiente = MyDates.getDayAsContinuosNumber(manana);
+        const anterior = MyDates.getDayAsContinuosNumber(ayer);
+        return {
+            actual,
+            siguiente,
+            anterior,
+            deadline: (mananaInicio.getTime() - hoy.getTime()),
+        };
+    }
     static formatDateBasic(dateformat, now, ...args) {
         if (now instanceof Date) {
             if (new Date().getFullYear() == now.getFullYear()) {

@@ -1,6 +1,6 @@
 
+import { MyDates } from "../srcJs/MyDates.js";
 import { ModuloDatoSeguro } from "../srcJs/ModuloDatoSeguro.js";
-import MyDatesBack from "../srcJs/MyDatesBack.mjs";
 import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
 
@@ -8,30 +8,13 @@ const KEYS_TYPE = "page-key";
 const DEFAULT_KEY_SIZE = 10;
 
 export class KeysSrv {
-
-    static getDates() {
-        const hoy = new Date();
-        const manana = new Date(hoy.getTime());
-        manana.setDate(manana.getDate() + 1);
-        const ayer = new Date(hoy.getTime());
-        ayer.setDate(ayer.getDate() - 1);
-        const actual = MyDatesBack.getDayAsContinuosNumber(hoy);
-        const siguiente = MyDatesBack.getDayAsContinuosNumber(manana);
-        const anterior = MyDatesBack.getDayAsContinuosNumber(ayer);
-        return {
-            actual,
-            siguiente,
-            anterior,
-        };
-    }
-
     static async getOrGeneratePageKeys(pageId) {
         // Cada página debe tener algo como esto:
         const {
             actual,
             siguiente,
             anterior,
-        } = KeysSrv.getDates();
+        } = MyDates.getDates();
 
         // Busco el registro por pageId
         const response = await MyStore.readById(KEYS_TYPE, pageId);
@@ -68,7 +51,7 @@ export class KeysSrv {
 
     static async cifrar(objeto, pageId) {
         const llavero = await KeysSrv.getOrGeneratePageKeys(pageId);
-        const actual = MyDatesBack.getDayAsContinuosNumber(new Date());
+        const actual = MyDates.getDayAsContinuosNumber(new Date());
         const pass = llavero[actual];
         const resultado = ModuloDatoSeguro.cifrar(objeto, pass);
         return resultado;
@@ -80,7 +63,7 @@ export class KeysSrv {
             actual,
             siguiente,
             anterior,
-        } = KeysSrv.getDates();
+        } = MyDates.getDates();
         let resultado = undefined;
         const llaves = [];
         llaves.push(llavero[actual]);
