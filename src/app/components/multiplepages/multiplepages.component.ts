@@ -90,6 +90,13 @@ export class MultiplepagesComponent implements OnInit {
     const indice = this.paginas.indexOf(item);
     if (indice >= 0) {
       this.paginas.splice(indice, 1);
+      const currentPageId = document
+        .getElementById('meta_page_id')
+        ?.getAttribute('content');
+      if (currentPageId == item.id) {
+        // Force reload
+        location.reload();
+      }
     }
   }
 

@@ -55,6 +55,9 @@ class MyDates {
         masks.simple2 = 'ddd d mmm';
 
         masks.opcion3 = 'h:MM TT'
+
+        masks.completo1 = 'ddd d mmm, yyyy h:MM TT';
+        masks.completo2 = 'ddd d mmm h:MM TT';
     }
     static formatDateBasic(dateformat, now, ...args) {
         if (now instanceof Date) {
@@ -76,6 +79,17 @@ class MyDates {
             }
         } else {
             return "Día / Mes / Año";
+        }
+    }
+    static formatDateCompletoBasic(dateformat, now, ...args) {
+        if (now instanceof Date) {
+            if (new Date().getFullYear() == now.getFullYear()) {
+                return dateformat(now, "completo2");
+            } else {
+                return dateformat(now, "completo1");
+            }
+        } else {
+            return "Día / Mes / Año Hora:Minutos";
         }
     }
     static formatTimeBasic(dateformat, now, ...args) {

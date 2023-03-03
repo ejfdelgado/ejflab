@@ -38,6 +38,11 @@ export class BaseComponent implements OnInit, OnDestroy {
     if (page != null) {
       if (page.tit) {
         document.title = page.tit;
+        // document.getElementById('meta_page_id')?.getAttribute("content");
+        const metaPageId = document.getElementById('meta_page_id');
+        if (metaPageId && typeof page.id == 'string') {
+          metaPageId.setAttribute('content', page.id);
+        }
       }
     }
   }
