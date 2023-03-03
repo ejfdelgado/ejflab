@@ -39,8 +39,8 @@ export class FileService {
       {},
       options,
       {
-        folder: `srv/pg${pageType}/${idPage}/`,
-        fileName: payload.fileName,
+        folder: `srv/pg${pageType}/`,
+        fileName: `/${idPage}/${payload.fileName}`,
         foldertype: 'OWN',
         isplainfile: '1',
         isprivate: '1',

@@ -66,8 +66,7 @@ export class BaseComponent implements OnInit, OnDestroy {
   public async saveFile(options: FileSaveData) {
     try {
       const response = await this.fileService.save(options);
-      response.key =
-        MyConstants.SRV_ROOT + response.key + '?t=' + new Date().getTime();
+      response.key = response.key + '?t=' + new Date().getTime();
       return response;
     } catch (err: any) {
       this.modalService.error(err);

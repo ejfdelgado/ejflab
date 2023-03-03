@@ -25,6 +25,7 @@ export interface ImagepickerOptionsData {
   isEditable?: boolean;
   useBackground?: boolean;
   defaultImage?: string;
+  useRoot?: string;
 }
 
 @Component({
@@ -104,10 +105,14 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
       ) {
         return of(url);
       } else {
+        let theUrl = url;
+        if (typeof this.options.useRoot == 'string') {
+          theUrl = this.options.useRoot + url.replace(/^\/+/, '');
+        }
         return (
           this.httpClient
             // load the image as a blob
-            .get(url, { responseType: 'blob' })
+            .get(theUrl, { responseType: 'blob' })
             // create an object url of that blob that we can use in the src attribute
             .pipe(
               map((e) => {

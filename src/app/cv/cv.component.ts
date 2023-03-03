@@ -22,6 +22,7 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     isEditable: true,
     isRounded: false,
     useBackground: false,
+    useRoot: MyConstants.SRV_ROOT,
   };
   constructor(
     public override route: ActivatedRoute,
