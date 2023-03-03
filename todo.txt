@@ -1,7 +1,5 @@
 src/app/app.component.ts
 
-- BUCKET:
-- Hacer servicios de lecto escritura en bucket privado usando pg/cv/idPage/idUsuario/
 - Que las tuplas no intenten indefinidamente la escritura si es error de 403.
 - Que cuando se logea o desloguea se actualice el valor de las tuplas en la página.
 

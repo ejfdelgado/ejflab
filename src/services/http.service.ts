@@ -109,23 +109,14 @@ export class HttpService {
         req.onload = (event) => {
           const jsonResponse = JSON.parse(req.responseText);
           const status = req.status;
-          if ([428, 424].indexOf(status) >= 0) {
-            reject(status);
+          if (status >= 400 && status <= 599) {
+            reject(jsonResponse);
           } else {
-            if (status >= 400 && status <= 599) {
-              reject(new Error(jsonResponse));
-            } else {
-              resolve(jsonResponse);
-            }
+            resolve(jsonResponse);
           }
         };
         req.onerror = (e: ProgressEvent) => {
-          console.log(e);
-          if (!options || options.showError !== false) {
-            const error = new Error('Error guardando archivo');
-            this.modalSrv.error(error);
-          }
-          reject();
+          reject({ message: 'Error guardando archivo' });
         };
         req.send(blob);
       });

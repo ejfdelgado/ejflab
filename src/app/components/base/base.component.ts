@@ -13,6 +13,7 @@ import { PageData } from 'src/interfaces/login-data.interface';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { FileSaveData, FileService } from 'src/services/file.service';
+import { ModalService } from 'src/services/modal.service';
 import {
   TupleData,
   TupleService,
@@ -40,7 +41,8 @@ export class BaseComponent implements OnInit, OnDestroy {
     public authService: AuthService,
     public dialog: MatDialog,
     public tupleService: TupleService,
-    public fileService: FileService
+    public fileService: FileService,
+    public modalService: ModalService
   ) {}
 
   private setCurrentUser(user: User | null) {
@@ -62,9 +64,15 @@ export class BaseComponent implements OnInit, OnDestroy {
   }
 
   public async saveFile(options: FileSaveData) {
-    const response = await this.fileService.save(options);
-    response.key = MyConstants.SRV_ROOT + response.key;
-    return response;
+    try {
+      const response = await this.fileService.save(options);
+      response.key =
+        MyConstants.SRV_ROOT + response.key + '?t=' + new Date().getTime();
+      return response;
+    } catch (err: any) {
+      this.modalService.error(err);
+      throw err;
+    }
   }
 
   public saveTuple() {
