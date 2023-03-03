@@ -2,17 +2,11 @@ import { initializeApp } from 'firebase-admin/app';
 import { getAuth } from 'firebase-admin/auth';
 import { MyError } from '../MyError.mjs';
 import { Usuario } from './Usuario.mjs';
+import fs from "fs";
 
 function getFirebaseConfig() {
-    return {
-        apiKey: 'AIzaSyCApCHEeXtyMp-Ud3j4qkUaup1kwfH_wJE',
-        authDomain: 'ejfexperiments.firebaseapp.com',
-        projectId: 'ejfexperiments',
-        storageBucket: 'ejfexperiments.appspot.com',
-        messagingSenderId: '1066977671859',
-        appId: '1:1066977671859:web:6d688407ab6cf306094ec6',
-        measurementId: 'G-5LTBBBHRX3',
-    };
+    const firebaseJson = fs.readFileSync("./llaves/firebase.pro.json", { encoding: "utf8" });
+    return JSON.parse(firebaseJson);
 }
 
 const firebaseApp = initializeApp(getFirebaseConfig());

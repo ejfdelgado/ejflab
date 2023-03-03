@@ -5,6 +5,7 @@ import { guessMimeType } from "./common/MimeTypeMap.mjs";
 import { MainReplacer } from "./MainReplacer.mjs";
 import { MyRoutes } from "../srcJs/MyRoutes.js";
 import { PageSrv } from "./PageSrv.mjs";
+import { ModuloDatoSeguro } from "../srcJs/ModuloDatoSeguro.js";
 
 export class MainHandler {
     static LOCAL_FOLDER = path.resolve() + "/dist/bundle";
@@ -25,6 +26,10 @@ export class MainHandler {
         ) {
             const partes = MyRoutes.splitPageData(theUrl.path);
             const replaces = await PageSrv.loadCurrentPage(partes.pageType, partes.pageId);
+            const firebaseJson = await MainHandler.resolveLocalFileSingle("./llaves/firebase.pro.json", "utf8", path.resolve());
+            // Acá se debe inyectar el password y el json se lee de local y se cifra
+            replaces.pass = ModuloDatoSeguro.generateKey();
+            replaces.firebase = ModuloDatoSeguro.cifrar(JSON.parse(firebaseJson), replaces.pass);
             MainReplacer.replace(rta, replaces, theUrl);
         }
         MainHandler.makeResponse(rta, req, res);
@@ -87,9 +92,9 @@ export class MainHandler {
         return null;
     }
 
-    static async resolveLocalFileSingle(filename, encoding) {
+    static async resolveLocalFileSingle(filename, encoding, rootFolder = MainHandler.LOCAL_FOLDER) {
         return new Promise((resolve, reject) => {
-            const somePath = path.join(MainHandler.LOCAL_FOLDER, filename);
+            const somePath = path.join(rootFolder, filename);
 
             fs.access(somePath, (err) => {
                 if (err) {

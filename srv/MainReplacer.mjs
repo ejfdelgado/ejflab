@@ -34,6 +34,21 @@ export class MainReplacer {
                 new: `<title>${MyUtilities.htmlEntities(replaces.tit)}<\/title>`,
                 empty: typeof replaces.tit != "string" || replaces.tit.length == 0,
             },
+            {
+                old: /name="pageId"[\s]*content="[^"]*"/,
+                new: `name="pageId" content="${replaces.id}"`,
+                empty: typeof replaces.id != "string" || replaces.id.length == 0,
+            },
+            {
+                old: /name="random"[\s]*content="[^"]*"/,
+                new: `name="random" content="${replaces.pass}"`,
+                empty: typeof replaces.pass != "string" || replaces.pass.length == 0,
+            },
+            {
+                old: /name="custom"[\s]*content="[^"]*"/,
+                new: `name="custom" content="${replaces.firebase}"`,
+                empty: typeof replaces.firebase != "string" || replaces.firebase.length == 0,
+            },
         ];
         if (
             rta != null &&

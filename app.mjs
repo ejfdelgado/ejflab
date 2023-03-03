@@ -40,9 +40,11 @@ app.get('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, Authorizat
 app.post('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["tup_w"]]), express.json(), handleErrorsDecorator(TupleSrv.save)]);
 app.get('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["per_r"]]), handleErrorsDecorator(AuthorizationSrv.readAll)]);
 app.post('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["per_w"]]), express.json(), handleErrorsDecorator(AuthorizationSrv.save)]);
-app.use("/", handleErrorsDecorator(MainHandler.handle));
+app.use("/", handleErrorsDecorator(MainHandler.handle));// Esto solo funciona sin el npm run angular
 io.on('connection', MySocketStream.handle(io));
 
+// fuser 8081/tcp
+// fuser -k 8081/tcp
 const PORT = process.env.PORT || 8081;
 httpServer.listen(PORT, () => {
     console.log(

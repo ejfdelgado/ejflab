@@ -2,13 +2,11 @@ src/app/app.component.ts
 
 - BUCKET:
 - Hacer servicios de lecto escritura en bucket privado usando pg/cv/idPage/idUsuario/
-- Permitir autenticar una imagen, cookies?
 
 - Que las tuplas no intenten indefinidamente la escritura si es error de 403.
-- Crear tarea programada para borrar todo (pg/auth/tuple/bucket/page-key)
-
 - así como se actualiza el título de la página, actualizar el id en un meta tag del html, de forma que sea accesible para después que se borra la página actual, hacer reload.
-- cifrar el json de firebase y mandarlo en el index.html
+
+- Crear tarea programada para borrar todo (pg/auth/tuple/bucket/page-key)
 - hacer lectura periódica de las llaves de la página, cifrar el firebase tuple-temp en vivo usando las llaves
 
 - Crear la representacion de DB de usuario
