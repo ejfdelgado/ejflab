@@ -4,7 +4,7 @@ import { MyRoutes } from 'srcJs/MyRoutes';
 import { HttpService } from './http.service';
 
 export interface FileSaveData {
-  image: string;
+  base64: string;
   fileName: string;
 }
 
@@ -34,7 +34,7 @@ export class FileService {
       showIndicator: true,
     };
     const response: FileSaveResponseData = await this.httpSrv.postWithFile(
-      payload.image,
+      payload.base64,
       URL,
       {},
       options,

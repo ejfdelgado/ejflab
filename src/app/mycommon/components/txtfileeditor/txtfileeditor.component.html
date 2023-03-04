@@ -1,0 +1,31 @@
+<div class="parent_container" [ngStyle]="getStyles()">
+    <div class="txt_container" [ngStyle]="getStyles()">
+        <!--p class="mi_texto" [formControl]="control" contenteditable></p-->
+        <textarea class="mi_texto" [formControl]="control"></textarea>
+        <div class="menu_container">
+            <div class="menu_icon_parent" [matMenuTriggerFor]="myMenu" aria-label="Menú">
+                <div class="menu_icon_user">
+                    <fa-icon [icon]="faEllipsisVerticalIcon"></fa-icon>
+                </div>
+            </div>
+            <mat-menu #myMenu="matMenu">
+                <button (click)="guardar()" mat-menu-item>
+                    <mat-icon>save</mat-icon>
+                    <span>Guardar</span>
+                </button>
+                <button (click)="share()" mat-menu-item>
+                    <mat-icon>share</mat-icon>
+                    <span>Copiar enlace</span>
+                </button>
+                <button (click)="download()" mat-menu-item>
+                    <mat-icon>download</mat-icon>
+                    <span>Descagar archivo</span>
+                </button>
+                <button (click)="upload()" mat-menu-item>
+                    <mat-icon>upload_file</mat-icon>
+                    <span>Subir archivo</span>
+                </button>
+            </mat-menu>
+        </div>
+    </div>
+</div>

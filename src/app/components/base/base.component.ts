@@ -63,10 +63,10 @@ export class BaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async saveFile(options: FileSaveData) {
+  public async saveFile(options: FileSaveData, suffix: string = '') {
     try {
       const response = await this.fileService.save(options);
-      response.key = response.key + '?t=' + new Date().getTime();
+      response.key = response.key + '?t=' + new Date().getTime() + suffix;
       return response;
     } catch (err: any) {
       this.modalService.error(err);

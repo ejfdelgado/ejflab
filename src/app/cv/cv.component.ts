@@ -11,6 +11,7 @@ import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { MyConstants } from 'srcJs/MyConstants';
 import { BaseComponent } from '../components/base/base.component';
 import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
+import { TxtOptionsData } from '../mycommon/components/txtfileeditor/txtfileeditor.component';
 
 @Component({
   selector: 'app-cv',
@@ -22,6 +23,11 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     isEditable: true,
     isRounded: false,
     useBackground: false,
+    useRoot: MyConstants.SRV_ROOT,
+  };
+  textOptions: TxtOptionsData = {
+    height: '200px',
+    maxHeight: '200px',
     useRoot: MyConstants.SRV_ROOT,
   };
   constructor(
@@ -54,10 +60,22 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
 
   async changedImage(imagenBase64: string) {
     const response = await super.saveFile({
-      image: imagenBase64,
+      base64: imagenBase64,
       fileName: 'imagen.jpg',
     });
     this.tupleModel.image = response.key;
+    super.saveTuple();
+  }
+
+  async eventSave(base64: string) {
+    const response = await super.saveFile(
+      {
+        base64: base64,
+        fileName: 'script.txt',
+      },
+      '&encoding=utf8'
+    );
+    this.tupleModel.txtFile = response.key;
     super.saveTuple();
   }
 

@@ -1,0 +1,43 @@
+.parent_container {
+  position: relative;
+  padding: 10px;
+  background-color: #feffca;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.txt_container {
+  width: 100%;
+  border-radius: 5px;
+}
+
+.txt_container .mi_texto {
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  outline: 0px solid transparent;
+  font-family: monospace;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.menu_container {
+  position: absolute;
+  right: 32px;
+  top: 12px;
+  cursor: pointer;
+}
+
+.menu_icon_parent {
+  width: 32px;
+  height: 32px;
+  background: white;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  box-shadow: 1px 1px 4px 1px #c7c8ca;
+}

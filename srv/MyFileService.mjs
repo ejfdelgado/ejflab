@@ -102,8 +102,8 @@ export class MyFileService {
         return contents;
     }
 
-    static async readString(filePath, encoding = "utf8") {
-        const respuesta = await StorageHandler.readBinary(bucket, filePath);
+    static async readString(bucket, filePath, encoding = "utf8") {
+        const respuesta = await MyFileService.readBinary(bucket, filePath);
         if (respuesta != null) {
             return respuesta.toString(encoding);
         }
@@ -114,8 +114,15 @@ export class MyFileService {
         const downloadFlag = req.query ? req.query.download : false;
         const encoding = req.query ? req.query.encoding : null;
         const rta = await MyFileService.read(req.originalUrl, encoding);
+        const MAPEO_CHARSET = {
+            "utf8": "; charset=utf-8",
+        };
+        let charset = MAPEO_CHARSET[encoding];
+        if (!charset) {
+            charset = "";
+        }
         res.writeHead(200, {
-            "Content-Type": rta.metadata.contentType,
+            "Content-Type": rta.metadata.contentType + charset,
             "Content-disposition":
                 downloadFlag != undefined
                     ? "attachment;filename=" + rta.metadata.filename

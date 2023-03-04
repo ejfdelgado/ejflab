@@ -8,6 +8,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatMenuModule } from '@angular/material/menu';
 import { StreamingComponent } from './components/streaming/streaming.component';
 import { FechaCardPipe } from './pipes/fecha-card.pipe';
+import { TxtfileeditorComponent } from './components/txtfileeditor/txtfileeditor.component';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor';
 
 @NgModule({
   declarations: [
@@ -16,13 +19,23 @@ import { FechaCardPipe } from './pipes/fecha-card.pipe';
     StatusbarComponent,
     StreamingComponent,
     FechaCardPipe,
+    TxtfileeditorComponent,
   ],
-  imports: [FontAwesomeModule, CommonModule, MatIconModule, MatMenuModule],
+  imports: [
+    FontAwesomeModule,
+    CommonModule,
+    MatIconModule,
+    MatMenuModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ContenteditableValueAccessorModule,
+  ],
   exports: [
     CardComponent,
     ImagepickerComponent,
     StatusbarComponent,
     StreamingComponent,
+    TxtfileeditorComponent,
   ],
 })
 export class MycommonModule {}

@@ -153,7 +153,7 @@ export class MultiplepagesComponent implements OnInit {
       const actual = fetch[i];
       actual.action = this.abrirEnPestaniaNueva;
       actual.bigColumn = 0;
-      // iconos buscar en https://fonts.google.com/icons?icon.query=open&icon.platform=android
+      // iconos buscar en https://fonts.google.com/icons
       actual.menu = [
         {
           action: this.abrirEnPestaniaNueva,

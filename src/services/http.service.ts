@@ -60,7 +60,6 @@ export class HttpService {
       ?.getAttribute('content');
     if (typeof serverTime == 'string' && serverTime.length > 0) {
       this.timeDifference = new Date().getTime() - parseInt(serverTime);
-      console.log(`this.timeDifference = ${this.timeDifference}`);
     }
   }
 
