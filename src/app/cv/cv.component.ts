@@ -10,6 +10,10 @@ import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { MyConstants } from 'srcJs/MyConstants';
 import { BaseComponent } from '../components/base/base.component';
+import {
+  BlobOptionsData,
+  FileBase64Data,
+} from '../mycommon/components/blobeditor/blobeditor.component';
 import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
 import { TxtOptionsData } from '../mycommon/components/txtfileeditor/txtfileeditor.component';
 
@@ -28,6 +32,9 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
   textOptions: TxtOptionsData = {
     height: '200px',
     maxHeight: '200px',
+    useRoot: MyConstants.SRV_ROOT,
+  };
+  blobOptions: BlobOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
   };
   constructor(
@@ -76,6 +83,17 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
       '&encoding=utf8'
     );
     this.tupleModel.txtFile = response.key;
+    super.saveTuple();
+  }
+
+  async blobSave(fileData: FileBase64Data) {
+    const response = await super.saveFile(
+      {
+        base64: fileData.base64,
+        fileName: fileData.name,
+      },
+    );
+    this.tupleModel.blobFile = response.key;
     super.saveTuple();
   }
 

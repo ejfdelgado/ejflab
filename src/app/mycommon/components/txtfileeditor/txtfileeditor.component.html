@@ -21,11 +21,12 @@
                     <mat-icon>download</mat-icon>
                     <span>Descagar archivo</span>
                 </button>
-                <button (click)="upload()" mat-menu-item>
+                <button (click)="!control.disabled ? textInput.click() : ''" mat-menu-item>
                     <mat-icon>upload_file</mat-icon>
                     <span>Subir archivo</span>
                 </button>
             </mat-menu>
         </div>
+        <input class="esconder" #textInput type="file" accept="text/*" (change)="processFile(textInput)">
     </div>
 </div>

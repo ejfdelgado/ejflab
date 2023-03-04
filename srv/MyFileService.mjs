@@ -135,7 +135,7 @@ export class MyFileService {
     * @param encoding ascii, utf8 or null
     */
     static async read(originalUrl, encoding = null) {
-        const filePath = originalUrl.replace(/^\//, "").replace(/\?.*$/, "");
+        const filePath = decodeURIComponent(originalUrl.replace(/^\//, "").replace(/\?.*$/, ""));
         const fileName = /[^/]+$/.exec(filePath)[0];
         const bucket = privateBucket;
         const file = bucket.file(filePath);

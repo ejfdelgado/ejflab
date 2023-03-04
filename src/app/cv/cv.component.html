@@ -1,7 +1,12 @@
 <pre>{{ tupleModel | json }}</pre>
 <button (click)="setTime()">Catch Time</button>
 <div style="padding: 10px;">
-    <app-txtfileeditor [options]="textOptions" (eventSave)="eventSave($event)" [url]="tupleModel?.txtFile"></app-txtfileeditor>
+    <app-blobeditor [options]="blobOptions" (eventSave)="blobSave($event)" [url]="tupleModel?.blobFile">
+    </app-blobeditor>
+</div>
+<div style="padding: 10px;">
+    <app-txtfileeditor [options]="textOptions" (eventSave)="eventSave($event)" [url]="tupleModel?.txtFile">
+    </app-txtfileeditor>
 </div>
 <div style="width: 500px; height: 500px;">
     <app-imagepicker [options]="imageOptions" (changedImage)="changedImage($event)" [url]="tupleModel?.image">

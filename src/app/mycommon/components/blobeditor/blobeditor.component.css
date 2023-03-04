@@ -1,0 +1,27 @@
+.menu_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.etiqueta_archivo {
+  font-weight: bold;
+}
+
+.menu_icon_parent {
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background: white;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  box-shadow: 1px 1px 4px 1px #c7c8ca;
+}
+
+.esconder {
+  display: none;
+}

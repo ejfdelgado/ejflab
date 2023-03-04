@@ -11,6 +11,7 @@ import { FechaCardPipe } from './pipes/fecha-card.pipe';
 import { TxtfileeditorComponent } from './components/txtfileeditor/txtfileeditor.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor';
+import { BlobeditorComponent } from './components/blobeditor/blobeditor.component';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contentedit
     StreamingComponent,
     FechaCardPipe,
     TxtfileeditorComponent,
+    BlobeditorComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -36,6 +38,7 @@ import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contentedit
     StatusbarComponent,
     StreamingComponent,
     TxtfileeditorComponent,
+    BlobeditorComponent,
   ],
 })
 export class MycommonModule {}

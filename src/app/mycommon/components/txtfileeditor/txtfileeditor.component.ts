@@ -1,24 +1,17 @@
 import { HttpClient } from '@angular/common/http';
 import {
   Component,
-  Directive,
-  ElementRef,
   EventEmitter,
-  forwardRef,
-  HostListener,
   Input,
   OnChanges,
   OnDestroy,
   OnInit,
   Output,
-  Renderer2,
-  ChangeDetectorRef,
 } from '@angular/core';
 import { FormControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Buffer } from 'buffer';
 import { catchError, of } from 'rxjs';
-import { MyConstants } from 'srcJs/MyConstants';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from 'src/services/modal.service';
 
@@ -39,14 +32,12 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   @Input() options: TxtOptionsData;
   @Input() url: string;
   @Output() eventSave = new EventEmitter<string>();
-  disabled: boolean = false;
   readonly control = new FormControl({
     value: '',
     disabled: false,
   });
   constructor(
     private httpClient: HttpClient,
-    private cdr: ChangeDetectorRef,
     private clipboard: Clipboard,
     private modalSrv: ModalService
   ) {}
@@ -109,10 +100,6 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  async upload() {
-    console.log('upload');
-  }
-
   async download() {
     let theUrl = this.getCompleteUrl(this.url + '&download=1');
     window.open(theUrl, '_blank');
@@ -133,6 +120,20 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
       theUrl = `${location.origin}${theUrl}`;
     }
     return theUrl;
+  }
+
+  processFile(textInput: any) {
+    const file: File = textInput.files[0];
+    const reader = new FileReader();
+    reader.addEventListener('load', (event: any) => {
+      let temp = event.target.result;
+      temp = temp.replace(/^.*base64,/, '');
+      const texto = Buffer.from(temp, 'base64').toString('utf8');
+      this.control.setValue(texto);
+    });
+    if (file instanceof Blob) {
+      reader.readAsDataURL(file);
+    }
   }
 
   async leer(url: string) {
