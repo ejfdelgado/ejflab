@@ -18,6 +18,7 @@ import {
   Subscription,
   switchMap,
 } from 'rxjs';
+import { FileBase64Data } from 'src/app/components/base/base.component';
 import { MyConstants } from 'srcJs/MyConstants';
 
 export interface ImagepickerOptionsData {
@@ -36,7 +37,8 @@ export interface ImagepickerOptionsData {
 export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
   @Input() options: ImagepickerOptionsData;
   @Input() url: string | null;
-  @Output() changedImage = new EventEmitter<string>();
+  @Input() fileName: string;
+  @Output() eventSave = new EventEmitter<FileBase64Data>();
   private src$: BehaviorSubject<string | null> | null = null;
   background: SafeUrl | null = null;
   private backgroundSubscription: Subscription | null = null;
@@ -81,7 +83,11 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
     const file: File = imageInput.files[0];
     const reader = new FileReader();
     reader.addEventListener('load', (event: any) => {
-      this.changedImage.emit(event.target.result);
+      this.eventSave.emit({
+        base64: event.target.result,
+        name: this.fileName,
+        type: 'image',
+      });
       if (this.src$ != null) {
         this.src$.next(event.target.result);
       }

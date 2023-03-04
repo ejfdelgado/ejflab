@@ -21,6 +21,12 @@ import {
 } from 'src/services/tuple.service';
 import { MyConstants } from 'srcJs/MyConstants';
 
+export interface FileBase64Data {
+  base64: string;
+  name: string;
+  type: string;
+}
+
 @Component({
   selector: 'app-base',
   template: ` <p></p> `,
@@ -60,6 +66,33 @@ export class BaseComponent implements OnInit, OnDestroy {
           metaPageId.setAttribute('content', page.id);
         }
       }
+    }
+  }
+
+  public async generalSave(fileData: FileBase64Data, nextFunction: Function) {
+    const nextFunctionThis = nextFunction.bind(this);
+    if (fileData.type == 'blob') {
+      const response = await this.saveFile({
+        base64: fileData.base64,
+        fileName: fileData.name,
+        erasefile: this.tupleModel.blobFile, // send old file
+      });
+      await nextFunctionThis(response);
+    } else if (fileData.type == 'text') {
+      const response = await this.saveFile(
+        {
+          base64: fileData.base64,
+          fileName: fileData.name,
+        },
+        '&encoding=utf8'
+      );
+      await nextFunctionThis(response);
+    } else if (fileData.type == 'image') {
+      const response = await this.saveFile({
+        base64: fileData.base64,
+        fileName: fileData.name,
+      });
+      await nextFunctionThis(response);
     }
   }
 

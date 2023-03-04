@@ -7,6 +7,7 @@ import { PageData } from 'src/interfaces/login-data.interface';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { ModalService } from 'src/services/modal.service';
 import { MyConstants } from 'srcJs/MyConstants';
+import { FileBase64Data } from '../base/base.component';
 
 @Component({
   selector: 'app-pagepopup',
@@ -63,8 +64,8 @@ export class PagepopupComponent implements OnInit {
     return this.form.get('description');
   }
 
-  changedImage(imagenBase64: string) {
-    this.changedImageValue = imagenBase64;
+  changedImage(imagenBase64: FileBase64Data) {
+    this.changedImageValue = imagenBase64.base64;
   }
 
   getPageImage(): string | null {

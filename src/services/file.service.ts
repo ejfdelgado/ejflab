@@ -6,6 +6,7 @@ import { HttpService } from './http.service';
 export interface FileSaveData {
   base64: string;
   fileName: string;
+  erasefile?: string;
 }
 
 export interface FileSaveResponseData {
@@ -44,6 +45,7 @@ export class FileService {
         foldertype: 'OWN',
         isplainfile: '1',
         isprivate: '1',
+        erasefile: payload.erasefile,
       }
     );
     return response;

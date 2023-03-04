@@ -14,6 +14,7 @@ import { Buffer } from 'buffer';
 import { catchError, of } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from 'src/services/modal.service';
+import { FileBase64Data } from 'src/app/components/base/base.component';
 
 export interface TxtOptionsData {
   encoding?: string;
@@ -31,7 +32,8 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   faEllipsisVerticalIcon = faEllipsisVertical;
   @Input() options: TxtOptionsData;
   @Input() url: string;
-  @Output() eventSave = new EventEmitter<string>();
+  @Input() fileName: string;
+  @Output() eventSave = new EventEmitter<FileBase64Data>();
   readonly control = new FormControl({
     value: '',
     disabled: false,
@@ -86,7 +88,6 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
     tmp.innerHTML = html;
     let salida = tmp.textContent || tmp.innerText || '';
     salida = salida.replace(/\\n/g, '\n');
-    console.log(salida);
     return salida;
   }
 
@@ -96,7 +97,7 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
       //let base64 = Buffer.from(this.htmlToText(actual), 'utf8').toString('base64');
       let base64 = Buffer.from(actual, 'utf8').toString('base64');
       base64 = `data:text/plain;base64,${base64}`;
-      this.eventSave.emit(base64);
+      this.eventSave.emit({ base64, name: this.fileName, type: 'text' });
     }
   }
 

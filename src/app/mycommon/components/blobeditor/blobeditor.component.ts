@@ -3,15 +3,11 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ModalService } from 'src/services/modal.service';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { FileBase64Data } from 'src/app/components/base/base.component';
 
 export interface BlobOptionsData {
   useRoot?: string;
   isEditable?: boolean;
-}
-
-export interface FileBase64Data {
-  base64: string;
-  name: string;
 }
 
 @Component({
@@ -79,7 +75,7 @@ export class BlobeditorComponent implements OnInit {
     const reader = new FileReader();
     reader.addEventListener('load', (event: any) => {
       let base64 = event.target.result;
-      this.eventSave.emit({ base64, name: file.name });
+      this.eventSave.emit({ base64, name: file.name, type: 'blob' });
     });
     if (file instanceof Blob) {
       reader.readAsDataURL(file);

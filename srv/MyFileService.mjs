@@ -233,6 +233,17 @@ export class MyFileService {
         );
         const file = bucketRef.file(keyName);
 
+        //check if needs to erase previous file
+        if (req.headers.erasefile) {
+            const oldFile = decodeURIComponent(req.headers.erasefile.replace(/^\//, "").replace(/\?.*$/, ""));
+            const oldFileRef = bucketRef.file(oldFile);
+            try {
+                await oldFileRef.delete();
+            } catch (err) {
+                //ignore, best effor
+            }
+        }
+
         if (isplainfile) {
             // Treated as simple blob
             const readClone1 = new ReadableStreamClone(req);

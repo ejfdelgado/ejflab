@@ -3,17 +3,17 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
-import { FileService } from 'src/services/file.service';
+import { FileSaveResponseData, FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { MyConstants } from 'srcJs/MyConstants';
-import { BaseComponent } from '../components/base/base.component';
 import {
-  BlobOptionsData,
+  BaseComponent,
   FileBase64Data,
-} from '../mycommon/components/blobeditor/blobeditor.component';
+} from '../components/base/base.component';
+import { BlobOptionsData } from '../mycommon/components/blobeditor/blobeditor.component';
 import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
 import { TxtOptionsData } from '../mycommon/components/txtfileeditor/txtfileeditor.component';
 
@@ -65,34 +65,17 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  async changedImage(imagenBase64: string) {
-    const response = await super.saveFile({
-      base64: imagenBase64,
-      fileName: 'imagen.jpg',
-    });
+  async saveImageRef(response: FileSaveResponseData) {
     this.tupleModel.image = response.key;
     super.saveTuple();
   }
 
-  async eventSave(base64: string) {
-    const response = await super.saveFile(
-      {
-        base64: base64,
-        fileName: 'script.txt',
-      },
-      '&encoding=utf8'
-    );
+  async saveTextRef(response: FileSaveResponseData) {
     this.tupleModel.txtFile = response.key;
     super.saveTuple();
   }
 
-  async blobSave(fileData: FileBase64Data) {
-    const response = await super.saveFile(
-      {
-        base64: fileData.base64,
-        fileName: fileData.name,
-      },
-    );
+  async saveBlobRef(response: FileSaveResponseData) {
     this.tupleModel.blobFile = response.key;
     super.saveTuple();
   }

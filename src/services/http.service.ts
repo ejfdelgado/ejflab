@@ -41,6 +41,7 @@ export interface LoadFileData {
   foldertype?: string | null; //FIRST_YEAR_MONTH|FIRST_EMAIL|own
   isprivate?: string | null;
   isplainfile?: string | null;
+  erasefile?: string | null;
 }
 
 @Injectable({
@@ -108,6 +109,7 @@ export class HttpService {
           'foldertype',
           'isplainfile',
           'isprivate',
+          'erasefile',
         ];
         if (loadOptions) {
           const temp: any = loadOptions;
