@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { AuthorizationService } from 'src/services/authorization.service';
 import { LoginService } from 'src/services/login.service';
 import { PageService } from 'src/services/page.service';
+import { MyUserService } from 'src/services/user.service';
 
 @Component({
   selector: 'app-root',
@@ -12,7 +13,8 @@ export class AppComponent {
   constructor(
     private loginSrv: LoginService,
     private pageSrv: PageService,
-    private authorizationSrv: AuthorizationService
+    private authorizationSrv: AuthorizationService,
+    private usrSrv: MyUserService
   ) {}
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -33,6 +35,9 @@ export class AppComponent {
           break;
         case 'Period':
           this.pageSrv.multiple();
+          break;
+        case 'Enter':
+          this.usrSrv.edit();
           break;
         default:
           console.log(event.code);

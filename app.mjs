@@ -13,6 +13,7 @@ import { TupleSrv } from "./srv/TupleSrv.mjs";
 import { AuthorizationSrv } from "./srv/AuthorizationSrv.mjs";
 import { UtilesSrv } from "./srv/UtilesSrv.mjs";
 import { KeysSrv } from "./srv/KeysSrv.mjs";
+import { Usuario } from "./srv/common/Usuario.mjs";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -28,6 +29,7 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
+app.get('/srv/usr/me', [commonHeaders, checkAuthenticated, handleErrorsDecorator(Usuario.getCurrentUser)]);
 app.get('/srv/date', [commonHeaders, handleErrorsDecorator(UtilesSrv.fecha)]);
 app.get('/srv/pg/:pageType/:idUser/:pageId/*', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_r"]]), handleErrorsDecorator(MyFileService.readFile)]);
 app.get('/srv/pg', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(PageSrv.getCurrentPage)]);

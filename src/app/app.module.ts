@@ -36,6 +36,7 @@ import { AuthorizationpopupComponent } from './components/authorizationpopup/aut
 import { FormsModule } from '@angular/forms';
 import { AdduserrolepopupComponent } from './components/adduserrolepopup/adduserrolepopup.component';
 import { MultiplepagesComponent } from './components/multiplepages/multiplepages.component';
+import { UserpopupComponent } from './components/userpopup/userpopup.component';
 
 @NgModule({
   declarations: [
@@ -48,6 +49,7 @@ import { MultiplepagesComponent } from './components/multiplepages/multiplepages
     AuthorizationpopupComponent,
     AdduserrolepopupComponent,
     MultiplepagesComponent,
+    UserpopupComponent,
   ],
   imports: [
     FormsModule,

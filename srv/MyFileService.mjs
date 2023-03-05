@@ -66,7 +66,9 @@ export class MyFileService {
             uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PRIVATE}/${keyName}`;
         }
         await MyFileService.sendFile2Bucket(stream, file);
-        await file.makePublic();
+        if (isPrivate === false) {
+            await file.makePublic();
+        }
 
         return uri;
     }

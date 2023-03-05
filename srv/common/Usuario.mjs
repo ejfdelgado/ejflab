@@ -1,40 +1,66 @@
+import { MyUtilities } from "../../srcJs/MyUtilities.js";
+import { MyFileService } from "../MyFileService.mjs";
+import { MyConstants } from "../../srcJs/MyConstants.js";
+import { MyStore } from "./MyStore.mjs";
+
+const USER_TYPE = "user";
+
 export class Usuario {
-    metadatos;
-    roles;
+    metadatos = null;
+    id = null;
+    email = null;
+    phone = null;
     constructor(token) {
-        this.roles = [];
         this.metadatos = token;
-    }
-    darUsername() {
-        let respuesta = null;
         if (this.metadatos != null) {
+            if (this.metadatos.email) {
+                this.email = this.metadatos.email;
+            }
             const contenedor = this.metadatos["firebase"];
             const identidades = contenedor["identities"];
-            respuesta = { dominio: contenedor["sign_in_provider"] };
             if ("email" in identidades) {
-                respuesta["usuario"] = identidades["email"][0];
+                this.id = identidades["email"][0];
+                this.email = this.id;
             } else if ("phone" in identidades) {
-                respuesta["usuario"] = identidades["phone"][0];
+                this.id = identidades["phone"][0];
+                this.phone = this.id;
             }
         }
-        return respuesta;
     }
-    darId() {
-        let respuesta = null;
-        if (this.metadatos != null) {
-            const userName = this.darUsername(this.metadatos);
-            respuesta = userName["dominio"] + "/" + userName["usuario"];
+    static async getCurrentUser(req, res, next) {
+        const user = res.locals.user;
+        const token = res.locals.token;
+        // Debo buscar el usuario de base de datos
+        const response = await MyStore.readById(USER_TYPE, user.id);
+        if (response) {
+            res.status(200).send(response);
+        } else {
+            // Si no existe lo creo
+            const AHORA = new Date().getTime();
+            const email = user.email;
+            const prefijoEmail = /^[^@]+/.exec(email)[0]
+            const nuevo = {
+                email: email,
+                name: (token.name ? token.name : prefijoEmail),//El nombre será la primera parte del mail
+                phone: user.phone,
+            };
+            const q = `${nuevo.name ? nuevo.name : ""} ${prefijoEmail}`;
+            user.search = MyUtilities.partirTexto(q, true);
+            if (token.picture) {
+                nuevo.picture = await MyFileService.fetchUrl2Bucket(token.picture, token, "profile", "/me.jpg");
+            } else {
+                // Podría aquí hacerce un random
+                nuevo.picture = MyConstants.USER.DEFAULT_IMAGE;
+            }
+            nuevo.created = AHORA;
+            nuevo.updated = AHORA;
+            await MyStore.createById(USER_TYPE, user.id, nuevo);
+            nuevo.id = user.id;
+            res.status(200).send(nuevo);
         }
-        return respuesta;
     }
-    getIdentity() {
-        const ans = {
-            id: this.darId(),
-            roles: this.roles,
-            proveedor: this.metadatos.firebase.sign_in_provider,
-            sufijo: this.darUsername()["usuario"],
-            uid: this.metadatos.user_id,
-        };
-        return ans;
+
+    static async saveMyUser(req, res, next) {
+        const user = res.locals.user;
     }
 }

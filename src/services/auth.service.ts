@@ -23,13 +23,13 @@ export class AuthService {
     this.promesa = new Promise((resolve) => {
       auth.onAuthStateChanged((user) => {
         if (user) {
-          this.evento.emit(user);
           resolve(user);
           this.promesa = Promise.resolve(user);
+          this.evento.emit(user);
         } else {
-          this.evento.emit(null);
           resolve(null);
           this.promesa = Promise.resolve(null);
+          this.evento.emit(null);
         }
       });
     });

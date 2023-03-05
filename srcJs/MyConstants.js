@@ -7,6 +7,9 @@ class MyConstants {
         PRIVATE: `labs-pro-private`,
         MAX_MB: 5,
     }
+    static USER = {
+        DEFAULT_IMAGE: '/assets/img/defavatar.jpg',
+    };
     static PAGE = {
         DEFAULT_IMAGE: '/assets/img/defaultPage.jpg',
         NO_IMAGE: '/assets/img/noimage.jpg',
