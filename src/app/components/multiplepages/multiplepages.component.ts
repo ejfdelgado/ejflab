@@ -12,6 +12,7 @@ import { AuthService } from 'src/services/auth.service';
 import { User } from '@angular/fire/auth';
 import { ModalService } from 'src/services/modal.service';
 import { Clipboard } from '@angular/cdk/clipboard';
+import { MyConstants } from 'srcJs/MyConstants';
 
 @Component({
   selector: 'app-multiplepages',
@@ -25,7 +26,7 @@ export class MultiplepagesComponent implements OnInit {
   paginas: Array<CardComponentData> = [];
   iterador: PageIteratorData | null = null;
   onlyMyPages: boolean = true;
-
+  AHORA = new Date().getTime();
   constructor(
     private fb: FormBuilder,
     private pageSrv: PageService,
@@ -131,11 +132,24 @@ export class MultiplepagesComponent implements OnInit {
     const partes = MyRoutes.splitPageData(location.pathname);
     for (let i = 0; i < datos.length; i++) {
       const dato = datos[i];
+
+      const imageRef =
+        MyConstants.BUCKET.URL_BASE +
+        '/' +
+        MyConstants.BUCKET.PUBLIC +
+        '/' +
+        MyConstants.USER.DEFAULT_FOLDER +
+        '/' +
+        dato.usr +
+        MyConstants.USER.DEFAULT_FILE +
+        '?t=' +
+        this.AHORA;
+
       const nuevo: CardComponentData = {
         imageUrl: dato.img,
         title: dato.tit,
         href: `${partes.pageType}/${dato.id}`,
-        profile: '/assets/img/profile.jpeg',
+        profile: imageRef,
         act: dato.act,
         usr: dato.usr,
         id: dato.id,

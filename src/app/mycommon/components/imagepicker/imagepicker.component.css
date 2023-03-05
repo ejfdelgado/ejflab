@@ -30,6 +30,7 @@
   display: none;
 }
 
-.myImage.rounded {
+.myImage.rounded,
+.myImage.rounded img {
   border-radius: 50%;
 }

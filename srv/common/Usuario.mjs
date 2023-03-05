@@ -2,6 +2,8 @@ import { MyUtilities } from "../../srcJs/MyUtilities.js";
 import { MyFileService } from "../MyFileService.mjs";
 import { MyConstants } from "../../srcJs/MyConstants.js";
 import { MyStore } from "./MyStore.mjs";
+import { General } from "./General.mjs";
+import { MalaPeticionException } from "../MyError.mjs";
 
 const USER_TYPE = "user";
 
@@ -47,7 +49,7 @@ export class Usuario {
             const q = `${nuevo.name ? nuevo.name : ""} ${prefijoEmail}`;
             user.search = MyUtilities.partirTexto(q, true);
             if (token.picture) {
-                nuevo.picture = await MyFileService.fetchUrl2Bucket(token.picture, token, "profile", "/me.jpg");
+                nuevo.picture = await MyFileService.fetchUrl2Bucket(token.picture, token, MyConstants.USER.DEFAULT_FOLDER, MyConstants.USER.DEFAULT_FILE);
             } else {
                 // Podría aquí hacerce un random
                 nuevo.picture = MyConstants.USER.DEFAULT_IMAGE;
@@ -62,5 +64,34 @@ export class Usuario {
 
     static async saveMyUser(req, res, next) {
         const user = res.locals.user;
+        const datos = General.readParam(req, "datos");
+        if (!datos || !(typeof datos == "object")) {
+            throw new MalaPeticionException("Falta datos");
+        }
+        const AHORA = new Date().getTime();
+        const updated = {
+            updated: AHORA,
+        };
+        const LLAVES = ["name", "email", "phone", "created"];
+        const LLAVES_SEARCH = ["name", "phone"];
+        let searchable = "";
+        for (let i = 0; i < LLAVES.length; i++) {
+            const llave = LLAVES[i];
+            const valor = datos[llave];
+            if (LLAVES_SEARCH.indexOf(llave) >= 0 && typeof valor == "string") {
+                searchable += valor + " ";
+            }
+            updated[llave] = valor;
+        }
+        updated.search = MyUtilities.partirTexto(searchable);
+        updated.search.push(user.id);
+        if (typeof datos.email == "string" && datos.email.length > 0) {
+            updated.search.push(datos.email);
+        }
+        await MyStore.updateById(USER_TYPE, user.id, updated);
+        updated.id = user.id;
+        updated.picture = datos.picture;
+        delete updated.search;
+        res.status(200).send(updated);
     }
 }

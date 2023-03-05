@@ -9,6 +9,8 @@ class MyConstants {
     }
     static USER = {
         DEFAULT_IMAGE: '/assets/img/defavatar.jpg',
+        DEFAULT_FOLDER: "profile",
+        DEFAULT_FILE: "/me.jpg",
     };
     static PAGE = {
         DEFAULT_IMAGE: '/assets/img/defaultPage.jpg',
@@ -29,7 +31,7 @@ class MyConstants {
         { id: "editor", txt: "Editor", auth: MyConstants.AUTH_READ.concat(MyConstants.AUTH_WRITE) },
         { id: "owner", txt: "Dueño", auth: MyConstants.AUTH_READ.concat(MyConstants.AUTH_WRITE).concat(MyConstants.AUTH_OWNER) },
     ];
-    
+
     static getDefaultPageImage(pageType) {
         pageType = pageType.replace(/^\//, '');
         if (pageType in MyConstants.PAGE.defaults) {

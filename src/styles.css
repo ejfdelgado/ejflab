@@ -12,3 +12,13 @@ body {
 .search-pages-dialog-container .mat-dialog-container {
   min-width: 80vw;
 }
+
+.edit-user-dialog-container .mat-dialog-container {
+  min-width: 50vw;
+}
+
+@media (max-width: 800px) {
+  .edit-user-dialog-container .mat-dialog-container {
+    min-width: 80vw;
+  }
+}

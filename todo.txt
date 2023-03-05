@@ -2,12 +2,7 @@ src/app/app.component.ts
 https://fonts.google.com/icons
 
 MUST:
-- Crear la representacion de DB de usuario
-- Fetch de la imagen de la persona logeada y agregarla al Card de Page.
-
 - Capturar imagen de cámara
-- Editar los datos del usuario
-
 - Permitir modelo directo de firebase sin seguridad
 
 SHOULD:
