@@ -4,9 +4,9 @@ https://fonts.google.com/icons
 MUST:
 - Crear la representacion de DB de usuario
 - Fetch de la imagen de la persona logeada y agregarla al Card de Page.
-- capturar imagen de cámara
+- Capturar imagen de cámara
 - Editar los datos del usuario
-- permitir modelo directo de firebase sin seguridad
+- Permitir modelo directo de firebase sin seguridad
 
 SHOULD:
 - copiar/pegar las tuplas al portapapeles
@@ -16,18 +16,17 @@ SHOULD:
 - login con cellphone y ajustar user.metadata.email -> id
 - QR y short-url
 
-
 - Apps:
+ - Programador de ejecución de instancias de docker -> reconstrucción 3d, entrenamiento de tensorflow?
  - Streaming de audio wip
  - Juego de buscar algo en el mapa del mundo.
  - Juego de actores y marionetas.
  - Canvas compartido.
 
-- evitar tener que cambiar la url en Constants
+- evitar tener que cambiar la url de ROOT en Constants
 
 - Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso.
 - Permitir enviar correos, usar templates para los correos.
-
 
 <div *ngIf="currentUser !== null">
     <h1>{{ currentUser.displayName }}</h1>

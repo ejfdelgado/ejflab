@@ -2,7 +2,6 @@ import { HttpClient } from '@angular/common/http';
 import {
   Component,
   EventEmitter,
-  HostBinding,
   Input,
   OnChanges,
   OnDestroy,
@@ -19,6 +18,8 @@ import {
   switchMap,
 } from 'rxjs';
 import { FileBase64Data } from 'src/app/components/base/base.component';
+import { FileSaveData, FileService } from 'src/services/file.service';
+import { ModalService } from 'src/services/modal.service';
 import { MyConstants } from 'srcJs/MyConstants';
 
 export interface ImagepickerOptionsData {
@@ -27,6 +28,7 @@ export interface ImagepickerOptionsData {
   useBackground?: boolean;
   defaultImage?: string;
   useRoot?: string;
+  autosave?: boolean;
 }
 
 @Component({
@@ -37,6 +39,7 @@ export interface ImagepickerOptionsData {
 export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
   @Input() options: ImagepickerOptionsData;
   @Input() url: string | null;
+  @Output() urlChange = new EventEmitter<string | null>();
   @Input() fileName: string;
   @Output() eventSave = new EventEmitter<FileBase64Data>();
   private src$: BehaviorSubject<string | null> | null = null;
@@ -45,7 +48,9 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
   dataUrl$: Observable<SafeUrl> | null = null;
   constructor(
     private httpClient: HttpClient,
-    private domSanitizer: DomSanitizer
+    private domSanitizer: DomSanitizer,
+    public fileService: FileService,
+    public modalService: ModalService
   ) {}
 
   ngOnInit(): void {}
@@ -79,15 +84,35 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  public async saveFile(options: FileSaveData, suffix: string = '') {
+    try {
+      const response = await this.fileService.save(options);
+      response.key = response.key + '?t=' + new Date().getTime() + suffix;
+      return response;
+    } catch (err: any) {
+      this.modalService.error(err);
+      throw err;
+    }
+  }
+
   processFile(imageInput: any) {
     const file: File = imageInput.files[0];
     const reader = new FileReader();
-    reader.addEventListener('load', (event: any) => {
-      this.eventSave.emit({
-        base64: event.target.result,
-        name: this.fileName,
-        type: 'image',
-      });
+    reader.addEventListener('load', async (event: any) => {
+      if (this.options.autosave === true) {
+        const response = await this.saveFile({
+          base64: event.target.result,
+          fileName: this.fileName,
+        });
+        this.url = response.key;
+        this.urlChange.emit(this.url);
+      } else {
+        this.eventSave.emit({
+          base64: event.target.result,
+          name: this.fileName,
+          type: 'image',
+        });
+      }
       if (this.src$ != null) {
         this.src$.next(event.target.result);
       }

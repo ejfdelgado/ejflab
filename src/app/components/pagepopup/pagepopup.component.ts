@@ -65,7 +65,9 @@ export class PagepopupComponent implements OnInit {
   }
 
   changedImage(imagenBase64: FileBase64Data) {
-    this.changedImageValue = imagenBase64.base64;
+    if (imagenBase64.base64) {
+      this.changedImageValue = imagenBase64.base64;
+    }
   }
 
   getPageImage(): string | null {

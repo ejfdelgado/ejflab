@@ -28,6 +28,7 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     isRounded: false,
     useBackground: false,
     useRoot: MyConstants.SRV_ROOT,
+    autosave: true,
   };
   textOptions: TxtOptionsData = {
     height: '200px',
@@ -36,6 +37,7 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
   };
   blobOptions: BlobOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
+    autosave: true,
   };
   constructor(
     public override route: ActivatedRoute,
@@ -65,18 +67,8 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     }
   }
 
-  async saveImageRef(response: FileSaveResponseData) {
-    this.tupleModel.image = response.key;
-    super.saveTuple();
-  }
-
   async saveTextRef(response: FileSaveResponseData) {
     this.tupleModel.txtFile = response.key;
-    super.saveTuple();
-  }
-
-  async saveBlobRef(response: FileSaveResponseData) {
-    this.tupleModel.blobFile = response.key;
     super.saveTuple();
   }
 

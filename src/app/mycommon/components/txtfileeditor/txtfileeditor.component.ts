@@ -15,6 +15,7 @@ import { catchError, of } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from 'src/services/modal.service';
 import { FileBase64Data } from 'src/app/components/base/base.component';
+import { FileSaveData, FileService } from 'src/services/file.service';
 
 export interface TxtOptionsData {
   encoding?: string;
@@ -32,6 +33,7 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   faEllipsisVerticalIcon = faEllipsisVertical;
   @Input() options: TxtOptionsData;
   @Input() url: string;
+  @Output() urlChange = new EventEmitter<string | null>();
   @Input() fileName: string;
   @Output() eventSave = new EventEmitter<FileBase64Data>();
   readonly control = new FormControl({
@@ -41,7 +43,8 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   constructor(
     private httpClient: HttpClient,
     private clipboard: Clipboard,
-    private modalSrv: ModalService
+    private modalSrv: ModalService,
+    public fileService: FileService
   ) {}
 
   ngOnInit(): void {}
@@ -91,13 +94,32 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
     return salida;
   }
 
+  public async saveFile(options: FileSaveData, suffix: string = '') {
+    try {
+      const response = await this.fileService.save(options);
+      response.key = response.key + '?t=' + new Date().getTime() + suffix;
+      return response;
+    } catch (err: any) {
+      this.modalSrv.error(err);
+      throw err;
+    }
+  }
+
   async guardar() {
     const actual = this.control.value;
     if (typeof actual == 'string') {
       //let base64 = Buffer.from(this.htmlToText(actual), 'utf8').toString('base64');
       let base64 = Buffer.from(actual, 'utf8').toString('base64');
       base64 = `data:text/plain;base64,${base64}`;
-      this.eventSave.emit({ base64, name: this.fileName, type: 'text' });
+      const response = await this.saveFile(
+        {
+          base64: base64,
+          fileName: this.fileName,
+        },
+        '&encoding=utf8'
+      );
+      this.url = response.key;
+      this.urlChange.emit(this.url);
     }
   }
 

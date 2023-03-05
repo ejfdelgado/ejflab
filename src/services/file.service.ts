@@ -6,7 +6,7 @@ import { HttpService } from './http.service';
 export interface FileSaveData {
   base64: string;
   fileName: string;
-  erasefile?: string;
+  erasefile?: string | null;
 }
 
 export interface FileSaveResponseData {

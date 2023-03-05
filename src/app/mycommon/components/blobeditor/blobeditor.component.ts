@@ -4,10 +4,12 @@ import { ModalService } from 'src/services/modal.service';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FileBase64Data } from 'src/app/components/base/base.component';
+import { FileSaveData, FileService } from 'src/services/file.service';
 
 export interface BlobOptionsData {
   useRoot?: string;
   isEditable?: boolean;
+  autosave?: boolean;
 }
 
 @Component({
@@ -19,11 +21,13 @@ export class BlobeditorComponent implements OnInit {
   faEllipsisVerticalIcon = faEllipsisVertical;
   @Input() options: BlobOptionsData;
   @Input() url: string | null;
+  @Output() urlChange = new EventEmitter<string | null>();
   @Output() eventSave = new EventEmitter<FileBase64Data>();
   constructor(
     private httpClient: HttpClient,
     private clipboard: Clipboard,
-    private modalSrv: ModalService
+    private modalSrv: ModalService,
+    public fileService: FileService
   ) {}
 
   ngOnInit(): void {}
@@ -70,12 +74,33 @@ export class BlobeditorComponent implements OnInit {
     }
   }
 
+  public async saveFile(options: FileSaveData, suffix: string = '') {
+    try {
+      const response = await this.fileService.save(options);
+      response.key = response.key + '?t=' + new Date().getTime() + suffix;
+      return response;
+    } catch (err: any) {
+      this.modalSrv.error(err);
+      throw err;
+    }
+  }
+
   processFile(textInput: any) {
     const file: File = textInput.files[0];
     const reader = new FileReader();
-    reader.addEventListener('load', (event: any) => {
+    reader.addEventListener('load', async (event: any) => {
       let base64 = event.target.result;
-      this.eventSave.emit({ base64, name: file.name, type: 'blob' });
+      if (this.options.autosave === true) {
+        const response = await this.saveFile({
+          base64: base64,
+          fileName: file.name,
+          erasefile: this.url, // send old file
+        });
+        this.url = response.key;
+        this.urlChange.emit(this.url);
+      } else {
+        this.eventSave.emit({ base64, name: file.name, type: 'blob' });
+      }
     });
     if (file instanceof Blob) {
       reader.readAsDataURL(file);
