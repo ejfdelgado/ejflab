@@ -4,14 +4,16 @@ https://fonts.google.com/icons
 MUST:
 - Capturar imagen de cámara
 - Permitir modelo directo de firebase sin seguridad
+- Recuperar contraseña
+- Login con cellphone y ajustar user.metadata.email -> id
+- Permitir enviar correos, usar templates para los correos.
+- Permitir compartir los modelos a otros usuarios, por correo.
 
 SHOULD:
-- copiar/pegar las tuplas al portapapeles
+- QR y short-url
 - Que cuando se logea o desloguea se actualice el valor de las tuplas en la página.
 - Crear tarea programada para borrar todo (pg/auth/tuple/bucket/page-key)
-- recuperar contraseña
-- login con cellphone y ajustar user.metadata.email -> id
-- QR y short-url
+- copiar/pegar las tuplas al portapapeles
 
 - Apps:
  - Programador de ejecución de instancias de docker -> reconstrucción 3d, entrenamiento de tensorflow?
@@ -21,9 +23,6 @@ SHOULD:
  - Canvas compartido.
 
 - evitar tener que cambiar la url de ROOT en Constants
-
-- Permitir compartir los modelos a otros usuarios, por correo, poder pedir permiso.
-- Permitir enviar correos, usar templates para los correos.
 
 <div *ngIf="currentUser !== null">
     <h1>{{ currentUser.displayName }}</h1>
