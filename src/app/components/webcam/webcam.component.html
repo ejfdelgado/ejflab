@@ -1,4 +1,47 @@
 <div class="contenedor_webcam" *ngIf="isActive">
-    <webcam [trigger]="invokeObservable" (imageCapture)="captureImg($event)" (initError)="handleInitError($event)">
+    <div class="webcam-wrapper" *ngIf="step == 2">
+        <img [src]="webcamImage.imageAsDataUrl" />
+    </div>
+    <webcam *ngIf="step == 1" [trigger]="invokeObservable" (imageCapture)="captureImg($event)"
+        (initError)="handleInitError($event)">
     </webcam>
+    <div class="first_step" *ngIf="step == 1">
+        <div class="overlay">
+            <div class="my_header">
+                <div class="igual_ancho right">
+                    <mat-icon class="" (click)="cancelCapture()">close</mat-icon>
+                </div>
+            </div>
+            <div class="body"></div>
+            <div class="my_footer">
+                <div class="igual_ancho">
+
+                </div>
+                <div class="igual_ancho center">
+                    <div class="boton_rec" (click)="getSnapshot()"></div>
+                </div>
+                <div class="igual_ancho right">
+                    <mat-icon class="" (click)="switchImage()">autorenew</mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="first_step" *ngIf="step == 2">
+        <div class="overlay">
+            <div class="my_header">
+                <div class="igual_ancho right">
+                    <mat-icon class="" (click)="cancelCapture()">close</mat-icon>
+                </div>
+            </div>
+            <div class="body"></div>
+            <div class="my_footer">
+                <div class="igual_ancho center">
+                    <mat-icon class="red_icon" (click)="dischargeImage()">close</mat-icon>
+                </div>
+                <div class="igual_ancho center">
+                    <mat-icon class="green_icon" (click)="acceptImage()">done</mat-icon>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

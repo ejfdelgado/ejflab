@@ -7,3 +7,70 @@
   background-color: black;
   z-index: 3;
 }
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.overlay .igual_ancho {
+  flex: 1;
+}
+
+.overlay .igual_ancho.center {
+  text-align: center;
+}
+
+.overlay .igual_ancho.left {
+  text-align: left;
+}
+
+.overlay .igual_ancho.right {
+  text-align: right;
+}
+
+.overlay .my_header,
+.overlay .my_footer {
+  padding: 20px;
+  display: flex;
+}
+
+.overlay .body {
+  flex: 1;
+}
+
+mat-icon,
+.boton_rec {
+  width: 53px;
+  height: 53px;
+  border-radius: 50%;
+  background: white;
+  /* box-shadow: 1px 1px 4px 1px #c7c8ca; */
+  font-size: 53px;
+  cursor: pointer;
+
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+.boton_rec {
+  background: red !important;
+  border: 5px solid white;
+  display: inline-block;
+}
+
+mat-icon.red_icon {
+  color: rgb(255, 76, 76);
+  border: 5px solid rgb(255, 76, 76);
+}
+
+mat-icon.green_icon {
+  color: rgb(2, 147, 0);
+  border: 5px solid rgb(2, 147, 0);
+}

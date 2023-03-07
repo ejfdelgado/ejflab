@@ -1,5 +1,6 @@
 src/app/app.component.ts
-https://fonts.google.com/icons
+https://fonts.google.com/icons <mat-icon>edit</mat-icon>
+https://fontawesome.com/icons?d=gallery
 
 MUST:
 - Capturar imagen de cámara

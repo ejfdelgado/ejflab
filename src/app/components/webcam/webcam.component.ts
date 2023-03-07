@@ -14,7 +14,7 @@ export class WebcamComponent implements OnInit {
   public webcamImage!: WebcamImage;
   private nextWebcam: Subject<any> = new Subject();
   sysImage = '';
-
+  step = 1;
   constructor(private webcamSrv: WebcamService) {}
 
   ngOnInit(): void {
@@ -24,15 +24,41 @@ export class WebcamComponent implements OnInit {
 
   private openWebcamCapture(payload: WebcamRequestData) {
     this.isActive = true;
+    this.step = 1;
+    this.sysImage = '';
+  }
+
+  cancelCapture() {
+    this.webcamSrv.sendResponse({
+      canceled: true,
+    });
+    this.isActive = false;
+  }
+
+  switchImage() {
+    // Call change image
+  }
+
+  dischargeImage() {
+    this.step = 1;
+    this.sysImage = '';
+  }
+
+  acceptImage() {
+    this.webcamSrv.sendResponse({
+      canceled: false,
+      base64: this.sysImage,
+    });
+    this.isActive = false;
   }
 
   public getSnapshot(): void {
     this.trigger.next(void 0);
+    this.step = 2;
   }
   public captureImg(webcamImage: WebcamImage): void {
     this.webcamImage = webcamImage;
     this.sysImage = webcamImage!.imageAsDataUrl;
-    console.info('got webcam image', this.sysImage);
   }
   public get invokeObservable(): Observable<any> {
     return this.trigger.asObservable();
@@ -42,8 +68,11 @@ export class WebcamComponent implements OnInit {
   }
 
   public handleInitError(error: WebcamInitError): void {
-    if (error.mediaStreamError && error.mediaStreamError.name === "NotAllowedError") {
-      console.warn("Camera access was not allowed by user!");
+    if (
+      error.mediaStreamError &&
+      error.mediaStreamError.name === 'NotAllowedError'
+    ) {
+      console.warn('Camera access was not allowed by user!');
     }
   }
 }

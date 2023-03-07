@@ -4,7 +4,8 @@ import { Subscription } from 'rxjs';
 export interface WebcamRequestData {}
 
 export interface WebcamResponseData {
-    canceled?: boolean;
+  canceled?: boolean;
+  base64?: string;
 }
 
 @Injectable({
@@ -20,6 +21,10 @@ export class WebcamService {
 
   subscribe(escucha: Function): Subscription {
     return this.evento.subscribe(escucha);
+  }
+
+  sendResponse(response: WebcamResponseData) {
+    this.eventResponse.emit(response);
   }
 
   async openWebcam(request: WebcamRequestData): Promise<WebcamResponseData> {
