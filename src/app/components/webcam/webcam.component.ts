@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { WebcamImage, WebcamInitError } from 'ngx-webcam';
 import { Observable, Subject } from 'rxjs';
+import { ModalService } from 'src/services/modal.service';
 import { WebcamRequestData, WebcamService } from 'src/services/webcam.service';
 
 @Component({
@@ -10,12 +11,16 @@ import { WebcamRequestData, WebcamService } from 'src/services/webcam.service';
 })
 export class WebcamComponent implements OnInit {
   isActive: boolean = false;
+  private mySwitchCamera: Subject<boolean | string> = new Subject();
   private trigger: Subject<any> = new Subject();
   public webcamImage!: WebcamImage;
   private nextWebcam: Subject<any> = new Subject();
   sysImage = '';
   step = 1;
-  constructor(private webcamSrv: WebcamService) {}
+  constructor(
+    private webcamSrv: WebcamService,
+    private modalSrv: ModalService
+  ) {}
 
   ngOnInit(): void {
     const openWebcamCaptureThis = this.openWebcamCapture.bind(this);
@@ -36,7 +41,7 @@ export class WebcamComponent implements OnInit {
   }
 
   switchImage() {
-    // Call change image
+    this.mySwitchCamera.next(true);
   }
 
   dischargeImage() {
@@ -63,6 +68,9 @@ export class WebcamComponent implements OnInit {
   public get invokeObservable(): Observable<any> {
     return this.trigger.asObservable();
   }
+  public get switchCamera(): Observable<any> {
+    return this.mySwitchCamera.asObservable();
+  }
   public get nextWebcamObservable(): Observable<any> {
     return this.nextWebcam.asObservable();
   }
@@ -72,7 +80,10 @@ export class WebcamComponent implements OnInit {
       error.mediaStreamError &&
       error.mediaStreamError.name === 'NotAllowedError'
     ) {
-      console.warn('Camera access was not allowed by user!');
+      this.modalSrv.alert({
+        title: 'Ups!',
+        txt: 'No se permitió el acceso a la cámara',
+      });
     }
   }
 }

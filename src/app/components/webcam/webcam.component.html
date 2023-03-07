@@ -2,7 +2,7 @@
     <div class="webcam-wrapper" *ngIf="step == 2">
         <img [src]="webcamImage.imageAsDataUrl" />
     </div>
-    <webcam *ngIf="step == 1" [trigger]="invokeObservable" (imageCapture)="captureImg($event)"
+    <webcam *ngIf="step == 1" [trigger]="invokeObservable" [switchCamera]="switchCamera" (imageCapture)="captureImg($event)"
         (initError)="handleInitError($event)">
     </webcam>
     <div class="first_step" *ngIf="step == 1">
