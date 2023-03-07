@@ -19,6 +19,11 @@ import {
   TupleService,
   TupleServiceInstance,
 } from 'src/services/tuple.service';
+import {
+  WebcamRequestData,
+  WebcamResponseData,
+  WebcamService,
+} from 'src/services/webcam.service';
 import { MyConstants } from 'srcJs/MyConstants';
 
 export interface FileBase64Data {
@@ -49,12 +54,17 @@ export class BaseComponent implements OnInit, OnDestroy {
     public dialog: MatDialog,
     public tupleService: TupleService,
     public fileService: FileService,
-    public modalService: ModalService
+    public modalService: ModalService,
+    public webcamService: WebcamService
   ) {}
 
   private setCurrentUser(user: User | null) {
     this.currentUser = user;
     this.cdr.detectChanges();
+  }
+
+  async openWebcam(request: WebcamRequestData): Promise<WebcamResponseData> {
+    return this.webcamService.openWebcam(request);
   }
 
   private updateDinamicallyOgData(page: PageData | null) {

@@ -37,6 +37,8 @@ import { FormsModule } from '@angular/forms';
 import { AdduserrolepopupComponent } from './components/adduserrolepopup/adduserrolepopup.component';
 import { MultiplepagesComponent } from './components/multiplepages/multiplepages.component';
 import { UserpopupComponent } from './components/userpopup/userpopup.component';
+import { WebcamComponent } from './components/webcam/webcam.component';
+import { WebcamModule } from 'ngx-webcam';
 
 @NgModule({
   declarations: [
@@ -50,6 +52,7 @@ import { UserpopupComponent } from './components/userpopup/userpopup.component';
     AdduserrolepopupComponent,
     MultiplepagesComponent,
     UserpopupComponent,
+    WebcamComponent,
   ],
   imports: [
     FormsModule,
@@ -73,6 +76,7 @@ import { UserpopupComponent } from './components/userpopup/userpopup.component';
     MatDialogModule,
     MatIconModule,
     MycommonModule,
+    WebcamModule,
   ],
   providers: [
     ScreenTrackingService,

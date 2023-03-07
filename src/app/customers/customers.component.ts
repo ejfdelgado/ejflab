@@ -6,6 +6,7 @@ import { BackendPageService } from 'src/services/backendPage.service';
 import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
+import { WebcamService } from 'src/services/webcam.service';
 import { BaseComponent } from '../components/base/base.component';
 
 @Component({
@@ -25,7 +26,8 @@ export class CustomersComponent
     public override dialog: MatDialog,
     public override tupleService: TupleService,
     public override fileService: FileService,
-    public override modalService: ModalService
+    public override modalService: ModalService,
+    public override webcamService: WebcamService
   ) {
     super(
       route,
@@ -35,7 +37,8 @@ export class CustomersComponent
       dialog,
       tupleService,
       fileService,
-      modalService
+      modalService,
+      webcamService
     );
   }
 

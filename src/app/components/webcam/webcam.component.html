@@ -1,0 +1,4 @@
+<div class="contenedor_webcam" *ngIf="isActive">
+    <webcam [trigger]="invokeObservable" (imageCapture)="captureImg($event)" (initError)="handleInitError($event)">
+    </webcam>
+</div>

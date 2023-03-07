@@ -33,6 +33,7 @@ ng generate component components/authorizationpopup
 ng generate component components/adduserrolepopup
 ng generate component components/multiplepages
 ng generate component components/userpopup
+ng generate component components/webcam
 
 ng generate component mycommon/components/blobeditor
 ng generate component mycommon/components/txtfileeditor

@@ -6,6 +6,7 @@ import { BackendPageService } from 'src/services/backendPage.service';
 import { FileSaveResponseData, FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
+import { WebcamService } from 'src/services/webcam.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { MyConstants } from 'srcJs/MyConstants';
@@ -47,7 +48,8 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     public override dialog: MatDialog,
     public override tupleService: TupleService,
     public override fileService: FileService,
-    public override modalService: ModalService
+    public override modalService: ModalService,
+    public override webcamService: WebcamService
   ) {
     super(
       route,
@@ -57,7 +59,8 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
       dialog,
       tupleService,
       fileService,
-      modalService
+      modalService,
+      webcamService
     );
   }
 

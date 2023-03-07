@@ -11,6 +11,7 @@ import { HttpService } from 'src/services/http.service';
 import { TupleService } from 'src/services/tuple.service';
 import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
+import { WebcamService } from 'src/services/webcam.service';
 
 @Component({
   selector: 'app-home',
@@ -31,7 +32,8 @@ export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
     private readonly httpSrv: HttpService,
     public override tupleService: TupleService,
     public override fileService: FileService,
-    public override modalService: ModalService
+    public override modalService: ModalService,
+    public override webcamService: WebcamService
   ) {
     super(
       route,
@@ -41,7 +43,8 @@ export class HomeComponent extends BaseComponent implements OnInit, OnDestroy {
       dialog,
       tupleService,
       fileService,
-      modalService
+      modalService,
+      webcamService
     );
   }
 
