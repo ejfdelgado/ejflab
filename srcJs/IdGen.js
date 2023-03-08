@@ -139,7 +139,7 @@ class IdGen {
     return i;
   }
 
-  static async nuevo(epoch = null, esInicio) {
+  static async nuevo(epoch, esInicio) {
     if (typeof epoch == "number") {
       if (typeof esInicio == "boolean") {
         if (esInicio === true) {

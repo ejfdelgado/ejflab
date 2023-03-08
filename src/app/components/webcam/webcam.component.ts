@@ -36,6 +36,7 @@ export class WebcamComponent implements OnInit {
   cancelCapture() {
     this.webcamSrv.sendResponse({
       canceled: true,
+      base64: '',
     });
     this.isActive = false;
   }

@@ -1,7 +1,18 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { HttpOptionsData } from 'src/interfaces/login-data.interface';
 import { MyRoutes } from 'srcJs/MyRoutes';
 import { HttpService } from './http.service';
+
+export interface FileRequestData {
+  type: string; // file, fileimage, photo, fileimage-photo
+}
+
+export interface FileResponseData {
+  canceled?: boolean;
+  base64: string;
+  fileName: string;
+}
 
 export interface FileSaveData {
   base64: string;
@@ -19,7 +30,37 @@ export interface FileSaveResponseData {
   providedIn: 'root',
 })
 export class FileService {
-  constructor(private httpSrv: HttpService) {}
+  evento: EventEmitter<FileRequestData>;
+  eventResponse: EventEmitter<FileResponseData>;
+  callback: Function | null = null;
+  constructor(private httpSrv: HttpService) {
+    this.evento = new EventEmitter<FileRequestData>();
+    this.eventResponse = new EventEmitter<FileResponseData>();
+
+    this.eventResponse.subscribe((response: FileResponseData) => {
+      if (this.callback) {
+        this.callback(response);
+      }
+    });
+  }
+
+  subscribe(escucha: Function): Subscription {
+    return this.evento.subscribe(escucha);
+  }
+
+  sendResponse(response: FileResponseData) {
+    this.eventResponse.emit(response);
+  }
+
+  getLastCallback(): Function | null {
+    return this.callback;
+  }
+
+  sendRequest(request: FileRequestData, callback: Function): void {
+    // Connect to other callback
+    this.callback = callback;
+    this.evento.emit(request);
+  }
 
   async save(payload: FileSaveData): Promise<FileSaveResponseData> {
     const idPage = document

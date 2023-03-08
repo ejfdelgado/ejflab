@@ -32,5 +32,5 @@
 
 .myImage.rounded,
 .myImage.rounded img {
-  border-radius: 50%;
+  border-radius: 5px;
 }

@@ -18,7 +18,11 @@ import {
   switchMap,
 } from 'rxjs';
 import { FileBase64Data } from 'src/app/components/base/base.component';
-import { FileSaveData, FileService } from 'src/services/file.service';
+import {
+  FileResponseData,
+  FileSaveData,
+  FileService,
+} from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { MyConstants } from 'srcJs/MyConstants';
 
@@ -29,6 +33,7 @@ export interface ImagepickerOptionsData {
   defaultImage?: string;
   useRoot?: string;
   autosave?: boolean;
+  askType?: string;
 }
 
 @Component({
@@ -95,31 +100,34 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  processFile(imageInput: any) {
-    const file: File = imageInput.files[0];
-    const reader = new FileReader();
-    reader.addEventListener('load', async (event: any) => {
-      if (this.options.autosave === true) {
-        const response = await this.saveFile({
-          base64: event.target.result,
-          fileName: this.fileName,
-        });
-        this.url = response.key;
-        this.urlChange.emit(this.url);
-      } else {
-        this.eventSave.emit({
-          base64: event.target.result,
-          name: this.fileName,
-          type: 'image',
-        });
-      }
-      if (this.src$ != null) {
-        this.src$.next(event.target.result);
-      }
-    });
-    if (file instanceof Blob) {
-      reader.readAsDataURL(file);
+  async processFile(responseData: FileResponseData) {
+    if (this.options.autosave === true) {
+      const response = await this.saveFile({
+        base64: responseData.base64,
+        fileName: this.fileName,
+      });
+      this.url = response.key;
+      this.urlChange.emit(this.url);
+    } else {
+      this.eventSave.emit({
+        base64: responseData.base64,
+        name: this.fileName,
+        type: 'image',
+      });
     }
+    if (this.src$ != null) {
+      this.src$.next(responseData.base64);
+    }
+  }
+
+  askForImage() {
+    // fileimage fileimage-photo photo
+    let type = 'fileimage-photo';
+    if (this.options.askType) {
+      type = this.options.askType;
+    }
+    const processFileThis = this.processFile.bind(this);
+    this.fileService.sendRequest({ type }, processFileThis);
   }
 
   private loadImage(url: string | null): Observable<SafeUrl> {

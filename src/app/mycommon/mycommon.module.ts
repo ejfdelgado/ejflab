@@ -12,6 +12,8 @@ import { TxtfileeditorComponent } from './components/txtfileeditor/txtfileeditor
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor';
 import { BlobeditorComponent } from './components/blobeditor/blobeditor.component';
+import { FileordevicepopupComponent } from './components/fileordevicepopup/fileordevicepopup.component';
+import { FilepickerComponent } from './components/filepicker/filepicker.component';
 
 @NgModule({
   declarations: [
@@ -22,6 +24,8 @@ import { BlobeditorComponent } from './components/blobeditor/blobeditor.componen
     FechaCardPipe,
     TxtfileeditorComponent,
     BlobeditorComponent,
+    FileordevicepopupComponent,
+    FilepickerComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -39,6 +43,8 @@ import { BlobeditorComponent } from './components/blobeditor/blobeditor.componen
     StreamingComponent,
     TxtfileeditorComponent,
     BlobeditorComponent,
+    FilepickerComponent,
+    FileordevicepopupComponent,
   ],
 })
 export class MycommonModule {}

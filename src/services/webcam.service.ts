@@ -5,7 +5,7 @@ export interface WebcamRequestData {}
 
 export interface WebcamResponseData {
   canceled?: boolean;
-  base64?: string;
+  base64: string;
 }
 
 @Injectable({

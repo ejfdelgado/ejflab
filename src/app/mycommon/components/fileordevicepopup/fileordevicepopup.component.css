@@ -1,0 +1,21 @@
+.my_container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+}
+
+.my_container .my_option {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  cursor: pointer;
+  text-align: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.my_container .my_option mat-icon {
+  font-size: 100px;
+  height: 100px;
+  width: 100px;
+}

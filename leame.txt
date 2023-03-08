@@ -40,6 +40,7 @@ ng generate component mycommon/components/txtfileeditor
 ng generate component mycommon/components/imagepicker
 ng generate component mycommon/components/statusbar
 ng generate component mycommon/components/streaming
+ng generate component mycommon/components/fileordevicepopup
 
 ng generate pipe mycommon/pipes/fechaCard
 

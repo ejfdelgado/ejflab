@@ -4,7 +4,11 @@ import { ModalService } from 'src/services/modal.service';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FileBase64Data } from 'src/app/components/base/base.component';
-import { FileSaveData, FileService } from 'src/services/file.service';
+import {
+  FileResponseData,
+  FileSaveData,
+  FileService,
+} from 'src/services/file.service';
 
 export interface BlobOptionsData {
   useRoot?: string;
@@ -85,25 +89,26 @@ export class BlobeditorComponent implements OnInit {
     }
   }
 
-  processFile(textInput: any) {
-    const file: File = textInput.files[0];
-    const reader = new FileReader();
-    reader.addEventListener('load', async (event: any) => {
-      let base64 = event.target.result;
-      if (this.options.autosave === true) {
-        const response = await this.saveFile({
-          base64: base64,
-          fileName: file.name,
-          erasefile: this.url, // send old file
-        });
-        this.url = response.key;
-        this.urlChange.emit(this.url);
-      } else {
-        this.eventSave.emit({ base64, name: file.name, type: 'blob' });
-      }
-    });
-    if (file instanceof Blob) {
-      reader.readAsDataURL(file);
+  askForFile() {
+    const processFileThis = this.processFile.bind(this);
+    this.fileService.sendRequest({ type: 'file' }, processFileThis);
+  }
+
+  async processFile(responseData: FileResponseData) {
+    if (this.options.autosave === true) {
+      const response = await this.saveFile({
+        base64: responseData.base64,
+        fileName: responseData.fileName,
+        erasefile: this.url, // send old file
+      });
+      this.url = response.key;
+      this.urlChange.emit(this.url);
+    } else {
+      this.eventSave.emit({
+        base64: responseData.base64,
+        name: responseData.fileName,
+        type: 'blob',
+      });
     }
   }
 }

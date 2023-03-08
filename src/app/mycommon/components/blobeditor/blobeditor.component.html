@@ -13,11 +13,10 @@
             <mat-icon>download</mat-icon>
             <span>Descagar archivo</span>
         </button>
-        <button (click)="blobInput.click()" mat-menu-item>
+        <button (click)="askForFile()" mat-menu-item>
             <mat-icon>upload_file</mat-icon>
             <span>Subir archivo</span>
         </button>
     </mat-menu>
     <div class="etiqueta_archivo">{{ getFileName() }}</div>
-    <input class="esconder" #blobInput type="file" (change)="processFile(blobInput)">
 </div>
