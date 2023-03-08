@@ -3,7 +3,6 @@ https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
 MUST:
-- Capturar imagen de cámara
 - Permitir modelo directo de firebase sin seguridad
 - Recuperar contraseña
 - Login con cellphone y ajustar user.metadata.email -> id
@@ -11,6 +10,7 @@ MUST:
 - Permitir compartir los modelos a otros usuarios, por correo.
 
 SHOULD:
+- subir archivos de audio permitir un componente que tenga play y preloading
 - QR y short-url
 - Que cuando se logea o desloguea se actualice el valor de las tuplas en la página.
 - Crear tarea programada para borrar todo (pg/auth/tuple/bucket/page-key)
