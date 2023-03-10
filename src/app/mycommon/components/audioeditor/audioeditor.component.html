@@ -11,13 +11,16 @@
     <div class="generic_icon blue_icon" *ngIf="!isRecording && blobUrl && isPlaying" (click)="pause()">
         <mat-icon>pause</mat-icon>
     </div>
+    <div class="generic_icon" *ngIf="blobUrl" (click)="cut()">
+        <mat-icon>content_cut</mat-icon>
+    </div>
     <div class="generic_icon" (click)="uploadFile()">
         <mat-icon>upload_file</mat-icon>
     </div>
     <div class="generic_icon" *ngIf="!isRecording && blobUrl" (click)="download()">
         <mat-icon>download</mat-icon>
     </div>
-    <div class="generic_icon" *ngIf="!isRecording && blobUrl && recordedBlob" (click)="save()">
+    <div class="generic_icon blue_icon" *ngIf="!isRecording && blobUrl && recordedBlob" (click)="save()">
         <mat-icon>save</mat-icon>
     </div>
     <div class="generic_icon" *ngIf="!isRecording && blobUrl" (click)="clearRecordedData()">
