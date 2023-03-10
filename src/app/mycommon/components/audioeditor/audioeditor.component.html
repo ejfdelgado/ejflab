@@ -1,0 +1,32 @@
+<div class="audio_container">
+    <div class="generic_icon red_icon" *ngIf="!isRecording && !blobUrl" (click)="startRecording()">
+        <mat-icon>mic</mat-icon>
+    </div>
+    <div class="generic_icon" *ngIf="isRecording && !blobUrl" (click)="stopRecording()">
+        <mat-icon>stop</mat-icon>
+    </div>
+    <div class="generic_icon green_icon" *ngIf="!isRecording && blobUrl && !isPlaying" (click)="play()">
+        <mat-icon>play_arrow</mat-icon>
+    </div>
+    <div class="generic_icon blue_icon" *ngIf="!isRecording && blobUrl && isPlaying" (click)="pause()">
+        <mat-icon>pause</mat-icon>
+    </div>
+    <div class="generic_icon" (click)="uploadFile()">
+        <mat-icon>upload_file</mat-icon>
+    </div>
+    <div class="generic_icon" *ngIf="!isRecording && blobUrl" (click)="download()">
+        <mat-icon>download</mat-icon>
+    </div>
+    <div class="generic_icon" *ngIf="!isRecording && blobUrl && recordedBlob" (click)="save()">
+        <mat-icon>save</mat-icon>
+    </div>
+    <div class="generic_icon" *ngIf="!isRecording && blobUrl" (click)="clearRecordedData()">
+        <mat-icon>delete</mat-icon>
+    </div>
+    <div class="waveform" #myWaveFormRef></div>
+    <div class="invisible">
+        <audio #audioRef *ngIf="!isRecording && blobUrl" controls>
+            <source [src]="blobUrl" type="audio/webm">
+        </audio>
+    </div>
+</div>

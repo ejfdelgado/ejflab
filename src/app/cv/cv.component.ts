@@ -14,6 +14,7 @@ import {
   BaseComponent,
   FileBase64Data,
 } from '../components/base/base.component';
+import { AudioOptionsData } from '../mycommon/components/audioeditor/audioeditor.component';
 import { BlobOptionsData } from '../mycommon/components/blobeditor/blobeditor.component';
 import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
 import { TxtOptionsData } from '../mycommon/components/txtfileeditor/txtfileeditor.component';
@@ -37,6 +38,10 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     useRoot: MyConstants.SRV_ROOT,
   };
   blobOptions: BlobOptionsData = {
+    useRoot: MyConstants.SRV_ROOT,
+    autosave: true,
+  };
+  audioOptions: AudioOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
     autosave: true,
   };

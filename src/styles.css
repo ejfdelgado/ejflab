@@ -19,6 +19,24 @@ body {
   min-width: 50vw;
 }
 
+.generic_icon {
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  background: white;
+  text-align: center;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  box-shadow: 1px 1px 4px 1px #c7c8ca;
+}
+
+.invisible {
+  display: none !important;
+}
+
 @media (max-width: 800px) {
   .edit-user-dialog-container .mat-dialog-container {
     min-width: 80vw;

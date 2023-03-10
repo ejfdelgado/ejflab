@@ -5,7 +5,7 @@ import { MyRoutes } from 'srcJs/MyRoutes';
 import { HttpService } from './http.service';
 
 export interface FileRequestData {
-  type: string; // file, fileimage, photo, fileimage-photo
+  type: string; // file, fileimage, photo, fileimage-photo, fileaudio
 }
 
 export interface FileResponseData {

@@ -14,6 +14,7 @@ import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contentedit
 import { BlobeditorComponent } from './components/blobeditor/blobeditor.component';
 import { FileordevicepopupComponent } from './components/fileordevicepopup/fileordevicepopup.component';
 import { FilepickerComponent } from './components/filepicker/filepicker.component';
+import { AudioeditorComponent } from './components/audioeditor/audioeditor.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { FilepickerComponent } from './components/filepicker/filepicker.componen
     BlobeditorComponent,
     FileordevicepopupComponent,
     FilepickerComponent,
+    AudioeditorComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -45,6 +47,7 @@ import { FilepickerComponent } from './components/filepicker/filepicker.componen
     BlobeditorComponent,
     FilepickerComponent,
     FileordevicepopupComponent,
+    AudioeditorComponent
   ],
 })
 export class MycommonModule {}

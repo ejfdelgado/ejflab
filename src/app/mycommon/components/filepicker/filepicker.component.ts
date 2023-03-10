@@ -36,6 +36,10 @@ export class FilepickerComponent implements OnInit {
       // Open file picker general file
       nativeElement.accept = 'image/*';
       nativeElement.click();
+    } else if (payload.type == 'fileaudio') {
+      // Open file picker general file
+      nativeElement.accept = 'audio/*';
+      nativeElement.click();
     } else if (payload.type == 'fileimage-photo') {
       // Open modal (photo/file)
       this.dialog.open(FileordevicepopupComponent, {

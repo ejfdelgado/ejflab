@@ -29,6 +29,9 @@
             "scripts": [],
             "allowedCommonJsDependencies": [
               "buffer",
+              "moment",
+              "recordrtc",
+              "wavesurfer.js",
               "srcJs/MyConstants",
               "srcJs/MyDates",
               "srcJs/MyRoutes",

@@ -1,0 +1,24 @@
+.audio_container {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
+  gap: 5px;
+  align-items: center;
+  height: 50px;
+}
+
+.red_icon {
+  color: red;
+}
+
+.green_icon {
+  color: green;
+}
+
+.blue_icon {
+  color: blue;
+}
+
+.waveform {
+  flex: 1;
+}
