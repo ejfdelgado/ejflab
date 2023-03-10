@@ -3,11 +3,19 @@ https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
 MUST:
+- Hacer la directiva para edit in place on blur guardar.
+- PWA https://danielk.tech/home/angular-pwa
+- Usar kubernetes
+- Agregar un contenedor básico de nodejs
+- Agregar una forma de desplegar código jalando de git o de un bucket.
+
+- Usar motor de template ¿tangular? ¿https://github.com/josdejong/jsoneditor?
+- Permitir enviar correos, usar templates para los correos.
+
+- Permitir compartir los modelos a otros usuarios, por correo.
 - Permitir modelo directo de firebase sin seguridad
 - Recuperar contraseña
 - Login con cellphone y ajustar user.metadata.email -> id
-- Permitir enviar correos, usar templates para los correos.
-- Permitir compartir los modelos a otros usuarios, por correo.
 
 SHOULD:
 - subir archivos de audio permitir un componente que tenga play y preloading

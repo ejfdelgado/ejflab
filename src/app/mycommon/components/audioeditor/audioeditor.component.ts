@@ -18,7 +18,6 @@ import {
 } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { MyAudioService } from 'src/services/myaudio.service';
-import { MyLame } from 'srcJs/lame';
 import Wavesurfer from 'wavesurfer.js';
 import MarkersPlugin from 'wavesurfer.js/src/plugin/markers';
 
@@ -26,95 +25,6 @@ export interface AudioOptionsData {
   useRoot?: string;
   isEditable?: boolean;
   autosave?: boolean;
-}
-
-export class mp3cutter {
-  start: number;
-  end: number;
-  callback: Function;
-  bitrate: number;
-  audioContext: AudioContext;
-  async cut(
-    src: Blob,
-    start: number,
-    end: number,
-    callback: Function,
-    bitrate = 192
-  ) {
-    if (!src) throw 'Invalid parameters!';
-
-    if (start > end) throw 'Start is bigger than end!';
-    else if (start < 0 || end < 0)
-      throw 'Start or end is negative, cannot process';
-    this.start = start;
-    this.end = end;
-    this.callback = callback;
-    this.bitrate = bitrate;
-
-    // Convert blob into ArrayBuffer
-    let buffer = await new Response(src).arrayBuffer();
-    this.audioContext = new AudioContext();
-
-    //Convert ArrayBuffer into AudioBuffer
-    this.audioContext.decodeAudioData(buffer).then((decodedData) => {
-      this.computeData(decodedData);
-    });
-  }
-
-  computeData(decodedData: AudioBuffer) {
-    //Compute start and end values in secondes
-    let computedStart =
-      (decodedData.length * this.start) / decodedData.duration;
-    let computedEnd = (decodedData.length * this.end) / decodedData.duration;
-
-    //Create a new buffer
-    const newBuffer = this.audioContext.createBuffer(
-      decodedData.numberOfChannels,
-      computedEnd - computedStart,
-      decodedData.sampleRate
-    );
-
-    // Copy from old buffer to new with the right slice.
-    // At this point, the audio has been cut
-    for (var i = 0; i < decodedData.numberOfChannels; i++) {
-      newBuffer.copyToChannel(
-        decodedData.getChannelData(i).slice(computedStart, computedEnd),
-        i
-      );
-    }
-
-    // Bitrate is  by default 192, but can be whatever you want
-    const lame: any = MyLame.lamejs();
-    console.log(lame);
-    let encoder: any = lame['Mp3Encoder'](
-      decodedData.numberOfChannels,
-      newBuffer.sampleRate,
-      this.bitrate
-    );
-
-    //Recreate Object from AudioBuffer
-    let formattedArray = {
-      channels: Array.apply(
-        null,
-        new Array(newBuffer.numberOfChannels - 1 - 0 + 1)
-      )
-        .map((v, i) => i + 0)
-        .map((i) => newBuffer.getChannelData(i)),
-      sampleRate: newBuffer.sampleRate,
-      length: newBuffer.length,
-    };
-
-    //Encode into mp3
-    encoder.encodeBuffer(formattedArray.channels);
-    var mp3buf = encoder.flush(); //finish writing mp3
-
-    var mp3Data = [];
-    if (mp3buf.length > 0) {
-      mp3Data.push(new Int8Array(mp3buf));
-    }
-    const blob = new Blob(mp3Data, { type: 'audio/mp3' });
-    this.callback(blob);
-  }
 }
 
 @Component({
@@ -138,6 +48,7 @@ export class AudioeditorComponent implements OnInit {
   @Input() fileName: string;
   currentBlob: Blob | null = null;
   recordedBlob: Blob | null = null;
+  mediaRecorder: MediaRecorder | null = null;
 
   constructor(
     private audioRecordingService: MyAudioService,
@@ -164,10 +75,27 @@ export class AudioeditorComponent implements OnInit {
     const ti = this.markerTi.time;
     const tf = this.markerTf.time;
 
-    if (blob) {
-      new mp3cutter().cut(blob, ti, tf, (blobCut: Blob) => {
-        console.log(blobCut);
+    const sampleDuration = tf - ti;
+
+    console.log(`ti = ${ti}`);
+    console.log(`tf = ${tf}`);
+    console.log(`sampleDuration = ${sampleDuration}`);
+
+    if (blob && this.mediaRecorder) {
+      this.mediaRecorder.addEventListener('dataavailable', (e) => {
+        const sampleObject = {
+          sampleSrc: URL.createObjectURL(e.data),
+          name: 'parte.mp3',
+          sampleBlob: e.data,
+        };
       });
+      this.play();
+      this.mediaRecorder.start();
+      setTimeout(() => {
+        if (this.mediaRecorder) {
+          this.mediaRecorder.stop();
+        }
+      }, sampleDuration * 1000);
     }
   }
 
@@ -215,6 +143,7 @@ export class AudioeditorComponent implements OnInit {
     this.myWaveForm = Wavesurfer.create({
       container: this.myWaveFormRef.nativeElement,
       scrollParent: true,
+      //backend: "MediaElementWebAudio",
       //fillParent: true,
       height: 50,
       plugins: [
@@ -223,6 +152,7 @@ export class AudioeditorComponent implements OnInit {
         }),
       ],
     });
+
     this.myWaveForm.loadBlob(blob);
     this.markerTi = this.myWaveForm['addMarker']({
       time: 0,
@@ -231,12 +161,19 @@ export class AudioeditorComponent implements OnInit {
       draggable: true,
     });
 
-    this.markerTf = this.myWaveForm['addMarker']({
-      time: 9999999999,
-      label: 'tf',
-      color: '#ff990a',
-      draggable: true,
-    });
+    //Set up cutter
+    // Creates a mediastream for mediaRecorder
+    const streamDestination: MediaStreamAudioDestinationNode =
+      this.myWaveForm.backend.getAudioContext().createMediaStreamDestination();
+    // wavesurfer.current.load("./NOISE.wav");
+    // Creates a gainNode to use as a wavesurfer filter (just needs to be something for the audio to pass through)
+    const gainNode: GainNode = this.myWaveForm.backend
+      .getAudioContext()
+      .createGain();
+    // Connects gain node to the audio stream
+    gainNode.connect(streamDestination);
+    this.myWaveForm.backend.setFilter(gainNode);
+    this.mediaRecorder = new MediaRecorder(streamDestination.stream);
 
     this.myWaveForm.on('finish', () => {
       this.isPlaying = false;
@@ -245,6 +182,17 @@ export class AudioeditorComponent implements OnInit {
     this.myWaveForm.on('pause', () => {
       this.isPlaying = false;
       this.cdr.detectChanges();
+    });
+    this.myWaveForm.on('ready', () => {
+      if (this.myWaveForm) {
+        const segundos = this.myWaveForm.getDuration();
+        this.markerTf = this.myWaveForm['addMarker']({
+          time: segundos,
+          label: 'tf',
+          color: '#ff990a',
+          draggable: true,
+        });
+      }
     });
   }
 
