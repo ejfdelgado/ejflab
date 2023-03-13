@@ -11,22 +11,28 @@
     <div class="generic_icon blue_icon" *ngIf="!isRecording && blobUrl && isPlaying" (click)="pause()">
         <mat-icon>pause</mat-icon>
     </div>
-    <div class="generic_icon" *ngIf="blobUrl" (click)="cut()">
+    <div class="generic_icon" *ngIf="options.canCut !== false && blobUrl" (click)="cut()">
         <mat-icon>content_cut</mat-icon>
     </div>
-    <div class="generic_icon" (click)="uploadFile()">
+    <div class="generic_icon" *ngIf="options.canUpload !== false" (click)="uploadFile()">
         <mat-icon>upload_file</mat-icon>
     </div>
-    <div class="generic_icon" *ngIf="!isRecording && blobUrl" (click)="download()">
+    <div class="generic_icon" *ngIf="options.canDownload !== false && !isRecording && blobUrl" (click)="download()">
         <mat-icon>download</mat-icon>
     </div>
-    <div class="generic_icon blue_icon" *ngIf="!isRecording && blobUrl && recordedBlob" (click)="save()">
+    <div class="generic_icon red_icon" *ngIf="options.canSave !== false && !isRecording && blobUrl && recordedBlob"
+        (click)="save()">
         <mat-icon>save</mat-icon>
     </div>
-    <div class="generic_icon" *ngIf="!isRecording && blobUrl" (click)="clearRecordedData()">
+    <div class="generic_icon" *ngIf="options.canDelete !== false && !isRecording && blobUrl"
+        (click)="clearRecordedData()">
         <mat-icon>delete</mat-icon>
     </div>
-    <div class="waveform" #myWaveFormRef></div>
+    <div class="waveform" *ngIf="options.showWaveForm !== false">
+        <div class="waveform_real" #myWaveFormRef></div>
+        <mat-progress-bar *ngIf="isLoading || isRecording" class="waveform_loading" mode="indeterminate">
+        </mat-progress-bar>
+    </div>
     <div class="invisible">
         <audio #audioRef *ngIf="!isRecording && blobUrl" controls>
             <source [src]="blobUrl" type="audio/webm">

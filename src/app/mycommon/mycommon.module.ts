@@ -15,6 +15,7 @@ import { BlobeditorComponent } from './components/blobeditor/blobeditor.componen
 import { FileordevicepopupComponent } from './components/fileordevicepopup/fileordevicepopup.component';
 import { FilepickerComponent } from './components/filepicker/filepicker.component';
 import { AudioeditorComponent } from './components/audioeditor/audioeditor.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { AudioeditorComponent } from './components/audioeditor/audioeditor.compo
     FormsModule,
     ReactiveFormsModule,
     ContenteditableValueAccessorModule,
+    MatProgressBarModule
   ],
   exports: [
     CardComponent,

@@ -16,7 +16,6 @@ import { provideAuth, getAuth } from '@angular/fire/auth';
 import { provideDatabase, getDatabase } from '@angular/fire/database';
 import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 import { provideStorage, getStorage } from '@angular/fire/storage';
-import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { JwtInterceptor } from 'src/interceptors/JwtInterceptor';
@@ -39,6 +38,7 @@ import { MultiplepagesComponent } from './components/multiplepages/multiplepages
 import { UserpopupComponent } from './components/userpopup/userpopup.component';
 import { WebcamComponent } from './components/webcam/webcam.component';
 import { WebcamModule } from 'ngx-webcam';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -65,7 +65,7 @@ import { WebcamModule } from 'ngx-webcam';
     provideDatabase(() => getDatabase()),
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
-    NoopAnimationsModule,
+    BrowserAnimationsModule,
     MatDialogModule,
     HttpClientModule,
     ReactiveFormsModule,

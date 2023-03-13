@@ -21,4 +21,16 @@
 
 .waveform {
   flex: 1;
+  position: relative;
+}
+
+.waveform .waveform_real {
+  width: 100%;
+  height: 100%;
+}
+
+.waveform .waveform_loading {
+  width: 100%;
+  position: absolute;
+  bottom: 0;
 }

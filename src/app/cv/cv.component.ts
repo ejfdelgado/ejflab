@@ -43,7 +43,21 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
   };
   audioOptions: AudioOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
-    autosave: true,
+    canCut: true,
+    canDownload: true,
+    canUpload: true,
+    canDelete: true,
+    canSave: true,
+    showWaveForm: true,
+  };
+  audioOptionsReadOnly: AudioOptionsData = {
+    useRoot: MyConstants.SRV_ROOT,
+    canCut: false,
+    canDownload: false,
+    canUpload: false,
+    canDelete: true,
+    canSave: true,
+    showWaveForm: false,
   };
   constructor(
     public override route: ActivatedRoute,

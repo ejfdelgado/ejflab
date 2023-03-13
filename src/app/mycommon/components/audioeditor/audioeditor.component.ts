@@ -23,8 +23,20 @@ import MarkersPlugin from 'wavesurfer.js/src/plugin/markers';
 
 export interface AudioOptionsData {
   useRoot?: string;
-  isEditable?: boolean;
-  autosave?: boolean;
+  //autosave?: boolean;
+  canCut?: boolean;
+  canDownload?: boolean;
+  canUpload?: boolean;
+  canDelete?: boolean;
+  canSave?: boolean;
+  showWaveForm?: boolean;
+}
+
+export interface AudioCutData {
+  ti: number;
+  tf: number;
+  t: number;
+  blob: Blob;
 }
 
 @Component({
@@ -33,6 +45,14 @@ export interface AudioOptionsData {
   styleUrls: ['./audioeditor.component.css'],
 })
 export class AudioeditorComponent implements OnInit {
+  @Input() options: AudioOptionsData;
+  @Input() url: string | null;
+  @Input() fileName: string;
+  @Input() externalBlob: Blob | null = null;
+  @Output() urlChange = new EventEmitter<string | null>();
+  @Output() cutEvent = new EventEmitter<AudioCutData>();
+
+  isLoading = false;
   isRecording = false;
   isPlaying = false;
   recordedTime: String;
@@ -42,13 +62,10 @@ export class AudioeditorComponent implements OnInit {
   myWaveForm: Wavesurfer | null = null;
   markerTi: any = null;
   markerTf: any = null;
-  @Input() options: AudioOptionsData;
-  @Input() url: string | null;
-  @Output() urlChange = new EventEmitter<string | null>();
-  @Input() fileName: string;
   currentBlob: Blob | null = null;
   recordedBlob: Blob | null = null;
   mediaRecorder: MediaRecorder | null = null;
+  responsiveWaveListener: any | null = null;
 
   constructor(
     private audioRecordingService: MyAudioService,
@@ -77,17 +94,15 @@ export class AudioeditorComponent implements OnInit {
 
     const sampleDuration = tf - ti;
 
-    console.log(`ti = ${ti}`);
-    console.log(`tf = ${tf}`);
-    console.log(`sampleDuration = ${sampleDuration}`);
-
     if (blob && this.mediaRecorder) {
       this.mediaRecorder.addEventListener('dataavailable', (e) => {
-        const sampleObject = {
-          sampleSrc: URL.createObjectURL(e.data),
-          name: 'parte.mp3',
-          sampleBlob: e.data,
+        const sampleObject: AudioCutData = {
+          blob: e.data,
+          t: sampleDuration,
+          ti: ti,
+          tf: tf,
         };
+        this.cutEvent.emit(sampleObject);
       });
       this.play();
       this.mediaRecorder.start();
@@ -105,6 +120,7 @@ export class AudioeditorComponent implements OnInit {
         if (typeof changes.url.previousValue == 'string') {
           // Había una url antes y puede que sea la misma, solo cambio el query param
         } else {
+          this.isLoading = true;
           // Fijo toca cargar el archivo
           this.loadUrl(changes.url.currentValue).subscribe((blob) => {
             this.receiveBlob(blob);
@@ -137,7 +153,11 @@ export class AudioeditorComponent implements OnInit {
     this.currentBlob = blob;
     const objectUrl = URL.createObjectURL(blob);
     this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
+    if (this.options.showWaveForm === false) {
+      return;
+    }
     if (this.myWaveForm) {
+      window.removeEventListener('resize', this.responsiveWaveListener);
       this.myWaveForm.destroy();
     }
     this.myWaveForm = Wavesurfer.create({
@@ -156,8 +176,8 @@ export class AudioeditorComponent implements OnInit {
     this.myWaveForm.loadBlob(blob);
     this.markerTi = this.myWaveForm['addMarker']({
       time: 0,
-      label: 'ti',
-      color: '#ff990a',
+      label: 'Inicio',
+      color: '#00ff00',
       draggable: true,
     });
 
@@ -188,12 +208,22 @@ export class AudioeditorComponent implements OnInit {
         const segundos = this.myWaveForm.getDuration();
         this.markerTf = this.myWaveForm['addMarker']({
           time: segundos,
-          label: 'tf',
-          color: '#ff990a',
+          label: 'Fin',
+          color: '#ff0000',
           draggable: true,
+          position: 'top',
         });
       }
+      this.isLoading = false;
     });
+    this.responsiveWaveListener = this.myWaveForm.util.debounce(() => {
+      if (this.myWaveForm) {
+        this.myWaveForm['drawer'].updateSize();
+        this.myWaveForm['drawBuffer']();
+      }
+    }, 0);
+
+    window.addEventListener('resize', this.responsiveWaveListener);
   }
 
   ngOnInit(): void {}

@@ -2,7 +2,13 @@ src/app/app.component.ts
 https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
+
 MUST:
+- Hacer un componente con canvas que cargue dos imágenes, que permita con una de ellas hacer el efecto de fondo verde.
+- que cuando se corta el audio alguien más capture el evento para crear otro audio.
+
+- modal con z-index 1001 para webcam capture.
+- reactividad de pg y tuple con el usuario logeado.
 - Hacer la directiva para edit in place on blur guardar.
 - PWA https://danielk.tech/home/angular-pwa
 - Usar kubernetes
