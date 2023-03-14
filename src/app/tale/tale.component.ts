@@ -47,7 +47,6 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     showWaveForm: true,
   };
   temporalBlobAudios: Map<string, Blob> = new Map();
-  talePageList: Array<any> = [];
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
@@ -76,16 +75,6 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     return dato;
   }
 
-  computeTalePageList() {
-    this.talePageList.splice(0, this.talePageList.length);
-    const llaves = Object.keys(this.tupleModel.cuttedAudios).sort();
-    for (let i = 0; i < llaves.length; i++) {
-      const llave = llaves[i];
-      const actual = this.tupleModel.cuttedAudios[llave];
-      this.talePageList.push(actual);
-    }
-  }
-
   forgetTemporalBlob(llave: string) {
     this.temporalBlobAudios.delete(llave);
   }
@@ -102,7 +91,24 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     return item.key;
   }
 
-  async deleteTalePage(valor: PageTaleData) {
+  talePageOrder(a: any, b: any) {
+    if (a.key == b.key) {
+      return 0;
+    }
+    // The oldest on top
+    if (a.key > b.key) {
+      return 1;
+    } else {
+      return -1;
+    }
+  }
+
+  getTalePageMap(): Map<string, PageTaleData> {
+    const mapa: Map<string, PageTaleData> = this.tupleModel.cuttedAudios;
+    return mapa;
+  }
+
+  async deleteTalePage(llave: string, valor: PageTaleData) {
     const respuesta = await this.modalService.confirm({
       txt: 'No se puede deshacer la acción',
       title: '¿Estás seguro?',
@@ -113,13 +119,8 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     if (valor.audioUrl) {
       await this.fileService.delete(valor.audioUrl);
     }
-    if (valor.key in this.tupleModel.cuttedAudios) {
-      delete this.tupleModel.cuttedAudios[valor.key];
-    }
-    // Lo quito de la lista también
-    const indice = this.talePageList.indexOf(valor);
-    if (indice >= 0) {
-      this.talePageList.splice(indice, 1);
+    if (llave in this.tupleModel.cuttedAudios) {
+      delete this.tupleModel.cuttedAudios[llave];
     }
     await this.saveTuple();
   }
@@ -136,7 +137,6 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       key: id,
     };
     this.temporalBlobAudios.set(id, event.blob);
-    this.computeTalePageList();
     await this.saveTuple();
   }
 
@@ -150,7 +150,6 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       this.tupleModel.cuttedAudios = {};
       this.saveTuple();
     }
-    this.computeTalePageList();
   }
 
   override async ngOnInit() {
