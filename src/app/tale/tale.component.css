@@ -18,4 +18,16 @@
 
 .all_tale .card_page {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.all_tale .card_page .pictures {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.all_tale .card_page .pictures app-imagepicker {
+  flex: 1;
 }

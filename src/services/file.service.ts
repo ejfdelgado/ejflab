@@ -6,6 +6,7 @@ import { HttpService } from './http.service';
 
 export interface FileRequestData {
   type: string; // file, fileimage, photo, fileimage-photo, fileaudio
+  defaultFileName?: string | null;
 }
 
 export interface FileResponseData {

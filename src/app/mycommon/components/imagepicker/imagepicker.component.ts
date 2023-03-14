@@ -19,6 +19,7 @@ import {
 } from 'rxjs';
 import { FileBase64Data } from 'src/app/components/base/base.component';
 import {
+  FileRequestData,
   FileResponseData,
   FileSaveData,
   FileService,
@@ -33,7 +34,8 @@ export interface ImagepickerOptionsData {
   defaultImage?: string;
   useRoot?: string;
   autosave?: boolean;
-  askType?: string;
+  askType?: string; //fileimage fileimage-photo photo
+  defaultFileName?: string | null;
 }
 
 @Component({
@@ -101,6 +103,7 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   async processFile(responseData: FileResponseData) {
+    // Pese a que responseData tiene fileName, no se usa, sino el local
     if (this.options.autosave === true) {
       const response = await this.saveFile({
         base64: responseData.base64,
@@ -122,12 +125,12 @@ export class ImagepickerComponent implements OnInit, OnDestroy, OnChanges {
 
   askForImage() {
     // fileimage fileimage-photo photo
-    let type = 'fileimage-photo';
-    if (this.options.askType) {
-      type = this.options.askType;
-    }
+    const options: FileRequestData = {
+      type: 'fileimage-photo',
+      defaultFileName: this.options.defaultFileName,
+    };
     const processFileThis = this.processFile.bind(this);
-    this.fileService.sendRequest({ type }, processFileThis);
+    this.fileService.sendRequest(options, processFileThis);
   }
 
   private loadImage(url: string | null): Observable<SafeUrl> {

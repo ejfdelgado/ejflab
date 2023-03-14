@@ -21,5 +21,13 @@
             [url]="talePage.value.audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
             (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()">
         </app-audioeditor>
+        <div class="pictures">
+            <app-imagepicker [options]="imageOptions" [fileName]="talePage.value.key+'_img1.jpg'"
+                [url]="talePage.value.image1Url" (urlChange)="talePage.value.image1Url=$event; saveTuple()">
+            </app-imagepicker>
+            <app-imagepicker [options]="imageOptions" [fileName]="talePage.value.key+'_img2.jpg'"
+                [url]="talePage.value.image2Url" (urlChange)="talePage.value.image2Url=$event; saveTuple()">
+            </app-imagepicker>
+        </div>
     </div>
 </div>

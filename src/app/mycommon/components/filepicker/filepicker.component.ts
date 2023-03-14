@@ -13,6 +13,7 @@ import { IdGen } from 'srcJs/IdGen';
 export class FilepickerComponent implements OnInit {
   @ViewChild('imageInput') imageInput: ElementRef;
   imageInputBinded = false;
+  lastDefaultFileName?: string | null = null;
   constructor(
     private fileSrv: FileService,
     private dialog: MatDialog,
@@ -26,6 +27,7 @@ export class FilepickerComponent implements OnInit {
 
   private async openFileRequest(payload: FileRequestData) {
     // file, fileimage, photo, fileimage-photo
+    this.lastDefaultFileName = payload.defaultFileName;
     const nativeElement = this.imageInput.nativeElement;
     nativeElement.value = '';
     if (payload.type == 'file') {
@@ -45,14 +47,19 @@ export class FilepickerComponent implements OnInit {
       this.dialog.open(FileordevicepopupComponent, {
         data: {
           type: 'image',
+          defaultFileName: payload.defaultFileName,
         },
       });
     } else if (payload.type == 'photo') {
       // Open photo
       const respuesta = await this.webcamSrv.openWebcam({});
       if (!respuesta.canceled) {
+        let fileName = payload.defaultFileName;
+        if (!fileName) {
+          fileName = IdGen.nuevo(new Date().getTime()) + '.jpg';
+        }
         this.fileSrv.sendResponse({
-          fileName: IdGen.nuevo(new Date().getTime()) + '.jpg',
+          fileName: fileName,
           base64: respuesta.base64,
           canceled: false,
         });
@@ -68,7 +75,9 @@ export class FilepickerComponent implements OnInit {
       this.fileSrv.sendResponse({
         canceled: false,
         base64: base64,
-        fileName: file.name,
+        fileName: this.lastDefaultFileName
+          ? this.lastDefaultFileName
+          : file.name,
       });
     });
     if (file instanceof Blob) {

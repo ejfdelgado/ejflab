@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
-import { FileResponseData, FileService } from 'src/services/file.service';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  FileRequestData,
+  FileResponseData,
+  FileService,
+} from 'src/services/file.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { IdGen } from 'srcJs/IdGen';
 
@@ -13,7 +17,8 @@ export class FileordevicepopupComponent implements OnInit {
   constructor(
     private fileSrv: FileService,
     private dialogRef: MatDialogRef<FileordevicepopupComponent>,
-    private webcamSrv: WebcamService
+    private webcamSrv: WebcamService,
+    @Inject(MAT_DIALOG_DATA) public data: FileRequestData
   ) {}
   lastCallback: Function | null;
   ngOnInit(): void {}
@@ -21,8 +26,12 @@ export class FileordevicepopupComponent implements OnInit {
   async usePhoto() {
     const respuesta = await this.webcamSrv.openWebcam({});
     if (!respuesta.canceled) {
+      let fileName = this.data.defaultFileName;
+      if (!fileName) {
+        fileName = IdGen.nuevo(new Date().getTime()) + '.jpg';
+      }
       this.fileSrv.sendResponse({
-        fileName: IdGen.nuevo(new Date().getTime()) + '.jpg',
+        fileName: fileName,
         base64: respuesta.base64,
         canceled: false,
       });
@@ -42,6 +51,10 @@ export class FileordevicepopupComponent implements OnInit {
   useImageFile() {
     const processFileThis = this.processFile.bind(this);
     this.lastCallback = this.fileSrv.getLastCallback();
-    this.fileSrv.sendRequest({ type: 'fileimage' }, processFileThis);
+    const options: FileRequestData = {
+      type: 'fileimage',
+      defaultFileName: this.data.defaultFileName,
+    };
+    this.fileSrv.sendRequest(options, processFileThis);
   }
 }

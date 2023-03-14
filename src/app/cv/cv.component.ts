@@ -28,6 +28,7 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     useBackground: false,
     useRoot: MyConstants.SRV_ROOT,
     autosave: true,
+    defaultFileName: 'miImagen.jpg',
   };
   textOptions: TxtOptionsData = {
     height: '200px',

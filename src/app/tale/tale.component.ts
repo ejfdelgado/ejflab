@@ -13,12 +13,15 @@ import {
   AudioCutData,
   AudioOptionsData,
 } from '../mycommon/components/audioeditor/audioeditor.component';
+import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
 
 export interface PageTaleData {
   t: number;
   ti: number;
   tf: number;
   audioUrl: string | null;
+  image1Url: string | null;
+  image2Url: string | null;
   key: string;
 }
 
@@ -45,6 +48,14 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     canDelete: false,
     canSave: true,
     showWaveForm: true,
+  };
+  imageOptions: ImagepickerOptionsData = {
+    isEditable: true,
+    isRounded: false,
+    useBackground: false,
+    useRoot: MyConstants.SRV_ROOT,
+    autosave: true,
+    askType: 'photo',
   };
   temporalBlobAudios: Map<string, Blob> = new Map();
   constructor(
@@ -116,9 +127,17 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     if (!respuesta) {
       return;
     }
+    const promesasBorrar = [];
     if (valor.audioUrl) {
-      await this.fileService.delete(valor.audioUrl);
+      promesasBorrar.push(this.fileService.delete(valor.audioUrl));
     }
+    if (valor.image1Url) {
+      promesasBorrar.push(this.fileService.delete(valor.image1Url));
+    }
+    if (valor.image2Url) {
+      promesasBorrar.push(this.fileService.delete(valor.image2Url));
+    }
+    await Promise.all(promesasBorrar);
     if (llave in this.tupleModel.cuttedAudios) {
       delete this.tupleModel.cuttedAudios[llave];
     }
@@ -135,6 +154,8 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       ti: event.ti,
       tf: event.tf,
       key: id,
+      image1Url: MyConstants.PAGE.DEFAULT_IMAGE,
+      image2Url: MyConstants.PAGE.DEFAULT_IMAGE,
     };
     this.temporalBlobAudios.set(id, event.blob);
     await this.saveTuple();
