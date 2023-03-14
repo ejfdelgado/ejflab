@@ -102,11 +102,6 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     return item.key;
   }
 
-  setAudioUrl(key: string, url: string | null, referencia: any) {
-    referencia.audioUrl = url;
-    this.tupleModel.cuttedAudios[key] = referencia;
-  }
-
   async deleteTalePage(valor: PageTaleData) {
     const respuesta = await this.modalService.confirm({
       txt: 'No se puede deshacer la acción',

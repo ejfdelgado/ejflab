@@ -14,7 +14,6 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
   },
-  { path: 'tale', loadChildren: () => import('./tale/tale.module').then(m => m.TaleModule) },
 ];
 
 /*
@@ -25,6 +24,7 @@ const PAGINAS = [
   { id: 'calendar', module: 'CalendarModule' },
   { id: 'callgame', module: 'CallgameModule' },
   { id: 'customers', module: 'CustomersModule' },
+  { id: 'tale', module: 'TaleModule' },
 ];
 
 for (let i = 0; i < PAGINAS.length; i++) {

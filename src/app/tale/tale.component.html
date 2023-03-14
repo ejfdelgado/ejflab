@@ -21,7 +21,7 @@
         </div>
         <app-audioeditor [fileName]="talePage.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
             [url]="talePage.audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
-            (urlChange)="setAudioUrl(talePage.key, $event, talePage); forgetTemporalBlob(talePage.key); saveTuple()">
+            (urlChange)="talePage.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()">
         </app-audioeditor>
     </div>
 </div>

@@ -1,4 +1,7 @@
 
+const TAMANIO_ALEATORIO = 10;
+const MAX_BUFFER_CHANGES = 3;
+
 class MyTuples {
     static TIPOS_BASICOS = ["string", "number", "boolean"];
     static convertFromBD(model) {
@@ -129,6 +132,7 @@ class MyTuples {
         let listeners = [];
         let ultimaFechaInicio = null;
         let isProcessing = false;
+        const ownTrackedChanges = [];
 
         const addActivityListener = (a) => {
             if (!(a in listeners)) {
@@ -172,11 +176,13 @@ class MyTuples {
                             //Se deben partir los cambios en grupos de MAX_SEND_SIZE
                             const crearBatch = () => {
                                 const batch = {
+                                    "r": createTrackId(),
                                     "+": [],
                                     "-": [],
                                     "*": [],
                                     total: 0,
                                 };
+                                trackChangeId(batch);
                                 const pasarElemento = (simbolo) => {
                                     const lista = ultimo[simbolo];
                                     if (lista.length > 0) {
@@ -243,7 +249,29 @@ class MyTuples {
             }, LOW_PRESSURE_MS);
         };
 
+        const isOwnChange = (cambio) => {
+            const randomId = cambio["r"];
+            if (ownTrackedChanges.indexOf(randomId) >= 0) {
+                return true;
+            }
+            return false;
+        };
+
+        const trackChangeId = (batch) => {
+            ownTrackedChanges.push(batch.r);
+            const tamanioActual = ownTrackedChanges.length;
+            const sobrantes = tamanioActual - MAX_BUFFER_CHANGES;
+            if (sobrantes > 0) {
+                ownTrackedChanges.splice(0, sobrantes);
+            }
+        };
+
+        const createTrackId = () => {
+            return Math.floor(Math.random() * Math.pow(10, TAMANIO_ALEATORIO)).toString(36);
+        };
+
         return {
+            isOwnChange,
             addActivityListener,
             build: (buffer) => {
                 resultado = MyTuples.getObject(buffer, resultado);
@@ -295,10 +323,13 @@ class MyTuples {
                 const modificadas = MyTuples.intersecionArreglo(tuplas1Keys, tuplas2Keys);
 
                 const batch = {
+                    "r": createTrackId(),
                     "+": [],
                     "-": [],
                     "*": [],
                 };
+
+                trackChangeId(batch);
 
                 for (let i = 0; i < nuevas.length; i++) {
                     const llave = nuevas[i];

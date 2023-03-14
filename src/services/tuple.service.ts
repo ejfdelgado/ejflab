@@ -146,11 +146,17 @@ export class TupleServiceInstance {
       const resta = a.t - b.t;
       return resta;
     });
+    let changeCount = 0;
     for (let i = 0; i < lista.length; i++) {
       const differences = lista[i];
-      this.model = this.builder.affect(differences);
+      if (!this.builder.isOwnChange(differences)) {
+        this.model = this.builder.affect(differences);
+        changeCount++;
+      }
     }
-    this.evento.emit({ status: 'news', body: this.model });
+    if (changeCount > 0) {
+      this.evento.emit({ status: 'news', body: this.model });
+    }
     this.myLiveChanges = {};
   }
 
