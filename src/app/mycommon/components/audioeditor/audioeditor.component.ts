@@ -65,8 +65,6 @@ export class AudioeditorComponent implements OnInit {
   markerTi: any = null;
   markerTf: any = null;
   currentBlob: Blob | null = null;
-
-  //mediaRecorder: RecordRTC.MultiStreamRecorder | null = null;
   mediaRecorder: MediaRecorder | null = null;
   responsiveWaveListener: any | null = null;
 
@@ -97,26 +95,6 @@ export class AudioeditorComponent implements OnInit {
 
     const sampleDuration = tf - ti;
     if (blob && this.mediaRecorder) {
-      // https://codepen.io/davidtorroija/pen/WYaKPq
-      // data:audio/wav;base64, OK <= RecordRTC.StereoAudioRecorder
-      // data:audio/webm;codecs=opus;base64, <= MediaRecorder
-      /*
-      this.mediaRecorder.record();
-      setTimeout(() => {
-        if (this.mediaRecorder) {
-          this.mediaRecorder.stop((blob) => {
-            const sampleObject: AudioCutData = {
-              blob: blob,
-              t: sampleDuration,
-              ti: ti,
-              tf: tf,
-            };
-            this.cutEvent.emit(sampleObject);
-          });
-        }
-      }, sampleDuration * 1000);
-      */
-
       const myFunction = async (e: BlobEvent) => {
         const sampleObject: AudioCutData = {
           blob: e.data,
@@ -233,27 +211,13 @@ export class AudioeditorComponent implements OnInit {
       draggable: true,
     });
 
-    //Set up cutter
-    // Creates a mediastream for mediaRecorder
     const streamDestination: MediaStreamAudioDestinationNode =
       this.myWaveForm.backend.getAudioContext().createMediaStreamDestination();
-    // wavesurfer.current.load("./NOISE.wav");
-    // Creates a gainNode to use as a wavesurfer filter (just needs to be something for the audio to pass through)
     const gainNode: GainNode = this.myWaveForm.backend
       .getAudioContext()
       .createGain();
-    // Connects gain node to the audio stream
     gainNode.connect(streamDestination);
     this.myWaveForm.backend.setFilter(gainNode);
-    /*
-    this.mediaRecorder = new RecordRTC.MultiStreamRecorder(
-      [streamDestination.stream],
-      {
-        type: 'audio',
-        mimeType: 'audio/webm',
-      }
-    );
-    */
     this.mediaRecorder = new MediaRecorder(streamDestination.stream);
 
     this.myWaveForm.on('finish', () => {
