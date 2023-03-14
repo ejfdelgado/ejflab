@@ -139,21 +139,21 @@ class IdGen {
     return i;
   }
 
-  static async nuevo(epoch, esInicio) {
+  static async nuevo(epoch, useDayBounds) {
     if (typeof epoch == "number") {
-      if (typeof esInicio == "boolean") {
-        if (esInicio === true) {
+      if (typeof useDayBounds == "boolean") {
+        if (useDayBounds === true) {
           epoch = IdGen.darInicioDia(epoch);
         } else {
           epoch = IdGen.darFinDia(epoch);
         }
-        return IdGen.num2ord(epoch, esInicio);
+        return IdGen.num2ord(epoch, useDayBounds);
       } else {
         return IdGen.num2ord(epoch);
       }
     } else {
       const fecha = await IdGen.ahora();
-      return IdGen.num2ord(fecha, esInicio);
+      return IdGen.num2ord(fecha, useDayBounds);
     }
   }
 

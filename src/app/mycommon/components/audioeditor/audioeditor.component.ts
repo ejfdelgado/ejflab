@@ -10,6 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import RecordRTC from 'recordrtc';
 import { Observable, map } from 'rxjs';
 import {
   FileResponseData,
@@ -48,9 +49,10 @@ export class AudioeditorComponent implements OnInit {
   @Input() options: AudioOptionsData;
   @Input() url: string | null;
   @Input() fileName: string;
-  @Input() externalBlob: Blob | null = null;
   @Output() urlChange = new EventEmitter<string | null>();
   @Output() cutEvent = new EventEmitter<AudioCutData>();
+  @Input() externalBlob: Blob | null = null;
+  recordedBlob: Blob | null = null;
 
   isLoading = false;
   isRecording = false;
@@ -63,7 +65,8 @@ export class AudioeditorComponent implements OnInit {
   markerTi: any = null;
   markerTf: any = null;
   currentBlob: Blob | null = null;
-  recordedBlob: Blob | null = null;
+
+  //mediaRecorder: RecordRTC.MultiStreamRecorder | null = null;
   mediaRecorder: MediaRecorder | null = null;
   responsiveWaveListener: any | null = null;
 
@@ -93,9 +96,28 @@ export class AudioeditorComponent implements OnInit {
     const tf = this.markerTf.time;
 
     const sampleDuration = tf - ti;
-
     if (blob && this.mediaRecorder) {
-      this.mediaRecorder.addEventListener('dataavailable', (e) => {
+      // https://codepen.io/davidtorroija/pen/WYaKPq
+      // data:audio/wav;base64, OK <= RecordRTC.StereoAudioRecorder
+      // data:audio/webm;codecs=opus;base64, <= MediaRecorder
+      /*
+      this.mediaRecorder.record();
+      setTimeout(() => {
+        if (this.mediaRecorder) {
+          this.mediaRecorder.stop((blob) => {
+            const sampleObject: AudioCutData = {
+              blob: blob,
+              t: sampleDuration,
+              ti: ti,
+              tf: tf,
+            };
+            this.cutEvent.emit(sampleObject);
+          });
+        }
+      }, sampleDuration * 1000);
+      */
+
+      const myFunction = async (e: BlobEvent) => {
         const sampleObject: AudioCutData = {
           blob: e.data,
           t: sampleDuration,
@@ -103,7 +125,11 @@ export class AudioeditorComponent implements OnInit {
           tf: tf,
         };
         this.cutEvent.emit(sampleObject);
-      });
+        if (this.mediaRecorder) {
+          this.mediaRecorder.removeEventListener('dataavailable', myFunction);
+        }
+      };
+      this.mediaRecorder.addEventListener('dataavailable', myFunction);
       this.play();
       this.mediaRecorder.start();
       setTimeout(() => {
@@ -116,7 +142,10 @@ export class AudioeditorComponent implements OnInit {
 
   ngOnChanges(changes: any) {
     if (changes.url) {
-      if (typeof changes.url.currentValue == 'string') {
+      if (
+        typeof changes.url.currentValue == 'string' &&
+        changes.url.currentValue.length > 0
+      ) {
         if (typeof changes.url.previousValue == 'string') {
           // Había una url antes y puede que sea la misma, solo cambio el query param
         } else {
@@ -126,6 +155,16 @@ export class AudioeditorComponent implements OnInit {
             this.receiveBlob(blob);
           });
         }
+      }
+    }
+    if (changes.externalBlob && changes.externalBlob.currentValue) {
+      if (changes.externalBlob.currentValue instanceof Blob) {
+        setTimeout(() => {
+          this.recordedBlob = changes.externalBlob.currentValue;
+          if (this.recordedBlob != null) {
+            this.receiveBlob(this.recordedBlob);
+          }
+        }, 0);
       }
     }
   }
@@ -148,8 +187,22 @@ export class AudioeditorComponent implements OnInit {
     );
   }
 
-  receiveBlob(blob: Blob) {
+  async blob2Base64(blob: Blob): Promise<string> {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.addEventListener('load', async (event: any) => {
+        const base64 = event.target.result;
+        resolve(base64);
+      });
+      if (blob instanceof Blob) {
+        reader.readAsDataURL(blob);
+      }
+    });
+  }
+
+  async receiveBlob(blob: Blob) {
     // https://wavesurfer-js.org/docs/methods.html
+    //console.log(await this.blob2Base64(blob));
     this.currentBlob = blob;
     const objectUrl = URL.createObjectURL(blob);
     this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
@@ -163,7 +216,6 @@ export class AudioeditorComponent implements OnInit {
     this.myWaveForm = Wavesurfer.create({
       container: this.myWaveFormRef.nativeElement,
       scrollParent: true,
-      //backend: "MediaElementWebAudio",
       //fillParent: true,
       height: 50,
       plugins: [
@@ -193,6 +245,15 @@ export class AudioeditorComponent implements OnInit {
     // Connects gain node to the audio stream
     gainNode.connect(streamDestination);
     this.myWaveForm.backend.setFilter(gainNode);
+    /*
+    this.mediaRecorder = new RecordRTC.MultiStreamRecorder(
+      [streamDestination.stream],
+      {
+        type: 'audio',
+        mimeType: 'audio/webm',
+      }
+    );
+    */
     this.mediaRecorder = new MediaRecorder(streamDestination.stream);
 
     this.myWaveForm.on('finish', () => {

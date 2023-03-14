@@ -8,6 +8,7 @@ import { ModalService } from './modal.service';
 import { AuthService } from 'src/services/auth.service';
 import { Buffer } from 'buffer';
 import { FileSaveResponseData } from './file.service';
+import { MyDatesFront } from 'srcJs/MyDatesFront';
 
 const DEFAULT_PAGE_SIZE = 30;
 
@@ -48,24 +49,15 @@ export interface LoadFileData {
   providedIn: 'root',
 })
 export class HttpService {
-  timeDifference: number = 0;
   constructor(
     private http: HttpClient,
     private indicatorSrv: IndicatorService,
     private modalSrv: ModalService,
     private auth: AuthService
-  ) {
-    // Se captura la fecha del html
-    const serverTime = document
-      .getElementById('meta_time')
-      ?.getAttribute('content');
-    if (typeof serverTime == 'string' && serverTime.length > 0) {
-      this.timeDifference = new Date().getTime() - parseInt(serverTime);
-    }
-  }
+  ) {}
 
   getServerTime() {
-    return new Date().getTime() - this.timeDifference;
+    return MyDatesFront.getServerTime();
   }
 
   async postWithFile(

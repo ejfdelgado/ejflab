@@ -1,0 +1,21 @@
+.encabezado {
+  padding: 10px;
+}
+
+.all_tale {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px;
+}
+
+.menu_container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.all_tale .card_page {
+  width: 100%;
+}

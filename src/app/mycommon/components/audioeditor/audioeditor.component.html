@@ -26,7 +26,7 @@
     </div>
     <div class="generic_icon" *ngIf="options.canDelete !== false && !isRecording && blobUrl"
         (click)="clearRecordedData()">
-        <mat-icon>delete</mat-icon>
+        <mat-icon>close</mat-icon>
     </div>
     <div class="waveform" *ngIf="options.showWaveForm !== false">
         <div class="waveform_real" #myWaveFormRef></div>

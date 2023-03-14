@@ -40,7 +40,8 @@
               "srcJs/IdGen",
               "srcJs/ModuloDatoSeguro",
               "srcJs/ModuloDatoSeguroFront",
-              "srcJs/MyDatesFront"
+              "srcJs/MyDatesFront",
+              "@ffmpeg/ffmpeg",
             ]
           },
           "configurations": {

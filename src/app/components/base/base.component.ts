@@ -24,7 +24,9 @@ import {
   WebcamResponseData,
   WebcamService,
 } from 'src/services/webcam.service';
+import { IdGen } from 'srcJs/IdGen';
 import { MyConstants } from 'srcJs/MyConstants';
+import { MyDatesFront } from 'srcJs/MyDatesFront';
 
 export interface FileBase64Data {
   base64?: string;
@@ -65,6 +67,16 @@ export class BaseComponent implements OnInit, OnDestroy {
 
   async openWebcam(request: WebcamRequestData): Promise<WebcamResponseData> {
     return this.webcamService.openWebcam(request);
+  }
+
+  async generateId(): Promise<string> {
+    const time = MyDatesFront.getServerTime();
+    let respuesta: string | null = await IdGen.nuevo(time);
+    if (respuesta) {
+      return respuesta;
+    } else {
+      return '';
+    }
   }
 
   private updateDinamicallyOgData(page: PageData | null) {

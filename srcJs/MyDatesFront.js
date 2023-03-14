@@ -3,6 +3,16 @@ const { MyDates } = require('./MyDates.js');
 
 MyDates.configureLocale(dateformat.i18n, dateformat.masks);
 class MyDatesFront extends MyDates {
+    static timeDifference = 0;
+    static {
+        // Se captura la fecha del html
+        const serverTime = document
+            .getElementById('meta_time')
+            ?.getAttribute('content');
+        if (typeof serverTime == 'string' && serverTime.length > 0) {
+            this.timeDifference = new Date().getTime() - parseInt(serverTime);
+        }
+    }
     static formatDate(now, ...args) {
         return MyDates.formatDateBasic(dateformat.default, now, args);
     }
@@ -14,6 +24,9 @@ class MyDatesFront extends MyDates {
     }
     static formatTime(now, ...args) {
         return MyDates.formatTimeBasic(dateformat.default, now, args);
+    }
+    static getServerTime() {
+        return new Date().getTime() - this.timeDifference;
     }
 }
 

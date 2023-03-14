@@ -1,8 +1,6 @@
 <div class="menu_container">
     <div class="generic_icon" [matMenuTriggerFor]="myMenu" aria-label="Menú">
-        <div class="menu_icon_user">
-            <fa-icon [icon]="faEllipsisVerticalIcon"></fa-icon>
-        </div>
+        <mat-icon>menu</mat-icon>
     </div>
     <mat-menu #myMenu="matMenu">
         <button *ngIf="url != null" (click)="share()" mat-menu-item>

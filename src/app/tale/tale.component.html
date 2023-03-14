@@ -1,0 +1,24 @@
+<div class="encabezado">
+    <app-audioeditor [fileName]="'general.mp3'" [options]="audioOptions" [url]="tupleModel?.generalAudioFile"
+        (cutEvent)="receiveCuttedAudio($event);">
+    </app-audioeditor>
+</div>
+<div class="all_tale" *ngIf="tupleModel != null && tupleModel.cuttedAudios">
+    <div class="card_page" *ngFor="let talePage of tupleModel.cuttedAudios | keyvalue">
+        <div class="menu_container">
+            <div class="generic_icon" [matMenuTriggerFor]="myMenu" aria-label="Menú">
+                <mat-icon>menu</mat-icon>
+            </div>
+            <mat-menu #myMenu="matMenu">
+                <button (click)="deleteTalePage(talePage.key, talePage.value)" mat-menu-item>
+                    <mat-icon>delete</mat-icon>
+                    <span>Borrar</span>
+                </button>
+            </mat-menu>
+        </div>
+        <app-audioeditor [fileName]="talePage.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
+            [url]="castPageData(talePage.value).audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
+            (urlChange)="castPageData(talePage.value).audioUrl=$event; saveTuple()">
+        </app-audioeditor>
+    </div>
+</div>

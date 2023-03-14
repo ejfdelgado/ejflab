@@ -10,10 +10,7 @@ import { WebcamService } from 'src/services/webcam.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { MyConstants } from 'srcJs/MyConstants';
-import {
-  BaseComponent,
-  FileBase64Data,
-} from '../components/base/base.component';
+import { BaseComponent } from '../components/base/base.component';
 import { AudioOptionsData } from '../mycommon/components/audioeditor/audioeditor.component';
 import { BlobOptionsData } from '../mycommon/components/blobeditor/blobeditor.component';
 import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
@@ -49,15 +46,6 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     canDelete: true,
     canSave: true,
     showWaveForm: true,
-  };
-  audioOptionsReadOnly: AudioOptionsData = {
-    useRoot: MyConstants.SRV_ROOT,
-    canCut: false,
-    canDownload: false,
-    canUpload: false,
-    canDelete: true,
-    canSave: true,
-    showWaveForm: false,
   };
   constructor(
     public override route: ActivatedRoute,
