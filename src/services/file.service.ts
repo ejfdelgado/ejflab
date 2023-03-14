@@ -62,6 +62,14 @@ export class FileService {
     this.evento.emit(request);
   }
 
+  async delete(url: string): Promise<void> {
+    const partes = MyRoutes.splitPageData(location.pathname);
+    const options: HttpOptionsData = {
+      showIndicator: true,
+    };
+    await this.httpSrv.delete(url, {}, options);
+  }
+
   async save(payload: FileSaveData): Promise<FileSaveResponseData> {
     const idPage = document
       .getElementById('meta_page_id')

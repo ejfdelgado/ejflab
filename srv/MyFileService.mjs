@@ -112,6 +112,19 @@ export class MyFileService {
         return null;
     }
 
+    static async deleteFile(req, res, next) {
+        const originalUrl = req.originalUrl;
+        const filePath = decodeURIComponent(originalUrl.replace(/^\//, "").replace(/\?.*$/, ""));
+        const bucket = privateBucket;
+        const oldFileRef = bucket.file(filePath);
+        try {
+            await oldFileRef.delete();
+        } catch (err) {
+            //ignore, best effor
+        }
+        res.status(204).send();
+    }
+
     static async readFile(req, res, next) {
         const downloadFlag = req.query ? req.query.download : false;
         const encoding = req.query ? req.query.encoding : null;

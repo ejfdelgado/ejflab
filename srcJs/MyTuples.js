@@ -119,7 +119,7 @@ class MyTuples {
     static getBuilder() {
         const START_BACKOFF = 0;
         const BACK_OFF_MULTIPLIER = 500;
-        const MAX_SEND_SIZE = 2;// Cuántas tuplas se pueden afectar en un llamado
+        const MAX_SEND_SIZE = 20;// Cuántas tuplas se pueden afectar en un llamado
         const LOW_PRESSURE_MS = 1000;
 
         let resultado = {};

@@ -3,22 +3,25 @@
         (cutEvent)="receiveCuttedAudio($event);">
     </app-audioeditor>
 </div>
+<!--button (click)="borrarTodo()">Borrar Todo</button-->
+<!--pre>{{ tupleModel | json }}</pre>
+<pre>{{ talePageList | json }}</pre-->
 <div class="all_tale" *ngIf="tupleModel != null && tupleModel.cuttedAudios">
-    <div class="card_page" *ngFor="let talePage of tupleModel.cuttedAudios | keyvalue">
+    <div class="card_page" *ngFor="let talePage of talePageList; let i=index; trackBy: trackByItems">
         <div class="menu_container">
             <div class="generic_icon" [matMenuTriggerFor]="myMenu" aria-label="Menú">
                 <mat-icon>menu</mat-icon>
             </div>
             <mat-menu #myMenu="matMenu">
-                <button (click)="deleteTalePage(talePage.key, talePage.value)" mat-menu-item>
+                <button (click)="deleteTalePage(talePage)" mat-menu-item>
                     <mat-icon>delete</mat-icon>
                     <span>Borrar</span>
                 </button>
             </mat-menu>
         </div>
         <app-audioeditor [fileName]="talePage.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
-            [url]="castPageData(talePage.value).audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
-            (urlChange)="castPageData(talePage.value).audioUrl=$event; saveTuple()">
+            [url]="talePage.audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
+            (urlChange)="setAudioUrl(talePage.key, $event, talePage); forgetTemporalBlob(talePage.key); saveTuple()">
         </app-audioeditor>
     </div>
 </div>

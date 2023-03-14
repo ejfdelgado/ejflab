@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import RecordRTC from 'recordrtc';
-import { Observable, map } from 'rxjs';
+import { Observable, map, Subscription } from 'rxjs';
 import {
   FileResponseData,
   FileSaveData,
@@ -67,6 +67,7 @@ export class AudioeditorComponent implements OnInit {
   currentBlob: Blob | null = null;
   mediaRecorder: MediaRecorder | null = null;
   responsiveWaveListener: any | null = null;
+  recordSubscriptions: Array<Subscription> = [];
 
   constructor(
     private audioRecordingService: MyAudioService,
@@ -75,17 +76,29 @@ export class AudioeditorComponent implements OnInit {
     public cdr: ChangeDetectorRef,
     public fileService: FileService,
     private httpClient: HttpClient
-  ) {
-    this.audioRecordingService
-      .recordingFailed()
-      .subscribe(() => (this.isRecording = false));
-    this.audioRecordingService
-      .getRecordedTime()
-      .subscribe((time) => (this.recordedTime = time));
-    this.audioRecordingService.getRecordedBlob().subscribe((data) => {
-      this.recordedBlob = data.blob;
-      this.receiveBlob(this.recordedBlob);
-    });
+  ) {}
+
+  subscribe() {
+    this.recordSubscriptions.push(
+      this.audioRecordingService.recordingFailed().subscribe(() => {
+        this.isRecording = false;
+        this.unsubscribe();
+      })
+    );
+    this.recordSubscriptions.push(
+      this.audioRecordingService.getRecordedBlob().subscribe((data) => {
+        this.recordedBlob = data.blob;
+        this.receiveBlob(this.recordedBlob);
+        this.unsubscribe();
+      })
+    );
+  }
+
+  unsubscribe() {
+    for (let i = 0; i < this.recordSubscriptions.length; i++) {
+      const actual = this.recordSubscriptions[i];
+      actual.unsubscribe();
+    }
   }
 
   cut() {
@@ -244,7 +257,9 @@ export class AudioeditorComponent implements OnInit {
     this.responsiveWaveListener = this.myWaveForm.util.debounce(() => {
       if (this.myWaveForm) {
         this.myWaveForm['drawer'].updateSize();
-        this.myWaveForm['drawBuffer']();
+        try {
+          this.myWaveForm['drawBuffer']();
+        } catch (err) {}
       }
     }, 0);
 
@@ -302,6 +317,7 @@ export class AudioeditorComponent implements OnInit {
 
   startRecording() {
     if (!this.isRecording) {
+      this.subscribe();
       this.isRecording = true;
       this.audioRecordingService.startRecording();
     }
@@ -337,6 +353,7 @@ export class AudioeditorComponent implements OnInit {
 
   ngOnDestroy(): void {
     this.abortRecording();
+    this.unsubscribe();
     if (this.myWaveForm) {
       this.myWaveForm.destroy();
     }
