@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from 'src/services/auth.service';
 import { MatDialog } from '@angular/material/dialog';
-import { BaseComponent } from '../components/base/base.component';
+import { BaseComponent } from 'src/app/components/base/base.component';
 import { ActivatedRoute } from '@angular/router';
 import { BackendPageService } from 'src/services/backendPage.service';
 import { faGamepad } from '@fortawesome/free-solid-svg-icons';

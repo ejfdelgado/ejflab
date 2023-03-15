@@ -16,13 +16,11 @@ ng serve -o
 
 ng generate component selectornumerico
 
-ng generate module cv --route cv --module app.module
-ng generate module calendar --route calendar --module app.module
-ng generate module callgame --route callgame --module app.module
-ng generate module tale --route tale --module app.module
-ng generate module home --route home --module app.module
-ng generate module elementos
-ng generate module common
+ng generate module views/cv --route cv --module app.module
+ng generate module views/calendar --route calendar --module app.module
+ng generate module views/callgame --route callgame --module app.module
+ng generate module views/tale --route tale --module app.module
+ng generate module views/home --route home --module app.module
 
 ng generate component home/components/alert
 ng generate component home/components/confirm

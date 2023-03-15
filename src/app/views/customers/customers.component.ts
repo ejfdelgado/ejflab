@@ -7,7 +7,7 @@ import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
 import { WebcamService } from 'src/services/webcam.service';
-import { BaseComponent } from '../components/base/base.component';
+import { BaseComponent } from 'src/app/components/base/base.component';
 
 @Component({
   selector: 'app-customers',

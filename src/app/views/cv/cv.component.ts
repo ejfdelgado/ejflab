@@ -10,11 +10,11 @@ import { WebcamService } from 'src/services/webcam.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 import { MyConstants } from 'srcJs/MyConstants';
-import { BaseComponent } from '../components/base/base.component';
-import { AudioOptionsData } from '../mycommon/components/audioeditor/audioeditor.component';
-import { BlobOptionsData } from '../mycommon/components/blobeditor/blobeditor.component';
-import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
-import { TxtOptionsData } from '../mycommon/components/txtfileeditor/txtfileeditor.component';
+import { BaseComponent } from 'src/app/components/base/base.component';
+import { AudioOptionsData } from 'src/app/mycommon/components/audioeditor/audioeditor.component';
+import { BlobOptionsData } from 'src/app/mycommon/components/blobeditor/blobeditor.component';
+import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/imagepicker.component';
+import { TxtOptionsData } from 'src/app/mycommon/components/txtfileeditor/txtfileeditor.component';
 
 @Component({
   selector: 'app-cv',

@@ -5,7 +5,7 @@ https://fontawesome.com/icons?d=gallery
 
 MUST:
 - Hacer un componente con canvas que cargue dos imágenes, que permita con una de ellas hacer el efecto de fondo verde.
-- que cuando se corta el audio alguien más capture el evento para crear otro audio.
+https://kernhanda.github.io/tutorial-typescript-canvas-drawing/
 
 - modal con z-index 1001 para webcam capture.
 - reactividad de pg y tuple con el usuario logeado.

@@ -12,7 +12,7 @@ const redirectLoggedInToHome = () => redirectLoggedInTo(['customers']);
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./home/home.module').then((m) => m.HomeModule),
+    loadChildren: () => import('./views/home/home.module').then((m) => m.HomeModule),
   },
 ];
 
@@ -34,7 +34,7 @@ for (let i = 0; i < PAGINAS.length; i++) {
     //canActivate: [AuthGuard],
     //data: { authGuardPipe: redirectUnauthorizedToLogin },
     loadChildren: () =>
-      import(`./${actual.id}/${actual.id}.module`).then(
+      import(`./views/${actual.id}/${actual.id}.module`).then(
         (m) => m[actual.module]
       ),
   });
@@ -43,7 +43,7 @@ for (let i = 0; i < PAGINAS.length; i++) {
     //canActivate: [AuthGuard],
     //data: { authGuardPipe: redirectUnauthorizedToLogin },
     loadChildren: () =>
-      import(`./${actual.id}/${actual.id}.module`).then(
+      import(`./views/${actual.id}/${actual.id}.module`).then(
         (m) => m[actual.module]
       ),
   });

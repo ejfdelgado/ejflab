@@ -1,11 +1,7 @@
 .titulo_anio {
-  width: 100%;
   text-align: center;
-  padding-top: 25px;
-  padding-bottom: 10px;
 }
 .year {
-  padding: 0 10% 50px 10%;
   position: fixed;
   top: 0;
   bottom: 0;
@@ -16,8 +12,7 @@
 }
 
 .year > .calendar {
-  border: 1px solid;
-  border-radius: 10px 10px 0 0;
+
 }
 
 .myscroll {
@@ -57,7 +52,7 @@
 
 .ind {
   position: relative;
-  border-radius: 50%;
+  border-radius: 5px;
   width: 100%;
   height: auto;
   padding: 33% 0;

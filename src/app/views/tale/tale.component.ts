@@ -8,12 +8,12 @@ import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { MyConstants } from 'srcJs/MyConstants';
-import { BaseComponent } from '../components/base/base.component';
+import { BaseComponent } from 'src/app/components/base/base.component';
 import {
   AudioCutData,
   AudioOptionsData,
-} from '../mycommon/components/audioeditor/audioeditor.component';
-import { ImagepickerOptionsData } from '../mycommon/components/imagepicker/imagepicker.component';
+} from 'src/app/mycommon/components/audioeditor/audioeditor.component';
+import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/imagepicker.component';
 
 export interface PageTaleData {
   t: number;
