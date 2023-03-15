@@ -22,12 +22,10 @@
             (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()">
         </app-audioeditor>
         <div class="pictures">
-            <app-imagepicker [options]="imageOptions" [fileName]="talePage.value.key+'_img1.jpg'"
-                [url]="talePage.value.image1Url" (urlChange)="talePage.value.image1Url=$event; saveTuple()">
-            </app-imagepicker>
-            <app-imagepicker [options]="imageOptions" [fileName]="talePage.value.key+'_img2.jpg'"
-                [url]="talePage.value.image2Url" (urlChange)="talePage.value.image2Url=$event; saveTuple()">
-            </app-imagepicker>
+            <app-canvaseditor [url]="talePage.value.canvasUrl"
+                (urlChange)="talePage.value.canvasUrl=$event; saveTuple()"
+                [defaultFileName]="getDefaultCanvasImageName(talePage.value.key)" [options]="imageOptions">
+            </app-canvaseditor>
         </div>
     </div>
 </div>

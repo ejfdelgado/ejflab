@@ -16,6 +16,7 @@ import { FileordevicepopupComponent } from './components/fileordevicepopup/fileo
 import { FilepickerComponent } from './components/filepicker/filepicker.component';
 import { AudioeditorComponent } from './components/audioeditor/audioeditor.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     FileordevicepopupComponent,
     FilepickerComponent,
     AudioeditorComponent,
+    CanvaseditorComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -49,7 +51,8 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     BlobeditorComponent,
     FilepickerComponent,
     FileordevicepopupComponent,
-    AudioeditorComponent
+    AudioeditorComponent,
+    CanvaseditorComponent
   ],
 })
 export class MycommonModule {}

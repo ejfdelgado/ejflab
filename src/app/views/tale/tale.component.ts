@@ -14,14 +14,17 @@ import {
   AudioOptionsData,
 } from 'src/app/mycommon/components/audioeditor/audioeditor.component';
 import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/imagepicker.component';
+import {
+  CanvasOptionsData,
+  ImagesUrlData,
+} from 'src/app/mycommon/components/canvaseditor/canvaseditor.component';
 
 export interface PageTaleData {
   t: number;
   ti: number;
   tf: number;
   audioUrl: string | null;
-  image1Url: string | null;
-  image2Url: string | null;
+  canvasUrl?: ImagesUrlData;
   key: string;
 }
 
@@ -49,13 +52,10 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     canSave: true,
     showWaveForm: true,
   };
-  imageOptions: ImagepickerOptionsData = {
-    isEditable: true,
-    isRounded: false,
-    useBackground: false,
+  imageOptions: CanvasOptionsData = {
+    height: 500,
+    width: 500,
     useRoot: MyConstants.SRV_ROOT,
-    autosave: true,
-    askType: 'photo',
   };
   temporalBlobAudios: Map<string, Blob> = new Map();
   constructor(
@@ -88,6 +88,14 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
 
   forgetTemporalBlob(llave: string) {
     this.temporalBlobAudios.delete(llave);
+  }
+
+  getDefaultCanvasImageName(llave: string): ImagesUrlData {
+    return {
+      actor: `${llave}/actor.png`,
+      background: `${llave}/background.jpg`,
+      sketch: `${llave}/sketch.png`,
+    };
   }
 
   getTemporalBlob(llave: string): Blob | null {
@@ -131,11 +139,14 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     if (valor.audioUrl) {
       promesasBorrar.push(this.fileService.delete(valor.audioUrl));
     }
-    if (valor.image1Url) {
-      promesasBorrar.push(this.fileService.delete(valor.image1Url));
+    if (valor.canvasUrl?.actor) {
+      promesasBorrar.push(this.fileService.delete(valor.canvasUrl.actor));
     }
-    if (valor.image2Url) {
-      promesasBorrar.push(this.fileService.delete(valor.image2Url));
+    if (valor.canvasUrl?.background) {
+      promesasBorrar.push(this.fileService.delete(valor.canvasUrl.background));
+    }
+    if (valor.canvasUrl?.sketch) {
+      promesasBorrar.push(this.fileService.delete(valor.canvasUrl.sketch));
     }
     await Promise.all(promesasBorrar);
     if (llave in this.tupleModel.cuttedAudios) {

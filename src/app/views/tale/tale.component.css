@@ -5,7 +5,6 @@
 .all_tale {
   display: flex;
   flex-direction: column;
-  width: 100%;
   padding: 10px;
 }
 
@@ -25,9 +24,13 @@
 .all_tale .card_page .pictures {
   width: 100%;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0;
 }
 
-.all_tale .card_page .pictures app-imagepicker {
+.all_tale .card_page .pictures app-canvaseditor {
   flex: 1;
+  /*height: 60vh;*/
+  max-width: 90vw;
 }
