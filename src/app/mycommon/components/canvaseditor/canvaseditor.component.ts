@@ -71,8 +71,10 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   private canvasBackground: HTMLCanvasElement;
   private contextBackground: CanvasRenderingContext2D | null;
 
-  private paint: boolean;
+  mode: string = 'paint';
+  private isDragging: boolean;
 
+  private pickedColor: Uint8ClampedArray | null = null;
   private clickX: number[] = [];
   private clickY: number[] = [];
   private clickDrag: boolean[] = [];
@@ -202,6 +204,10 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     });
   }
 
+  transparency() {
+    this.mode = 'remove_background';
+  }
+
   drawImageScaled(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
     let canvas = ctx.canvas;
     let hRatio = canvas.width / img.width;
@@ -318,6 +324,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   async guardar() {
     const fileNames = this.defaultFileName;
     const promesas = [];
+    console.log(JSON.stringify(this.changes));
     if (this.changes.sketch) {
       promesas.push(
         new Promise<void>((resolve, reject) => {
@@ -485,15 +492,6 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     contexto.clearRect(0, 0, this.options.width, this.options.height);
   }
 
-  private releaseEventHandler = () => {
-    this.paint = false;
-    this.redraw();
-  };
-
-  private cancelEventHandler = () => {
-    this.paint = false;
-  };
-
   private getGlobalOffset(el: HTMLElement) {
     let x = 0;
     let y = 0;
@@ -536,23 +534,74 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     };
   }
 
-  private pressEventHandler = (e: MouseEvent | TouchEvent) => {
-    const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
-    this.paint = true;
+  private startPaint(mouseX: number, mouseY: number) {
     this.clickX = [];
     this.clickY = [];
     this.clickDrag = [];
     this.addClick(mouseX, mouseY, false);
     this.redraw();
+  }
+
+  private pickColor(mouseX: number, mouseY: number) {
+    if (!this.contextGreen) {
+      return;
+    }
+    try {
+      const pixel = this.contextGreen.getImageData(mouseX, mouseY, 1, 1);
+      this.pickedColor = pixel.data;
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  private clearBackground() {
+    if (this.pickedColor) {
+      const data = this.pickedColor;
+      const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+      console.log(rgba);
+    }
+  }
+
+  private pressEventHandler = (e: MouseEvent | TouchEvent) => {
+    const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
+    this.isDragging = true;
+    if (this.mode == 'remove_background') {
+      this.pickColor(mouseX, mouseY);
+    } else if (this.mode == 'paint') {
+      this.startPaint(mouseX, mouseY);
+    }
   };
 
   private dragEventHandler = (e: MouseEvent | TouchEvent) => {
-    const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
-    if (this.paint) {
-      this.addClick(mouseX, mouseY, true);
+    if (this.isDragging) {
+      const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
+      if (this.mode == 'remove_background') {
+        this.pickColor(mouseX, mouseY);
+      } else if (this.mode == 'paint') {
+        this.addClick(mouseX, mouseY, true);
+        this.redraw();
+      }
+      e.preventDefault();
+    }
+  };
+
+  private releaseEventHandler = () => {
+    if (this.mode == 'remove_background') {
+      this.clearBackground();
+      this.mode = 'paint';
+      this.pickedColor = null;
+    } else if (this.mode == 'paint') {
       this.redraw();
     }
+    this.isDragging = false;
+  };
 
-    e.preventDefault();
+  private cancelEventHandler = () => {
+    if (this.mode == 'remove_background') {
+      this.mode = 'paint';
+      this.pickedColor = null;
+    } else if (this.mode == 'paint') {
+    }
+    this.isDragging = false;
   };
 }

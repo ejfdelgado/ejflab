@@ -3,15 +3,12 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 9px;
 }
 
 .canvas_container {
   height: 100%;
   width: 100%;
   position: relative;
-  box-shadow: 1px 1px 4px 1px #c7c8ca;
-  border-radius: 5px;
 }
 
 .main_container .back {
@@ -24,17 +21,27 @@
   max-height: 100%;
   max-width: 100%;
   z-index: 1;
+  border-radius: 5px;
 }
 
 .main_container canvas.front {
   position: relative;
   z-index: 2;
+  box-shadow: 1px 1px 4px 1px #c7c8ca;
 }
 
 .menu_container {
+  z-index: 3;
+  width: 100%;
+  position: relative;
+}
+
+.local_icon {
   position: absolute;
   left: -16px;
-  top: -16px;
-  z-index: 3;
-  width: 29px;
+  bottom: -16px;
+}
+
+.transparente {
+  visibility: hidden;
 }
