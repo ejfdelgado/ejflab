@@ -289,7 +289,8 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   private loadImage(url: string): Observable<string> {
     if (
       /^https?:\/\/storage\.googleapis\.com/i.exec(url) != null ||
-      /^data:image/i.exec(url) != null
+      /^data:image/i.exec(url) != null ||
+      /^blob:/i.exec(url) != null
     ) {
       return of(url);
     }
@@ -630,6 +631,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       this.doSeedPointRegionGrow();
     } else if (this.mode == 'edit_sketch') {
       this.redraw();
+      this.takeSnapshot('sketch');
     }
     this.isDragging = false;
   };
@@ -674,7 +676,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         const diferencia =
           lista.length + 1 - CanvaseditorComponent.MAX_UNDO_SIZE;
         if (diferencia >= 0) {
-          lista.slice(0, diferencia);
+          lista.splice(0, diferencia);
         }
         lista.push(blob);
       }
@@ -704,5 +706,9 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     if (!lista) {
       return;
     }
+    lista.splice(lista.length - 1, 1);
+    const lastBlob = lista[lista.length - 1];
+    const url = URL.createObjectURL(lastBlob);
+    await this.localLoadImages(url, type);
   }
 }
