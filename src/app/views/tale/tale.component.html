@@ -3,7 +3,7 @@
         (cutEvent)="receiveCuttedAudio($event);">
     </app-audioeditor>
 </div>
-<!--button (click)="borrarTodo()">Borrar Todo</button-->
+<button (click)="loginSrv.login()">Login</button>
 <div class="all_tale" *ngIf="tupleModel != null && tupleModel.cuttedAudios">
     <div class="card_page" *ngFor="let talePage of getTalePageMap() | keyvalue : talePageOrder; trackBy: trackByItems ">
         <div class="menu_container">

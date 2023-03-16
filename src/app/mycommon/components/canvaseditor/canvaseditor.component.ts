@@ -9,9 +9,9 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { map, Observable, of } from 'rxjs';
 import { FileRequestData, FileService } from 'src/services/file.service';
+import { IndicatorService } from 'src/services/indicator.service';
 import { ModalService } from 'src/services/modal.service';
 
 export interface CanvasOptionsData {
@@ -65,6 +65,9 @@ export interface SeedData {
 })
 export class CanvaseditorComponent implements OnInit, OnChanges {
   static MAX_UNDO_SIZE = 7;
+  static HUE_SIMILITUD_360 = 10;
+  static SAT_MIN = 0.4;
+  static VAL_MIN = 0.3;
   static MAPEO_MODES: any = {
     edit_sketch: 'sketch',
     edit_actor: 'actor',
@@ -90,7 +93,8 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   private canvasBackground: HTMLCanvasElement;
   private contextBackground: CanvasRenderingContext2D | null;
 
-  mode: string = 'edit_sketch';
+  isWorkingHard = false;
+  mode: string = 'none';
   private isDragging: boolean;
 
   private pickedPoint: PickedData | null = null;
@@ -164,7 +168,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     private modalSrv: ModalService,
     public fileService: FileService,
     private httpClient: HttpClient,
-    private domSanitizer: DomSanitizer
+    private indicatorSrv: IndicatorService
   ) {
     this.lastStrokeColor = this.menuColors[0].option;
     this.lastStrokeSize = this.menuSize[0].option;
@@ -200,7 +204,6 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       this.setStrokeOptions(this.menuSize[0].option);
       this.setStrokeOptions(this.lastStrokeColor);
 
-      //this.redraw();
       this.createUserEvents();
     }, 0);
   }
@@ -222,10 +225,6 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         this.changes.background = true;
       }
     });
-  }
-
-  transparency() {
-    this.changeToMode('edit_actor');
   }
 
   drawImageScaled(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
@@ -418,7 +417,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       );
     }
     await Promise.all(promesas);
-    this.changeToMode('edit_sketch');
+    this.changeToMode('none');
     if (promesas.length > 0) {
       this.urlChange.emit(this.url);
     }
@@ -644,22 +643,8 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
 
   private pixelBelong(seed: PickedData, actual: PickedData) {
     if (seed.hsv && actual.hsv) {
-      const origSat = seed.hsv[1];
-      const origVal = seed.hsv[2];
-      const LIMIT = 0.2;
-      if (origSat > LIMIT && origVal > LIMIT) {
-        // Has color
-        const diff = Math.abs(seed.hsv[0] - actual.hsv[0]);
-        return diff < 30;
-      } else if (origSat <= LIMIT && origVal > LIMIT) {
-        // Like white -> belive in value
-        const diff = Math.abs(seed.hsv[2] - actual.hsv[2]);
-        return diff < 0.1;
-      } else if (origVal <= LIMIT) {
-        // Like black -> belive in saturation
-        const diff = Math.abs(seed.hsv[1] - actual.hsv[1]);
-        return diff < 0.5;
-      }
+      const diff = Math.abs(seed.hsv[0] - actual.hsv[0]);
+      return diff < CanvaseditorComponent.HUE_SIMILITUD_360;
     }
     return false;
   }
@@ -673,6 +658,20 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         data[1] / 255,
         data[2] / 255
       );
+      if (
+        !(
+          pickedPoint.hsv[1] > CanvaseditorComponent.SAT_MIN &&
+          pickedPoint.hsv[2] > CanvaseditorComponent.VAL_MIN
+        )
+      ) {
+        this.modalSrv.alert({
+          title: 'Ups!',
+          txt: `Debes seleccionar una región con más color. Sat:${pickedPoint.hsv[1].toFixed(
+            2
+          )}. Val:${pickedPoint.hsv[2].toFixed(2)}`,
+        });
+        return;
+      }
 
       //const hsl = this.rgb2hsl(data[0] / 255, data[1] / 255, data[2] / 255);
       //const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
@@ -716,6 +715,9 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   }
 
   private pressEventHandler = (e: MouseEvent | TouchEvent) => {
+    if (this.isWorkingHard) {
+      return;
+    }
     const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
     this.isDragging = true;
     if (this.mode == 'edit_actor') {
@@ -740,18 +742,25 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
 
   private releaseEventHandler = () => {
     if (this.mode == 'edit_actor') {
-      if (this.contextGreen) {
-        this.doSeedPointRegionGrow(this.contextGreen);
-      }
+      this.isWorkingHard = true;
+      setTimeout(() => {
+        if (this.contextGreen) {
+          this.doSeedPointRegionGrow(this.contextGreen);
+          setTimeout(() => {
+            this.isWorkingHard = false;
+          }, 100);
+        }
+      }, 100);
     } else if (this.mode == 'edit_sketch') {
       this.redraw();
       this.takeSnapshot('sketch');
     }
     this.isDragging = false;
   };
-  private changeToMode(mode: string) {
-    const type = CanvaseditorComponent.MAPEO_MODES[mode];
+
+  changeToMode(mode: string) {
     this.mode = mode;
+    const type = CanvaseditorComponent.MAPEO_MODES[mode];
     const listaSketch = this.snapshots.get('sketch');
     const listaActor = this.snapshots.get('actor');
     const listaBackground = this.snapshots.get('background');
@@ -806,15 +815,17 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   }
   acceptImage() {
     if (this.mode == 'edit_actor') {
-      this.changeToMode('edit_sketch');
+      this.changes.actor = true;
+      this.changeToMode('none');
     }
   }
   cancelImage() {
     if (this.mode == 'edit_actor') {
-      this.changeToMode('edit_sketch');
+      this.undoImage(true);
+      this.changeToMode('none');
     }
   }
-  async undoImage(): Promise<void> {
+  async undoImage(first = false): Promise<void> {
     const type = CanvaseditorComponent.MAPEO_MODES[this.mode];
     const lista = this.snapshots.get(type);
     if (!lista) {
@@ -823,7 +834,10 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     if (lista.length > 1) {
       lista.splice(lista.length - 1, 1);
     }
-    const lastBlob = lista[lista.length - 1];
+    let lastBlob = lista[lista.length - 1];
+    if (first) {
+      lastBlob = lista[0];
+    }
     const url = URL.createObjectURL(lastBlob);
     await this.localLoadImages(url, type);
   }

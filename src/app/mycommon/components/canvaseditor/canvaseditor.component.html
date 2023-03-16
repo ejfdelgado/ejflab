@@ -24,6 +24,20 @@
                         <span>Fondo</span>
                     </button>
                 </mat-menu>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuMagic">
+                    <mat-icon>auto_fix_normal</mat-icon>
+                    <span>Editar</span>
+                </button>
+                <mat-menu #myMenuMagic="matMenu">
+                    <button mat-menu-item (click)="changeToMode('edit_sketch')">
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar trazos</span>
+                    </button>
+                    <button mat-menu-item (click)="changeToMode('edit_actor')">
+                        <mat-icon>image_search</mat-icon>
+                        <span>Editar fondo</span>
+                    </button>
+                </mat-menu>
                 <button mat-menu-item [matMenuTriggerFor]="myMenuTool">
                     <mat-icon>waving_hand</mat-icon>
                     <span>Herramienta</span>
@@ -62,16 +76,6 @@
                     <mat-icon>delete</mat-icon>
                     <span>Borrar</span>
                 </button>
-                <button mat-menu-item [matMenuTriggerFor]="myMenuMagic">
-                    <mat-icon>auto_fix_normal</mat-icon>
-                    <span>Magic</span>
-                </button>
-                <mat-menu #myMenuMagic="matMenu">
-                    <button mat-menu-item (click)="transparency()">
-                        <mat-icon>image_search</mat-icon>
-                        <span>Quitar fondo</span>
-                    </button>
-                </mat-menu>
                 <mat-menu #myMenuDelete="matMenu">
                     <button mat-menu-item (click)="clearCanvas('sketch')">
                         <mat-icon>gesture</mat-icon>
@@ -102,7 +106,7 @@
             </div>
         </div>
     </div>
-    <div #eventsContainer class="canvas_container">
+    <div #eventsContainer class="canvas_container" [ngClass]="{'ocupado': isWorkingHard}">
         <canvas #canvasBackground class="back" [ngClass]="{'invisible': (mode=='edit_actor')}">
         </canvas>
         <canvas #canvasGreen class="green back">

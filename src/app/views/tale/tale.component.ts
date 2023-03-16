@@ -18,6 +18,7 @@ import {
   CanvasOptionsData,
   ImagesUrlData,
 } from 'src/app/mycommon/components/canvaseditor/canvaseditor.component';
+import { LoginService } from 'src/services/login.service';
 
 export interface PageTaleData {
   t: number;
@@ -67,7 +68,8 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     public override tupleService: TupleService,
     public override fileService: FileService,
     public override modalService: ModalService,
-    public override webcamService: WebcamService
+    public override webcamService: WebcamService,
+    public loginSrv: LoginService
   ) {
     super(
       route,
