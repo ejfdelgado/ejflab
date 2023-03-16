@@ -93,6 +93,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   private canvasBackground: HTMLCanvasElement;
   private contextBackground: CanvasRenderingContext2D | null;
 
+  threshold = 40;
   isWorkingHard = false;
   mode: string = 'none';
   private isDragging: boolean;
@@ -528,6 +529,10 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       background: this.contextBackground,
     };
     contexto = MAP[option];
+    if (!contexto) {
+      return;
+    }
+    contexto.clearRect(0, 0, this.options.width, this.options.height);
     if (option == 'sketch') {
       this.changes.sketch = true;
     } else if (option == 'actor') {
@@ -535,11 +540,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     } else if (option == 'background') {
       this.changes.background = true;
     }
-
-    if (!contexto) {
-      return;
-    }
-    contexto.clearRect(0, 0, this.options.width, this.options.height);
+    this.takeSnapshot(option);
   }
 
   private getGlobalOffset(el: HTMLElement) {
@@ -632,19 +633,33 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       var currPoint = stack.pop();
       if (isEmpty(currPoint)) {
         // Check if the point is not filled
-        setPixel(currPoint); // Fill the point with the foreground
-        stack.push({ x: currPoint.x + 1, y: currPoint.y }); // Fill the east neighbour
-        stack.push({ x: currPoint.x, y: currPoint.y + 1 }); // Fill the south neighbour
-        stack.push({ x: currPoint.x - 1, y: currPoint.y }); // Fill the west neighbour
-        stack.push({ x: currPoint.x, y: currPoint.y - 1 }); // Fill the north neighbour
+        setPixel(currPoint);
+
+        stack.push({ x: currPoint.x + 1, y: currPoint.y });
+        stack.push({ x: currPoint.x, y: currPoint.y + 1 });
+        stack.push({ x: currPoint.x - 1, y: currPoint.y });
+        stack.push({ x: currPoint.x, y: currPoint.y - 1 });
+
+        stack.push({ x: currPoint.x + 1, y: currPoint.y + 1 });
+        stack.push({ x: currPoint.x - 1, y: currPoint.y - 1 });
+        stack.push({ x: currPoint.x + 1, y: currPoint.y - 1 });
+        stack.push({ x: currPoint.x - 1, y: currPoint.y + 1 });
       }
     }
   }
 
-  private pixelBelong(seed: PickedData, actual: PickedData) {
+  private pixelBelong(seed: PickedData, actual: PickedData, threshold: number) {
     if (seed.hsv && actual.hsv) {
-      const diff = Math.abs(seed.hsv[0] - actual.hsv[0]);
-      return diff < CanvaseditorComponent.HUE_SIMILITUD_360;
+      const diffHue = Math.abs(seed.hsv[0] - actual.hsv[0]);
+      const diffSat = Math.abs(seed.hsv[1] - actual.hsv[1]);
+      const diffVal = Math.abs(seed.hsv[2] - actual.hsv[2]);
+      let condicionHue =
+        diffHue < CanvaseditorComponent.HUE_SIMILITUD_360 * threshold*2;
+      let condifcionSat = true;
+      let condifcionVal = true;
+      condifcionSat = diffSat < threshold / 2;
+      condifcionVal = diffVal < threshold / 2;
+      return condicionHue && condifcionSat && condifcionVal;
     }
     return false;
   }
@@ -678,7 +693,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       //console.log(rgba);
       //console.log(hsv);
       //console.log(hsl);
-
+      const actualThreshold = this.threshold / 100;
       this.floodfill(
         { x: pickedPoint.x, y: pickedPoint.y },
         (point: SeedData) => {
@@ -697,7 +712,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
             pixel.data[1] / 255,
             pixel.data[2] / 255
           );
-          return this.pixelBelong(pickedPoint, actual);
+          return this.pixelBelong(pickedPoint, actual, actualThreshold);
         },
         (point: SeedData) => {
           var id = context.createImageData(1, 1);
@@ -732,11 +747,12 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
       if (this.mode == 'edit_actor') {
         this.pickColor(mouseX, mouseY);
+        e.preventDefault();
       } else if (this.mode == 'edit_sketch') {
         this.addClick(mouseX, mouseY, true);
         this.redraw();
+        e.preventDefault();
       }
-      e.preventDefault();
     }
   };
 

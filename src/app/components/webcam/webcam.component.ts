@@ -15,6 +15,10 @@ export class WebcamComponent implements OnInit {
   private trigger: Subject<any> = new Subject();
   public webcamImage!: WebcamImage;
   private nextWebcam: Subject<any> = new Subject();
+  // https://www.npmjs.com/package/ngx-webcam
+  videoOptions: MediaTrackConstraints = {
+    aspectRatio: 1,
+  };
   sysImage = '';
   step = 1;
   constructor(

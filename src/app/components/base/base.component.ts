@@ -162,7 +162,10 @@ export class BaseComponent implements OnInit, OnDestroy {
     });
   }
 
-  onTupleReadDone() {}
+  onTupleReadDone() {
+    // detect changes
+    this.cdr.detectChanges();
+  }
 
   onTupleWriteDone() {}
 

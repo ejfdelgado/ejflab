@@ -15,7 +15,7 @@
     "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments && npm run credentials_paistv",
     "end": "gcloud config set account edelgado@panal.co && gcloud config set project panal-comunidad-app && npm run credentials_comunidad",
     "credentials_paistv": "export ENV=pro && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json",
-    "credentials_comunidad": "export ENV=dev && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/panal/comunidad/keys/panal-comunidad-app-7da87eb73391.json"
+    "credentials_comunidad": "export ENV=stg && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/panal/comunidad/keys/panal-comunidad-app-7da87eb73391.json"
   },
   "engines": {
     "node": ">=14.0.0"

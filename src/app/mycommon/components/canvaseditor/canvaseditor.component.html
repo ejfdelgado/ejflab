@@ -93,6 +93,8 @@
             </mat-menu>
         </div>
         <div class="menu_container_others">
+            <mat-slider min="0" max="100" step="1" [(ngModel)]="threshold" *ngIf="['edit_actor'].indexOf(mode) >= 0">
+            </mat-slider>
             <div class="other_icon generic_icon" aria-label="Menú" (click)="acceptImage()"
                 *ngIf="['edit_actor'].indexOf(mode) >= 0">
                 <mat-icon>done</mat-icon>

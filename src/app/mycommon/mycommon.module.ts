@@ -17,6 +17,7 @@ import { FilepickerComponent } from './components/filepicker/filepicker.componen
 import { AudioeditorComponent } from './components/audioeditor/audioeditor.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.component';
+import { MatSliderModule } from '@angular/material/slider';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.co
     FormsModule,
     ReactiveFormsModule,
     ContenteditableValueAccessorModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatSliderModule,
   ],
   exports: [
     CardComponent,
@@ -52,7 +54,7 @@ import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.co
     FilepickerComponent,
     FileordevicepopupComponent,
     AudioeditorComponent,
-    CanvaseditorComponent
+    CanvaseditorComponent,
   ],
 })
 export class MycommonModule {}
