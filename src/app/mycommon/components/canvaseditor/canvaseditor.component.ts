@@ -742,6 +742,9 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
 
   private releaseEventHandler = () => {
     if (this.mode == 'edit_actor') {
+      if (this.isWorkingHard) {
+        return;
+      }
       this.isWorkingHard = true;
       setTimeout(() => {
         if (this.contextGreen) {
