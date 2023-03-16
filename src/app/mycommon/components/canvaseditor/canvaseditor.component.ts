@@ -45,12 +45,24 @@ export interface ImagesChangedData {
   background?: boolean;
 }
 
+export interface PickedData {
+  color: Uint8ClampedArray;
+  x: number;
+  y: number;
+}
+
 @Component({
   selector: 'app-canvaseditor',
   templateUrl: './canvaseditor.component.html',
   styleUrls: ['./canvaseditor.component.css'],
 })
 export class CanvaseditorComponent implements OnInit, OnChanges {
+  static MAX_UNDO_SIZE = 5;
+  static MAPEO_MODES: any = {
+    edit_sketch: 'sketch',
+    edit_actor: 'actor',
+    edit_background: 'background',
+  };
   @Input() options: CanvasOptionsData;
   @Input() defaultFileName: ImagesUrlData;
   @Input() defaultUrl: ImagesUrlData;
@@ -71,13 +83,14 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   private canvasBackground: HTMLCanvasElement;
   private contextBackground: CanvasRenderingContext2D | null;
 
-  mode: string = 'paint';
+  mode: string = 'edit_sketch';
   private isDragging: boolean;
 
-  private pickedColor: Uint8ClampedArray | null = null;
+  private pickedPoint: PickedData | null = null;
   private clickX: number[] = [];
   private clickY: number[] = [];
   private clickDrag: boolean[] = [];
+  private snapshots: Map<string, Array<Blob>> = new Map();
 
   private changes: ImagesChangedData = {
     actor: false,
@@ -205,7 +218,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   }
 
   transparency() {
-    this.mode = 'remove_background';
+    this.changeToMode('edit_actor');
   }
 
   drawImageScaled(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
@@ -256,13 +269,19 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     if (changes.url && changes.url.currentValue) {
       const actual: ImagesUrlData = changes.url.currentValue;
       if (actual.sketch) {
-        this.localLoadImages(actual.sketch, 'sketch');
+        this.localLoadImages(actual.sketch, 'sketch').then(() => {
+          this.takeSnapshot('sketch');
+        });
       }
       if (actual.actor) {
-        this.localLoadImages(actual.actor, 'actor');
+        this.localLoadImages(actual.actor, 'actor').then(() => {
+          this.takeSnapshot('actor');
+        });
       }
       if (actual.background) {
-        this.localLoadImages(actual.background, 'background');
+        this.localLoadImages(actual.background, 'background').then(() => {
+          this.takeSnapshot('background');
+        });
       }
     }
   }
@@ -321,62 +340,78 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
   }
 
+  getImageBlobFromCanvas(type: string): Promise<Blob | null> {
+    return new Promise<Blob | null>((resolve, reject) => {
+      let localCanvas = null;
+      let mimeType = 'image/png';
+      if (type == 'sketch') {
+        localCanvas = this.canvas;
+      } else if (type == 'actor') {
+        localCanvas = this.canvasGreen;
+      } else if (type == 'background') {
+        localCanvas = this.canvasBackground;
+        mimeType = 'image/jpeg';
+      }
+      if (localCanvas) {
+        localCanvas.toBlob((temp) => {
+          resolve(temp);
+        });
+      }
+    });
+  }
+
   async guardar() {
     const fileNames = this.defaultFileName;
     const promesas = [];
     console.log(JSON.stringify(this.changes));
     if (this.changes.sketch) {
       promesas.push(
-        new Promise<void>((resolve, reject) => {
-          this.canvas.toBlob(async (temp) => {
-            try {
-              if (fileNames.sketch) {
-                await this.guardarInterno('sketch', temp, fileNames.sketch);
-                this.changes.sketch = false;
-                resolve();
-              }
-            } catch (err) {}
-          }, 'image/png');
+        new Promise<void>(async (resolve, reject) => {
+          const temp = await this.getImageBlobFromCanvas('sketch');
+          try {
+            if (fileNames.sketch) {
+              await this.guardarInterno('sketch', temp, fileNames.sketch);
+              this.changes.sketch = false;
+              resolve();
+            }
+          } catch (err) {}
         })
       );
     }
     if (this.changes.background) {
       promesas.push(
-        new Promise<void>((resolve, reject) => {
-          this.canvasBackground.toBlob(async (temp) => {
-            try {
-              if (fileNames.background) {
-                await this.guardarInterno(
-                  'background',
-                  temp,
-                  fileNames.background
-                );
-                this.changes.background = false;
-                resolve();
-              }
-            } catch (err) {}
-          }, 'image/jpeg');
+        new Promise<void>(async (resolve, reject) => {
+          const temp = await this.getImageBlobFromCanvas('background');
+          try {
+            if (fileNames.background) {
+              await this.guardarInterno(
+                'background',
+                temp,
+                fileNames.background
+              );
+              this.changes.background = false;
+              resolve();
+            }
+          } catch (err) {}
         })
       );
     }
     if (this.changes.actor) {
       promesas.push(
-        new Promise<void>((resolve, reject) => {
-          this.canvasGreen.toBlob(async (temp) => {
-            try {
-              if (fileNames.actor) {
-                await this.guardarInterno('actor', temp, fileNames.actor);
-                this.changes.actor = false;
-                resolve();
-              }
-            } catch (err) {}
-          }, 'image/png');
+        new Promise<void>(async (resolve, reject) => {
+          const temp = await this.getImageBlobFromCanvas('actor');
+          try {
+            if (fileNames.actor) {
+              await this.guardarInterno('actor', temp, fileNames.actor);
+              this.changes.actor = false;
+              resolve();
+            }
+          } catch (err) {}
         })
       );
     }
     await Promise.all(promesas);
     if (promesas.length > 0) {
-      console.log(JSON.stringify(this.url));
       this.urlChange.emit(this.url);
     }
   }
@@ -548,26 +583,31 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
     try {
       const pixel = this.contextGreen.getImageData(mouseX, mouseY, 1, 1);
-      this.pickedColor = pixel.data;
+      this.pickedPoint = {
+        color: pixel.data,
+        x: mouseX,
+        y: mouseY,
+      };
     } catch (err) {
       console.log(err);
     }
   }
 
-  private clearBackground() {
-    if (this.pickedColor) {
-      const data = this.pickedColor;
+  private doSeedPointRegionGrow() {
+    if (this.pickedPoint) {
+      const data = this.pickedPoint.color;
       const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
       console.log(rgba);
+      this.pickedPoint = null;
     }
   }
 
   private pressEventHandler = (e: MouseEvent | TouchEvent) => {
     const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
     this.isDragging = true;
-    if (this.mode == 'remove_background') {
+    if (this.mode == 'edit_actor') {
       this.pickColor(mouseX, mouseY);
-    } else if (this.mode == 'paint') {
+    } else if (this.mode == 'edit_sketch') {
       this.startPaint(mouseX, mouseY);
     }
   };
@@ -575,9 +615,9 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   private dragEventHandler = (e: MouseEvent | TouchEvent) => {
     if (this.isDragging) {
       const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
-      if (this.mode == 'remove_background') {
+      if (this.mode == 'edit_actor') {
         this.pickColor(mouseX, mouseY);
-      } else if (this.mode == 'paint') {
+      } else if (this.mode == 'edit_sketch') {
         this.addClick(mouseX, mouseY, true);
         this.redraw();
       }
@@ -586,22 +626,83 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   };
 
   private releaseEventHandler = () => {
-    if (this.mode == 'remove_background') {
-      this.clearBackground();
-      this.mode = 'paint';
-      this.pickedColor = null;
-    } else if (this.mode == 'paint') {
+    if (this.mode == 'edit_actor') {
+      this.doSeedPointRegionGrow();
+    } else if (this.mode == 'edit_sketch') {
       this.redraw();
     }
     this.isDragging = false;
   };
-
+  private changeToMode(mode: string) {
+    const type = CanvaseditorComponent.MAPEO_MODES[mode];
+    this.mode = mode;
+    const listaSketch = this.snapshots.get('sketch');
+    const listaActor = this.snapshots.get('actor');
+    const listaBackground = this.snapshots.get('background');
+    if (listaSketch && listaSketch.length > 0) {
+      listaSketch.splice(0, listaSketch.length);
+    }
+    if (listaActor && listaActor.length > 0) {
+      listaActor.splice(0, listaActor.length);
+    }
+    if (listaBackground && listaBackground.length > 0) {
+      listaBackground.splice(0, listaBackground.length);
+    }
+    this.takeSnapshot(type);
+  }
   private cancelEventHandler = () => {
-    if (this.mode == 'remove_background') {
-      this.mode = 'paint';
-      this.pickedColor = null;
-    } else if (this.mode == 'paint') {
+    if (this.mode == 'edit_actor') {
+      this.pickedPoint = null;
+    } else if (this.mode == 'edit_sketch') {
     }
     this.isDragging = false;
   };
+  private async takeSnapshot(type: string | null = null) {
+    if (type == null) {
+      type = CanvaseditorComponent.MAPEO_MODES[this.mode];
+    }
+    if (type == null) {
+      return;
+    }
+    const blob = await this.getImageBlobFromCanvas(type);
+    if (blob) {
+      if (!this.snapshots.has(type)) {
+        this.snapshots.set(type, []);
+      }
+      const lista = this.snapshots.get(type);
+      if (lista) {
+        const diferencia =
+          lista.length + 1 - CanvaseditorComponent.MAX_UNDO_SIZE;
+        if (diferencia >= 0) {
+          lista.slice(0, diferencia);
+        }
+        lista.push(blob);
+      }
+    }
+  }
+  canUndo() {
+    const type = CanvaseditorComponent.MAPEO_MODES[this.mode];
+    const lista = this.snapshots.get(type);
+    if (!lista) {
+      return false;
+    }
+    return lista.length > 1;
+  }
+  acceptImage() {
+    if (this.mode == 'edit_actor') {
+      this.changeToMode('edit_sketch');
+    }
+  }
+  cancelImage() {
+    if (this.mode == 'edit_actor') {
+      this.changeToMode('edit_sketch');
+    }
+  }
+  async undoImage(): Promise<void> {
+    const type = CanvaseditorComponent.MAPEO_MODES[this.mode];
+    const lista = this.snapshots.get(type);
+    if (!lista) {
+      return;
+    }
+  }
 }

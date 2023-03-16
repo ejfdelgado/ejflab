@@ -1,98 +1,113 @@
 <div class="main_container">
-    <div class="menu_container">
-        <div class="local_icon generic_icon" (click)="noPropagar($event)" [matMenuTriggerFor]="myMenu"
-            aria-label="Menú">
-            <mat-icon>menu</mat-icon>
+    <div class="menu_container_parent">
+        <div class="menu_container">
+            <div class="local_icon generic_icon" (click)="noPropagar($event)" [matMenuTriggerFor]="myMenu"
+                aria-label="Menú">
+                <mat-icon>menu</mat-icon>
+            </div>
+            <mat-menu #myMenu="matMenu">
+                <button (click)="guardar()" mat-menu-item>
+                    <mat-icon>save</mat-icon>
+                    <span>Guardar</span>
+                </button>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuUpload">
+                    <mat-icon>cloud_upload</mat-icon>
+                    <span>Cargar</span>
+                </button>
+                <mat-menu #myMenuUpload="matMenu">
+                    <button mat-menu-item (click)="askForImage('actor')">
+                        <mat-icon>accessibility_new</mat-icon>
+                        <span>Actor</span>
+                    </button>
+                    <button mat-menu-item (click)="askForImage('background')">
+                        <mat-icon>wallpaper</mat-icon>
+                        <span>Fondo</span>
+                    </button>
+                </mat-menu>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuTool">
+                    <mat-icon>waving_hand</mat-icon>
+                    <span>Herramienta</span>
+                </button>
+                <mat-menu #myMenuTool="matMenu">
+                    <button mat-menu-item (click)="useTool('lapiz')">
+                        <mat-icon>edit</mat-icon>
+                        <span>Lapiz</span>
+                    </button>
+                    <button mat-menu-item (click)="useTool('borrador')">
+                        <mat-icon>cleaning_services</mat-icon>
+                        <span>Borrador</span>
+                    </button>
+                </mat-menu>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuTamanio">
+                    <mat-icon>line_weight</mat-icon>
+                    <span>Tamaño</span>
+                </button>
+                <mat-menu #myMenuTamanio="matMenu">
+                    <button *ngFor="let mySize of menuSize" (click)="setStrokeSize(mySize.option)" mat-menu-item>
+                        <mat-icon [ngStyle]="{'color': mySize.option.strokeStyle}">{{ mySize.icon }}</mat-icon>
+                        <span>{{ mySize.txt }}</span>
+                    </button>
+                </mat-menu>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuColor">
+                    <mat-icon>palette</mat-icon>
+                    <span>Color</span>
+                </button>
+                <mat-menu #myMenuColor="matMenu">
+                    <button *ngFor="let myColor of menuColors" (click)="setStrokeColor(myColor.option)" mat-menu-item>
+                        <mat-icon [ngStyle]="{'color': myColor.option.strokeStyle}">{{ myColor.icon }}</mat-icon>
+                        <span>{{ myColor.txt }}</span>
+                    </button>
+                </mat-menu>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuDelete">
+                    <mat-icon>delete</mat-icon>
+                    <span>Borrar</span>
+                </button>
+                <button mat-menu-item [matMenuTriggerFor]="myMenuMagic">
+                    <mat-icon>auto_fix_normal</mat-icon>
+                    <span>Magic</span>
+                </button>
+                <mat-menu #myMenuMagic="matMenu">
+                    <button mat-menu-item (click)="transparency()">
+                        <mat-icon>image_search</mat-icon>
+                        <span>Quitar fondo</span>
+                    </button>
+                </mat-menu>
+                <mat-menu #myMenuDelete="matMenu">
+                    <button mat-menu-item (click)="clearCanvas('gesture')">
+                        <mat-icon>gesture</mat-icon>
+                        <span>Borrar Trazo</span>
+                    </button>
+                    <button mat-menu-item (click)="clearCanvas('actor')">
+                        <mat-icon>accessibility_new</mat-icon>
+                        <span>Borrar Actor</span>
+                    </button>
+                    <button mat-menu-item (click)="clearCanvas('background')">
+                        <mat-icon>wallpaper</mat-icon>
+                        <span>Borrar Fondo</span>
+                    </button>
+                </mat-menu>
+            </mat-menu>
         </div>
-        <mat-menu #myMenu="matMenu">
-            <button (click)="guardar()" mat-menu-item>
-                <mat-icon>save</mat-icon>
-                <span>Guardar</span>
-            </button>
-            <button mat-menu-item [matMenuTriggerFor]="myMenuUpload">
-                <mat-icon>cloud_upload</mat-icon>
-                <span>Cargar</span>
-            </button>
-            <mat-menu #myMenuUpload="matMenu">
-                <button mat-menu-item (click)="askForImage('actor')">
-                    <mat-icon>accessibility_new</mat-icon>
-                    <span>Actor</span>
-                </button>
-                <button mat-menu-item (click)="askForImage('background')">
-                    <mat-icon>wallpaper</mat-icon>
-                    <span>Fondo</span>
-                </button>
-            </mat-menu>
-            <button mat-menu-item [matMenuTriggerFor]="myMenuTool">
-                <mat-icon>waving_hand</mat-icon>
-                <span>Herramienta</span>
-            </button>
-            <mat-menu #myMenuTool="matMenu">
-                <button mat-menu-item (click)="useTool('lapiz')">
-                    <mat-icon>edit</mat-icon>
-                    <span>Lapiz</span>
-                </button>
-                <button mat-menu-item (click)="useTool('borrador')">
-                    <mat-icon>cleaning_services</mat-icon>
-                    <span>Borrador</span>
-                </button>
-            </mat-menu>
-            <button mat-menu-item [matMenuTriggerFor]="myMenuTamanio">
-                <mat-icon>line_weight</mat-icon>
-                <span>Tamaño</span>
-            </button>
-            <mat-menu #myMenuTamanio="matMenu">
-                <button *ngFor="let mySize of menuSize" (click)="setStrokeSize(mySize.option)" mat-menu-item>
-                    <mat-icon [ngStyle]="{'color': mySize.option.strokeStyle}">{{ mySize.icon }}</mat-icon>
-                    <span>{{ mySize.txt }}</span>
-                </button>
-            </mat-menu>
-            <button mat-menu-item [matMenuTriggerFor]="myMenuColor">
-                <mat-icon>palette</mat-icon>
-                <span>Color</span>
-            </button>
-            <mat-menu #myMenuColor="matMenu">
-                <button *ngFor="let myColor of menuColors" (click)="setStrokeColor(myColor.option)" mat-menu-item>
-                    <mat-icon [ngStyle]="{'color': myColor.option.strokeStyle}">{{ myColor.icon }}</mat-icon>
-                    <span>{{ myColor.txt }}</span>
-                </button>
-            </mat-menu>
-            <button mat-menu-item [matMenuTriggerFor]="myMenuDelete">
-                <mat-icon>delete</mat-icon>
-                <span>Borrar</span>
-            </button>
-            <button mat-menu-item [matMenuTriggerFor]="myMenuMagic">
-                <mat-icon>auto_fix_normal</mat-icon>
-                <span>Magic</span>
-            </button>
-            <mat-menu #myMenuMagic="matMenu">
-                <button mat-menu-item (click)="transparency()">
-                    <mat-icon>image_search</mat-icon>
-                    <span>Quitar fondo</span>
-                </button>
-            </mat-menu>
-            <mat-menu #myMenuDelete="matMenu">
-                <button mat-menu-item (click)="clearCanvas('gesture')">
-                    <mat-icon>gesture</mat-icon>
-                    <span>Borrar Trazo</span>
-                </button>
-                <button mat-menu-item (click)="clearCanvas('actor')">
-                    <mat-icon>accessibility_new</mat-icon>
-                    <span>Borrar Actor</span>
-                </button>
-                <button mat-menu-item (click)="clearCanvas('background')">
-                    <mat-icon>wallpaper</mat-icon>
-                    <span>Borrar Fondo</span>
-                </button>
-            </mat-menu>
-        </mat-menu>
+        <div class="menu_container_others">
+            <div class="other_icon generic_icon" aria-label="Menú" (click)="acceptImage()"
+                *ngIf="['edit_actor'].indexOf(mode) >= 0">
+                <mat-icon>done</mat-icon>
+            </div>
+            <div class="other_icon generic_icon" aria-label="Menú" (click)="cancelImage()"
+                *ngIf="['edit_actor'].indexOf(mode) >= 0">
+                <mat-icon>close</mat-icon>
+            </div>
+            <div class="other_icon generic_icon" aria-label="Menú" (click)="undoImage()" *ngIf="canUndo()">
+                <mat-icon>undo</mat-icon>
+            </div>
+        </div>
     </div>
     <div #eventsContainer class="canvas_container">
-        <canvas #canvasBackground class="back" [ngClass]="{'invisible': (mode=='remove_background')}">
+        <canvas #canvasBackground class="back" [ngClass]="{'invisible': (mode=='edit_actor')}">
         </canvas>
         <canvas #canvasGreen class="green back">
         </canvas>
-        <canvas #canvas class="front" [ngClass]="{'transparente': (mode=='remove_background')}">
+        <canvas #canvas class="front" [ngClass]="{'transparente': (mode=='edit_actor')}">
         </canvas>
     </div>
 </div>

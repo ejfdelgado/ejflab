@@ -51,18 +51,14 @@ gcloud config set account edelgado@panal.co
 gcloud config set project panal-comunidad-app
 
 apply
-
+gcloud config set account edgar.jose.fernando.delgado@gmail.com
+gcloud config set project ejfexperiments
 
 https://spring-gcp.saturnism.me/getting-started/helloworld/app-engine
 
 gcloud auth list
 
-gcloud config set account edgar.jose.fernando.delgado@gmail.com
-
 gcloud config list project
-
-gcloud config set project ejfexperiments
-
 
 cd $HOME
 git clone https://github.com/saturnism/jvm-helloworld-by-example
