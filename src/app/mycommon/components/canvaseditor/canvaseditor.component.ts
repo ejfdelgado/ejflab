@@ -47,6 +47,13 @@ export interface ImagesChangedData {
 
 export interface PickedData {
   color: Uint8ClampedArray;
+  hsv?: Array<number>;
+  hsl?: Array<number>;
+  x: number;
+  y: number;
+}
+
+export interface SeedData {
   x: number;
   y: number;
 }
@@ -57,7 +64,7 @@ export interface PickedData {
   styleUrls: ['./canvaseditor.component.css'],
 })
 export class CanvaseditorComponent implements OnInit, OnChanges {
-  static MAX_UNDO_SIZE = 5;
+  static MAX_UNDO_SIZE = 7;
   static MAPEO_MODES: any = {
     edit_sketch: 'sketch',
     edit_actor: 'actor',
@@ -412,6 +419,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       );
     }
     await Promise.all(promesas);
+    this.changeToMode('edit_sketch');
     if (promesas.length > 0) {
       this.urlChange.emit(this.url);
     }
@@ -611,15 +619,91 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     return [60 * (h < 0 ? h + 6 : h), f ? c / f : 0, (v + v - c) / 2];
   }
 
-  private doSeedPointRegionGrow() {
+  private floodfill(point: SeedData, isEmpty: Function, setPixel: Function) {
+    const stack = Array();
+    stack.push(point); // Push the seed
+    while (stack.length > 0) {
+      var currPoint = stack.pop();
+      if (isEmpty(currPoint)) {
+        // Check if the point is not filled
+        setPixel(currPoint); // Fill the point with the foreground
+        stack.push({ x: currPoint.x + 1, y: currPoint.y }); // Fill the east neighbour
+        stack.push({ x: currPoint.x, y: currPoint.y + 1 }); // Fill the south neighbour
+        stack.push({ x: currPoint.x - 1, y: currPoint.y }); // Fill the west neighbour
+        stack.push({ x: currPoint.x, y: currPoint.y - 1 }); // Fill the north neighbour
+      }
+    }
+  }
+
+  private pixelBelong(seed: PickedData, actual: PickedData) {
+    if (seed.hsv && actual.hsv) {
+      const origSat = seed.hsv[1];
+      const origVal = seed.hsv[2];
+      const LIMIT = 0.2;
+      if (origSat > LIMIT && origVal > LIMIT) {
+        // Has color
+        const diff = Math.abs(seed.hsv[0] - actual.hsv[0]);
+        return diff < 30;
+      } else if (origSat <= LIMIT && origVal > LIMIT) {
+        // Like white -> belive in value
+        const diff = Math.abs(seed.hsv[2] - actual.hsv[2]);
+        return diff < 0.1;
+      } else if (origVal <= LIMIT) {
+        // Like black -> belive in saturation
+        const diff = Math.abs(seed.hsv[1] - actual.hsv[1]);
+        return diff < 0.5;
+      }
+    }
+    return false;
+  }
+
+  private doSeedPointRegionGrow(context: CanvasRenderingContext2D) {
     if (this.pickedPoint) {
-      const data = this.pickedPoint.color;
-      const hsv = this.rgb2hsv(data[0] / 255, data[1] / 255, data[2] / 255);
-      const hsl = this.rgb2hsl(data[0] / 255, data[1] / 255, data[2] / 255);
-      const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
-      console.log(rgba);
-      console.log(hsv);
-      console.log(hsl);
+      const pickedPoint: PickedData = this.pickedPoint;
+      const data = pickedPoint.color;
+      pickedPoint.hsv = this.rgb2hsv(
+        data[0] / 255,
+        data[1] / 255,
+        data[2] / 255
+      );
+
+      //const hsl = this.rgb2hsl(data[0] / 255, data[1] / 255, data[2] / 255);
+      //const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+      //console.log(rgba);
+      //console.log(hsv);
+      //console.log(hsl);
+
+      this.floodfill(
+        { x: pickedPoint.x, y: pickedPoint.y },
+        (point: SeedData) => {
+          //pixel belong?
+          const pixel = context.getImageData(point.x, point.y, 1, 1);
+          if (pixel.data[3] == 0) {
+            return false;
+          }
+          const actual: PickedData = {
+            color: pixel.data,
+            x: point.x,
+            y: point.y,
+          };
+          actual.hsv = this.rgb2hsv(
+            pixel.data[0] / 255,
+            pixel.data[1] / 255,
+            pixel.data[2] / 255
+          );
+          return this.pixelBelong(pickedPoint, actual);
+        },
+        (point: SeedData) => {
+          var id = context.createImageData(1, 1);
+          var d = id.data;
+          d[0] = 0;
+          d[1] = 0;
+          d[2] = 0;
+          d[3] = 0;
+          context.putImageData(id, point.x, point.y);
+        }
+      );
+      this.takeSnapshot();
       this.pickedPoint = null;
     }
   }
@@ -649,7 +733,9 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
 
   private releaseEventHandler = () => {
     if (this.mode == 'edit_actor') {
-      this.doSeedPointRegionGrow();
+      if (this.contextGreen) {
+        this.doSeedPointRegionGrow(this.contextGreen);
+      }
     } else if (this.mode == 'edit_sketch') {
       this.redraw();
       this.takeSnapshot('sketch');
