@@ -200,7 +200,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       this.setStrokeOptions(this.menuSize[0].option);
       this.setStrokeOptions(this.lastStrokeColor);
 
-      this.redraw();
+      //this.redraw();
       this.createUserEvents();
     }, 0);
   }
@@ -371,7 +371,6 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   async guardar() {
     const fileNames = this.defaultFileName;
     const promesas = [];
-    console.log(JSON.stringify(this.changes));
     if (this.changes.sketch) {
       promesas.push(
         new Promise<void>(async (resolve, reject) => {
@@ -525,11 +524,19 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
     let contexto = null;
     const MAP: any = {
-      gesture: this.context,
+      sketch: this.context,
       actor: this.contextGreen,
       background: this.contextBackground,
     };
     contexto = MAP[option];
+    if (option == 'sketch') {
+      this.changes.sketch = true;
+    } else if (option == 'actor') {
+      this.changes.actor = true;
+    } else if (option == 'background') {
+      this.changes.background = true;
+    }
+
     if (!contexto) {
       return;
     }
