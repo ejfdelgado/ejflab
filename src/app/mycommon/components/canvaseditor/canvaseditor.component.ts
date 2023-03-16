@@ -594,11 +594,32 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
   }
 
+  rgb2hsv(r: number, g: number, b: number) {
+    let v = Math.max(r, g, b),
+      c = v - Math.min(r, g, b);
+    let h =
+      c && (v == r ? (g - b) / c : v == g ? 2 + (b - r) / c : 4 + (r - g) / c);
+    return [60 * (h < 0 ? h + 6 : h), v && c / v, v];
+  }
+
+  rgb2hsl(r: number, g: number, b: number) {
+    let v = Math.max(r, g, b),
+      c = v - Math.min(r, g, b),
+      f = 1 - Math.abs(v + v - c - 1);
+    let h =
+      c && (v == r ? (g - b) / c : v == g ? 2 + (b - r) / c : 4 + (r - g) / c);
+    return [60 * (h < 0 ? h + 6 : h), f ? c / f : 0, (v + v - c) / 2];
+  }
+
   private doSeedPointRegionGrow() {
     if (this.pickedPoint) {
       const data = this.pickedPoint.color;
+      const hsv = this.rgb2hsv(data[0] / 255, data[1] / 255, data[2] / 255);
+      const hsl = this.rgb2hsl(data[0] / 255, data[1] / 255, data[2] / 255);
       const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
       console.log(rgba);
+      console.log(hsv);
+      console.log(hsl);
       this.pickedPoint = null;
     }
   }
@@ -676,7 +697,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         const diferencia =
           lista.length + 1 - CanvaseditorComponent.MAX_UNDO_SIZE;
         if (diferencia >= 0) {
-          lista.splice(0, diferencia);
+          lista.splice(1, diferencia - 1);
         }
         lista.push(blob);
       }
@@ -706,7 +727,9 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     if (!lista) {
       return;
     }
-    lista.splice(lista.length - 1, 1);
+    if (lista.length > 1) {
+      lista.splice(lista.length - 1, 1);
+    }
     const lastBlob = lista[lista.length - 1];
     const url = URL.createObjectURL(lastBlob);
     await this.localLoadImages(url, type);
