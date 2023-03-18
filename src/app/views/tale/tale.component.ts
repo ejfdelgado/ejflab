@@ -132,6 +132,12 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       const key = llaves[i];
       const frame = mapeo[key];
       const audioUrl = frame.audioUrl;
+      if (!audioUrl) {
+        throw new Error(`Falta el audio #${i + 1}`);
+      }
+      if (!frame.canvasUrl || !frame.canvasUrl.merged) {
+        throw new Error(`Falta la imagen #${i + 1}`);
+      }
       const imageUrl = frame.canvasUrl.merged;
       const duration = frame.t * 1000;
       frames.push({ duration, audioUrl, imageUrl, key });
@@ -162,31 +168,37 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   async buildAudio() {
-    const guion = this.getCompleteGuion();
-    const crunker = new Crunker();
+    try {
+      const guion = this.getCompleteGuion();
+      const crunker = new Crunker();
 
-    // Place all audio buffer into single array
-    const audios: Array<AudioBuffer> = [];
-    const frames = guion.frames;
+      // Place all audio buffer into single array
+      const audios: Array<AudioBuffer> = [];
+      const frames = guion.frames;
 
-    for (let i = 0; i < frames.length; i++) {
-      const frame = frames[i];
-      const key = frame.key;
-      const audioBuffer = this.allBlobAudios.get(key);
-      if (!audioBuffer) {
-        this.modalService.alert({ txt: `No se ha cargado el audio de ${key}` });
-        return;
+      for (let i = 0; i < frames.length; i++) {
+        const frame = frames[i];
+        const key = frame.key;
+        const audioBuffer = this.allBlobAudios.get(key);
+        if (!audioBuffer) {
+          this.modalService.alert({
+            txt: `No se ha cargado el audio de ${key}`,
+          });
+          return;
+        }
+        audios.push(audioBuffer);
       }
-      audios.push(audioBuffer);
+
+      const merged = crunker.mergeAudio(audios);
+      const exported = crunker.export(merged, 'audio/mp3');
+      crunker.download(exported.blob);
+
+      crunker.notSupported(() => {
+        // Handle no browser support
+      });
+    } catch (err: any) {
+      this.modalService.error(err);
     }
-
-    const merged = crunker.mergeAudio(audios);
-    const exported = crunker.export(merged, 'audio/mp3');
-    crunker.download(exported.blob);
-
-    crunker.notSupported(() => {
-      // Handle no browser support
-    });
   }
 
   download(url: string) {
@@ -210,9 +222,13 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
   }
 
   async buildGif() {
-    const guion = this.getCompleteGuion();
-    const response = await this.fileService.generateGif(guion);
-    this.download('/' + response.key);
+    try {
+      const guion = this.getCompleteGuion();
+      const response = await this.fileService.generateGif(guion);
+      this.download('/' + response.key);
+    } catch (err: any) {
+      this.modalService.error(err);
+    }
   }
 
   castPageData(dato: any): PageTaleData {
