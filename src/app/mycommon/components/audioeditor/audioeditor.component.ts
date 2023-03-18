@@ -49,9 +49,10 @@ export class AudioeditorComponent implements OnInit {
   @Input() options: AudioOptionsData;
   @Input() url: string | null;
   @Input() fileName: string;
+  @Input() externalBlob: Blob | null = null;
   @Output() urlChange = new EventEmitter<string | null>();
   @Output() cutEvent = new EventEmitter<AudioCutData>();
-  @Input() externalBlob: Blob | null = null;
+  @Output() gotAudioBlob = new EventEmitter<Blob>();
   recordedBlob: Blob | null = null;
 
   isLoading = false;
@@ -195,6 +196,7 @@ export class AudioeditorComponent implements OnInit {
     // https://wavesurfer-js.org/docs/methods.html
     //console.log(await this.blob2Base64(blob));
     this.currentBlob = blob;
+    this.gotAudioBlob.emit(blob);
     const objectUrl = URL.createObjectURL(blob);
     this.blobUrl = this.sanitizer.bypassSecurityTrustUrl(objectUrl);
     if (this.options.showWaveForm === false) {

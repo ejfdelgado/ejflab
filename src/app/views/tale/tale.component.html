@@ -21,7 +21,8 @@
         </div>
         <app-audioeditor [fileName]="talePage.value.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
             [url]="talePage.value.audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
-            (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()">
+            (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()"
+            (gotAudioBlob)="addAudioBuffer(talePage.key, $event)">
         </app-audioeditor>
         <div class="pictures">
             <app-canvaseditor [url]="talePage.value.canvasUrl"

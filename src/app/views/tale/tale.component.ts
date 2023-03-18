@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
-import { FileService } from 'src/services/file.service';
+import { FileService, frameVideoRequestData } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
 import { WebcamService } from 'src/services/webcam.service';
@@ -60,6 +60,8 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     useRoot: MyConstants.SRV_ROOT,
   };
   temporalBlobAudios: Map<string, Blob> = new Map();
+  audioCtx = new window.AudioContext();
+  allBlobAudios: Map<string, AudioBuffer> = new Map();
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
@@ -85,17 +87,17 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     );
   }
 
-  getCompleteGuion() {
+  getCompleteGuion(): frameVideoRequestData {
     const mapeo = this.tupleModel.cuttedAudios;
     const llaves = Object.keys(mapeo).sort();
     const frames = [];
     for (let i = 0; i < llaves.length; i++) {
-      const llave = llaves[i];
-      const frame = mapeo[llave];
+      const key = llaves[i];
+      const frame = mapeo[key];
       const audioUrl = frame.audioUrl;
       const imageUrl = frame.canvasUrl.merged;
       const duration = frame.t * 1000;
-      frames.push({ duration, audioUrl, imageUrl });
+      frames.push({ duration, audioUrl, imageUrl, key });
     }
     return {
       width: this.imageOptions.width,
@@ -106,20 +108,48 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     };
   }
 
+  addAudioBuffer(key: string, blob: Blob) {
+    let fileReader = new FileReader();
+    let arrayBuffer;
+
+    fileReader.onloadend = async () => {
+      arrayBuffer = fileReader.result;
+      if (arrayBuffer instanceof ArrayBuffer) {
+        const audioBuffer: AudioBuffer = await this.audioCtx.decodeAudioData(
+          arrayBuffer
+        );
+        this.allBlobAudios.set(key, audioBuffer);
+      }
+    };
+    fileReader.readAsArrayBuffer(blob);
+  }
+
   async buildAudio() {
     const guion = this.getCompleteGuion();
-    console.log(JSON.stringify(guion));
-    /*
     const crunker = new Crunker();
-    crunker
-      .fetchAudio('/voice.mp3', '/background.mp3')
-      .then((buffers) => crunker.mergeAudio(buffers))
-      .then((merged) => crunker.export(merged, 'audio/mp3'))
-      .then((output) => crunker.download(output.blob))
-      .catch((error) => {
-        throw new Error(error);
-      });
-      */
+
+    // Place all audio buffer into single array
+    const audios: Array<AudioBuffer> = [];
+    const frames = guion.frames;
+
+    for (let i = 0; i < frames.length; i++) {
+      const frame = frames[i];
+      const key = frame.key;
+      const audioBuffer = this.allBlobAudios.get(key);
+      if (!audioBuffer) {
+        this.modalService.alert({ txt: `No se ha cargado el audio de ${key}` });
+        return;
+      }
+      audios.push(audioBuffer);
+    }
+
+    const merged = crunker.mergeAudio(audios);
+    const exported = crunker.export(merged, 'audio/mp3');
+    crunker.download(exported.blob);
+
+    crunker.notSupported(() => {
+      // Handle no browser support
+    });
   }
 
   download(url: string) {
@@ -222,6 +252,7 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     if (llave in this.tupleModel.cuttedAudios) {
       delete this.tupleModel.cuttedAudios[llave];
     }
+    this.allBlobAudios.delete(llave);
     await this.saveTuple();
   }
 

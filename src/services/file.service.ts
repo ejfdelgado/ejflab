@@ -8,10 +8,13 @@ export interface frameVideoDetailRequestData {
   duration: number;
   audioUrl: string;
   imageUrl: string;
+  key: string;
 }
 
 export interface frameVideoRequestData {
   frames: Array<frameVideoDetailRequestData>;
+  width: number;
+  height: number;
   key: string;
   download?: boolean;
 }
