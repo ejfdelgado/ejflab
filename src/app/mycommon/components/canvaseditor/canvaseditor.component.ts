@@ -14,6 +14,11 @@ import { FileRequestData, FileService } from 'src/services/file.service';
 import { IndicatorService } from 'src/services/indicator.service';
 import { ModalService } from 'src/services/modal.service';
 
+export interface KeyUrlPairData {
+  key: string;
+  url: string;
+}
+
 export interface UrlBlobPairData {
   blob: Blob;
   url: string;
@@ -243,36 +248,31 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     });
   }
 
-  async drawImageScaled(
+  drawImageScaled(
     img: HTMLImageElement,
     ctx: CanvasRenderingContext2D,
     clear = true
-  ): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      setTimeout(() => {
-        let canvas = ctx.canvas;
-        let hRatio = canvas.width / img.width;
-        let vRatio = canvas.height / img.height;
-        let ratio = Math.max(hRatio, vRatio);
-        let centerShift_x = (canvas.width - img.width * ratio) / 2;
-        let centerShift_y = (canvas.height - img.height * ratio) / 2;
-        if (clear) {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          img.width,
-          img.height,
-          centerShift_x,
-          centerShift_y,
-          img.width * ratio,
-          img.height * ratio
-        );
-        resolve();
-      }, 0);
-    });
+  ) {
+    let canvas = ctx.canvas;
+    let hRatio = canvas.width / img.width;
+    let vRatio = canvas.height / img.height;
+    let ratio = Math.max(hRatio, vRatio);
+    let centerShift_x = (canvas.width - img.width * ratio) / 2;
+    let centerShift_y = (canvas.height - img.height * ratio) / 2;
+    if (clear) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    ctx.drawImage(
+      img,
+      0,
+      0,
+      img.width,
+      img.height,
+      centerShift_x,
+      centerShift_y,
+      img.width * ratio,
+      img.height * ratio
+    );
   }
 
   async getImageElementFromUrl(url: string): Promise<HTMLImageElement> {
@@ -415,14 +415,14 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   async guardar() {
     const fileNames = this.defaultFileName;
     const promesas = [];
-    const urlsMerge: Array<string> = [];
+    const urlsMerge: Array<KeyUrlPairData> = [];
     if (this.changes.background || this.changes.actor || this.changes.sketch) {
       promesas.push(
         new Promise<void>(async (resolve, reject) => {
           const temp = await this.getImageBlobFromCanvas('background');
           try {
             if (fileNames.background && temp) {
-              urlsMerge.push(temp.url);
+              urlsMerge.push({ key: 'background', url: temp.url });
               if (this.changes.background) {
                 await this.guardarInterno(
                   'background',
@@ -444,7 +444,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
           const temp = await this.getImageBlobFromCanvas('actor');
           try {
             if (fileNames.actor && temp) {
-              urlsMerge.push(temp.url);
+              urlsMerge.push({ key: 'actor', url: temp.url });
               if (this.changes.actor) {
                 await this.guardarInterno('actor', temp.blob, fileNames.actor);
                 this.changes.actor = false;
@@ -461,7 +461,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
           const temp = await this.getImageBlobFromCanvas('sketch');
           try {
             if (fileNames.sketch && temp) {
-              urlsMerge.push(temp.url);
+              urlsMerge.push({ key: 'sketch', url: temp.url });
               if (this.changes.sketch) {
                 await this.guardarInterno(
                   'sketch',
@@ -478,6 +478,12 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         })
       );
       await Promise.all(promesas);
+      const ORDEN = ['background', 'actor', 'sketch'];
+      urlsMerge.sort((a: KeyUrlPairData, b: KeyUrlPairData): number => {
+        const oa = ORDEN.indexOf(a.key);
+        const ob = ORDEN.indexOf(a.key);
+        return oa - ob;
+      });
       if (urlsMerge.length > 0) {
         // Se actualiza el canvas merge
         await this.mergeImages(urlsMerge);
@@ -495,7 +501,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
   }
 
-  async mergeImages(lista: Array<string>) {
+  async mergeImages(lista: Array<KeyUrlPairData>) {
     const contexto = this.contextMerged;
     const canvas = this.canvasMerged;
     if (contexto == null) {
@@ -504,14 +510,14 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     const promesasImgElements = [];
     for (let i = 0; i < lista.length; i++) {
       const urlLocal = lista[i];
-      promesasImgElements.push(this.getImageElementFromUrl(urlLocal));
+      promesasImgElements.push(this.getImageElementFromUrl(urlLocal.url));
     }
 
     const elementos = await Promise.all(promesasImgElements);
     contexto.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < elementos.length; i++) {
       const unEleImg = elementos[i];
-      await this.drawImageScaled(unEleImg, contexto, false);
+      this.drawImageScaled(unEleImg, contexto, false);
     }
   }
 
