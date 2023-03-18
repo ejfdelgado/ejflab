@@ -85,14 +85,30 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     );
   }
 
-  async buildAudio() {
+  getCompleteGuion() {
     const mapeo = this.tupleModel.cuttedAudios;
     const llaves = Object.keys(mapeo).sort();
+    const frames = [];
     for (let i = 0; i < llaves.length; i++) {
       const llave = llaves[i];
       const frame = mapeo[llave];
-      console.log(frame);
+      const audioUrl = frame.audioUrl;
+      const imageUrl = frame.canvasUrl.merged;
+      const duration = frame.t * 1000;
+      frames.push({ duration, audioUrl, imageUrl });
     }
+    return {
+      width: this.imageOptions.width,
+      height: this.imageOptions.height,
+      frames,
+      key: 'mygift.gif',
+      download: false,
+    };
+  }
+
+  async buildAudio() {
+    const guion = this.getCompleteGuion();
+    console.log(JSON.stringify(guion));
     /*
     const crunker = new Crunker();
     crunker
@@ -106,8 +122,30 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       */
   }
 
-  async buildGif() {
+  download(url: string) {
+    let theUrl = this.getCompleteUrl(url);
+    console.log(theUrl);
+    if (theUrl) {
+      window.open(theUrl, '_blank');
+    }
+  }
 
+  getCompleteUrl(url: string | null) {
+    if (url == null) {
+      return null;
+    }
+    let theUrl = url;
+    theUrl = MyConstants.SRV_ROOT + url.replace(/^\/+/, '');
+    if (theUrl.startsWith('/')) {
+      theUrl = `${location.origin}${theUrl}`;
+    }
+    return theUrl;
+  }
+
+  async buildGif() {
+    const guion = this.getCompleteGuion();
+    const response = await this.fileService.generateGif(guion);
+    this.download('/' + response.key);
   }
 
   castPageData(dato: any): PageTaleData {
@@ -176,6 +214,9 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     }
     if (valor.canvasUrl?.sketch) {
       promesasBorrar.push(this.fileService.delete(valor.canvasUrl.sketch));
+    }
+    if (valor.canvasUrl?.merged) {
+      promesasBorrar.push(this.fileService.delete(valor.canvasUrl.merged));
     }
     await Promise.all(promesasBorrar);
     if (llave in this.tupleModel.cuttedAudios) {

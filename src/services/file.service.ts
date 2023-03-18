@@ -4,6 +4,18 @@ import { HttpOptionsData } from 'src/interfaces/login-data.interface';
 import { MyRoutes } from 'srcJs/MyRoutes';
 import { HttpService } from './http.service';
 
+export interface frameVideoDetailRequestData {
+  duration: number;
+  audioUrl: string;
+  imageUrl: string;
+}
+
+export interface frameVideoRequestData {
+  frames: Array<frameVideoDetailRequestData>;
+  key: string;
+  download?: boolean;
+}
+
 export interface FileRequestData {
   type: string; // file, fileimage, photo, fileimage-photo, fileaudio
   defaultFileName?: string | null;
@@ -71,13 +83,28 @@ export class FileService {
     await this.httpSrv.delete(url, {}, options);
   }
 
-  async save(payload: FileSaveData): Promise<FileSaveResponseData> {
+  async generateGif(payload: frameVideoRequestData) {
+    const idPage = this.getIdPage();
+    const URL = `srv/${idPage}/makegif`;
+    const options: HttpOptionsData = {
+      showIndicator: true,
+    };
+    const response: any = await this.httpSrv.post(URL, payload, options);
+    return response;
+  }
+
+  getIdPage() {
     const idPage = document
       .getElementById('meta_page_id')
       ?.getAttribute('content');
     if (!idPage) {
       throw Error('No se encontró el id de la página actual.');
     }
+    return idPage;
+  }
+
+  async save(payload: FileSaveData): Promise<FileSaveResponseData> {
+    const idPage = this.getIdPage();
     const partes = MyRoutes.splitPageData(location.pathname);
     const pageType = partes.pageType;
     const URL = `srv/${idPage}/file`;

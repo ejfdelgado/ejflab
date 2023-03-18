@@ -6,6 +6,7 @@ import ReadableStreamClone from 'readable-stream-clone'
 import { MyConstants } from "../srcJs/MyConstants.js";
 import { General } from "./common/General.mjs";
 import { Gif } from 'make-a-gif';
+import { PassThrough } from "stream";
 
 const storage = new Storage();
 
@@ -21,37 +22,46 @@ export class MyFileService {
     }
 
     static async makegif(req, res, next) {
-        try {
-            const myGif = new Gif(500, 500);
-            //We set 3 images that will be 3 frames
-            /*const res1 = await fetch(
-                'https://cdn.discordapp.com/attachments/724014357343895703/960220310144184330/unknown.png'
-            );
-            */
-            await myGif.setFrames([
-                {
-                    src: 'https://cdn.discordapp.com/attachments/960206787775201314/960213088974561280/unknown.png',
-                },
-                /*{
-                    src: new Uint8Array(await res1.arrayBuffer()),
-                },*/
-                {
-                    src: 'https://cdn.discordapp.com/attachments/960206787775201314/960213089536585808/unknown.png',
-                    background:
-                        'https://cdn.discordapp.com/attachments/724014357343895703/960220070976565378/unknown.png',
-                },
-            ]);
+        const token = res.locals.token;
+        const pageId = req.params['pageId'];
+        const peticion = req.body;
 
-            //Render the image, it will return a Buffer or it will give an error if anything goes wrong
-            const Render = await myGif.encode();
+        //duration, audioUrl, imageUrl
+        const frames = peticion.frames;
+        const promesasImg = [];
+        for (let i = 0; i < frames.length; i++) {
+            const frame = frames[i];
+            const { imageUrl } = frame;
+            promesasImg.push(MyFileService.read(imageUrl));
+        }
+        const imgBuffers = await Promise.all(promesasImg);
+        for (let i = 0; i < frames.length; i++) {
+            const frame = frames[i];
+            frame.src = new Uint8Array(imgBuffers[i].data);
+        }
+
+        const myGif = new Gif(peticion.width, peticion.height, 100);
+        await myGif.setFrames(frames);
+        const rendered = await myGif.encode();
+
+        const bucketKey = MyFileService.getKeyBucketPath(token, "srv/pg/tale/", `${pageId}/${peticion.key}`, "OWN");
+        const uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PRIVATE}/${peticion.key}`;
+
+        const file = privateBucket.file(bucketKey);
+
+        const stream = new PassThrough();
+        stream.end(rendered);
+
+        await MyFileService.sendFile2Bucket(stream, file);
+
+        if (peticion.download) {
             res.writeHead(200, {
-                'Content-Type': 'image/gif',
-                "Content-Disposition": "inline; filename=image.gif"
+                "Content-Type": "image/gif",
+                "Content-disposition": "attachment;filename=" + peticion.key
             });
-            res.end(Render);
-        } catch (err) {
-            console.log(err);
-            res.status(200).send({ err: err });
+            res.end(rendered);
+        } else {
+            res.status(200).send({ key: bucketKey + "?t=" + new Date().getTime(), uri });
         }
     }
 
@@ -85,9 +95,15 @@ export class MyFileService {
         await origFile.copy(destFile, copyOptions);
         await destFile.makePublic();
     }
-
-    static async fetchUrl2Bucket(url, token, folder, filename, type, isPrivate = false) {
-        const keyName = MyFileService.getKeyBucketPath(token, folder, filename, type);
+    static async stream2Buffer(stream) {
+        return new Promise((resolve, reject) => {
+            const _buf = [];
+            stream.on("data", (chunk) => _buf.push(chunk));
+            stream.on("end", () => resolve(Buffer.concat(_buf)));
+            stream.on("error", (err) => reject(err));
+        });
+    }
+    static async fetchFile2Stream(url) {
         const options = { responseType: 'stream' };
         const response = await new Promise((resolve, reject) => {
             axios.get(url, options)
@@ -95,6 +111,11 @@ export class MyFileService {
                 .catch(error => { reject(error) });
         });
         const stream = response.data;
+        return stream;
+    }
+    static async fetchUrl2Bucket(url, token, folder, filename, type, isPrivate = false) {
+        const keyName = MyFileService.getKeyBucketPath(token, folder, filename, type);
+        const stream = await MyFileService.fetchFile2Stream(url);
         let file = defaultBucket.file(keyName);
         let uri = `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
         if (isPrivate) {
