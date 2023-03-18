@@ -6,6 +6,8 @@ import { TaleComponent } from './tale.component';
 import { MycommonModule } from 'src/app/mycommon/mycommon.module';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor';
 
 @NgModule({
   declarations: [TaleComponent],
@@ -15,6 +17,9 @@ import { MatIconModule } from '@angular/material/icon';
     MycommonModule,
     MatMenuModule,
     MatIconModule,
+    FormsModule,
+    ReactiveFormsModule,
+    ContenteditableValueAccessorModule
   ],
 })
 export class TaleModule {}

@@ -7,32 +7,40 @@
 <button (click)="buildAudio()">Build Audio</button>
 <button (click)="buildGif()">Build Gif</button>
 <div class="all_tale" *ngIf="tupleModel != null && tupleModel.cuttedAudios">
-    <div class="card_page" *ngFor="let talePage of getTalePageMap() | keyvalue : talePageOrder; trackBy: trackByItems ">
-        <div class="menu_container">
-            <div class="generic_icon" [matMenuTriggerFor]="myMenu" aria-label="Menú">
-                <mat-icon>menu</mat-icon>
+    <form [formGroup]="formGroup">
+        <div class="card_page"
+            *ngFor="let talePage of getTalePageMap() | keyvalue : talePageOrder; trackBy: trackByItems ">
+            <div class="menu_container">
+                <div class="generic_icon" [matMenuTriggerFor]="myMenu" aria-label="Menú">
+                    <mat-icon>menu</mat-icon>
+                </div>
+                <mat-menu #myMenu="matMenu">
+                    <button (click)="deleteTalePage(talePage.key, talePage.value)" mat-menu-item>
+                        <mat-icon>delete</mat-icon>
+                        <span>Borrar</span>
+                    </button>
+                    <button (click)="togglePictureVisible(talePage.key)" mat-menu-item>
+                        <mat-icon>image</mat-icon>
+                        <span>Mostrar/esconder Imagen</span>
+                    </button>
+                    <button (click)="saveTuple()" mat-menu-item>
+                        <mat-icon>save</mat-icon>
+                        <span>Guardar</span>
+                    </button>
+                </mat-menu>
             </div>
-            <mat-menu #myMenu="matMenu">
-                <button (click)="deleteTalePage(talePage.key, talePage.value)" mat-menu-item>
-                    <mat-icon>delete</mat-icon>
-                    <span>Borrar</span>
-                </button>
-                <button (click)="togglePictureVisible(talePage.key)" mat-menu-item>
-                    <mat-icon>image</mat-icon>
-                    <span>Mostrar/esconder Imagen</span>
-                </button>
-            </mat-menu>
+            <h1 formControlName="{{ getFormGroupName(talePage.key) }}" contenteditable></h1>
+            <app-audioeditor [fileName]="talePage.value.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
+                [url]="talePage.value.audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
+                (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()"
+                (gotAudioBlob)="addAudioBuffer(talePage.key, $event)">
+            </app-audioeditor>
+            <div class="pictures" *ngIf="pictureIsVisible(talePage.key)">
+                <app-canvaseditor [url]="talePage.value.canvasUrl"
+                    (urlChange)="talePage.value.canvasUrl=$event; saveTuple()"
+                    [defaultFileName]="getDefaultCanvasImageName(talePage.value.key)" [options]="imageOptions">
+                </app-canvaseditor>
+            </div>
         </div>
-        <app-audioeditor [fileName]="talePage.value.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
-            [url]="talePage.value.audioUrl" [externalBlob]="getTemporalBlob(talePage.key)"
-            (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()"
-            (gotAudioBlob)="addAudioBuffer(talePage.key, $event)">
-        </app-audioeditor>
-        <div class="pictures" *ngIf="pictureIsVisible(talePage.key)">
-            <app-canvaseditor [url]="talePage.value.canvasUrl"
-                (urlChange)="talePage.value.canvasUrl=$event; saveTuple()"
-                [defaultFileName]="getDefaultCanvasImageName(talePage.value.key)" [options]="imageOptions">
-            </app-canvaseditor>
-        </div>
-    </div>
+    </form>
 </div>

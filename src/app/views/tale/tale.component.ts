@@ -20,6 +20,7 @@ import {
 } from 'src/app/mycommon/components/canvaseditor/canvaseditor.component';
 import { LoginService } from 'src/services/login.service';
 import Crunker from 'crunker';
+import { FormControl, FormGroup } from '@angular/forms';
 
 export interface PageTaleData {
   t: number;
@@ -28,6 +29,7 @@ export interface PageTaleData {
   audioUrl: string | null;
   canvasUrl?: ImagesUrlData;
   key: string;
+  txt?: string;
 }
 
 @Component({
@@ -62,6 +64,7 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
   temporalBlobAudios: Map<string, Blob> = new Map();
   audioCtx = new window.AudioContext();
   allBlobAudios: Map<string, AudioBuffer> = new Map();
+  formGroup = new FormGroup({});
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
@@ -85,6 +88,26 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       modalService,
       webcamService
     );
+  }
+
+  changedText(key: string, val: string | null) {
+    this.tupleModel.cuttedAudios[key].txt = val;
+  }
+
+  getFormGroupName(key: string) {
+    const old = this.formGroup.get(key);
+    if (!old) {
+      let txt = this.tupleModel.cuttedAudios[key].txt;
+      const nuevo = new FormControl({
+        value: txt ? txt : 'Texto',
+        disabled: false,
+      });
+      nuevo.valueChanges.subscribe((value) => {
+        this.changedText(key, value);
+      });
+      this.formGroup.addControl(key, nuevo);
+    }
+    return key;
   }
 
   pictureVisible: Map<string, boolean> = new Map();
