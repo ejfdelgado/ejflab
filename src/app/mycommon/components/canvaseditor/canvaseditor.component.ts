@@ -243,31 +243,36 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     });
   }
 
-  drawImageScaled(
+  async drawImageScaled(
     img: HTMLImageElement,
     ctx: CanvasRenderingContext2D,
     clear = true
-  ) {
-    let canvas = ctx.canvas;
-    let hRatio = canvas.width / img.width;
-    let vRatio = canvas.height / img.height;
-    let ratio = Math.max(hRatio, vRatio);
-    let centerShift_x = (canvas.width - img.width * ratio) / 2;
-    let centerShift_y = (canvas.height - img.height * ratio) / 2;
-    if (clear) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-    }
-    ctx.drawImage(
-      img,
-      0,
-      0,
-      img.width,
-      img.height,
-      centerShift_x,
-      centerShift_y,
-      img.width * ratio,
-      img.height * ratio
-    );
+  ): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
+      setTimeout(() => {
+        let canvas = ctx.canvas;
+        let hRatio = canvas.width / img.width;
+        let vRatio = canvas.height / img.height;
+        let ratio = Math.max(hRatio, vRatio);
+        let centerShift_x = (canvas.width - img.width * ratio) / 2;
+        let centerShift_y = (canvas.height - img.height * ratio) / 2;
+        if (clear) {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+        ctx.drawImage(
+          img,
+          0,
+          0,
+          img.width,
+          img.height,
+          centerShift_x,
+          centerShift_y,
+          img.width * ratio,
+          img.height * ratio
+        );
+        resolve();
+      }, 0);
+    });
   }
 
   async getImageElementFromUrl(url: string): Promise<HTMLImageElement> {
@@ -492,6 +497,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
 
   async mergeImages(lista: Array<string>) {
     const contexto = this.contextMerged;
+    const canvas = this.canvasMerged;
     if (contexto == null) {
       return;
     }
@@ -502,10 +508,10 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
 
     const elementos = await Promise.all(promesasImgElements);
-
+    contexto.clearRect(0, 0, canvas.width, canvas.height);
     for (let i = 0; i < elementos.length; i++) {
       const unEleImg = elementos[i];
-      this.drawImageScaled(unEleImg, contexto, false);
+      await this.drawImageScaled(unEleImg, contexto, false);
     }
   }
 

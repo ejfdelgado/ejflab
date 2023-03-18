@@ -109,11 +109,11 @@
         </div>
     </div>
     <div #eventsContainer class="canvas_container" [ngClass]="{'ocupado': isWorkingHard}">
-        <canvas width="1" height="2" #canvasMerged class="back" class="invisible">
+        <canvas width="1" height="2" #canvasMerged class="back front">
         </canvas>
-        <canvas width="1" height="2" #canvasBackground class="back" [ngClass]="{'invisible': (mode=='edit_actor')}">
+        <canvas width="1" height="2" #canvasBackground class="back front" [ngClass]="{'invisible': (mode=='edit_actor')}">
         </canvas>
-        <canvas width="1" height="2" #canvasGreen class="green back">
+        <canvas width="1" height="2" #canvasGreen class="green back front">
         </canvas>
         <canvas width="1" height="2" #canvas class="front" [ngClass]="{'transparente': (mode=='edit_actor')}">
         </canvas>
