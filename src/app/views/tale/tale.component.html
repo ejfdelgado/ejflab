@@ -17,6 +17,10 @@
                     <mat-icon>delete</mat-icon>
                     <span>Borrar</span>
                 </button>
+                <button (click)="togglePictureVisible(talePage.key)" mat-menu-item>
+                    <mat-icon>image</mat-icon>
+                    <span>Mostrar/esconder Imagen</span>
+                </button>
             </mat-menu>
         </div>
         <app-audioeditor [fileName]="talePage.value.key+'_sound.mp3'" [options]="audioOptionsReadOnly"
@@ -24,7 +28,7 @@
             (urlChange)="talePage.value.audioUrl=$event; forgetTemporalBlob(talePage.key); saveTuple()"
             (gotAudioBlob)="addAudioBuffer(talePage.key, $event)">
         </app-audioeditor>
-        <div class="pictures">
+        <div class="pictures" *ngIf="pictureIsVisible(talePage.key)">
             <app-canvaseditor [url]="talePage.value.canvasUrl"
                 (urlChange)="talePage.value.canvasUrl=$event; saveTuple()"
                 [defaultFileName]="getDefaultCanvasImageName(talePage.value.key)" [options]="imageOptions">

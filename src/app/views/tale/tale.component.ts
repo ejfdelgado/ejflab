@@ -87,6 +87,20 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     );
   }
 
+  pictureVisible: Map<string, boolean> = new Map();
+  pictureIsVisible(key: string) {
+    return this.pictureVisible.get(key) === true;
+  }
+
+  togglePictureVisible(key: string) {
+    const old = this.pictureVisible.get(key);
+    if (old === true) {
+      this.pictureVisible.set(key, false);
+    } else {
+      this.pictureVisible.set(key, true);
+    }
+  }
+
   getCompleteGuion(): frameVideoRequestData {
     const mapeo = this.tupleModel.cuttedAudios;
     const llaves = Object.keys(mapeo).sort();
