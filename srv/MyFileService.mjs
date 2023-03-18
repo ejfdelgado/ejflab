@@ -5,8 +5,8 @@ import { Storage } from '@google-cloud/storage';
 import ReadableStreamClone from 'readable-stream-clone'
 import { MyConstants } from "../srcJs/MyConstants.js";
 import { General } from "./common/General.mjs";
-import { Gif } from 'make-a-gif';
 import { PassThrough } from "stream";
+import { Gif } from "../srcJs/gif/index.mjs";
 
 const storage = new Storage();
 
@@ -25,6 +25,8 @@ export class MyFileService {
         const token = res.locals.token;
         const pageId = req.params['pageId'];
         const peticion = req.body;
+
+        //console.log(JSON.stringify(peticion, null, 4));
 
         //duration, audioUrl, imageUrl
         const frames = peticion.frames;
