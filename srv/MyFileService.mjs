@@ -5,6 +5,7 @@ import { Storage } from '@google-cloud/storage';
 import ReadableStreamClone from 'readable-stream-clone'
 import { MyConstants } from "../srcJs/MyConstants.js";
 import { General } from "./common/General.mjs";
+import { Gif } from 'make-a-gif';
 
 const storage = new Storage();
 
@@ -17,6 +18,41 @@ export class MyFileService {
         await bucketRef
             .file(fileName)
             .makePublic();
+    }
+
+    static async makegif(req, res, next) {
+        try {
+            const myGif = new Gif(500, 500);
+            //We set 3 images that will be 3 frames
+            /*const res1 = await fetch(
+                'https://cdn.discordapp.com/attachments/724014357343895703/960220310144184330/unknown.png'
+            );
+            */
+            await myGif.setFrames([
+                {
+                    src: 'https://cdn.discordapp.com/attachments/960206787775201314/960213088974561280/unknown.png',
+                },
+                /*{
+                    src: new Uint8Array(await res1.arrayBuffer()),
+                },*/
+                {
+                    src: 'https://cdn.discordapp.com/attachments/960206787775201314/960213089536585808/unknown.png',
+                    background:
+                        'https://cdn.discordapp.com/attachments/724014357343895703/960220070976565378/unknown.png',
+                },
+            ]);
+
+            //Render the image, it will return a Buffer or it will give an error if anything goes wrong
+            const Render = await myGif.encode();
+            res.writeHead(200, {
+                'Content-Type': 'image/gif',
+                "Content-Disposition": "inline; filename=image.gif"
+            });
+            res.end(Render);
+        } catch (err) {
+            console.log(err);
+            res.status(200).send({ err: err });
+        }
     }
 
     static async deleteDonationFiles(bucketRef, keyName) {

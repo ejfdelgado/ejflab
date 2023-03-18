@@ -14,6 +14,11 @@ import { FileRequestData, FileService } from 'src/services/file.service';
 import { IndicatorService } from 'src/services/indicator.service';
 import { ModalService } from 'src/services/modal.service';
 
+export interface UrlBlobPairData {
+  blob: Blob;
+  url: string;
+}
+
 export interface CanvasOptionsData {
   width: number;
   height: number;
@@ -37,6 +42,7 @@ export interface ImagesUrlData {
   sketch?: string;
   actor?: string;
   background?: string;
+  merged?: string;
 }
 
 export interface ImagesChangedData {
@@ -92,6 +98,10 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   @ViewChild('canvasBackground') canvasBackgroundRef: ElementRef;
   private canvasBackground: HTMLCanvasElement;
   private contextBackground: CanvasRenderingContext2D | null;
+
+  @ViewChild('canvasMerged') canvasMergedRef: ElementRef;
+  private canvasMerged: HTMLCanvasElement;
+  private contextMerged: CanvasRenderingContext2D | null;
 
   threshold = 40;
   isWorkingHard = false;
@@ -192,6 +202,11 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       this.canvasBackground.height = this.options.height;
       this.contextBackground = this.canvasBackground.getContext('2d');
 
+      this.canvasMerged = this.canvasMergedRef.nativeElement;
+      this.canvasMerged.width = this.options.width;
+      this.canvasMerged.height = this.options.height;
+      this.contextMerged = this.canvasMerged.getContext('2d');
+
       if (!this.context) {
         return;
       }
@@ -228,14 +243,20 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     });
   }
 
-  drawImageScaled(img: HTMLImageElement, ctx: CanvasRenderingContext2D) {
+  drawImageScaled(
+    img: HTMLImageElement,
+    ctx: CanvasRenderingContext2D,
+    clear = true
+  ) {
     let canvas = ctx.canvas;
     let hRatio = canvas.width / img.width;
     let vRatio = canvas.height / img.height;
     let ratio = Math.max(hRatio, vRatio);
     let centerShift_x = (canvas.width - img.width * ratio) / 2;
     let centerShift_y = (canvas.height - img.height * ratio) / 2;
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (clear) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
     ctx.drawImage(
       img,
       0,
@@ -249,27 +270,28 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     );
   }
 
-  async localLoadImages(url: string, type: string) {
-    return new Promise<void>((resolve, reject) => {
-      this.loadImage(url).subscribe((url: string) => {
-        try {
-          const newImg = document.createElement('img');
-          newImg.onload = () => {
-            if (type == 'sketch' && this.context) {
-              this.drawImageScaled(newImg, this.context);
-            } else if (type == 'actor' && this.contextGreen) {
-              this.drawImageScaled(newImg, this.contextGreen);
-            } else if (type == 'background' && this.contextBackground) {
-              this.drawImageScaled(newImg, this.contextBackground);
-            }
-            resolve();
-          };
-          newImg.src = url;
-        } catch (e) {
-          reject(e);
-        }
-      });
+  async getImageElementFromUrl(url: string): Promise<HTMLImageElement> {
+    const newImg = document.createElement('img');
+    return new Promise<HTMLImageElement>((resolve, reject) => {
+      newImg.onload = () => {
+        resolve(newImg);
+      };
+      newImg.src = url;
     });
+  }
+
+  async localLoadImages(url: string, type: string) {
+    const localUrl = await this.remoteUrlToLocalUrl(url);
+    const newImg: HTMLImageElement = await this.getImageElementFromUrl(
+      localUrl
+    );
+    if (type == 'sketch' && this.context) {
+      this.drawImageScaled(newImg, this.context);
+    } else if (type == 'actor' && this.contextGreen) {
+      this.drawImageScaled(newImg, this.contextGreen);
+    } else if (type == 'background' && this.contextBackground) {
+      this.drawImageScaled(newImg, this.contextBackground);
+    }
   }
 
   ngOnChanges(changes: any) {
@@ -293,26 +315,33 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     }
   }
 
-  private loadImage(url: string): Observable<string> {
+  private remoteUrlToLocalUrl(url: string): Promise<string> {
     if (
       /^https?:\/\/storage\.googleapis\.com/i.exec(url) != null ||
       /^data:image/i.exec(url) != null ||
       /^blob:/i.exec(url) != null
     ) {
-      return of(url);
+      return Promise.resolve(url);
     }
     if (!url) {
-      return of('');
+      return Promise.resolve('');
     }
     let theUrl = url;
     if (typeof this.options.useRoot == 'string') {
       theUrl = this.options.useRoot + url.replace(/^\/+/, '');
     }
-    return this.httpClient.get(theUrl, { responseType: 'blob' }).pipe(
-      map((e) => {
-        return URL.createObjectURL(e);
-      })
-    );
+    return new Promise<string>((resolve, reject) => {
+      this.httpClient
+        .get(theUrl, { responseType: 'blob' })
+        .pipe(
+          map((e) => {
+            return URL.createObjectURL(e);
+          })
+        )
+        .subscribe((response) => {
+          resolve(response);
+        });
+    });
   }
 
   async blob2Base64(blob: Blob): Promise<string> {
@@ -345,24 +374,34 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       this.url.sketch = response.key + '?t=' + new Date().getTime();
     } else if (type == 'background') {
       this.url.background = response.key + '?t=' + new Date().getTime();
+    } else if (type == 'merged') {
+      this.url.merged = response.key + '?t=' + new Date().getTime();
     }
   }
 
-  getImageBlobFromCanvas(type: string): Promise<Blob | null> {
-    return new Promise<Blob | null>((resolve, reject) => {
+  getImageBlobFromCanvas(type: string): Promise<UrlBlobPairData | null> {
+    return new Promise<UrlBlobPairData | null>((resolve, reject) => {
       let localCanvas = null;
-      let mimeType = 'image/png';
       if (type == 'sketch') {
         localCanvas = this.canvas;
       } else if (type == 'actor') {
         localCanvas = this.canvasGreen;
       } else if (type == 'background') {
         localCanvas = this.canvasBackground;
-        mimeType = 'image/jpeg';
+      } else if (type == 'merged') {
+        localCanvas = this.canvasMerged;
       }
       if (localCanvas) {
         localCanvas.toBlob((temp) => {
-          resolve(temp);
+          // Resolve something different
+          if (temp) {
+            resolve({
+              blob: temp,
+              url: URL.createObjectURL(temp),
+            });
+          } else {
+            resolve(null);
+          }
         });
       }
     });
@@ -371,56 +410,102 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   async guardar() {
     const fileNames = this.defaultFileName;
     const promesas = [];
-    if (this.changes.sketch) {
-      promesas.push(
-        new Promise<void>(async (resolve, reject) => {
-          const temp = await this.getImageBlobFromCanvas('sketch');
-          try {
-            if (fileNames.sketch) {
-              await this.guardarInterno('sketch', temp, fileNames.sketch);
-              this.changes.sketch = false;
-              resolve();
-            }
-          } catch (err) {}
-        })
-      );
-    }
-    if (this.changes.background) {
+    const urlsMerge: Array<string> = [];
+    if (this.changes.background || this.changes.actor || this.changes.sketch) {
       promesas.push(
         new Promise<void>(async (resolve, reject) => {
           const temp = await this.getImageBlobFromCanvas('background');
           try {
-            if (fileNames.background) {
-              await this.guardarInterno(
-                'background',
-                temp,
-                fileNames.background
-              );
-              this.changes.background = false;
-              resolve();
+            if (fileNames.background && temp) {
+              urlsMerge.push(temp.url);
+              if (this.changes.background) {
+                await this.guardarInterno(
+                  'background',
+                  temp.blob,
+                  fileNames.background
+                );
+                this.changes.background = false;
+              }
             }
-          } catch (err) {}
+            resolve();
+          } catch (err) {
+            reject();
+          }
         })
       );
-    }
-    if (this.changes.actor) {
+
       promesas.push(
         new Promise<void>(async (resolve, reject) => {
           const temp = await this.getImageBlobFromCanvas('actor');
           try {
-            if (fileNames.actor) {
-              await this.guardarInterno('actor', temp, fileNames.actor);
-              this.changes.actor = false;
-              resolve();
+            if (fileNames.actor && temp) {
+              urlsMerge.push(temp.url);
+              if (this.changes.actor) {
+                await this.guardarInterno('actor', temp.blob, fileNames.actor);
+                this.changes.actor = false;
+              }
             }
-          } catch (err) {}
+            resolve();
+          } catch (err) {
+            reject();
+          }
         })
       );
+      promesas.push(
+        new Promise<void>(async (resolve, reject) => {
+          const temp = await this.getImageBlobFromCanvas('sketch');
+          try {
+            if (fileNames.sketch && temp) {
+              urlsMerge.push(temp.url);
+              if (this.changes.sketch) {
+                await this.guardarInterno(
+                  'sketch',
+                  temp.blob,
+                  fileNames.sketch
+                );
+                this.changes.sketch = false;
+              }
+            }
+            resolve();
+          } catch (err) {
+            reject();
+          }
+        })
+      );
+      await Promise.all(promesas);
+      if (urlsMerge.length > 0) {
+        // Se actualiza el canvas merge
+        await this.mergeImages(urlsMerge);
+        // Se debe guardar el merged
+        const temp = await this.getImageBlobFromCanvas('merged');
+        if (fileNames.merged && temp) {
+          await this.guardarInterno('merged', temp.blob, fileNames.merged);
+        }
+      }
     }
-    await Promise.all(promesas);
+
     this.changeToMode('none');
     if (promesas.length > 0) {
       this.urlChange.emit(this.url);
+    }
+  }
+
+  async mergeImages(lista: Array<string>) {
+    const contexto = this.contextMerged;
+    if (contexto == null) {
+      return;
+    }
+    const promesasImgElements = [];
+    for (let i = 0; i < lista.length; i++) {
+      const urlLocal = lista[i];
+      promesasImgElements.push(this.getImageElementFromUrl(urlLocal));
+    }
+
+    const elementos = await Promise.all(promesasImgElements);
+
+    for (let i = 0; i < elementos.length; i++) {
+      const unEleImg = elementos[i];
+      this.drawImageScaled(unEleImg, contexto, false);
     }
   }
 
@@ -654,7 +739,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
       const diffSat = Math.abs(seed.hsv[1] - actual.hsv[1]);
       const diffVal = Math.abs(seed.hsv[2] - actual.hsv[2]);
       let condicionHue =
-        diffHue < CanvaseditorComponent.HUE_SIMILITUD_360 * threshold*2;
+        diffHue < CanvaseditorComponent.HUE_SIMILITUD_360 * threshold * 2;
       let condifcionSat = true;
       let condifcionVal = true;
       condifcionSat = diffSat < threshold / 2;
@@ -820,7 +905,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         if (diferencia >= 0) {
           lista.splice(1, diferencia - 1);
         }
-        lista.push(blob);
+        lista.push(blob.blob);
       }
     }
   }

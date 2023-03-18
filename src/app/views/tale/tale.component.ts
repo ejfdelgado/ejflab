@@ -19,6 +19,7 @@ import {
   ImagesUrlData,
 } from 'src/app/mycommon/components/canvaseditor/canvaseditor.component';
 import { LoginService } from 'src/services/login.service';
+import Crunker from 'crunker';
 
 export interface PageTaleData {
   t: number;
@@ -84,6 +85,31 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
     );
   }
 
+  async buildAudio() {
+    const mapeo = this.tupleModel.cuttedAudios;
+    const llaves = Object.keys(mapeo).sort();
+    for (let i = 0; i < llaves.length; i++) {
+      const llave = llaves[i];
+      const frame = mapeo[llave];
+      console.log(frame);
+    }
+    /*
+    const crunker = new Crunker();
+    crunker
+      .fetchAudio('/voice.mp3', '/background.mp3')
+      .then((buffers) => crunker.mergeAudio(buffers))
+      .then((merged) => crunker.export(merged, 'audio/mp3'))
+      .then((output) => crunker.download(output.blob))
+      .catch((error) => {
+        throw new Error(error);
+      });
+      */
+  }
+
+  async buildGif() {
+
+  }
+
   castPageData(dato: any): PageTaleData {
     return dato;
   }
@@ -97,6 +123,7 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       actor: `${llave}/actor.png`,
       background: `${llave}/background.jpg`,
       sketch: `${llave}/sketch.png`,
+      merged: `${llave}/merged.png`,
     };
   }
 

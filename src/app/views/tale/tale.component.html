@@ -4,6 +4,8 @@
     </app-audioeditor>
 </div>
 <button (click)="loginSrv.login()">Login</button>
+<button (click)="buildAudio()">Build Audio</button>
+<button (click)="buildGif()">Build Gif</button>
 <div class="all_tale" *ngIf="tupleModel != null && tupleModel.cuttedAudios">
     <div class="card_page" *ngFor="let talePage of getTalePageMap() | keyvalue : talePageOrder; trackBy: trackByItems ">
         <div class="menu_container">

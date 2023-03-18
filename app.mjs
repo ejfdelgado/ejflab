@@ -46,6 +46,7 @@ app.post('/srv/:pageId/tup', [commonHeaders, checkAuthenticatedSilent, Authoriza
 app.get('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["per_r"]]), handleErrorsDecorator(AuthorizationSrv.readAll)]);
 app.post('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["per_w"]]), express.json(), handleErrorsDecorator(AuthorizationSrv.save)]);
 app.post('/srv/:pageId/file', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.uploadFile), MyFileService.uploadFileResponse]);
+app.get('/srv/:pageId/makegif', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileService.uploadFile), MyFileService.makegif]);
 app.use("/", handleErrorsDecorator(MainHandler.handle));// Esto solo funciona sin el npm run angular
 io.on('connection', MySocketStream.handle(io));
 

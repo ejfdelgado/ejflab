@@ -2,6 +2,19 @@ src/app/app.component.ts
 https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
+ng new proyecto001
+ng generate module views/tale --route tale --module app.module
+ng generate component components/webcam
+ng generate component mycommon/components/canvaseditor
+ng generate pipe mycommon/pipes/fechaCard
+
+panal:
+gcloud config set account edelgado@panal.co
+gcloud config set project panal-comunidad-app
+
+ejfexperiment:
+gcloud config set account edgar.jose.fernando.delgado@gmail.com
+gcloud config set project ejfexperiments
 
 MUST:
 - Hacer un componente con canvas que cargue dos imágenes, que permita con una de ellas hacer el efecto de fondo verde.
@@ -18,6 +31,7 @@ https://kernhanda.github.io/tutorial-typescript-canvas-drawing/
 - Usar motor de template ¿tangular? ¿https://github.com/josdejong/jsoneditor?
 - Permitir enviar correos, usar templates para los correos.
 
+- lazy loading https://angular.io/guide/lazy-loading-ngmodules
 - Permitir compartir los modelos a otros usuarios, por correo.
 - Permitir modelo directo de firebase sin seguridad
 - Recuperar contraseña
