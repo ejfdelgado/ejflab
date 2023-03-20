@@ -75,7 +75,7 @@ export interface SeedData {
   styleUrls: ['./canvaseditor.component.css'],
 })
 export class CanvaseditorComponent implements OnInit, OnChanges {
-  static MAX_UNDO_SIZE = 15;
+  static MAX_UNDO_SIZE = 6;
   static HUE_SIMILITUD_360 = 10;
   static SAT_MIN = 0.4;
   static VAL_MIN = 0.3;
@@ -254,6 +254,8 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     clear = true
   ) {
     let canvas = ctx.canvas;
+    // Sin esto, se borra todo
+    ctx.globalCompositeOperation = 'source-over';
     let hRatio = canvas.width / img.width;
     let vRatio = canvas.height / img.height;
     let ratio = Math.max(hRatio, vRatio);
