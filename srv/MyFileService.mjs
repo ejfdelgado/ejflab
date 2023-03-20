@@ -41,8 +41,9 @@ export class MyFileService {
             const frame = frames[i];
             frame.src = new Uint8Array(imgBuffers[i].data);
         }
-
-        const myGif = new Gif(peticion.width, peticion.height, 100);
+        const quality = 80;
+        const myGif = new Gif(peticion.width, peticion.height, quality);
+        myGif.setLoops(1);
         await myGif.setFrames(frames);
         const rendered = await myGif.encode();
 

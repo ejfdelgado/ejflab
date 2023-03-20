@@ -75,7 +75,7 @@ export interface SeedData {
   styleUrls: ['./canvaseditor.component.css'],
 })
 export class CanvaseditorComponent implements OnInit, OnChanges {
-  static MAX_UNDO_SIZE = 7;
+  static MAX_UNDO_SIZE = 15;
   static HUE_SIMILITUD_360 = 10;
   static SAT_MIN = 0.4;
   static VAL_MIN = 0.3;
@@ -128,7 +128,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   menuSize: Array<StrokeOptionsMenuData> = [
     {
       txt: 'Pequeño',
-      option: { lineWidth: 1 },
+      option: { lineWidth: 3 },
       icon: 'looks_one',
     },
     {
@@ -362,7 +362,12 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     });
   }
 
-  async guardarInterno(type: string, blob: Blob | null, fileName: string) {
+  async guardarInterno(
+    type: string,
+    blob: Blob | null,
+    fileName: string,
+    oldUrl?: string | null
+  ) {
     if (!blob) {
       return;
     }
@@ -372,6 +377,7 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
     const response = await this.fileService.save({
       fileName,
       base64: await this.blob2Base64(blob),
+      erasefile: oldUrl,
     });
     if (type == 'actor') {
       this.url.actor = response.key + '?t=' + new Date().getTime();
@@ -387,27 +393,35 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
   getImageBlobFromCanvas(type: string): Promise<UrlBlobPairData | null> {
     return new Promise<UrlBlobPairData | null>((resolve, reject) => {
       let localCanvas = null;
+      let mimeType = 'image/png';
+      let quality = 0.5;
       if (type == 'sketch') {
         localCanvas = this.canvas;
       } else if (type == 'actor') {
         localCanvas = this.canvasGreen;
       } else if (type == 'background') {
         localCanvas = this.canvasBackground;
+        mimeType = 'image/jpeg';
       } else if (type == 'merged') {
         localCanvas = this.canvasMerged;
+        mimeType = 'image/jpeg';
       }
       if (localCanvas) {
-        localCanvas.toBlob((temp) => {
-          // Resolve something different
-          if (temp) {
-            resolve({
-              blob: temp,
-              url: URL.createObjectURL(temp),
-            });
-          } else {
-            resolve(null);
-          }
-        });
+        localCanvas.toBlob(
+          (temp) => {
+            // Resolve something different
+            if (temp) {
+              resolve({
+                blob: temp,
+                url: URL.createObjectURL(temp),
+              });
+            } else {
+              resolve(null);
+            }
+          },
+          mimeType,
+          quality
+        );
       }
     });
   }
@@ -427,7 +441,8 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
                 await this.guardarInterno(
                   'background',
                   temp.blob,
-                  fileNames.background
+                  fileNames.background,
+                  this.url?.background
                 );
                 this.changes.background = false;
               }
@@ -446,7 +461,12 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
             if (fileNames.actor && temp) {
               urlsMerge.push({ key: 'actor', url: temp.url });
               if (this.changes.actor) {
-                await this.guardarInterno('actor', temp.blob, fileNames.actor);
+                await this.guardarInterno(
+                  'actor',
+                  temp.blob,
+                  fileNames.actor,
+                  this.url?.actor
+                );
                 this.changes.actor = false;
               }
             }
@@ -466,7 +486,8 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
                 await this.guardarInterno(
                   'sketch',
                   temp.blob,
-                  fileNames.sketch
+                  fileNames.sketch,
+                  this.url?.sketch
                 );
                 this.changes.sketch = false;
               }
@@ -490,7 +511,12 @@ export class CanvaseditorComponent implements OnInit, OnChanges {
         // Se debe guardar el merged
         const temp = await this.getImageBlobFromCanvas('merged');
         if (fileNames.merged && temp) {
-          await this.guardarInterno('merged', temp.blob, fileNames.merged);
+          await this.guardarInterno(
+            'merged',
+            temp.blob,
+            fileNames.merged,
+            this.url?.merged
+          );
         }
       }
     }

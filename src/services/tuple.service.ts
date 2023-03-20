@@ -164,7 +164,7 @@ export class TupleServiceInstance {
     this.evento.emit({ status: 'read_wip' });
     const request = {
       offset: 0,
-      max: 20,
+      max: 60,
       id: this.id,
     };
 

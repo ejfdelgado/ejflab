@@ -189,7 +189,8 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
         audios.push(audioBuffer);
       }
 
-      const merged = crunker.mergeAudio(audios);
+      //const merged = crunker.mergeAudio(audios);
+      const merged = crunker.concatAudio(audios);
       const exported = crunker.export(merged, 'audio/mp3');
       crunker.download(exported.blob);
 
@@ -244,7 +245,7 @@ export class TaleComponent extends BaseComponent implements OnInit, OnDestroy {
       actor: `${llave}/actor.png`,
       background: `${llave}/background.jpg`,
       sketch: `${llave}/sketch.png`,
-      merged: `${llave}/merged.png`,
+      merged: `${llave}/merged.jpg`,
     };
   }
 

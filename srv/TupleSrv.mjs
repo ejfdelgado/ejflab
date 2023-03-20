@@ -6,7 +6,7 @@ import { KeysSrv } from "./KeysSrv.mjs";
 
 const TUPLE_TYPE = "tuple";
 const TUPLE_TEMP_TYPE = "tuple-temp";
-const MAX_READ_SIZE = 30;
+const MAX_READ_SIZE = 60;
 
 /*
 {
