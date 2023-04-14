@@ -1,3 +1,4 @@
+const { SimpleObj } = require("./SimpleObj");
 
 const TAMANIO_ALEATORIO = 10;
 const MAX_BUFFER_CHANGES = 3;
@@ -42,70 +43,12 @@ class MyTuples {
         cache = null;
         return response;
     }
-    static createBasic(todo, llave, llave2) {
-        const llave2EsNumero = (/^\d+$/.exec(llave2) != null);
-        if (!(llave in todo)) {
-            if (llave2EsNumero) {
-                todo[llave] = [];
-            } else {
-                todo[llave] = {};
-            }
-        } else {
-            const indice = todo[llave];
-            if (indice instanceof Array && !llave2EsNumero) {
-                //migrar de arreglo a objeto
-                const temporal = {};
-                for (let i = 0; i < indice.length; i++) {
-                    temporal[i] = indice[i];
-                }
-                todo[llave] = temporal;
-            }
-        }
-        return todo;
-    }
-    static recreate(todo, llave, valor) {
-        const partes = llave.split(".");
-        let indice = todo;
-        for (let i = 0; i < partes.length - 1; i++) {
-            const parte = partes[i];
-            if (!(parte in indice)) {
-                MyTuples.createBasic(indice, parte, partes[i + 1]);
-            }
-            indice = indice[parte];
-        }
-        const ultimaLlave = partes[partes.length - 1];
-        if (typeof valor == "object" && valor !== null) {
-            if (!indice[ultimaLlave]) {
-                if (valor instanceof Array) {
-                    indice[ultimaLlave] = [];
-                } else {
-                    indice[ultimaLlave] = {};
-                }
-            } else {
-                if (!(valor instanceof Array) && indice[ultimaLlave] instanceof Array) {
-                    //migrar de arreglo a objeto
-                    const temporal = indice[ultimaLlave];
-                    const nuevo = {};
-                    for (let i = 0; i < temporal.length; i++) {
-                        const valorLocal = temporal[i];
-                        if (valorLocal !== null) {
-                            nuevo[i] = valorLocal;
-                        }
-                    }
-                    indice[ultimaLlave] = nuevo;
-                }
-            }
-        } else {
-            indice[ultimaLlave] = valor;
-        }
-        return todo;
-    }
     static getObject(t1, response = {}) {
         const llaves = Object.keys(t1);
         for (let i = 0; i < llaves.length; i++) {
             const llave = llaves[i];
             const valor = t1[llave];
-            MyTuples.recreate(response, "t." + llave, valor);
+            SimpleObj.recreate(response, "t." + llave, valor);
         }
         return response;
     }

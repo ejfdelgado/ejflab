@@ -179,11 +179,45 @@ class MyDates {
         return response;
     }
 
-    static toAAAAMMDD(siguiente) {
+    static toAAAAMMDD(siguiente, predeterminado = "") {
+        if (typeof siguiente == "string") {
+            siguiente = parseInt(siguiente);
+        }
+        if (typeof siguiente == "number") {
+            if (isNaN(siguiente)) {
+                return predeterminado;
+            }
+            siguiente = new Date(siguiente);
+        }
+        if (!(siguiente instanceof Date)) {
+            return predeterminado;
+        }
         const anio1 = siguiente.getFullYear();
-        const mes1 = siguiente.getMonth();
+        const mes1 = siguiente.getMonth() + 1;
         const dia1 = siguiente.getDate();
         return anio1 + MyDates.lPad2(mes1) + MyDates.lPad2(dia1);
+    }
+
+    static toAAAAMMDDHHmmss(siguiente, predeterminado = "") {
+        if (typeof siguiente == "string") {
+            siguiente = parseInt(siguiente);
+        }
+        if (typeof siguiente == "number") {
+            if (isNaN(siguiente)) {
+                return predeterminado;
+            }
+            siguiente = new Date(siguiente);
+        }
+        if (!(siguiente instanceof Date)) {
+            return predeterminado;
+        }
+        const anio1 = siguiente.getFullYear();
+        const mes1 = siguiente.getMonth() + 1;
+        const dia1 = siguiente.getDate();
+        const hora = siguiente.getHours();
+        const minutos = siguiente.getMinutes();
+        const segundos = siguiente.getSeconds();
+        return `${anio1}/${MyDates.lPad2(mes1)}/${MyDates.lPad2(dia1)} ${MyDates.lPad2(hora)}:${MyDates.lPad2(minutos)}:${MyDates.lPad2(segundos)}`;
     }
 }
 
