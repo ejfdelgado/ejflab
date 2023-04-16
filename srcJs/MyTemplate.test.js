@@ -12,23 +12,50 @@ function myTest() {
             exp: "my name is Edgar and I like red 1-1-2-3",
         },
         {
-            txt: "All combines: ${foreach color in ${colors}}${foreach name in ${names}}Color ${color.id|mapColor} + ${name}, ${end}${end}",
+            txt: "All combines: ${for color in ${colors}}${for name in ${names}}Color ${color.id|mapColor} + ${name}, ${endfor}${endfor}",
             data: { names: { first: "Edgar", last: "Delgado" }, colors: [{ id: 1 }, { id: 2 }] },
             exp: "All combines: Color red + Edgar, Color red + Delgado, Color blue + Edgar, Color blue + Delgado, ",
         },
-        /*{
-            txt: "${foreach parent in ${parents}} parent ${parent.name} has ${foreach child in ${parent.children}} ${child.name} ${end} ${end}",
+        {
+            txt: "Esto es una prueba ${for parent in ${parents}} parent ${parent.name} has ${for child in ${parent.children}} ${child.name} ${endfor} ${endfor} here there is nothing",
             data: {
                 parents: [
                     { name: "Dog", children: [{ name: "Pepito" }, { name: "Cuco" }] },
-                    { name: "Bird", children: [{ name: "Fly" }, { name: "Shym" }] }
+                    { name: "Bird", children: [{ name: "Fly" }, { name: "Shym" }] },
+                    { name: "Cat", children: [] }
                 ]
             },
-            exp: "",
-        }
-        */
+            exp: "Esto es una prueba  parent Dog has  Pepito  Cuco   parent Bird has  Fly  Shym   parent Cat has   here there is nothing",
+        },
+        {
+            txt: "Esto es una prueba ${for parent in ${parents}} parent ${parent.name} has ${for child in ${parent.children}} ${child.name} ${endfor} ${endfor} here there is nothing",
+            data: {
+                parents: [
+                    { name: "Dog", children: undefined },
+                    { name: "Bird" },
+                    { name: "Cat", children: null }
+                ]
+            },
+            exp: "Esto es una prueba  parent Dog has   parent Bird has   parent Cat has   here there is nothing",
+        },
+        {
+            txt: "Es ${if $[color.id] == 1 && $[algo] === undefined } Es uno ${endif} fin",
+            data: { color: { id: 1 } },
+            exp: "Es  Es uno  fin",
+        },
+        {
+            txt: "Es ${if $[color.id] == 1 && $[algo] === undefined }Verdadero${else}Falso${endif} fin",
+            data: { color: { id: 2 } },
+            exp: "Es Falso fin",
+        },
+        {
+            txt: 'Es ${if $[color.id] == 1 && $[algo] === undefined }Verdadero${else}pero acá es ${if typeof $[color] == "object" }Sí${else}No${endif}${endif} fin',
+            data: { color: { id: 2 } },
+            exp: "Es pero acá es Sí fin",
+        },
     ];
 
+    renderer.registerFunction("json", CsvFormatterFilters.json);
     renderer.registerFunction("mapColor", CsvFormatterFilters.map({ 1: "red", 2: "blue" }));
     renderer.registerFunction("personal", (val, ...args) => {
         return val + "-" + args.join("-");

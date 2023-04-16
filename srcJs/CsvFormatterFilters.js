@@ -1,4 +1,7 @@
 class CsvFormatterFilters {
+    static json(valor) {
+        return JSON.stringify(valor);
+    }
     static map(myMap) {
         return (key) => {
             return myMap[key];
