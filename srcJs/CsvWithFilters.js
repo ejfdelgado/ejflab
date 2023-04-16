@@ -1,5 +1,6 @@
 
 class CsvWithFilters {
+    static PATTERN_FILTER = "\\s*([^|\\s]+)(\\s*\\|\\s*([^:\\s]+)\\s*(\\s*:\\s*([^:\\s]+)*)?)?";
     constructor() {
         this.filterRegistry = {
             classes: {
@@ -59,7 +60,7 @@ class CsvWithFilters {
             partes = patron.exec(header);
             if (partes !== null) {
                 const completo = partes[1];
-                const patron2 = /\s*([^|\s]+)(\s*\|\s*([^:\s]+)\s*(\s*:\s*([^:\s]+)*)?)?/g;
+                const patron2 = new RegExp(CsvWithFilters.PATTERN_FILTER, "g");
                 const subpartes = patron2.exec(completo);
                 if (subpartes !== null) {
                     const desc = {
@@ -83,15 +84,15 @@ class CsvWithFilters {
                         if (subpartes[5]) {
                             argumentos.push(JSON.parse(subpartes[5]));
                             let siguiente = null;
-                            do {
-                                siguiente = patron2.exec(completo);
-                                if (siguiente !== null) {
-                                    const siguienteFixed = siguiente[1].replace(/^\s*:/, "");
-                                    if (siguienteFixed.length > 0) {
+                            siguiente = patron2.exec(completo);
+                            if (siguiente !== null) {
+                                siguiente[0].split(":").map((siguienteFixed) => {
+                                    if (siguienteFixed.trim().length > 0) {
                                         argumentos.push(JSON.parse(siguienteFixed));
                                     }
-                                }
-                            } while (siguiente !== null);
+
+                                });
+                            }
                         }
                         desc.argumentos = argumentos;
                     }
@@ -101,7 +102,7 @@ class CsvWithFilters {
         } while (partes !== null);
         return columnas;
     }
-}
+};
 
 module.exports = {
     CsvWithFilters
