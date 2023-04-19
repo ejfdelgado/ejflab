@@ -42,6 +42,8 @@
               "srcJs/ModuloDatoSeguroFront",
               "srcJs/MyDatesFront",
               "@ffmpeg/ffmpeg",
+              "@tensorflow/tfjs",
+              "@tensorflow/tfjs-vis"
             ]
           },
           "configurations": {

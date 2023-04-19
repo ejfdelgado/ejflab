@@ -1,4 +1,20 @@
 class CsvFormatterFilters {
+    static parseInt(valor, myDefault = NaN) {
+        const temp = parseInt(valor);
+        if (isNaN(temp)) {
+            return myDefault;
+        } else {
+            return temp;
+        }
+    }
+    static parseFloat(valor, myDefault = NaN) {
+        const temp = parseFloat(valor);
+        if (isNaN(temp)) {
+            return myDefault;
+        } else {
+            return temp;
+        }
+    }
     static json(valor) {
         return JSON.stringify(valor);
     }
