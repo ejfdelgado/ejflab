@@ -22,6 +22,7 @@ export interface HttpOptionsData {
   showError?: boolean;
   pageSize?: number;
   key?: string;
+  rawString?: boolean;
 }
 
 export interface BaseComponentData {

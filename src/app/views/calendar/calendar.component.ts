@@ -1,4 +1,14 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalService } from 'src/services/modal.service';
+
+export interface MiCalendario {
+  label: string;
+  dates: MiDiaType;
+}
+
+export interface MiDiaType {
+  [key: number]: { [key: number]: { [key: number]: MiDiaElement } };
+}
 
 export interface MiMes {
   txt: string;
@@ -6,7 +16,12 @@ export interface MiMes {
   fila: number;
 }
 
+export interface MiDiaElement {
+  txt: string;
+}
+
 export interface MiDia {
+  legible: number;
   txt: string;
   fds?: boolean;
   fes?: boolean;
@@ -15,6 +30,7 @@ export interface MiDia {
   happyjoyce?: boolean;
   hoy?: boolean;
   jardin?: boolean;
+  explain: Array<MiDiaElement>;
 }
 
 @Component({
@@ -56,15 +72,110 @@ export class CalendarComponent implements OnInit {
       12: { 8: true, 25: true },
     },
   };
-  jardin: { [key: number]: { [key: number]: { [key: number]: boolean } } } = {
-    2023: {
-      1: { 27: true }, //entrega de boletines
-      2: { 28: true }, //jornada pedagogica
-      3: { 17: true, 27: true, 28: true, 29: true, 30: true, 31: true }, //entrega de boletines
-      4: { 3: true, 4: true, 5: true, 6: true, 7: true, 10: true },
-    },
-  };
-  constructor() {}
+  calendarios: Array<MiCalendario> = [];
+  constructor(public modalService: ModalService) {
+    this.calendarios.push({
+      label: 'Personal',
+      dates: {
+        2023: {
+          5: {
+            9: { txt: 'Cumple Joyce!' },
+          },
+        },
+      },
+    });
+    this.calendarios.push({
+      label: 'Salud Joyce',
+      dates: {
+        2023: {
+          7: {
+            // Julio
+            14: { txt: '4:40pm Odontología Catalina Botero' },
+          },
+        },
+      },
+    });
+    this.calendarios.push({
+      label: 'Jardín',
+      dates: {
+        2023: {
+          1: {
+            // Enero
+            27: { txt: 'Entrega de boletines' },
+          },
+          2: {
+            // Febrero
+            28: { txt: 'jornada pedagógica' },
+          },
+          3: {
+            // Marzo
+            17: { txt: 'Entrega de boletines' },
+            27: { txt: 'Semana santa' },
+            28: { txt: 'Semana santa' },
+            29: { txt: 'Semana santa' },
+            30: { txt: 'Semana santa' },
+            31: { txt: 'Semana santa' },
+          },
+          4: {
+            // Abril
+            3: { txt: 'Semana santa' },
+            4: { txt: 'Semana santa' },
+            5: { txt: 'Semana santa' },
+            6: { txt: 'Semana santa' },
+            7: { txt: 'Semana santa' },
+            10: { txt: 'Inicio Clases' },
+            26: {
+              txt: 'Día del niño + Reunión con Miss Ingrid & Maria Andréa',
+            },
+          },
+          5: {
+            // Mayo
+            9: { txt: 'Jornada pedagógica - No hay clase' },
+            19: { txt: 'Día del profesor - No hay clase' },
+            25: { txt: 'Escuela de padres (por confirmar)' },
+            29: { txt: 'Inicio del 4to periodo' },
+          },
+          6: {
+            // Junio
+            5: { txt: 'Exámen visual/auditivo - Toda la semana' },
+            9: { txt: '3er informe académico - No hay clase' },
+          },
+          7: {
+            // Julio
+            19: { txt: 'Día de la Colombianidad' },
+            21: { txt: 'Último día de clases + Medallas' },
+            24: { txt: '4to informe académico - No hay clase' },
+          },
+          8: {
+            // Agosto
+          },
+          9: {
+            // Septiembre
+          },
+          10: {
+            // Octubre
+          },
+          11: {
+            // Noviembre
+          },
+          12: {
+            // Diciembre
+          },
+        },
+      },
+    });
+  }
+
+  explain(dia: MiDia) {
+    this.modalService.alert({
+      title: 'Detalle',
+      //txt: JSON.stringify(dia),
+      txt: 'assets/templates/calendar/popup.html',
+      payload: { elementos: dia.explain },
+      ishtml: true,
+      isUrl: true,
+    });
+  }
 
   weekOfYear(fecha: Date) {
     const currentDate = fecha.getTime();
@@ -142,22 +253,33 @@ export class CalendarComponent implements OnInit {
     const hoyElDia = hoy.getDate();
 
     for (let d = inicio; d <= final; d.setDate(d.getDate() + 1)) {
-      const dia: MiDia = {
-        txt: '' + d.getDate(),
-        fds: [0, 6].indexOf(d.getDay()) >= 0, // domingo o sabado
-      };
       const anio = d.getFullYear();
       const mes = d.getMonth() + 1;
       const elDia = d.getDate();
+      const dia: MiDia = {
+        txt: '' + d.getDate(),
+        fds: [0, 6].indexOf(d.getDay()) >= 0, // domingo o sabado
+        explain: [],
+        legible: elDia + 100 * mes + anio * 10000,
+      };
 
-      if (this.esPar && elDia % 2 != 0) {
-        dia.sad = true;
+      if (dia.legible < 20230501) {
+        if (this.esPar && elDia % 2 != 0) {
+          dia.sad = true;
+        } else {
+          dia.happy = true;
+        }
       } else {
-        dia.happy = true;
+        if (this.esPar && elDia % 2 == 0) {
+          dia.sad = true;
+        } else {
+          dia.happy = true;
+        }
       }
 
       if (anio == hoyAnio && mes == hoyMes && elDia == hoyElDia) {
         dia.hoy = true;
+        dia.explain.push({ txt: 'Es hoy' });
       }
 
       if ([0, 5, 6].indexOf(d.getDay()) >= 0) {
@@ -170,6 +292,17 @@ export class CalendarComponent implements OnInit {
         }
         if (!dia.happyjoyce) {
           dia.happy = false;
+          dia.explain.push({ txt: 'Fds sin Joyce' });
+        } else {
+          dia.explain.push({ txt: 'Fds con Joyce' });
+        }
+      }
+
+      if (typeof dia.happyjoyce !== 'boolean') {
+        if (dia.happy) {
+          dia.explain.push({ txt: 'Con Joyce' });
+        } else {
+          dia.explain.push({ txt: 'Sin Joyce' });
         }
       }
 
@@ -180,17 +313,23 @@ export class CalendarComponent implements OnInit {
           const esFestivo = p2[elDia];
           if (esFestivo) {
             dia.fes = true;
+            dia.explain.push({ txt: 'Festivo' });
           }
         }
       }
 
-      const j1 = this.jardin[anio];
-      if (j1) {
-        const j2 = j1[mes];
-        if (j2) {
-          const esJardin = j2[elDia];
-          if (esJardin) {
-            dia.jardin = true;
+      for (let i = 0; i < this.calendarios.length; i++) {
+        const calendario = this.calendarios[i];
+        const jardin = calendario.dates;
+        const j1 = jardin[anio];
+        if (j1) {
+          const j2 = j1[mes];
+          if (j2) {
+            const esJardin = j2[elDia];
+            if (typeof esJardin == 'object' && esJardin != null) {
+              dia.jardin = true;
+              dia.explain.push({ txt: `${calendario.label}: ${esJardin.txt}` });
+            }
           }
         }
       }

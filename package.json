@@ -10,6 +10,7 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",
+    "finish": "npm run build && npm run deploy",
     "deploy": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml && play /sound/finish.mp3",
     "deploystd": "gcloud app deploy --verbosity=debug --quiet appstd.yaml && play /sound/finish.mp3",
     "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments && npm run credentials_paistv",

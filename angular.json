@@ -30,6 +30,7 @@
             "allowedCommonJsDependencies": [
               "buffer",
               "moment",
+              "crunker",
               "recordrtc",
               "wavesurfer.js",
               "srcJs/MyConstants",

@@ -15,9 +15,12 @@
         <div class="calendar">
             <div class="month">
                 <div class="titulo" [ngStyle]="{'grid-row': titulo.fila+' / span '+titulo.semanas}"
-                    *ngFor="let titulo of titulos; index as i;">{{ titulo.txt }}</div>
-                <div class="day" [ngClass]="{'fds': dia.fds, 'fes': dia.fes}" *ngFor="let dia of dias; index as i;">
-                    <div class="ind" [ngClass]="{'sad': dia.sad, 'jardin': dia.jardin, 'happy': dia.happy, 'happyjoyce': dia.happyjoyce, 'hoy': dia.hoy}">{{ dia.txt }}
+                    *ngFor="let titulo of titulos; index as i;"><div class="titulo_child">{{ titulo.txt }}</div></div>
+                <div class="noselect day" [ngClass]="{'fds': dia.fds, 'fes': dia.fes}"
+                    *ngFor="let dia of dias; index as i;" (click)="explain(dia)">
+                    <div class="ind"
+                        [ngClass]="{'sad': dia.sad, 'jardin': dia.jardin, 'happy': dia.happy, 'happyjoyce': dia.happyjoyce, 'hoy': dia.hoy}">
+                        {{ dia.txt }}
                     </div>
                 </div>
 

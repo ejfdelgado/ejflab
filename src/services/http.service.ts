@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError, of } from 'rxjs';
+import { catchError, Observable, of } from 'rxjs';
 import { HttpOptionsData } from 'src/interfaces/login-data.interface';
 import { MyConstants } from 'srcJs/MyConstants';
 import { IndicatorService, Wait } from './indicator.service';
@@ -196,9 +196,18 @@ export class HttpService {
       wait = this.indicatorSrv.start();
     }
     try {
+      let first: Observable<any> = of(null);
+      const myUrl = `${MyConstants.SRV_ROOT}${path}`;
+      if (options?.rawString === true) {
+        first = this.http.get(myUrl, {
+          responseType: 'text',
+        });
+      } else {
+        first = this.http.get<Type>(myUrl);
+      }
+
       const respuesta = await new Promise<Type | null>((resolve, reject) => {
-        this.http
-          .get<Type>(`${MyConstants.SRV_ROOT}${path}`)
+        first
           .pipe(
             catchError((error) => {
               if (!options || options.showError !== false) {

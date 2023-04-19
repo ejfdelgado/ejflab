@@ -12,7 +12,6 @@
 }
 
 .year > .calendar {
-
 }
 
 .myscroll {
@@ -29,13 +28,19 @@
 }
 
 .titulo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /*margin: 0 auto;*/
+  background-color: bisque;
+  border-radius: 10px;
+}
+
+.titulo_child {
   text-align: center;
   writing-mode: vertical-rl;
   text-orientation: mixed;
   transform: rotate(-180deg);
-  /*margin: 0 auto;*/
-  background-color: bisque;
-  border-radius: 10px;
 }
 
 .dow,
