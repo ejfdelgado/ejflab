@@ -49,6 +49,7 @@ export interface LoadFileData {
   providedIn: 'root',
 })
 export class HttpService {
+  static CACHE: { [key: string]: any } = {};
   constructor(
     private http: HttpClient,
     private indicatorSrv: IndicatorService,
@@ -195,9 +196,20 @@ export class HttpService {
     if (!options || options.showIndicator !== false) {
       wait = this.indicatorSrv.start();
     }
+    const myUrl = `${MyConstants.SRV_ROOT}${path}`;
+    let cacheKey: string | null = null;
+    if (options?.useCache === true) {
+      cacheKey = myUrl; // TODO include POST payload MD5
+    }
     try {
       let first: Observable<any> = of(null);
-      const myUrl = `${MyConstants.SRV_ROOT}${path}`;
+
+      if (options?.useCache === true && cacheKey != null) {
+        if (cacheKey in HttpService.CACHE) {
+          const cached: any = HttpService.CACHE[cacheKey];
+          return Promise.resolve(JSON.parse(JSON.stringify(cached)));
+        }
+      }
       if (options?.rawString === true) {
         first = this.http.get(myUrl, {
           responseType: 'text',
@@ -222,6 +234,9 @@ export class HttpService {
             })
           )
           .subscribe((data) => {
+            if (options?.useCache === true && cacheKey != null) {
+              HttpService.CACHE[cacheKey] = data;
+            }
             resolve(data);
           });
       });

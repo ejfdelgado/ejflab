@@ -1,6 +1,5 @@
 class MyConstants {
-    static SRV_ROOT = "http://localhost:8081/";
-    //static SRV_ROOT = "/";
+    static SRV_ROOT = "/";
     static BUCKET = {
         URL_BASE: "https://storage.googleapis.com",
         PUBLIC: `labs-pro-public`,
@@ -61,6 +60,14 @@ class MyConstants {
         }
         return [];
     }
+}
+
+try {
+    if (location.hostname == "localhost") {
+        MyConstants.SRV_ROOT = "http://localhost:8081/";
+    }
+} catch (err) {
+
 }
 
 module.exports = {

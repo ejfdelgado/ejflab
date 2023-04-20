@@ -6,17 +6,12 @@
   "scripts": {
     "ng": "ng",
     "angular": "ng serve",
-    "build": "ng build --output-hashing=bundles && play /sound/finish.mp3",
+    "build": "ng build --output-hashing=bundles",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",
-    "finish": "npm run build && npm run deploy",
-    "deploy": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml && play /sound/finish.mp3",
-    "deploystd": "gcloud app deploy --verbosity=debug --quiet appstd.yaml && play /sound/finish.mp3",
-    "begin": "gcloud config set account edgar.jose.fernando.delgado@gmail.com && gcloud config set project ejfexperiments && npm run credentials_paistv",
-    "end": "gcloud config set account edelgado@panal.co && gcloud config set project panal-comunidad-app && npm run credentials_comunidad",
-    "credentials_paistv": "export ENV=pro && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json",
-    "credentials_comunidad": "export ENV=stg && export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/panal/comunidad/keys/panal-comunidad-app-7da87eb73391.json"
+    "deploy": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml",
+    "deploystd": "gcloud app deploy --verbosity=debug --quiet appstd.yaml"
   },
   "engines": {
     "node": ">=14.0.0"

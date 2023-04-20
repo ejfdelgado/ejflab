@@ -60,6 +60,7 @@ export class AlertComponent implements OnInit {
         const temp = await this.httpSrv.get<string>(this.data.txt, {
           showIndicator: true,
           rawString: true,
+          useCache: true,
         });
         if (temp != null) {
           this.text = temp;
