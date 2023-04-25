@@ -4,6 +4,71 @@
 
 const { CsvParser } = require("./CsvParser");
 
+//3. Call front front end
+//4. Add tfvisu...
+
+class MyJSONTensorHandler {
+    constructor(someModel) {
+        this.someModel = someModel;
+        this.listener = null;
+    }
+    setListener(callback) {
+        this.listener = callback;
+    }
+    toArrayBuffer(buffer) {
+        const arrayBuffer = new ArrayBuffer(buffer.length);
+        const view = new Uint8Array(arrayBuffer);
+        for (let i = 0; i < buffer.length; ++i) {
+            view[i] = buffer[i];
+        }
+        return arrayBuffer;
+    }
+    load() {
+        const modelJSON = this.someModel;
+        const modelArtifacts = {
+            modelTopology: modelJSON.modelTopology,
+            format: modelJSON.format,
+            generatedBy: modelJSON.generatedBy,
+            convertedBy: modelJSON.convertedBy
+        };
+        if (modelJSON.weightsManifest != null) {
+            const buffer = Buffer.from(modelJSON.weightsManifest[0].binary, "base64");
+            modelArtifacts.weightSpecs = modelJSON.weightsManifest[0].weights;
+            modelArtifacts.weightData = this.toArrayBuffer(buffer);
+        }
+        if (modelJSON.trainingConfig != null) {
+            modelArtifacts.trainingConfig = modelJSON.trainingConfig;
+        }
+        if (modelJSON.userDefinedMetadata != null) {
+            modelArtifacts.userDefinedMetadata = modelJSON.userDefinedMetadata;
+        }
+        return modelArtifacts;
+    }
+    save(modelArtifacts) {
+        const binary = modelArtifacts.weightData;
+        const weightsManifest = [{
+            binary: Buffer.from(binary).toString("base64"),
+            weights: modelArtifacts.weightSpecs
+        }];
+        const modelJSON = {
+            modelTopology: modelArtifacts.modelTopology,
+            weightsManifest,
+            format: modelArtifacts.format,
+            generatedBy: modelArtifacts.generatedBy,
+            convertedBy: modelArtifacts.convertedBy
+        };
+        if (modelArtifacts.trainingConfig != null) {
+            modelJSON.trainingConfig = modelArtifacts.trainingConfig;
+        }
+        if (modelArtifacts.userDefinedMetadata != null) {
+            modelJSON.userDefinedMetadata = modelArtifacts.userDefinedMetadata;
+        }
+        if (typeof this.listener == "function") {
+            this.listener(modelJSON);
+        }
+    }
+}
+
 class MyTensorflow {
 
     constructor() {
@@ -11,13 +76,21 @@ class MyTensorflow {
         this.myData = [];
         this.myTestData = [];
         this.metadata = null;
+        this.model = null;
     }
 
-    setData(textData, jsonMetadata, textTestData) {
+    setMetadata(jsonMetadata) {
+        this.metadata = jsonMetadata;
+    }
+
+    setData(textData) {
         const parser = new CsvParser();
         this.myData = parser.parse(textData, null, true);
+    }
+
+    setTestData(textTestData) {
+        const parser = new CsvParser();
         this.myTestData = parser.parse(textTestData, null, true);
-        this.metadata = jsonMetadata;
     }
 
     static clampZeroOne(val, min, max) {
@@ -62,55 +135,87 @@ class MyTensorflow {
         return outputs;
     }
 
-    prepareData(tf) {
+    prepareData(tf, data) {
         return tf.tidy(() => {
             const outmetadata = this.metadata.out;
-            const data = JSON.parse(JSON.stringify(this.myData));
-            const testData = JSON.parse(JSON.stringify(this.myTestData));
             tf.util.shuffle(data);
-            tf.util.shuffle(testData);
-
             const inputs = this.extractInputs(tf, data);
             const output = this.extractOutput(tf, data);
-
-            const inputsTest = this.extractInputs(tf, testData);
-            const outputTest = this.extractOutput(tf, testData);
-
             const inputTensor = tf.tensor2d(inputs, [inputs.length, inputs[0].length]);
             const outputTensor = tf.oneHot(tf.tensor1d(output, 'int32'), outmetadata.ngroups);
-
-            const inputTestTensor = tf.tensor2d(inputsTest, [inputsTest.length, inputsTest[0].length]);
-            const outputTestTensor = tf.oneHot(tf.tensor1d(outputTest, 'int32'), outmetadata.ngroups);
-
             //inputTensor.print(true);
             //outputTensor.print(true);
-
             return {
                 inputs: inputTensor,
                 outputs: outputTensor,
-                inputsTest: inputTestTensor,
-                outputsTest: outputTestTensor,
             }
         });
     }
 
-    async run(tf) {
+    async validate(tf) {
+        if (this.model == null) {
+            throw Error("No hay un modelo creado");
+        }
         const {
             inputs,
             outputs,
-            inputsTest,
-            outputsTest,
-        } = this.prepareData(tf);
+        } = this.prepareData(tf, this.myTestData);
+        const results = await this.model.evaluate(inputs, outputs, { batchSize: 2 });
+        console.log('Accuracy is:')
+        results[1].print();
+    }
+
+    async predict(tf, valores) {
+        if (this.model == null) {
+            throw Error("No hay un modelo creado");
+        }
+        const predProb = this.model.predict(tf.tensor2d([valores])).dataSync();
+        console.log("predProb:" + JSON.stringify(predProb));
+    }
+
+    async fit(tf) {
+        if (this.model == null) {
+            throw Error("No hay un modelo creado");
+        }
+        const {
+            inputs,
+            outputs,
+        } = this.prepareData(tf, this.myData);
 
         const X = inputs;
         const y = outputs;
         const data = this.metadata;
-        data.dims = {
-            in: inputs.shape[1],
-            out: outputs.shape[1],
-        };
+        await this.model.fit(X, y, data.fit);
+    }
 
-        const model = tf.sequential();
+    compile(tf) {
+        const data = this.metadata;
+        const myCompile = Object.assign({}, data.compile, { optimizer: tf.train.adam(0.1) });
+        this.model.compile(myCompile);
+    }
+
+    async getJsonModel(tf) {
+        if (this.model == null) {
+            throw Error("No hay un modelo creado");
+        }
+        return new Promise((resolve, reject) => {
+            const saver = new MyJSONTensorHandler();
+            saver.setListener(async (modelJson) => {
+                resolve(modelJson);
+            });
+            this.model.save(saver);
+        });
+    }
+
+    async setJsonModel(tf, modelJson) {
+        const handler = new MyJSONTensorHandler(modelJson);
+        this.model = await tf.loadLayersModel(handler);
+        this.compile(tf);
+    }
+
+    async createJsonModel(tf) {
+        const data = this.metadata;
+        this.model = tf.sequential();
 
         for (let i = 0; i < data.layers.length; i++) {
             const actual = data.layers[i];
@@ -120,51 +225,21 @@ class MyTensorflow {
                 activation: actual.activation
             }
             if (i == 0) {
-                myLayer.inputShape = [data.dims.in];
+                myLayer.inputShape = [data.in.length];
             }
-            model.add(
+            this.model.add(
                 tf.layers.dense(myLayer)
             );
         }
 
-        model.add(
+        this.model.add(
             tf.layers.dense({
-                units: data.dims.out,
+                units: data.out.ngroups,
                 activation: "softmax"
             })
         );
 
-        const myCompile = Object.assign({}, data.compile, { optimizer: tf.train.adam(0.1) });
-
-        model.compile(myCompile);
-
-        await model.fit(X, y, data.fit);
-
-        const results = await model.evaluate(inputsTest, outputsTest, { batchSize: 2 });
-        console.log('Accuracy is:')
-        results[1].print();
-    }
-
-    static createIntGroups(listOfValues, min, max, nGroups) {
-        const tam = (max - min);
-        return listOfValues.map((val) => {
-            let zeroBased = val - min;
-            if (zeroBased < 0) {
-                zeroBased = 0;
-            }
-            let zeroOne = zeroBased / tam;
-            if (zeroOne > 1) {
-                // clamp
-                zeroOne = 1;
-            }
-            const extended = zeroOne * (nGroups);
-            const response = Math.floor(extended);
-            //console.log(`val ${val} zeroBased ${zeroBased} zeroOne ${zeroOne} extended ${extended} response ${response}`);
-            if (response == nGroups) {
-                return nGroups - 1;
-            }
-            return response;
-        });
+        this.compile(tf);
     }
 }
 

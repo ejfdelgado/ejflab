@@ -9,8 +9,11 @@ const test = () => {
     const jsonMeta = JSON.parse(fs.readFileSync("./data/tensordata.json", { encoding: "utf8" }));
 
     const tensorflow = new MyTensorflow();
-    tensorflow.setData(csvText, jsonMeta, csvTestText);
-    tensorflow.run(tf);
+    tensorflow.setMetadata(jsonMeta);
+    tensorflow.setData(csvText);
+    tensorflow.setTestData(csvTestText);
+    await tensorflow.run(tf);
+    await tensorflow.validate(tf);
 }
 
 test();
