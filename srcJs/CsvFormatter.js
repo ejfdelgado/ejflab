@@ -30,7 +30,7 @@ class CsvFormatter extends CsvWithFilters {
                 const columna = columnas[j];
                 const llaveCampo = columna.id;
                 let valor = SimpleObj.getValue(dato, llaveCampo, defaultValue)
-                valor = super.filterValue(valor, columna);
+                valor = super.filterValue(valor, columna, dato);
                 if ([null, undefined].indexOf(valor) >= 0) {
                     valor = defaultValue;
                 }

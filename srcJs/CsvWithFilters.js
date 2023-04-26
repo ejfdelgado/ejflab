@@ -23,7 +23,7 @@ class CsvWithFilters {
             console.log(`registerFunction(${key}) OK`);
         }
     }
-    filterValue(valor, columna) {
+    filterValue(valor, columna, dato) {
         if (columna.theclass && columna.theclass in this.filterRegistry.classes) {
             const oneclass = this.filterRegistry.classes[columna.theclass];
             if (columna.themethod) {
