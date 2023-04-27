@@ -30,7 +30,6 @@
   "dependencies": {
     "@google-cloud/firestore": "^6.4.2",
     "@google-cloud/storage": "^6.9.0",
-    "@tinkoff/angular-contenteditable-accessor": "^1.2.0",
     "axios": "^1.2.3",
     "buffer": "^6.0.3",
     "cookie-parser": "^1.4.6",
@@ -43,18 +42,13 @@
     "jsencrypt": "^3.3.1",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
-    "ngx-webcam": "^0.4.1",
     "node-rsa": "^1.1.1",
     "phin": "^3.7.0",
     "readable-stream-clone": "0.0.7",
-    "recordrtc": "^5.6.2",
-    "rxjs": "~7.5.0",
     "sharp": "^0.31.3",
     "socket.io": "^4.5.4",
     "socket.io-client": "^4.5.4",
-    "tslib": "^2.3.0",
-    "wavesurfer.js": "^6.4.0",
-    "zone.js": "~0.11.4"
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^14.2.9",
@@ -77,9 +71,11 @@
     "@tensorflow/tfjs": "^4.4.0",
     "@tensorflow/tfjs-node": "^4.4.0",
     "@tensorflow/tfjs-vis": "^1.5.1",
+    "@tinkoff/angular-contenteditable-accessor": "^1.2.0",
     "@types/crypto-js": "^4.1.1",
     "@types/jasmine": "~4.0.0",
     "@types/recordrtc": "^5.6.10",
+    "@types/three": "^0.150.2",
     "@types/wavesurfer.js": "^6.0.3",
     "firebase-tools": "^11.19.0",
     "jasmine-core": "~4.3.0",
@@ -88,6 +84,12 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.0.0",
-    "typescript": "~4.7.2"
+    "ngx-webcam": "^0.4.1",
+    "recordrtc": "^5.6.2",
+    "rxjs": "~7.5.0",
+    "three": "^0.152.0",
+    "typescript": "~4.7.2",
+    "wavesurfer.js": "^6.4.0",
+    "zone.js": "~0.11.4"
   }
 }
