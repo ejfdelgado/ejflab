@@ -55,7 +55,7 @@ io.on('connection', MySocketStream.handle(io));
 const PORT = process.env.PORT || 8081;
 httpServer.listen(PORT, () => {
     console.log(
-        `App listening on http://127.0.0.1:${PORT} Press Ctrl+C to quit.`
+        `App listening on http://localhost:${PORT} Press Ctrl+C to quit.`
     );
 });
 

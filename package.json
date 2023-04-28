@@ -6,12 +6,14 @@
   "scripts": {
     "ng": "ng",
     "angular": "ng serve",
-    "build": "ng build --output-hashing=bundles",
-    "watch": "ng build --watch --configuration development",
+    "build": "",
+    "watch": "",
+    "build_local": "ng build --output-hashing=bundles",
+    "watch_local": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",
-    "deploy": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml",
-    "deploystd": "gcloud app deploy --verbosity=debug --quiet appstd.yaml"
+    "deployflex": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml",
+    "deploy": "gcloud app deploy --verbosity=debug --quiet appstd.yaml"
   },
   "engines": {
     "node": ">=14.0.0"
