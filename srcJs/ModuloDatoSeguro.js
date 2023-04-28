@@ -19,7 +19,7 @@
 class ModuloDatoSeguro {
   // create a key for symmetric encryption
   // pass in the desired length of your key
-  static generateKey = (keyLength = 10) => {
+  static generateKey(keyLength = 10) {
     // define the characters to pick from
     const chars =
       "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz*&-%/!?*+=()";
