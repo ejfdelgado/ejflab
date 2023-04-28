@@ -1,26 +1,24 @@
-//const { ModuloDatoSeguro } = require('./ModuloDatoSeguro.js');
+const { ModuloDatoSeguro } = require('./ModuloDatoSeguro.js');
 const NodeRSA = require('node-rsa');
-
 const fs = require('fs');
-const { ModuloDatoSeguro } = require('./ModuloDatoSeguro');
-const { ModuloDatoSeguroBack } = require('./ModuloDatoSeguroBack');
+const { ModuloDatoSeguroFront } = require('./ModuloDatoSeguroFront.js');
 
 const test = () => {
     //https://stackoverflow.com/questions/12524994/encrypt-decrypt-using-pycrypto-aes-256
     const dato = "edgar jose fernando";
-    const clave = ModuloDatoSeguro.generateKey(4);
-    const encriptado = ModuloDatoSeguro.cifrar(dato, clave);
+    const clave = ModuloDatoSeguroFront.generateKey(4);
+    const encriptado = ModuloDatoSeguroFront.cifrarSimple(dato, clave);
     console.log(encriptado);
-    const desencriptado = ModuloDatoSeguro.decifrar(encriptado, clave);
+    const desencriptado = ModuloDatoSeguroFront.decifrarSimple(encriptado, clave);
     console.log(dato + "=>" + encriptado + '=>' + desencriptado);
 }
 
 const test2 = () => {
-    const par = ModuloDatoSeguroBack.generateKeyPair();
+    const par = ModuloDatoSeguroFront.generateKeyPair();
     const prueba = { valor: "edgar" };
-    const cifrado = ModuloDatoSeguroBack.cifrar(prueba, par.public);
+    const cifrado = ModuloDatoSeguroFront.cifrar(prueba, par.public);
     console.log(cifrado);
-    const decifrado = ModuloDatoSeguroBack.decifrar(cifrado, par.private);
+    const decifrado = ModuloDatoSeguroFront.decifrar(cifrado, par.private);
     console.log(decifrado);
 }
 

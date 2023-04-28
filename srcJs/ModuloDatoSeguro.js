@@ -13,8 +13,8 @@
 //openssl req -new -x509 -key local_privada.key -out local_publica.cer
 //openssl x509 -in local_publica.crt -out local_publica.pem -outform PEM
 
-const AES = require("crypto-js/aes");
-const Utf8 = require("crypto-js/enc-utf8");
+//const AES = require("crypto-js/aes");
+//const Utf8 = require("crypto-js/enc-utf8");
 
 class ModuloDatoSeguro {
   // create a key for symmetric encryption
@@ -31,16 +31,16 @@ class ModuloDatoSeguro {
     return randomstring;
   };
 
-  static cifrar = function (objeto, llave) {
+  static cifrarSimple(objeto, llave, AES) {
     const texto = JSON.stringify(objeto);
     const encriptado = AES.encrypt(texto, llave);
     return encriptado.toString();
   }
-  static decifrar = function (texto, llave) {
+  static decifrarSimple(texto, llave, AES, Utf8) {
     const desencriptado = AES.decrypt(texto, llave).toString(Utf8);
     return JSON.parse(desencriptado);
   }
-  static decifrarConListaDeLlaves = function (texto, llaves) {
+  static decifrarConListaDeLlaves(texto, llaves) {
     for (let i = 0; i < llaves.length; i++) {
       try {
         const llave = llaves[i];

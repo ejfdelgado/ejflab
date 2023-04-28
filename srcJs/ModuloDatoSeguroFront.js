@@ -18,9 +18,17 @@ const AES = require("crypto-js/aes");
 const Utf8 = require("crypto-js/enc-utf8");
 const { ModuloDatoSeguro } = require("./ModuloDatoSeguro.js");
 
-class ModuloDatoSeguroFront {
+class ModuloDatoSeguroFront extends ModuloDatoSeguro {
     // create a key for symmetric encryption
     // pass in the desired length of your key
+
+    static cifrarSimple(objeto, llave) {
+        return super.cifrarSimple(objeto, llave, AES)
+    }
+
+    static decifrarSimple(texto, llave) {
+        return super.decifrarSimple(texto, llave, AES, Utf8);
+    }
 
     static cifrar = function (objeto, llavePublica) {
         llavePublica = llavePublica.replace('\n', '');

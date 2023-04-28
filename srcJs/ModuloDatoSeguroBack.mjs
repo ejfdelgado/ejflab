@@ -1,12 +1,21 @@
-const NodeRSA = require('node-rsa');
-const AES = require("crypto-js/aes");
-const Utf8 = require("crypto-js/enc-utf8");
-const { ModuloDatoSeguro } = require('./ModuloDatoSeguro');
+import NodeRSA from "node-rsa";
+import pkgCriptoJs from 'crypto-js';
+const { AES } = pkgCriptoJs;
+import Utf8 from "crypto-js/enc-utf8.js";
+import { ModuloDatoSeguro } from "./ModuloDatoSeguro.js";
 
-class ModuloDatoSeguroBack {
+export class ModuloDatoSeguroBack extends ModuloDatoSeguro {
     static SCHEMES = ["pkcs1", "pkcs8", "openssh"];
     static KEY_TYPES = ["public", "private"];
     static scheme_default = ModuloDatoSeguroBack.SCHEMES[0];
+
+    static cifrarSimple(objeto, llave) {
+        return super.cifrarSimple(objeto, llave, AES)
+    }
+
+    static decifrarSimple(texto, llave) {
+        return super.decifrarSimple(texto, llave, AES, Utf8);
+    }
 
     static generateKeyPair = (tamanio = 512) => {
         const key = new NodeRSA({ b: tamanio });
@@ -17,7 +26,7 @@ class ModuloDatoSeguroBack {
         };
         return respose;
     };
-    static cifrar = function (objeto, llavePublica) {
+    static cifrar(objeto, llavePublica) {
         llavePublica = llavePublica.replace('\n', '');
         const miniKey = ModuloDatoSeguro.generateKey(10);
         const format = `${ModuloDatoSeguroBack.scheme_default}-${ModuloDatoSeguroBack.KEY_TYPES[0]}-pem`;
@@ -32,7 +41,7 @@ class ModuloDatoSeguroBack {
         })).toString("base64");
 
     }
-    static decifrar = function (texto, llavePrivada) {
+    static decifrar(texto, llavePrivada) {
         llavePrivada = llavePrivada.replace('\n', '');
         const parametroSinBase64 = JSON.parse(Buffer.from(texto, "base64"));
         const key = new NodeRSA(llavePrivada, `${ModuloDatoSeguroBack.scheme_default}-${ModuloDatoSeguroBack.KEY_TYPES[1]}-pem`);
@@ -44,7 +53,3 @@ class ModuloDatoSeguroBack {
         return JSON.parse(desencriptado);
     }
 }
-
-module.exports = {
-    ModuloDatoSeguroBack
-};

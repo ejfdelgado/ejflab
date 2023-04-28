@@ -64,6 +64,7 @@ export class MyStore {
         return theJson;
     }
 
+    // Si no encuentra retorna undefined
     static async readById(collection, id, firestoreInstance = null) {
         const document = firestore.doc(`${process.env.ENV}-${collection}/${id}`);
         let doc;

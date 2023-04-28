@@ -83,14 +83,7 @@ export class CvComponent extends BaseComponent implements OnInit, OnDestroy {
     super.saveTuple();
   }
 
-  async setTime() {
-    if (!this.tupleModel) {
-      return;
-    }
-    const tiempo = await IdGen.ahora();
-    this.tupleModel.t = [tiempo];
-    super.saveTuple();
-
+  async testCifer() {
     const llavePublica =
       '-----BEGIN PUBLIC KEY-----\
 MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAM+53jqSLGfawXnrz5rmRs5Beg1XfgXL\
@@ -111,6 +104,15 @@ AKdwJTXS+jdc/GauPDSDogECEQC3G9pqcu1PyBNXGUlZKlzDAhASO74AOK6q8tA2\
     );
     const decifrado = ModuloDatoSeguroFront.decifrar(cifrado, llavePrivada);
     console.log(decifrado);
+  }
+
+  async setTime() {
+    if (!this.tupleModel) {
+      return;
+    }
+    const tiempo = await IdGen.ahora();
+    this.tupleModel.t = [tiempo];
+    super.saveTuple();
   }
 
   override async ngOnInit() {

@@ -2,11 +2,14 @@
 // `ng build` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
-import { ModuloDatoSeguro } from "srcJs/ModuloDatoSeguro";
+import { ModuloDatoSeguro } from 'srcJs/ModuloDatoSeguro';
+import pkgCriptoJs from 'crypto-js';
+const { AES } = pkgCriptoJs;
+import Utf8 from 'crypto-js/enc-utf8.js';
 
-const random = document.getElementById("meta_random")?.getAttribute("content");
-const custom = document.getElementById("meta_custom")?.getAttribute("content");
-const defifrado = ModuloDatoSeguro.decifrar(custom, random);
+const random = document.getElementById('meta_random')?.getAttribute('content');
+const custom = document.getElementById('meta_custom')?.getAttribute('content');
+const defifrado = ModuloDatoSeguro.decifrarSimple(custom, random, AES, Utf8);
 
 export const environment = {
   firebase: defifrado,

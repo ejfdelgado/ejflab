@@ -32,6 +32,8 @@
               "moment",
               "crunker",
               "recordrtc",
+              "crypto-js",
+              "crypto-js/enc-utf8.js",
               "wavesurfer.js",
               "srcJs/MyTemplate",
               "srcJs/MyConstants",

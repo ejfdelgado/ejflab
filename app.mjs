@@ -14,6 +14,7 @@ import { AuthorizationSrv } from "./srv/AuthorizationSrv.mjs";
 import { UtilesSrv } from "./srv/UtilesSrv.mjs";
 import { KeysSrv } from "./srv/KeysSrv.mjs";
 import { Usuario } from "./srv/common/Usuario.mjs";
+import { SecretsSrv } from "./srv/SecretsSrv.mjs";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -29,6 +30,9 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
+app.get('/srv/sec/r', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(SecretsSrv.read)]);
+app.get('/srv/sec/w', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(SecretsSrv.save)]);
+
 app.get('/srv/usr/me', [commonHeaders, checkAuthenticated, handleErrorsDecorator(Usuario.getCurrentUser)]);
 app.post('/srv/usr/me', [commonHeaders, checkAuthenticated, express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(Usuario.saveMyUser)]);
 app.get('/srv/date', [commonHeaders, handleErrorsDecorator(UtilesSrv.fecha)]);
