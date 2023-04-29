@@ -39,6 +39,7 @@ import { UserpopupComponent } from './components/userpopup/userpopup.component';
 import { WebcamComponent } from './components/webcam/webcam.component';
 import { WebcamModule } from 'ngx-webcam';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { PayupopupComponent } from './components/payupopup/payupopup.component';
 
 @NgModule({
   declarations: [
@@ -53,6 +54,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     MultiplepagesComponent,
     UserpopupComponent,
     WebcamComponent,
+    PayupopupComponent,
   ],
   imports: [
     FormsModule,

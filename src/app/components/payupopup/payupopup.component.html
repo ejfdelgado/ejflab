@@ -1,0 +1,40 @@
+<div mat-dialog-title>
+    <h1 class="centrado">Configurar PayU</h1>
+    <span class="boton_cerrar" [mat-dialog-close]>
+        <fa-icon [icon]="faXmark"></fa-icon>
+    </span>
+</div>
+<mat-dialog-content class="mat-typography con_form">
+    <p class="texto_descripcion">Tu información será cifrada en reposo y en tránsito.</p>
+    <form class="form-container layout_columna" [formGroup]="form" (ngSubmit)="guardar()">
+        <mat-form-field class="form-control">
+            <mat-label>API KEY</mat-label>
+            <input matInput formControlName="payu_api_key" type="text" required />
+            <mat-error *ngIf="payu_api_key?.hasError('required')">
+                El API KEY es requerido.
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-control">
+            <mat-label>API LOGIN</mat-label>
+            <input matInput formControlName="payu_api_login" type="text" required />
+            <mat-error *ngIf="payu_api_login?.hasError('required')">
+                El API LOGIN es requerido.
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field class="form-control">
+            <mat-label>Llave pública</mat-label>
+            <input matInput formControlName="payu_pub_key" type="text" required />
+            <mat-error *ngIf="payu_pub_key?.hasError('required')">
+                El Llave pública es requerido.
+            </mat-error>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+<div class="bottom_buttons">
+    <button mat-raised-button color="" (click)="cancelar()" type="button">
+        Cancelar
+    </button>
+    <button mat-raised-button color="primary" (click)="guardar()">
+        Guardar
+    </button>
+</div>

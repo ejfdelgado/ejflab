@@ -1,5 +1,6 @@
 
 class MyRoutes {
+    // pageType is for example /calendar
     static splitPageData(path) {
         const partes = /(\/[^/]+)(\/[^/]+|\/)?/ig.exec(path);
         if (partes == null) {

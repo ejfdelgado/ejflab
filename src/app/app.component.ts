@@ -2,6 +2,7 @@ import { Component, HostListener } from '@angular/core';
 import { AuthorizationService } from 'src/services/authorization.service';
 import { LoginService } from 'src/services/login.service';
 import { PageService } from 'src/services/page.service';
+import { PayuService } from 'src/services/payu.service';
 import { MyUserService } from 'src/services/user.service';
 
 @Component({
@@ -14,7 +15,8 @@ export class AppComponent {
     private loginSrv: LoginService,
     private pageSrv: PageService,
     private authorizationSrv: AuthorizationService,
-    private usrSrv: MyUserService
+    private usrSrv: MyUserService,
+    private payuSrv: PayuService
   ) {}
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
@@ -38,6 +40,12 @@ export class AppComponent {
           break;
         case 'Enter':
           this.usrSrv.edit();
+          break;
+        case 'Backquote':
+          //El pipe | arriba a la izquierda
+          break;
+        case 'NumpadEnter':
+          this.payuSrv.openConfiguration();
           break;
         default:
           console.log(event.code);
