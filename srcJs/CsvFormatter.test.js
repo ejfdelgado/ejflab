@@ -1,5 +1,7 @@
+const fs = require('fs');
 const { CsvFormatter } = require("./CsvFormatter");
 const { CsvFormatterFilters } = require("./CsvFormatterFilters");
+const { MyDates } = require('./MyDates');
 
 const myTest = () => {
     const dataset1 = [
@@ -35,4 +37,26 @@ const myTest = () => {
     }
 }
 
-myTest();
+function getRandomInt(min, max) {
+    return Math.floor(min + Math.random() * max);
+}
+
+const generateLongCsv = (n) => {
+    const data = [];
+    for (let i = 0; i < n; i++) {
+        const local = {};
+        local.d1 = getRandomInt(0, 100);
+        local.d2 = getRandomInt(0, 100);
+        local.out = 0;
+        data.push(local);
+    }
+    const myParser = new CsvFormatter();
+    const response = myParser.parse(data, "d1;d2;out", true);
+    
+    const fecha = MyDates.getDayAsContinuosNumberHmmSSmmm(new Date());
+    fs.writeFileSync(`./test/csv/test_${n}_${fecha}.csv`, response, { encoding: "utf8" });
+};
+
+//myTest();
+
+generateLongCsv(1000);

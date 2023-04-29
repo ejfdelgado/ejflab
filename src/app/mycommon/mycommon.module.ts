@@ -18,6 +18,7 @@ import { AudioeditorComponent } from './components/audioeditor/audioeditor.compo
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.component';
 import { MatSliderModule } from '@angular/material/slider';
+import { ScrollnavComponent } from './components/scrollnav/scrollnav.component';
 
 @NgModule({
   declarations: [
@@ -32,6 +33,7 @@ import { MatSliderModule } from '@angular/material/slider';
     FilepickerComponent,
     AudioeditorComponent,
     CanvaseditorComponent,
+    ScrollnavComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -55,6 +57,7 @@ import { MatSliderModule } from '@angular/material/slider';
     FileordevicepopupComponent,
     AudioeditorComponent,
     CanvaseditorComponent,
+    ScrollnavComponent,
   ],
 })
 export class MycommonModule {}

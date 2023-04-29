@@ -14,6 +14,7 @@ const routes: Routes = [
     path: '',
     loadChildren: () => import('./views/home/home.module').then((m) => m.HomeModule),
   },
+  { path: 'humanpose', loadChildren: () => import('./views/humanpose/humanpose.module').then(m => m.HumanposeModule) },
 ];
 
 /*

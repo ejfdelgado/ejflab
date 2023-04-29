@@ -1,0 +1,40 @@
+.parent {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.detail_in {
+  width: 100%;
+  flex: 1;
+  background-color: chocolate;
+  display: flex;
+  flex-direction: row;
+}
+
+.detail_out {
+  width: 100%;
+  height: 20px;
+  background-color: darkcyan;
+  position: relative;
+}
+
+.my_scroll {
+  cursor: pointer;
+  height: 100%;
+  position: absolute;
+  background-color: black;
+}
+
+.my_step {
+  height: 100%;
+  flex: 1;
+}
+
+.no_caret{
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+   user-select: none;       
+}

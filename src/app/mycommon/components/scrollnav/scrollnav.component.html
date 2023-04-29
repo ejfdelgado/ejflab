@@ -1,0 +1,12 @@
+<div class="parent no_caret">
+    <div class="detail_in no_caret" (wheel)="onMouseWheel($event)">
+        <div class="my_step no_caret" *ngFor="let step of window" 
+        [ngStyle]="{'background-color': getStepColor(step)}"></div>
+    </div>
+    <div class="detail_out no_caret" #scroll_parent (wheel)="moveInTime($event)">
+        <div class="my_scroll no_caret" (mousedown)="mouseDownScroll($event)"
+            (mouseup)="mouseUpScroll($event)" 
+            [ngStyle]="{'left': scroll.left+'px', 'width': scroll.scrollWidth+'px'}">
+            &nbsp;</div>
+    </div>
+</div>
