@@ -119,7 +119,7 @@ export class AuthorizationSrv {
             }
             await Promise.all(promesas);
         });
-        res.status().send();
+        res.status(200).send();
     }
 
     static async readAll(req, res) {

@@ -37,9 +37,11 @@ body {
   display: none !important;
 }
 
-.noselect {
+.noselect,
+.no_caret {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10 and IE 11 */
+  -moz-user-select: none; /* Firefox all */
   user-select: none; /* Standard syntax */
 }
 

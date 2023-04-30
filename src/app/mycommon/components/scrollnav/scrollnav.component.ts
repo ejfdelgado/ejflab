@@ -35,9 +35,13 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   };
   public scroll: any = {
     left: 0,
+    leftPer: 0,
+    realIndex: 0,
+    realIndexPer: 0,
     spaceWidth: null,
     scrollWidth: 150,
-    amount: 1,
+    amount1: 1,
+    amount2: 10,
     nshow: 10, // Cuantos pasos muestro en un momento dado
   };
   public window: Array<any>;
@@ -135,12 +139,13 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       this.scroll.left =
         this.dragging.startv + (ev.screenX - this.dragging.startx);
       this.clampScroll();
+      this.computeRealIndexFromLeft();
       this.computeWindow();
     }
   }
 
-  onMouseWheel(ev: WheelEvent) {
-    if (ev.deltaY < 0) {
+  zoomInOut(deltaY: number) {
+    if (deltaY < 0) {
       // zoom out
       this.scroll.nshow -= 1;
     } else {
@@ -157,6 +162,14 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     }
     //this.cdr.detectChanges();
     this.computeWindow();
+  }
+
+  onMouseWheel(ev: WheelEvent) {
+    if (ev.shiftKey) {
+      this.zoomInOut(ev.deltaY);
+    } else {
+      this.moveInTimeLocalReal(this.scroll.amount1, ev.deltaY);
+    }
   }
 
   mouseDownScroll(ev: MouseEvent) {
@@ -180,16 +193,54 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     };
   }
 
-  moveInTime(ev: WheelEvent) {
-    if (ev.deltaY < 0) {
+  moveInTimeLocalReal(amount: number, deltaY: number) {
+    if (deltaY < 0) {
       // move back
-      this.scroll.left = this.scroll.left + this.scroll.amount;
+      this.scroll.realIndex = this.scroll.realIndex + amount;
     } else {
       // move forward
-      this.scroll.left = this.scroll.left - this.scroll.amount;
+      this.scroll.realIndex = this.scroll.realIndex - amount;
     }
+    this.clampRealIndex();
+    // define left from real index
+    const maxScroll = this.scroll.spaceWidth - this.scroll.scrollWidth;
+    this.scroll.left = this.scroll.realIndexPer * maxScroll;
     this.clampScroll();
     this.computeWindow();
+  }
+
+  moveInTimeLocal(amount: number, deltaY: number) {
+    if (deltaY < 0) {
+      // move back
+      this.scroll.left = this.scroll.left + amount;
+    } else {
+      // move forward
+      this.scroll.left = this.scroll.left - amount;
+    }
+    this.clampScroll();
+    // define real index from left
+    this.computeRealIndexFromLeft();
+    this.computeWindow();
+  }
+
+  computeRealIndexFromLeft() {
+    const maxRealIndex = this.data.length - this.scroll.nshow;
+    this.scroll.realIndex = maxRealIndex * this.scroll.leftPer;
+  }
+
+  moveInTime(ev: WheelEvent) {
+    this.moveInTimeLocal(this.scroll.amount2, ev.deltaY);
+  }
+
+  clampRealIndex() {
+    if (this.scroll.realIndex < 0) {
+      this.scroll.realIndex = 0;
+    }
+    const max = this.data.length - this.scroll.nshow;
+    if (this.scroll.realIndex > max) {
+      this.scroll.realIndex = max;
+    }
+    this.scroll.realIndexPer = this.scroll.realIndex / max;
   }
 
   clampScroll() {
@@ -197,25 +248,23 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       this.scroll.left = 0;
     }
     const max = this.scroll.spaceWidth - this.scroll.scrollWidth;
-    if (this.scroll.left >= max) {
+    if (this.scroll.left > max) {
       this.scroll.left = max;
     }
+    this.scroll.leftPer = this.scroll.left / max;
   }
 
   computeWindow() {
     setTimeout(() => {
-      const max = this.scroll.spaceWidth - this.scroll.scrollWidth;
-      const porcentaje = this.scroll.left / max;
-      const nShow = this.scroll.nshow;
       const total = this.data.length;
-      if (total <= nShow) {
+      if (total <= this.scroll.nshow) {
         this.window = this.data;
       } else {
-        const indiceFinal = total - nShow;
-        const ixStart = Math.floor(indiceFinal * porcentaje);
-        const ixEnd = ixStart + nShow;
         this.window = this.data.filter((el, ix) => {
-          return ix >= ixStart && ix < ixEnd;
+          return (
+            ix >= this.scroll.realIndex &&
+            ix < this.scroll.realIndex + this.scroll.nshow
+          );
         });
       }
     }, 0);

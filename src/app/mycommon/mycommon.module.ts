@@ -19,6 +19,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.component';
 import { MatSliderModule } from '@angular/material/slider';
 import { ScrollnavComponent } from './components/scrollnav/scrollnav.component';
+import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.component';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { ScrollnavComponent } from './components/scrollnav/scrollnav.component';
     AudioeditorComponent,
     CanvaseditorComponent,
     ScrollnavComponent,
+    ScrollfilesComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -58,6 +60,7 @@ import { ScrollnavComponent } from './components/scrollnav/scrollnav.component';
     AudioeditorComponent,
     CanvaseditorComponent,
     ScrollnavComponent,
+    ScrollfilesComponent,
   ],
 })
 export class MycommonModule {}

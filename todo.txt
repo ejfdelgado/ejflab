@@ -6,6 +6,7 @@ ng new proyecto001
 ng generate module views/humanpose --route humanpose --module app.module
 ng generate component components/payupopup
 ng generate component mycommon/components/scrollnav
+ng generate component mycommon/components/scrollfiles
 ng generate pipe mycommon/pipes/fechaCard
 
 Hacer un validador de formulario de backend y front end con base en:
@@ -16,6 +17,14 @@ Requerimientos no funcionales:
 1. Se valida un JSON, cada campo por separado, se debe tener una librería de campos.
 2. Usar Oracle 1 write N reads replicas.
 3. Usar 
+
+Human Pose
+- Agregar play pause.
+- Agregar capacidad de etiquetado.
+  - Seleccionar cuál es el valor de etiquetación.
+  - Usar un generador de colores. HSV bien diferenciado.
+- independicar desarrollo de lo que hay dentro de la lista de archivos
+- Desarrollar backend subir, abrir, guardar, borrar
 
 MUST:
 
