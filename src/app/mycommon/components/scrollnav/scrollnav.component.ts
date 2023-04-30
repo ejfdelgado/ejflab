@@ -50,6 +50,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     realIndex: 0,
     realIndexPer: 0,
     spaceWidth: null,
+    xLeft: null,
     scrollWidth: 150,
     amount1: 1,
     amount2: 10,
@@ -151,8 +152,9 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
 
   computeDimensions() {
     const scrollEl = this.scrollParentEl.nativeElement;
-    this.scroll.spaceWidth = scrollEl.getBoundingClientRect().width;
-    this.scroll.amount = Math.max(10, Math.ceil(this.scroll.spaceWidth / 100));
+    const bounds = scrollEl.getBoundingClientRect();
+    this.scroll.xLeft = bounds.left;
+    this.scroll.spaceWidth = bounds.width;
   }
 
   ngAfterViewInit(): void {
@@ -174,7 +176,37 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       this.clampScroll();
       this.computeRealIndexFromLeft();
       this.computeWindow();
+    } else if (this.dragging.target == 'steps') {
+      const delta = ev.screenX - this.dragging.startx;
+      const selectedStep = this.getRealStep(delta);
+      this.assignCurrentClassToStep(selectedStep);
+    } else if (this.dragging.target == 'stepplay') {
+      const delta = ev.screenX - this.dragging.startx;
+      const selectedStep = this.getRealStep(delta);
+      console.log(`Ask to show in 3d renderer ${JSON.stringify(selectedStep)}`);
     }
+  }
+
+  assignCurrentClassToStep(selectedStep: any) {
+    selectedStep[this.model.columnName] = this.currentClass.number;
+  }
+
+  getRealStep(delta: number) {
+    const startv = this.dragging.startv;
+    const xLeft = this.scroll.xLeft;
+    const spaceWidth = this.scroll.spaceWidth;
+    const nshow = this.scroll.nshow;
+
+    const realX = startv - xLeft + delta;
+    const custoWidth = spaceWidth / nshow;
+    let myVal = Math.floor(realX / custoWidth) + this.scroll.realIndex;
+    if (myVal < 0) {
+      myVal = 0;
+    }
+    if (myVal >= this.data.length) {
+      myVal = this.data.length - 1;
+    }
+    return this.data[myVal];
   }
 
   zoomInOut(deltaY: number) {
@@ -194,6 +226,8 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       this.scroll.nshow = max;
     }
     //this.cdr.detectChanges();
+    // Debo recalcular real index dado el scroll left
+    this.computeRealIndexFromLeft();
     this.computeWindow();
   }
 
@@ -212,6 +246,26 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   mouseUpScroll(ev: MouseEvent) {
+    this.resetDragging();
+  }
+
+  mouseDownSteps(ev: MouseEvent) {
+    if (ev.shiftKey) {
+      this.dragging.target = 'steps';
+    } else {
+      this.dragging.target = 'stepplay';
+    }
+    //Options to get starting x point: .pageX .x .clientX
+    this.dragging.startv = ev.x;
+    this.dragging.startx = ev.screenX;
+
+    if (this.dragging.target == 'steps') {
+      const selectedStep = this.getRealStep(0);
+      this.assignCurrentClassToStep(selectedStep);
+    }
+  }
+
+  mouseUpSteps(ev: MouseEvent) {
     this.resetDragging();
   }
 
@@ -258,7 +312,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
 
   computeRealIndexFromLeft() {
     const maxRealIndex = this.data.length - this.scroll.nshow;
-    this.scroll.realIndex = maxRealIndex * this.scroll.leftPer;
+    this.scroll.realIndex = Math.floor(maxRealIndex * this.scroll.leftPer);
   }
 
   moveInTime(ev: WheelEvent) {
