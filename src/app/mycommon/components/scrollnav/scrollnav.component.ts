@@ -327,7 +327,11 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     if (this.scroll.realIndex > max) {
       this.scroll.realIndex = max;
     }
-    this.scroll.realIndexPer = this.scroll.realIndex / max;
+    if (max == 0) {
+      this.scroll.realIndexPer = 0;
+    } else {
+      this.scroll.realIndexPer = this.scroll.realIndex / max;
+    }
   }
 
   clampScroll() {
@@ -338,7 +342,11 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     if (this.scroll.left > max) {
       this.scroll.left = max;
     }
-    this.scroll.leftPer = this.scroll.left / max;
+    if (max == 0) {
+      this.scroll.leftPer = 0;
+    } else {
+      this.scroll.leftPer = this.scroll.left / max;
+    }
   }
 
   computeWindow() {
