@@ -8,10 +8,10 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { MyColor } from 'srcJs/MyColor.js';
 
 export interface ScrollNavData {
   columnName: string;
-  valueAssinged: string;
   elwidth: number;
   startix: number;
 }
@@ -25,6 +25,10 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   @ViewChild('scroll_parent') scrollParentEl: ElementRef;
   public model: ScrollNavData;
   data: Array<any>;
+  public currentClass: any = {
+    number: 0,
+    color: '#FFFFFF',
+  };
   public PLAY_STATE_VISUAL: any = {
     play: { text: 'Play', icon: 'play_arrow' },
     pause: { text: 'Pause', icon: 'pause' },
@@ -52,15 +56,10 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     nshow: 10, // Cuantos pasos muestro en un momento dado
   };
   public window: Array<any>;
-  static STEP_COLORS: any = {
-    '0': '#FFFFFF',
-    '1': '#FF0000',
-    '2': '#00FF00',
-  };
+  static STEP_COLORS: any = MyColor.getStepColors(32);
   constructor(public cdr: ChangeDetectorRef) {
     this.model = {
       columnName: 'out',
-      valueAssinged: '1',
       elwidth: 5,
       startix: 0,
     };
@@ -117,6 +116,25 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     this.window = [];
   }
 
+  computeCurrentColorClass() {
+    this.currentClass.color =
+      ScrollnavComponent.STEP_COLORS[this.currentClass.number];
+  }
+
+  currentClassChanged(arg: any) {
+    if (arg < 0) {
+      setTimeout(() => {
+        this.currentClass.number = 0;
+        this.computeCurrentColorClass();
+        this.cdr.detectChanges();
+      }, 0);
+    } else {
+      setTimeout(() => {
+        this.computeCurrentColorClass();
+      }, 0);
+    }
+  }
+
   togglePlayPause() {
     if (this.playState.state == 'pause') {
       this.playState.state = 'play';
@@ -128,7 +146,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {}
 
   getStepColor(step: any) {
-    return ScrollnavComponent.STEP_COLORS[step.out];
+    return ScrollnavComponent.STEP_COLORS[step[this.model.columnName]];
   }
 
   computeDimensions() {

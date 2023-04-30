@@ -17,6 +17,7 @@
         </div>
     </div>
     <div class="container_label">
-        <input type="number" class="white_subtitle" />
+        <input min="0" step="1" type="number" [ngStyle]="{'background-color': currentClass.color}"
+            class="white_subtitle" (ngModelChange)="currentClassChanged($event)" [(ngModel)]="currentClass.number" />
     </div>
 </div>

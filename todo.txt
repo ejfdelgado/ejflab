@@ -19,12 +19,11 @@ Requerimientos no funcionales:
 3. Usar 
 
 Human Pose
-- Agregar play pause.
-- Agregar capacidad de etiquetado.
-  - Seleccionar cuál es el valor de etiquetación.
-  - Usar un generador de colores. HSV bien diferenciado.
+- desarrollar step painting with label class
+- agregar top menu, enlazar acciones faltantes, titulo dinamico.
 - independicar desarrollo de lo que hay dentro de la lista de archivos
-- agregar top menu, enlazar acciones faltantes.
+
+- Desarrollo play pause
 - Desarrollar backend subir, abrir, guardar, borrar
 
 MUST:
