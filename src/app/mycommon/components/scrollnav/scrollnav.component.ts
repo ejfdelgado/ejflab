@@ -25,6 +25,13 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   @ViewChild('scroll_parent') scrollParentEl: ElementRef;
   public model: ScrollNavData;
   data: Array<any>;
+  public PLAY_STATE_VISUAL: any = {
+    play: { text: 'Play', icon: 'play_arrow' },
+    pause: { text: 'Pause', icon: 'pause' },
+  };
+  public playState: any = {
+    state: 'pause',
+  };
   public dragging: any = {
     target: null,
     startv: null,
@@ -108,6 +115,14 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       { d1: 1, d2: 4, out: 2 },
     ];
     this.window = [];
+  }
+
+  togglePlayPause() {
+    if (this.playState.state == 'pause') {
+      this.playState.state = 'play';
+    } else {
+      this.playState.state = 'pause';
+    }
   }
 
   ngOnInit(): void {}

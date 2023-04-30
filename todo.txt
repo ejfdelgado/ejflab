@@ -24,6 +24,7 @@ Human Pose
   - Seleccionar cuál es el valor de etiquetación.
   - Usar un generador de colores. HSV bien diferenciado.
 - independicar desarrollo de lo que hay dentro de la lista de archivos
+- agregar top menu, enlazar acciones faltantes.
 - Desarrollar backend subir, abrir, guardar, borrar
 
 MUST:
