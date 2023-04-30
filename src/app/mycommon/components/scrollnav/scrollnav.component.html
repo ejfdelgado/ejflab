@@ -5,16 +5,20 @@
             <span>{{ PLAY_STATE_VISUAL[playState.state].text }}</span>
         </button>
     </div>
-    <div class="parent no_caret">
-        <div class="detail_in no_caret" (wheel)="onMouseWheel($event)" (mousedown)="mouseDownSteps($event)"
-            (mouseup)="mouseUpSteps($event)">
-            <div class="my_step no_caret white_subtitle" *ngFor="let step of window"
-                [ngStyle]="{'background-color': getStepColor(step)}">{{step[model.columnName]}}</div>
-        </div>
-        <div class="detail_out no_caret" #scroll_parent (wheel)="moveInTime($event)">
-            <div class="my_scroll no_caret" (mousedown)="mouseDownScroll($event)" (mouseup)="mouseUpScroll($event)"
-                [ngStyle]="{'left': scroll.left+'px', 'width': scroll.scrollWidth+'px'}">
-                &nbsp;</div>
+    <div class="parent1">
+        <div class="parent no_caret">
+            <div class="detail_in no_caret" (wheel)="onMouseWheel($event)" (mousedown)="mouseDownSteps($event)"
+                (mouseup)="mouseUpSteps($event)">
+                <div class="my_step no_caret white_subtitle" *ngFor="let step of window"
+                    [ngStyle]="{'background-color': getStepColor(step)}">
+                    <div>{{step[model.columnName]}}</div>
+                </div>
+            </div>
+            <div class="detail_out no_caret" #scroll_parent (wheel)="moveInTime($event)">
+                <div class="my_scroll no_caret" (mousedown)="mouseDownScroll($event)" (mouseup)="mouseUpScroll($event)"
+                    [ngStyle]="{'left': scroll.left+'px', 'width': scroll.scrollWidth+'px'}">
+                    &nbsp;</div>
+            </div>
         </div>
     </div>
     <div class="container_label">

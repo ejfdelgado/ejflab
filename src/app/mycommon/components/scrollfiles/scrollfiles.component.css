@@ -70,3 +70,15 @@ button {
 .footer button span {
   display: block;
 }
+
+button.mat-menu-item {
+  width: unset;
+  text-align: center;
+  line-height: unset;
+  height: unset;
+}
+
+button.mat-menu-item .mat-icon {
+  margin-right: unset;
+  vertical-align: unset;
+}

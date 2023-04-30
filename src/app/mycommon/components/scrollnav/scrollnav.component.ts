@@ -54,6 +54,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     scrollWidth: 150,
     amount1: 1,
     amount2: 10,
+    amount3: 100,
     nshow: 10, // Cuantos pasos muestro en un momento dado
   };
   public window: Array<any>;
@@ -316,7 +317,11 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   moveInTime(ev: WheelEvent) {
-    this.moveInTimeLocal(this.scroll.amount2, ev.deltaY);
+    if (ev.shiftKey) {
+      this.moveInTimeLocal(this.scroll.amount3, ev.deltaY);
+    } else {
+      this.moveInTimeLocal(this.scroll.amount2, ev.deltaY);
+    }
   }
 
   clampRealIndex() {
