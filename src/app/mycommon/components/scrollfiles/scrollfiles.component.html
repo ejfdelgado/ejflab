@@ -24,6 +24,10 @@
             <mat-icon>upload_file</mat-icon>
             <span>Subir</span>
         </button>
+        <button (click)="toggleViewState()" mat-menu-item>
+            <mat-icon>{{ viewState == "threejs" ? "directions_run" : "psychology" }}</mat-icon>
+            <span>Vista</span>
+        </button>
         <button (click)="saveAll.emit()" mat-menu-item>
             <mat-icon>save</mat-icon>
             <span>Guardar</span>

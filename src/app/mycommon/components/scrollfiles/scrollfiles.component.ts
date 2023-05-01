@@ -24,11 +24,21 @@ export class ScrollfilesComponent implements OnInit {
   @Output('saveAll')
   saveAll: EventEmitter<void> = new EventEmitter();
 
+  viewState: string = 'threejs';
+
   constructor() {}
 
   ngOnInit(): void {}
 
   noneFun(): void {}
+
+  toggleViewState(): void {
+    if (this.viewState == 'threejs') {
+      this.viewState = 'tensorflow';
+    } else {
+      this.viewState = 'threejs';
+    }
+  }
 
   toggleCheck(ele: ElementItemData): void {
     if (ele.checked === true) {

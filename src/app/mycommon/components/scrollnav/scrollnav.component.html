@@ -4,6 +4,10 @@
             <mat-icon>{{ PLAY_STATE_VISUAL[playState.state].icon }}</mat-icon>
             <span>{{ PLAY_STATE_VISUAL[playState.state].text }}</span>
         </button>
+        <button class="play_pause" (click)="toggleTest()" mat-menu-item>
+            <mat-icon>{{ TEST_STATE_VISUAL[testState.state].icon }}</mat-icon>
+            <span>{{ TEST_STATE_VISUAL[testState.state].text }}</span>
+        </button>
     </div>
     <div class="parent1">
         <div class="parent no_caret">

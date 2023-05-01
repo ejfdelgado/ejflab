@@ -36,11 +36,18 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     color: '#FFFFFF',
   };
   public PLAY_STATE_VISUAL: any = {
-    play: { text: 'Play', icon: 'play_arrow' },
-    pause: { text: 'Pause', icon: 'pause' },
+    play: { text: 'Pause', icon: 'pause' },
+    pause: { text: 'Play', icon: 'play_arrow' },
+  };
+  public TEST_STATE_VISUAL: any = {
+    test_show: { text: 'Hide', icon: 'visibility' },
+    test_hide: { text: 'Show', icon: 'visibility_off' },
   };
   public playState: any = {
     state: 'pause',
+  };
+  public testState: any = {
+    state: 'test_hide',
   };
   public dragging: any = {
     target: null,
@@ -103,6 +110,14 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       this.playState.state = 'play';
     } else {
       this.playState.state = 'pause';
+    }
+  }
+
+  toggleTest() {
+    if (this.testState.state == 'test_show') {
+      this.testState.state = 'test_hide';
+    } else {
+      this.testState.state = 'test_show';
     }
   }
 
