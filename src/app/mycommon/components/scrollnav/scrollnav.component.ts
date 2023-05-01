@@ -15,6 +15,7 @@ import { MyColor } from 'srcJs/MyColor.js';
 
 export interface ScrollNavData {
   columnName: string;
+  testName: string;
   elwidth: number;
   startix: number;
 }
@@ -75,6 +76,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   constructor(public cdr: ChangeDetectorRef) {
     this.model = {
       columnName: 'out',
+      testName: 'test',
       elwidth: 5,
       startix: 0,
     };
@@ -123,8 +125,20 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {}
 
-  getStepColor(step: any) {
-    return ScrollnavComponent.STEP_COLORS[step[this.model.columnName]];
+  public getStepValue(step: any, columnName: string) {
+    const ans = step[columnName];
+    if (['number', 'string'].indexOf(typeof ans) >= 0) {
+      return ans;
+    }
+    return '';
+  }
+
+  public getStepColor(step: any, columnName: string) {
+    const ans = step[columnName];
+    if (['number', 'string'].indexOf(typeof ans) >= 0) {
+      return ScrollnavComponent.STEP_COLORS[ans];
+    }
+    return 'rgba(0, 0, 0, 0)';
   }
 
   public computeDimensions() {
@@ -133,6 +147,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     const bounds = scrollEl.getBoundingClientRect();
     this.scroll.xLeft = bounds.left;
     this.scroll.spaceWidth = bounds.width;
+    this.clampNShow();
   }
 
   ngAfterViewInit(): void {
@@ -201,15 +216,19 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     if (this.scroll.nshow < 1) {
       this.scroll.nshow = 1;
     }
-    const max = Math.min(this.scroll.spaceWidth, this.data.length);
-    if (this.scroll.nshow > max) {
-      // One step per pixel
-      this.scroll.nshow = max;
-    }
+    this.clampNShow();
     //this.cdr.detectChanges();
     // Debo recalcular real index dado el scroll left
     this.computeRealIndexFromLeft();
     this.computeWindow();
+  }
+
+  clampNShow() {
+    const max = Math.min(this.scroll.spaceWidth, this.data.length);
+    if (this.scroll.nshow > max || this.scroll.nshow == 0) {
+      // One step per pixel
+      this.scroll.nshow = max;
+    }
   }
 
   onMouseWheel(ev: WheelEvent) {

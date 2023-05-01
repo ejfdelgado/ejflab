@@ -61,7 +61,7 @@
 .detail_in {
   width: 100%;
   flex: 1;
-  background-color: chocolate;
+  background-color: #b5b5b5;
   display: flex;
   flex-direction: row;
 }

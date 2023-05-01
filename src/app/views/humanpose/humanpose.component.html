@@ -4,7 +4,6 @@
     </div>
     <div class="body_part">
         <div class="left_part">
-            <pre>{{ model | json }}</pre>
         </div>
         <div class="right_part">
             <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"
