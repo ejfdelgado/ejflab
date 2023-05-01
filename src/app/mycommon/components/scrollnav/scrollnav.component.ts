@@ -4,9 +4,11 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   Input,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { MyColor } from 'srcJs/MyColor.js';
@@ -27,6 +29,8 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   public model: ScrollNavData;
   @Input()
   data: Array<any>;
+  @Output('showPose')
+  showPose: EventEmitter<any> = new EventEmitter();
   public currentClass: any = {
     number: 0,
     color: '#FFFFFF',
@@ -109,7 +113,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   public computeDimensions() {
-    console.log(`computeDimensions ${this.data.length}`);
+    //console.log(`computeDimensions ${this.data.length}`);
     const scrollEl = this.scrollParentEl.nativeElement;
     const bounds = scrollEl.getBoundingClientRect();
     this.scroll.xLeft = bounds.left;
@@ -142,7 +146,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     } else if (this.dragging.target == 'stepplay') {
       const delta = ev.screenX - this.dragging.startx;
       const selectedStep = this.getRealStep(delta);
-      console.log(`Ask to show in 3d renderer ${JSON.stringify(selectedStep)}`);
+      this.showPose.emit(selectedStep);
     }
   }
 
@@ -322,7 +326,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   public computeWindow() {
-    console.log(`computeWindow ${this.data.length}`);
+    //console.log(`computeWindow ${this.data.length}`);
     if (this.data.length == 0) {
       return;
     }

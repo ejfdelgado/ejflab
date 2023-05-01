@@ -44,58 +44,19 @@ export class HumanposeComponent implements OnInit {
     }
   }
 
-  async saveAll() {}
+  async saveAll() {
+    console.log('TODO saveAll');
+  }
+
+  async showPose(row: any) {
+    console.log(`Ask to show in 3d renderer ${JSON.stringify(row)}`);
+  }
 
   async openFile(oneFile: ElementItemData) {
     this.model.timeline = [
       { d1: 1, d2: 4, out: 2 },
       { d1: 2, d2: 4, out: 0 },
       { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 2 },
     ];
     setTimeout(() => {
       this.scrollNav.computeDimensions();

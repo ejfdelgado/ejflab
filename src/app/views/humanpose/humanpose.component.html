@@ -4,16 +4,16 @@
     </div>
     <div class="body_part">
         <div class="left_part">
-
+            <pre>{{ model | json }}</pre>
         </div>
         <div class="right_part">
             <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"
-                (openFile)="openFile($event)">
+                (openFile)="openFile($event)" (saveAll)="saveAll()">
             </app-scrollfiles>
         </div>
     </div>
     <div class="foot_part">
-        <app-scrollnav #myScrollNav [data]="model.timeline"></app-scrollnav>
+        <app-scrollnav #myScrollNav [data]="model.timeline" (showPose)="showPose($event)"></app-scrollnav>
     </div>
 
 </div>
