@@ -21,9 +21,11 @@ Requerimientos no funcionales:
 Human Pose
 - agregar top menu, enlazar acciones faltantes, titulo dinamico.
 - independicar desarrollo de lo que hay dentro de la lista de archivos
+- agregar segundo etiquetado no editable para la respuesta de la red neuronal.
 
 - Desarrollo play pause
 - Desarrollar backend subir, abrir, guardar, borrar
+- Agregar threejs con N modelos dependiendo del csv
 
 MUST:
 

@@ -4,21 +4,27 @@
             <div *ngFor="let elemento of archivos" class="scroll_item noselect">
                 <mat-icon>description</mat-icon>
                 <span class="noselect nombre">{{ elemento.name }}</span>
-                <button (click)="uploadFile()" mat-menu-item>
+                <button (click)="openFile.emit(elemento)" mat-menu-item>
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button (click)="uploadFile()" mat-menu-item>
+                <button (click)="toggleCheck(elemento)" mat-menu-item>
+                    <mat-icon>{{ elemento.checked ? "check_circle" : "radio_button_unchecked" }}</mat-icon>
+                </button>
+                <button (click)="downloadFIle(elemento)" mat-menu-item>
+                    <mat-icon>download</mat-icon>
+                </button>
+                <button (click)="deleteFile.emit(elemento)" mat-menu-item>
                     <mat-icon>delete_forever</mat-icon>
                 </button>
             </div>
         </div>
     </div>
     <div class="footer">
-        <button (click)="uploadFile()" mat-menu-item>
+        <button (click)="uploadFile.emit()" mat-menu-item>
             <mat-icon>upload_file</mat-icon>
             <span>Subir</span>
         </button>
-        <button (click)="uploadFile()" mat-menu-item>
+        <button (click)="noneFun()" mat-menu-item>
             <mat-icon>save</mat-icon>
             <span>Guardar</span>
         </button>

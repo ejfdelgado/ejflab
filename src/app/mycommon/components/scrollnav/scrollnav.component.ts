@@ -5,6 +5,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  Input,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -24,6 +25,7 @@ export interface ScrollNavData {
 export class ScrollnavComponent implements OnInit, AfterViewInit {
   @ViewChild('scroll_parent') scrollParentEl: ElementRef;
   public model: ScrollNavData;
+  @Input()
   data: Array<any>;
   public currentClass: any = {
     number: 0,
@@ -65,57 +67,12 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       elwidth: 5,
       startix: 0,
     };
-    this.data = [
-      { d1: 1, d2: 4, out: 2 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 2 },
-    ];
+    this.data = [];
     this.window = [];
+  }
+
+  public detectChanges() {
+    this.cdr.detectChanges();
   }
 
   computeCurrentColorClass() {
@@ -128,7 +85,7 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
       setTimeout(() => {
         this.currentClass.number = 0;
         this.computeCurrentColorClass();
-        this.cdr.detectChanges();
+        this.detectChanges();
       }, 0);
     } else {
       setTimeout(() => {
@@ -151,7 +108,8 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     return ScrollnavComponent.STEP_COLORS[step[this.model.columnName]];
   }
 
-  computeDimensions() {
+  public computeDimensions() {
+    console.log(`computeDimensions ${this.data.length}`);
     const scrollEl = this.scrollParentEl.nativeElement;
     const bounds = scrollEl.getBoundingClientRect();
     this.scroll.xLeft = bounds.left;
@@ -211,6 +169,9 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   zoomInOut(deltaY: number) {
+    if (this.data.length == 0) {
+      return;
+    }
     if (deltaY < 0) {
       // zoom out
       this.scroll.nshow -= 1;
@@ -312,6 +273,9 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   computeRealIndexFromLeft() {
+    if (this.data.length == 0) {
+      return;
+    }
     const maxRealIndex = this.data.length - this.scroll.nshow;
     this.scroll.realIndex = Math.floor(maxRealIndex * this.scroll.leftPer);
   }
@@ -325,6 +289,9 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   clampRealIndex() {
+    if (this.data.length == 0) {
+      return;
+    }
     if (this.scroll.realIndex < 0) {
       this.scroll.realIndex = 0;
     }
@@ -354,7 +321,11 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
     }
   }
 
-  computeWindow() {
+  public computeWindow() {
+    console.log(`computeWindow ${this.data.length}`);
+    if (this.data.length == 0) {
+      return;
+    }
     setTimeout(() => {
       const total = this.data.length;
       if (total <= this.scroll.nshow) {

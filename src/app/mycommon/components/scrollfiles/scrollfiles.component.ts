@@ -1,4 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+
+export interface ElementItemData {
+  url: string;
+  name: string;
+  date?: number;
+  checked?: boolean;
+}
 
 @Component({
   selector: 'app-scrollfiles',
@@ -6,35 +13,31 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./scrollfiles.component.css'],
 })
 export class ScrollfilesComponent implements OnInit {
-  archivos: Array<any> = [
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-    { name: 'quepasasiestenombredearchivoesmuygrandeynocabe1.csv', url: '/ruta/a/archivo1.csv' },
-    { name: 'Archivo2.csv', url: '/ruta/a/archivo2.csv' },
-    { name: 'Archivo3.csv', url: '/ruta/a/archivo3.csv' },
-  ];
+  @Input()
+  archivos: Array<ElementItemData> = [];
+  @Output('uploadFile')
+  uploadFile: EventEmitter<any> = new EventEmitter();
+  @Output('deleteFile')
+  deleteFile: EventEmitter<ElementItemData> = new EventEmitter();
+  @Output('openFile')
+  openFile: EventEmitter<ElementItemData> = new EventEmitter();
+
   constructor() {}
 
   ngOnInit(): void {}
 
-  uploadFile() {}
+  noneFun(): void {}
+
+  toggleCheck(ele: ElementItemData): void {
+    if (ele.checked === true) {
+      ele.checked = false;
+    } else {
+      ele.checked = true;
+    }
+  }
+
+  downloadFIle(ele: ElementItemData): void {
+    // Download file
+    console.log('TODO download');
+  }
 }

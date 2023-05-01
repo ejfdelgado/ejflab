@@ -7,11 +7,13 @@
 
         </div>
         <div class="right_part">
-            <app-scrollfiles></app-scrollfiles>
+            <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"
+                (openFile)="openFile($event)">
+            </app-scrollfiles>
         </div>
     </div>
     <div class="foot_part">
-        <app-scrollnav></app-scrollnav>
+        <app-scrollnav #myScrollNav [data]="model.timeline"></app-scrollnav>
     </div>
 
 </div>
