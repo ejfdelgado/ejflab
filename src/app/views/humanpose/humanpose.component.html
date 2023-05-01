@@ -4,9 +4,9 @@
     </div>
     <div class="body_part">
         <div class="left_part">
-            <app-threejs *ngIf="currentView == 'threejs'"></app-threejs>
-            <app-tensorflow *ngIf="currentView == 'tensorflow'"></app-tensorflow>
-            <app-prejson *ngIf="currentView == 'prejson'" [model]="model.archivos"></app-prejson>
+            <app-threejs [hidden]="currentView !== 'threejs'"></app-threejs>
+            <app-tensorflow [hidden]="currentView !== 'tensorflow'"></app-tensorflow>
+            <app-prejson [hidden]="currentView !== 'prejson'" [model]="model.archivos"></app-prejson>
         </div>
         <div class="right_part">
             <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"
