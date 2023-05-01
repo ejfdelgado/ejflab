@@ -26,6 +26,15 @@
   height: 100%;
   width: 100%;
   flex: 1;
+  position: relative;
+}
+
+.body_part .left_part > * {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
 }
 
 .body_part .right_part {

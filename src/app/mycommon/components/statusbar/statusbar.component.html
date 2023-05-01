@@ -19,6 +19,10 @@
                     <mat-icon>search</mat-icon>
                     <span>Ver mis documentos</span>
                 </button>
+                <button *ngFor="let item of extraOptions" mat-menu-item (click)="item.action()">
+                    <mat-icon>{{ item.icon }}</mat-icon>
+                    <span>{{ item.label }}</span>
+                </button>
                 <button mat-menu-item>
                     <mat-icon>close</mat-icon>
                     <span>Salir</span>

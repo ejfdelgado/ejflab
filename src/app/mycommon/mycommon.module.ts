@@ -20,6 +20,9 @@ import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.co
 import { MatSliderModule } from '@angular/material/slider';
 import { ScrollnavComponent } from './components/scrollnav/scrollnav.component';
 import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.component';
+import { TensorflowComponent } from './components/tensorflow/tensorflow.component';
+import { ThreejsComponent } from './components/threejs/threejs.component';
+import { PrejsonComponent } from './components/prejson/prejson.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +39,9 @@ import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.compo
     CanvaseditorComponent,
     ScrollnavComponent,
     ScrollfilesComponent,
+    TensorflowComponent,
+    ThreejsComponent,
+    PrejsonComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -61,6 +67,9 @@ import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.compo
     CanvaseditorComponent,
     ScrollnavComponent,
     ScrollfilesComponent,
+    TensorflowComponent,
+    ThreejsComponent,
+    PrejsonComponent,
   ],
 })
 export class MycommonModule {}

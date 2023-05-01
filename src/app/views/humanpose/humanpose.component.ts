@@ -1,6 +1,7 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ElementItemData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
+import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 
 export interface HumanPoseLocalModel {
   archivos: Array<ElementItemData>;
@@ -19,8 +20,36 @@ export class HumanposeComponent implements OnInit {
   };
   @ViewChild('myScrollNav')
   scrollNav: ScrollnavComponent;
+  public extraOptions: Array<OptionData> = [];
+  public currentView: string = 'threejs';
 
-  constructor() {}
+  constructor() {
+    this.extraOptions.push({
+      action: () => {
+        this.setView('threejs');
+      },
+      icon: 'directions_run',
+      label: 'Espacio 3D',
+    });
+    this.extraOptions.push({
+      action: () => {
+        this.setView('tensorflow');
+      },
+      icon: 'psychology',
+      label: 'Red Neuronal',
+    });
+    this.extraOptions.push({
+      action: () => {
+        this.setView('prejson');
+      },
+      icon: 'bug_report',
+      label: 'Debug',
+    });
+  }
+
+  setView(type: string) {
+    this.currentView = type;
+  }
 
   async loadData() {
     this.model.archivos = [];

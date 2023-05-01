@@ -1,5 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { faBurger, faUser } from '@fortawesome/free-solid-svg-icons';
+
+export interface OptionData {
+  icon: string;
+  label: string;
+  action: Function;
+}
 
 @Component({
   selector: 'app-statusbar',
@@ -9,6 +15,8 @@ import { faBurger, faUser } from '@fortawesome/free-solid-svg-icons';
 export class StatusbarComponent implements OnInit {
   faBurgerIcon = faBurger;
   faUserIcon = faUser;
+  @Input('extraOptions')
+  extraOptions: Array<OptionData> = [];
 
   constructor() {}
 
