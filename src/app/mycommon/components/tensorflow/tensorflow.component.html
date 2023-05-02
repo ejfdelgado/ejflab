@@ -1,1 +1,124 @@
-<div class="theparent"></div>
+<div class="theparent flex_row">
+    <div class="flex_column flex_1 flex_gap_5">
+        <div class="local_section flex_column">
+            <p>Datos de entrada</p>
+            <div class="flex_row">
+                <div class="flex_column flex_1 flex_gap_5">
+                    <div *ngFor="let datoIn of model.in" class="local_section flex_row flex_gap_5">
+                        <div class="flex_column flex_1">
+                            <label>Nombre Columna:</label>
+                            <input [(ngModel)]="datoIn.column" />
+                        </div>
+                        <div class="flex_column flex_1">
+                            <label>Mínimo valor:</label>
+                            <input type="number" [(ngModel)]="datoIn.min" />
+                        </div>
+                        <div class="flex_column flex_1">
+                            <label>Máximo valor:</label>
+                            <input type="number" [(ngModel)]="datoIn.max" />
+                        </div>
+                        <button class="center_all" (click)="doAction()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                    <div class="flex_row reverse">
+                        <button class="flex_row center_all" (click)="doAction()">
+                            <mat-icon>add</mat-icon>
+                            <span>Agregar columna</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="local_section flex_column">
+            <p>Dato de salida</p>
+            <div class="flex_row flex_gap_5">
+                <div class="flex_column flex_1">
+                    <label>Nombre Columna:</label>
+                    <input [(ngModel)]="model.out.column" />
+                </div>
+                <div class="flex_column flex_1">
+                    <label>Mínimo valor:</label>
+                    <input type="number" [(ngModel)]="model.out.min" />
+                </div>
+                <div class="flex_column flex_1">
+                    <label>Máximo valor:</label>
+                    <input type="number" [(ngModel)]="model.out.max" />
+                </div>
+                <div class="flex_column flex_1">
+                    <label>Cantidad de diferentes valores:</label>
+                    <input type="number" [(ngModel)]="model.out.ngroups" />
+                </div>
+            </div>
+        </div>
+        <div class="local_section">
+            <p>Capas de la red neuronal</p>
+            <div class="flex_row">
+                <div class="flex_column flex_1 flex_gap_5">
+                    <div *ngFor="let myLayer of model.layers" class="local_section flex_row flex_gap_5">
+                        <div class="flex_column flex_1">
+                            <label>Cantidad de neuronas:</label>
+                            <input type="number" [(ngModel)]="myLayer.units" />
+                        </div>
+                        <div class="flex_column flex_1">
+                            <label>Función de activación:</label>
+                            <select [(ngModel)]="myLayer.activation">
+                                <option *ngFor="let c of activationOptions" [ngValue]="c.val">{{c.txt}}</option>
+                            </select>
+                        </div>
+                        <button class="center_all" (click)="doAction()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                    <div class="flex_row reverse">
+                        <button class="flex_row center_all" (click)="doAction()">
+                            <mat-icon>add</mat-icon>
+                            <span>Agregar capa</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="local_section">
+            <p>Compilación</p>
+            <div class="flex_column flex_1 flex_gap_5">
+                <div class="flex_column">
+                    <label>Loss:</label>
+                    <select [(ngModel)]="model.compile.loss">
+                        <option *ngFor="let c of lossOptions" [ngValue]="c.val">{{c.txt}}</option>
+                    </select>
+                </div>
+                <div class="flex_column">
+                    <label>Métricas:</label>
+                    <div class="flex_row" *ngFor="let myMetric of model.compile.metrics">
+                        <label>{{myMetric}}</label>
+                        <button class="center_all" (click)="doAction()">
+                            <mat-icon>close</mat-icon>
+                        </button>
+                    </div>
+                    <button class="flex_row center_all" (click)="doAction()">
+                        <mat-icon>add</mat-icon>
+                        <span>Agregar métrica</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="local_section">
+            <p>Entrenar</p>
+            <div class="flex_column flex_1 flex_gap_5">
+                <div class="flex_column">
+                    <label>Shuffle:</label>
+                    <input type="checkbox" [(ngModel)]="model.fit.shuffle" />
+                </div>
+                <div class="flex_column">
+                    <label>Epochs:</label>
+                    <input type="number" [(ngModel)]="model.fit.epochs" />
+                </div>
+                <div class="flex_column">
+                    <label>Validation Split:</label>
+                    <input type="number" [(ngModel)]="model.fit.validationSplit" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

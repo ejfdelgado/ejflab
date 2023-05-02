@@ -4,3 +4,45 @@
   background-color: azure;
   overflow: scroll;
 }
+
+.center_all {
+  align-items: center;
+  justify-content: center;
+}
+
+/*box-sizing: border-box;*/
+.local_section {
+  border-radius: 5px;
+  border: 1px solid;
+  padding: 10px;
+}
+
+.flex_column {
+  display: flex;
+  flex-direction: column;
+}
+
+.flex_row {
+  display: flex;
+  flex-direction: row;
+}
+
+.flex_row.reverse {
+  flex-direction: row-reverse;
+}
+
+.flex_column.reverse {
+  flex-direction: column-reverse;
+}
+
+.flex_1 {
+  flex: 1;
+}
+
+.flex_gap_5 {
+  gap: 5px;
+}
+
+button {
+  cursor: pointer;
+}

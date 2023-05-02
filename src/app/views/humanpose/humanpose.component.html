@@ -4,9 +4,11 @@
     </div>
     <div class="body_part">
         <div class="left_part">
-            <app-threejs [hidden]="currentView !== 'threejs'"></app-threejs>
-            <app-tensorflow [hidden]="currentView !== 'tensorflow'"></app-tensorflow>
-            <app-prejson [hidden]="currentView !== 'prejson'" [model]="model.archivos"></app-prejson>
+            <app-threejs [ngStyle]="{'display': (currentView == 'threejs' ? 'flex' : 'none')}"></app-threejs>
+            <div class="multiple_views" [ngStyle]="{'display': (currentView == 'tensorflow' ? 'flex' : 'none')}">
+                <app-tensorflow [model]="model.tensorflow"></app-tensorflow>
+                <app-prejson [model]="model.tensorflow"></app-prejson>
+            </div>
         </div>
         <div class="right_part">
             <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"

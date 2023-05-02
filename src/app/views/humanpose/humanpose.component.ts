@@ -2,10 +2,12 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { ElementItemData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
+import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';
 
 export interface HumanPoseLocalModel {
   archivos: Array<ElementItemData>;
   timeline: Array<any>;
+  tensorflow: MyTensorflowData;
 }
 
 @Component({
@@ -17,11 +19,46 @@ export class HumanposeComponent implements OnInit {
   model: HumanPoseLocalModel = {
     archivos: [],
     timeline: [],
+    tensorflow: {
+      in: [
+        {
+          column: 'pink',
+          min: 0,
+          max: 1,
+        },
+        {
+          column: 'small',
+          min: 0,
+          max: 1,
+        },
+      ],
+      out: {
+        column: 'quality',
+        min: 0,
+        max: 1,
+        ngroups: 2,
+      },
+      layers: [
+        {
+          units: 3,
+          activation: 'relu',
+        },
+      ],
+      compile: {
+        loss: 'binaryCrossentropy',
+        metrics: ['accuracy'],
+      },
+      fit: {
+        shuffle: true,
+        epochs: 20,
+        validationSplit: 0.1,
+      },
+    },
   };
   @ViewChild('myScrollNav')
   scrollNav: ScrollnavComponent;
   public extraOptions: Array<OptionData> = [];
-  public currentView: string = 'threejs';
+  public currentView: string = 'tensorflow';
 
   constructor() {
     this.extraOptions.push({

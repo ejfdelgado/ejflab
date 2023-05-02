@@ -37,6 +37,14 @@
   bottom: 0;
 }
 
+.multiple_views {
+  flex-direction: row;
+}
+
+.multiple_views > * {
+  flex: 1;
+}
+
 .body_part .right_part {
   width: 20vw;
   background-color: olive;
