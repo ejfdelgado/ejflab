@@ -50,6 +50,31 @@ class ModuloDatoSeguro {
     }
     return undefined;
   }
+  static ofuscarTexto(txt) {
+    const partes = txt.split(/\s+/g);
+    return partes.map((pal, i) => {
+      const tam = pal.length;
+      if (tam <= 3) {
+        return pal;
+      } else {
+        const arreglo = pal.split('');
+        const primer = arreglo.splice(0, 1);
+        const ultimo = arreglo.splice(arreglo.length - 1, 1);
+        const copy = [].concat(arreglo);
+        //const desordenado = [];
+        const desordenado = arreglo.map((character, i) => {
+          let aleatorio = Math.floor(Math.random() * (copy.length - 1));
+          if (copy.length > 1 && aleatorio == i) {
+            aleatorio += 1;
+          }
+          const actual = copy.splice(aleatorio, 1);
+          //desordenado.push(actual);
+          return actual;
+        });
+        return primer + desordenado.join('') + ultimo;
+      }
+    }).join(" ");
+  }
 }
 
 module.exports = {

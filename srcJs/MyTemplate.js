@@ -1,14 +1,14 @@
 const { CsvWithFilters } = require("./CsvWithFilters");
 const { SimpleObj } = require("./SimpleObj");
 
-const pInicio = "\\$\\s*{\\s*for\\s+([^\\s}]+)\\s+in\\s+([^\\s}]+\\s*})}";
-const pFin = "\\$\\s*\\{\\s*endfor\\s*\\}";
-const pNoFor = "((?!\\$\\s*\\{for).)*?";
+const pInicio = "\\$\\s*\\[\\s*for\\s+([^\\s\\]]+)\\s+in\\s+([^\\s\\]]+\\s*})\\]";
+const pFin = "\\$\\s*\\[\\s*endfor\\s*\\]";
+const pNoFor = "((?!\\$\\s*\\[for).)*?";
 const pAny = "(.*?)";
 
-const pIfInicio = "\\$\\s*\\{\\s*if\\s+([^}]*?)\\s*\\}";
-const pIfFin = "\\$\\s*\\{\\s*endif\\s*\\}";
-const pElse = "\\$\\s*\\{\\s*else\\s*\\}";
+const pIfInicio = "\\$\\s*\\[\\s*if\\s+([^\\]]*?)\\s*\\]";
+const pIfFin = "\\$\\s*\\[\\s*endif\\s*\\]";
+const pElse = "\\$\\s*\\[\\s*else\\s*\\]";
 
 class MyTemplate extends CsvWithFilters {
     // ${algo} -> algo
@@ -171,9 +171,9 @@ class MyTemplate extends CsvWithFilters {
             };
         }
 
-        const plainFormula = this.replaceBareValues(someIf.formula, data, "\\[", "\\]", "\\]", true);
+        const plainFormula = this.replaceBareValues(someIf.formula, data, "\\{", "\\}", "\\}", true);
         //console.log(plainFormula);
-        const isTrue = eval(plainFormula);// Yes is safe here, believeme, uncomment above
+        const isTrue = eval(plainFormula);// Yes it's safe here, believeme, uncomment above
         if (isTrue === true) {
             return {
                 template: someIf.part1 + someIf.localTemplateTrue + someIf.part2,

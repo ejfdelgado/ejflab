@@ -12,12 +12,12 @@ function myTest() {
             exp: "my name is Edgar and I like red 1-1-2-3",
         },
         {
-            txt: "All combines: ${for color in ${colors}}${for name in ${names}}Color ${color.id|mapColor} + ${name}, ${endfor}${endfor}",
+            txt: "All combines: $[for color in ${colors}]$[for name in ${names}]Color ${color.id|mapColor} + ${name}, $[endfor]$[endfor]",
             data: { names: { first: "Edgar", last: "Delgado" }, colors: [{ id: 1 }, { id: 2 }] },
             exp: "All combines: Color red + Edgar, Color red + Delgado, Color blue + Edgar, Color blue + Delgado, ",
         },
         {
-            txt: "Esto es una prueba ${for parent in ${parents}} parent ${parent.name} has ${for child in ${parent.children}} ${child.name} ${endfor} ${endfor} here there is nothing",
+            txt: "Esto es una prueba $[for parent in ${parents}] parent ${parent.name} has $[for child in ${parent.children}] ${child.name} $[endfor] $[endfor] here there is nothing",
             data: {
                 parents: [
                     { name: "Dog", children: [{ name: "Pepito" }, { name: "Cuco" }] },
@@ -28,7 +28,7 @@ function myTest() {
             exp: "Esto es una prueba  parent Dog has  Pepito  Cuco   parent Bird has  Fly  Shym   parent Cat has   here there is nothing",
         },
         {
-            txt: "Esto es una prueba ${for parent in ${parents}} parent ${parent.name} has ${for child in ${parent.children}} ${child.name} ${endfor} ${endfor} here there is nothing",
+            txt: "Esto es una prueba $[for parent in ${parents}] parent ${parent.name} has $[for child in ${parent.children}] ${child.name} $[endfor] $[endfor] here there is nothing",
             data: {
                 parents: [
                     { name: "Dog", children: undefined },
@@ -39,20 +39,31 @@ function myTest() {
             exp: "Esto es una prueba  parent Dog has   parent Bird has   parent Cat has   here there is nothing",
         },
         {
-            txt: "Es ${if $[color.id] == 1 && $[algo] === undefined } Es uno ${endif} fin",
+            txt: "Es $[if ${color.id} == 1 && ${algo} === undefined ] Es uno $[endif] fin",
             data: { color: { id: 1 } },
             exp: "Es  Es uno  fin",
         },
         {
-            txt: "Es ${if $[color.id] == 1 && $[algo] === undefined }Verdadero${else}Falso${endif} fin",
+            txt: "Es $[if ${color.id} == 1 && ${algo} === undefined ]Verdadero$[else]Falso$[endif] fin",
             data: { color: { id: 2 } },
             exp: "Es Falso fin",
         },
         {
-            txt: 'Es ${if $[color.id] == 1 && $[algo] === undefined }Verdadero${else}pero acá es ${if typeof $[color] == "object" }Sí${else}No${endif}${endif} fin',
+            txt: 'Es $[if ${color.id} == 1 && ${algo} === undefined ]Verdadero$[else]pero acá es $[if typeof ${color} == "object" ]Sí$[else]No$[endif]$[endif] fin',
             data: { color: { id: 2 } },
             exp: "Es pero acá es Sí fin",
         },
+        {
+            txt: 'Filtrado $[for el in ${arreglo}]$[if ${el.num} >= 3]${el.num} ${el.txt}$[endif]$[endfor]',
+            data: {
+                arreglo: [
+                    { num: 1, txt: "no debe salir" },
+                    { num: 2, txt: "tampoco debe salir" },
+                    { num: 3, txt: "sí debe salir" }
+                ]
+            },
+            exp: "Filtrado 3 sí debe salir",
+        }
     ];
 
     renderer.registerFunction("json", CsvFormatterFilters.json);
