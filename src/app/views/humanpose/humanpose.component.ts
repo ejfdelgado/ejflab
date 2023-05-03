@@ -3,6 +3,7 @@ import { ElementItemData } from 'src/app/mycommon/components/scrollfiles/scrollf
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';
+import { ModalService } from 'src/services/modal.service';
 
 export interface HumanPoseLocalModel {
   archivos: Array<ElementItemData>;
@@ -60,7 +61,7 @@ export class HumanposeComponent implements OnInit {
   public extraOptions: Array<OptionData> = [];
   public currentView: string = 'tensorflow';
 
-  constructor() {
+  constructor(private modalSrv: ModalService) {
     this.extraOptions.push({
       action: () => {
         this.setView('threejs');
@@ -103,7 +104,13 @@ export class HumanposeComponent implements OnInit {
   }
 
   async deleteFile(oneFile: ElementItemData) {
-    // TODO ask confirm
+    const response = await this.modalSrv.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
     const index = this.model.archivos.indexOf(oneFile);
     if (index >= 0) {
       this.model.archivos.splice(index, 1);

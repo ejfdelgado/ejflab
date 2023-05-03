@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { ModalService } from 'src/services/modal.service';
 
 export interface MyTensorflowLayerData {
   units: number;
@@ -77,7 +78,50 @@ export class TensorflowComponent implements OnInit {
     { val: 'precision', txt: 'precision' },
   ];
 
-  constructor() {}
+  constructor(private modalSrv: ModalService) {}
+
+  async removeColumnDataIn(el: MyTensorflowInData) {
+    const response = await this.modalSrv.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    const indice = this.model.in.indexOf(el);
+    if (indice >= 0) {
+      this.model.in.splice(indice, 1);
+    }
+  }
+
+  addDataIn() {
+    this.model.in.push({
+      column: '',
+      min: 0,
+      max: 1,
+    });
+  }
+
+  async removeLayer(layer: MyTensorflowLayerData) {
+    const response = await this.modalSrv.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    const indice = this.model.layers.indexOf(layer);
+    if (indice >= 0) {
+      this.model.layers.splice(indice, 1);
+    }
+  }
+
+  addLayer() {
+    this.model.layers.push({
+      units: 2,
+      activation: 'relu',
+    });
+  }
 
   ngOnInit(): void {}
 

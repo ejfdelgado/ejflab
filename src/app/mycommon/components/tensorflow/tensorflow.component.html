@@ -1,5 +1,5 @@
 <div class="theparent flex_row">
-    <div class="flex_column flex_1 flex_gap_5">
+    <div class="flex_column flex_1 flex_gap_5 margin_5">
         <div class="local_section flex_column">
             <p>Datos de entrada</p>
             <div class="flex_row">
@@ -17,12 +17,12 @@
                             <label>Máximo valor:</label>
                             <input type="number" [(ngModel)]="datoIn.max" />
                         </div>
-                        <button class="center_all" (click)="doAction()">
+                        <button class="center_all" (click)="removeColumnDataIn(datoIn)">
                             <mat-icon>close</mat-icon>
                         </button>
                     </div>
                     <div class="flex_row reverse">
-                        <button class="flex_row center_all" (click)="doAction()">
+                        <button class="flex_row center_all" (click)="addDataIn()">
                             <mat-icon>add</mat-icon>
                             <span>Agregar columna</span>
                         </button>
@@ -58,7 +58,7 @@
                     <div *ngFor="let myLayer of model.layers" class="local_section flex_row flex_gap_5">
                         <div class="flex_column flex_1">
                             <label>Cantidad de neuronas:</label>
-                            <input type="number" [(ngModel)]="myLayer.units" />
+                            <input min="1" step="1" type="number" [(ngModel)]="myLayer.units" />
                         </div>
                         <div class="flex_column flex_1">
                             <label>Función de activación:</label>
@@ -66,12 +66,12 @@
                                 <option *ngFor="let c of activationOptions" [ngValue]="c.val">{{c.txt}}</option>
                             </select>
                         </div>
-                        <button class="center_all" (click)="doAction()">
+                        <button class="center_all" (click)="removeLayer(myLayer)">
                             <mat-icon>close</mat-icon>
                         </button>
                     </div>
                     <div class="flex_row reverse">
-                        <button class="flex_row center_all" (click)="doAction()">
+                        <button class="flex_row center_all" (click)="addLayer()">
                             <mat-icon>add</mat-icon>
                             <span>Agregar capa</span>
                         </button>
@@ -112,7 +112,7 @@
                 </div>
                 <div class="flex_column">
                     <label>Epochs:</label>
-                    <input type="number" [(ngModel)]="model.fit.epochs" />
+                    <input min="1" step="1" type="number" [(ngModel)]="model.fit.epochs" />
                 </div>
                 <div class="flex_column">
                     <label>Validation Split:</label>
