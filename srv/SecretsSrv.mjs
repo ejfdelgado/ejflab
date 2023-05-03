@@ -28,12 +28,14 @@ export class SecretsSrv {
         }
         return changed;
     }
-    // SecretsSrv.localRead(["llave1", "llave2"], "edelgado@panal.co-payu-");
+    // SecretsSrv.localRead(["llave1", "llave2"], "edelgado@panal.co+");
+    // {mapa: {llave1: "XXXXX", llave2: undefined}, lista: [{key: "llave1", val: "XXXXX"}, undefined]}
     static async localRead(arg, prefix) {
         const master = await SecretsSrv.getMasterKey(prefix);
         const argsPrefix = arg.map(v => prefix + v);
         const response = await MyStore.readByIds(SECRET_TYPE, argsPrefix);
         const lista = [];
+        const mapa = {};
         for (let i = 0; i < argsPrefix.length; i++) {
             const key = argsPrefix[i];
             if (key in response) {
@@ -41,17 +43,20 @@ export class SecretsSrv {
                 const one = { key: arg[i] };
                 one.val = ModuloDatoSeguroBack.decifrarSimple(payload.val, master);
                 lista.push(one);
+                mapa[one.key] = one.val;
             } else {
                 lista.push(undefined);
+                mapa[arg[i]] = undefined;
             }
         }
         return {
             lista,
             arg,
-            master
+            master,
+            mapa,
         };
     }
-    // SecretsSrv.localSave({"llave1": "secreto"}, "edelgado@panal.co-payu-");
+    // SecretsSrv.localSave({"llave1": "secreto"}, "edelgado@panal.co+");
     static async localSave(arg, prefix) {
         const master = await SecretsSrv.getMasterKey(prefix);
         const keys = Object.keys(arg);

@@ -71,7 +71,13 @@ export class PayuService {
   async openConfiguration() {
     try {
       const oldValues = await this.loadSecrets({
-        key: ['payu_api_key', 'payu_api_login', 'payu_pub_key'],
+        key: [
+          'payu_api_key',
+          'payu_api_login',
+          'payu_pub_key',
+          'payu_account_id',
+          'payu_merchant_id',
+        ],
       });
       const dialogRef = this.dialog.open(PayupopupComponent, {
         data: oldValues,

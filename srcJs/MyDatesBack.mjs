@@ -12,10 +12,7 @@ export default class MyDatesBack extends MyDates {
     static formatTime(now, ...args) {
         return MyDates.formatTimeBasic(dateFormat, now, args);
     }
+    static formatPayu(now) {
+        return MyDates.formatPayu(dateFormat, now);
+    }
 }
-
-/*
-module.exports = {
-    MyDatesBack
-};
-*/

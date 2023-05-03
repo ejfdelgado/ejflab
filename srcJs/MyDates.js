@@ -54,7 +54,11 @@ class MyDates {
         masks.simple1 = 'ddd d mmm, yyyy';
         masks.simple2 = 'ddd d mmm';
 
-        masks.opcion3 = 'h:MM TT'
+        masks.opcion3 = 'h:MM TT';
+
+        // yyyy-MM-ddTHH:mm:ss
+        // https://www.npmjs.com/package/dateformat
+        masks.opcionPayu = 'yyyy-mm-dd"T"HH:MM:ss';
 
         masks.completo1 = 'ddd d mmm, yyyy h:MM TT';
         masks.completo2 = 'ddd d mmm h:MM TT';
@@ -119,6 +123,13 @@ class MyDates {
             return dateformat(now, "opcion3");
         } else {
             return "Hora / Minuto";
+        }
+    }
+    static formatPayu(dateformat, now) {
+        if (now instanceof Date) {
+            return dateformat(now, "opcionPayu");
+        } else {
+            return null;
         }
     }
     static createDuration(dias = 0, horas = 0, minutos = 0) {

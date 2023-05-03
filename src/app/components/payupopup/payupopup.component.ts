@@ -14,6 +14,8 @@ export interface PayuConfigData {
   payu_api_key: string;
   payu_api_login: string;
   payu_pub_key: string;
+  payu_merchant_id: string;
+  payu_account_id: string;
 }
 
 @Component({
@@ -38,6 +40,8 @@ export class PayupopupComponent implements OnInit {
       payu_api_key: [this.data.payu_api_key, [Validators.required]],
       payu_api_login: [this.data.payu_api_login, [Validators.required]],
       payu_pub_key: [this.data.payu_pub_key, [Validators.required]],
+      payu_account_id: [this.data.payu_account_id, [Validators.required]],
+      payu_merchant_id: [this.data.payu_merchant_id, [Validators.required]],
     });
   }
 
@@ -57,11 +61,21 @@ export class PayupopupComponent implements OnInit {
     return this.form.get('payu_pub_key');
   }
 
+  get payu_account_id() {
+    return this.form.get('payu_account_id');
+  }
+
+  get payu_merchant_id() {
+    return this.form.get('payu_merchant_id');
+  }
+
   async guardar() {
     const valores: SecretsWriteData = {
       payu_api_key: this.form.value.payu_api_key,
       payu_api_login: this.form.value.payu_api_login,
       payu_pub_key: this.form.value.payu_pub_key,
+      payu_account_id: this.form.value.payu_account_id,
+      payu_merchant_id: this.form.value.payu_merchant_id,
     };
     if (this.form.valid) {
       // Se envia a guardar al servicio
