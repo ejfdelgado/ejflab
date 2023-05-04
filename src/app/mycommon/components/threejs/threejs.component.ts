@@ -22,7 +22,7 @@ export class ThreejsComponent implements OnInit, AfterViewInit {
   constructor() {}
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: any) {
+  public onResize(event: any) {
     this.computeDimensions();
     if (this.scene != null && this.bounds != null) {
       this.scene.setBounds(this.bounds);

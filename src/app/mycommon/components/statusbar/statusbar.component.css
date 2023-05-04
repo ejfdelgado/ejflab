@@ -2,6 +2,20 @@
   height: 80px;
   width: 100%;
   display: flex;
+  align-items: center;
+}
+
+.top_menu > .relleno {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.mi_titulo {
+  font-size: 28px;
+  color: white;
+  overflow: hidden;
+  line-height: 28px;
 }
 
 .relleno {
@@ -19,7 +33,6 @@
 }
 
 .menu_icon_user_parent {
-  padding: 10px 0;
   height: 100%;
   width: 100%;
 }

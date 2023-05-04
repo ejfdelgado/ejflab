@@ -1,14 +1,15 @@
 <div class="level_0">
     <div class="head_part">
-        <app-statusbar [extraOptions]="extraOptions"></app-statusbar>
+        <app-statusbar [title]="localTitle" [extraOptions]="extraOptions"></app-statusbar>
     </div>
     <div class="body_part">
         <div class="left_part">
-            <app-threejs [ngStyle]="{'display': (currentView == 'threejs' ? 'flex' : 'none')}"></app-threejs>
+            <app-threejs #three_ref [ngStyle]="{'display': (currentView == 'threejs' ? 'flex' : 'none')}"></app-threejs>
             <div class="multiple_views" [ngStyle]="{'display': (currentView == 'tensorflow' ? 'flex' : 'none')}">
                 <app-tensorflow [model]="model.tensorflow"></app-tensorflow>
-                <app-prejson [model]="model.tensorflow"></app-prejson>
             </div>
+            <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}" [model]="model.archivos">
+            </app-prejson>
         </div>
         <div class="right_part">
             <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"

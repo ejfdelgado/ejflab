@@ -7,15 +7,19 @@
                 </div>
             </div>
             <mat-menu #mainMenu="matMenu">
-                <button mat-menu-item>
+                <button mat-menu-item (click)="editPage()">
                     <mat-icon>edit</mat-icon>
                     <span>Editar documento</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="editPagePermisions()">
+                    <mat-icon>lock</mat-icon>
+                    <span>Editar permisos del documento</span>
+                </button>
+                <button mat-menu-item (click)="createNewPage()">
                     <mat-icon>add</mat-icon>
                     <span>Crear nuevo documento</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="lookMyPages()">
                     <mat-icon>search</mat-icon>
                     <span>Ver mis documentos</span>
                 </button>
@@ -23,18 +27,18 @@
                     <mat-icon>{{ item.icon }}</mat-icon>
                     <span>{{ item.label }}</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="goToHome()">
                     <mat-icon>close</mat-icon>
                     <span>Salir</span>
                 </button>
-                <button mat-menu-item>
+                <button mat-menu-item (click)="logoutAndGoToHome()">
                     <mat-icon>logout</mat-icon>
                     <span>Salir y cerrar sesión</span>
                 </button>
             </mat-menu>
 
         </div>
-        <div class="relleno"></div>
+        <div class="relleno mi_titulo">{{ title }}</div>
     </div>
     <div class="usuario_container">
         <div class="menu_icon_user_parent" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
@@ -43,11 +47,11 @@
             </div>
         </div>
         <mat-menu #userMenu="matMenu">
-            <button mat-menu-item>
+            <button mat-menu-item (click)="editUser()">
                 <mat-icon>edit</mat-icon>
                 <span>Editar usuario</span>
             </button>
-            <button mat-menu-item>
+            <button mat-menu-item (click)="logout()">
                 <mat-icon>logout</mat-icon>
                 <span>Cerrar sesión</span>
             </button>

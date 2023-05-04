@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ElementItemData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';
+import { ThreejsComponent } from 'src/app/mycommon/components/threejs/threejs.component';
 import { ModalService } from 'src/services/modal.service';
 
 export interface HumanPoseLocalModel {
@@ -17,6 +18,8 @@ export interface HumanPoseLocalModel {
   styleUrls: ['./humanpose.component.css'],
 })
 export class HumanposeComponent implements OnInit {
+  localTitle: string = 'Entrenamiento para calificar movimientos';
+  @ViewChild('three_ref') threeRef: ElementRef;
   model: HumanPoseLocalModel = {
     archivos: [],
     timeline: [],
@@ -65,6 +68,12 @@ export class HumanposeComponent implements OnInit {
     this.extraOptions.push({
       action: () => {
         this.setView('threejs');
+        setTimeout(() => {
+          if (this.threeRef) {
+            console.log(this.threeRef);
+            (this.threeRef as unknown as ThreejsComponent).onResize(null);
+          }
+        }, 0);
       },
       icon: 'directions_run',
       label: 'Espacio 3D',
