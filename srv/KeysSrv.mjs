@@ -3,6 +3,7 @@ import { MyDates } from "../srcJs/MyDates.js";
 import { ModuloDatoSeguro } from "../srcJs/ModuloDatoSeguro.js";
 import { General } from "./common/General.mjs";
 import { MyStore } from "./common/MyStore.mjs";
+import { ModuloDatoSeguroBack } from "../srcJs/ModuloDatoSeguroBack.mjs";
 
 const KEYS_TYPE = "page-key";
 const DEFAULT_KEY_SIZE = 10;
@@ -53,7 +54,7 @@ export class KeysSrv {
         const llavero = await KeysSrv.getOrGeneratePageKeys(pageId);
         const actual = MyDates.getDayAsContinuosNumber(new Date());
         const pass = llavero[actual];
-        const resultado = ModuloDatoSeguro.cifrar(objeto, pass);
+        const resultado = ModuloDatoSeguroBack.cifrarSimple(objeto, pass);
         return resultado;
     }
 
@@ -72,7 +73,7 @@ export class KeysSrv {
         for (let i = 0; i < llaves.length; i++) {
             const llave = llaves[i];
             try {
-                resultado = ModuloDatoSeguro.decifrar(texto, llave);
+                resultado = ModuloDatoSeguroBack.decifrarSimple(texto, llave);
             } catch (e) {
 
             }

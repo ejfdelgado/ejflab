@@ -12,9 +12,16 @@ const redirectLoggedInToHome = () => redirectLoggedInTo(['customers']);
 const routes: Routes = [
   {
     path: '',
-    loadChildren: () => import('./views/home/home.module').then((m) => m.HomeModule),
+    loadChildren: () =>
+      import('./views/home/home.module').then((m) => m.HomeModule),
   },
-  { path: 'humanpose', loadChildren: () => import('./views/humanpose/humanpose.module').then(m => m.HumanposeModule) },
+  {
+    path: 'humanpose',
+    loadChildren: () =>
+      import('./views/humanpose/humanpose.module').then(
+        (m) => m.HumanposeModule
+      ),
+  },
 ];
 
 /*
@@ -24,8 +31,8 @@ const PAGINAS = [
   { id: 'cv', module: 'CvModule' },
   { id: 'calendar', module: 'CalendarModule' },
   { id: 'callgame', module: 'CallgameModule' },
-  { id: 'customers', module: 'CustomersModule' },
   { id: 'tale', module: 'TaleModule' },
+  { id: 'humanpose', module: 'HumanposeModule' },
 ];
 
 for (let i = 0; i < PAGINAS.length; i++) {
