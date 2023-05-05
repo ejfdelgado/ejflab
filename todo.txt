@@ -5,7 +5,7 @@ https://fontawesome.com/icons?d=gallery
 ng new proyecto001
 ng generate module views/humanpose --route humanpose --module app.module
 ng generate component components/payupopup
-ng generate component mycommon/components/scrollnav
+ng generate component mycommon/components/scrollfile
 ng generate pipe mycommon/pipes/fechaCard
 
 Hacer un validador de formulario de backend y front end con base en:

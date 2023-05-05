@@ -6,6 +6,11 @@
   overflow-x: hidden;
 }
 
+.subtitulo {
+  font-weight: bold;
+  font-size: 20px;
+}
+
 .center_all {
   align-items: center;
   justify-content: center;

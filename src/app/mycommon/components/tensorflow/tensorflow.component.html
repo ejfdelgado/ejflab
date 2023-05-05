@@ -1,7 +1,7 @@
 <div class="theparent flex_row">
     <div class="flex_column flex_1 flex_gap_5 margin_5">
         <div class="local_section flex_column">
-            <p>Datos de entrada</p>
+            <p class="subtitulo">Datos de entrada</p>
             <div class="flex_row">
                 <div class="flex_column flex_1 flex_gap_5">
                     <div *ngFor="let datoIn of model.in" class="local_section flex_row flex_gap_5">
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="local_section flex_column">
-            <p>Dato de salida</p>
+            <p class="subtitulo">Dato de salida</p>
             <div class="flex_row flex_gap_5">
                 <div class="flex_column flex_1">
                     <label>Nombre Columna:</label>
@@ -52,7 +52,7 @@
             </div>
         </div>
         <div class="local_section">
-            <p>Capas de la red neuronal</p>
+            <p class="subtitulo">Capas de la red neuronal</p>
             <div class="flex_row">
                 <div class="flex_column flex_1 flex_gap_5">
                     <div *ngFor="let myLayer of model.layers" class="local_section flex_row flex_gap_5">
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="local_section">
-            <p>Compilación</p>
+            <p class="subtitulo">Compilación</p>
             <div class="flex_column flex_1 flex_gap_5">
                 <div class="flex_column">
                     <label>Loss:</label>
@@ -104,7 +104,7 @@
             </div>
         </div>
         <div class="local_section">
-            <p>Entrenar</p>
+            <p class="subtitulo">Entrenar</p>
             <div class="flex_column flex_1 flex_gap_5">
                 <div class="flex_column">
                     <label>Shuffle:</label>

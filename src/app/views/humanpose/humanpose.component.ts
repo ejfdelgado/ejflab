@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ElementItemData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
+import { ElementItemData } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';

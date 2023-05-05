@@ -1,11 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-
-export interface ElementItemData {
-  url: string;
-  name: string;
-  date?: number;
-  checked?: boolean;
-}
+import { ElementItemData } from '../scrollfile/scrollfile.component';
 
 @Component({
   selector: 'app-scrollfiles',
@@ -30,16 +24,4 @@ export class ScrollfilesComponent implements OnInit {
 
   noneFun(): void {}
 
-  toggleCheck(ele: ElementItemData): void {
-    if (ele.checked === true) {
-      ele.checked = false;
-    } else {
-      ele.checked = true;
-    }
-  }
-
-  downloadFile(ele: ElementItemData): void {
-    // Download file
-    console.log('TODO download');
-  }
 }

@@ -23,6 +23,7 @@ import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.compo
 import { TensorflowComponent } from './components/tensorflow/tensorflow.component';
 import { ThreejsComponent } from './components/threejs/threejs.component';
 import { PrejsonComponent } from './components/prejson/prejson.component';
+import { ScrollfileComponent } from './components/scrollfile/scrollfile.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { PrejsonComponent } from './components/prejson/prejson.component';
     TensorflowComponent,
     ThreejsComponent,
     PrejsonComponent,
+    ScrollfileComponent,
   ],
   imports: [
     FontAwesomeModule,

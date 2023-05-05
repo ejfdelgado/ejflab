@@ -1,0 +1,26 @@
+:host {
+  background-color: peru;
+  width: 100%;
+  padding: 3px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
+
+.nombre {
+  flex: 1;
+  word-break: break-all;
+}
+
+:host:hover {
+  background-color: rgb(255, 174, 94);
+}
+
+button {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-color: transparent;
+}

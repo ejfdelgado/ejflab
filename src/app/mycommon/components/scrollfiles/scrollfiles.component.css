@@ -25,31 +25,6 @@
   padding-right: 6px;
 }
 
-.scroll_item {
-  background-color: peru;
-  width: 100%;
-  padding: 3px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 5px;
-}
-
-.scroll_item .nombre {
-  flex: 1;
-  word-break: break-all;
-}
-
-.scroll_item:hover {
-  background-color: rgb(255, 174, 94);
-}
-
-.scroll_item button {
-  border: 0;
-  padding: 0;
-}
-
 .footer {
   display: flex;
   flex-direction: row;

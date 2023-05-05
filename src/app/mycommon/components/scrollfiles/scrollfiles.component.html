@@ -1,22 +1,8 @@
 <div class="parent_1">
     <div class="parent_scroll_container">
         <div class="scroll_container">
-            <div *ngFor="let elemento of archivos" class="scroll_item noselect">
-                <mat-icon>description</mat-icon>
-                <span class="noselect nombre">{{ elemento.name }}</span>
-                <button (click)="openFile.emit(elemento)" mat-menu-item>
-                    <mat-icon>edit</mat-icon>
-                </button>
-                <button (click)="toggleCheck(elemento)" mat-menu-item>
-                    <mat-icon>{{ elemento.checked ? "check_circle" : "radio_button_unchecked" }}</mat-icon>
-                </button>
-                <button (click)="downloadFile(elemento)" mat-menu-item>
-                    <mat-icon>download</mat-icon>
-                </button>
-                <button (click)="deleteFile.emit(elemento)" mat-menu-item>
-                    <mat-icon>delete_forever</mat-icon>
-                </button>
-            </div>
+            <app-scrollfile (deleteFile)="deleteFile.emit($event)" (openFile)="openFile.emit($event)"
+                *ngFor="let elemento of archivos" [elemento]="elemento"></app-scrollfile>
         </div>
     </div>
     <div class="footer">

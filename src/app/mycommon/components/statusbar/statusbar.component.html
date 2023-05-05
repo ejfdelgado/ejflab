@@ -27,14 +27,14 @@
                     <mat-icon>{{ item.icon }}</mat-icon>
                     <span>{{ item.label }}</span>
                 </button>
-                <button mat-menu-item (click)="goToHome()">
+                <!--button mat-menu-item (click)="goToHome()">
                     <mat-icon>close</mat-icon>
                     <span>Salir</span>
                 </button>
                 <button mat-menu-item (click)="logoutAndGoToHome()">
                     <mat-icon>logout</mat-icon>
                     <span>Salir y cerrar sesión</span>
-                </button>
+                </button-->
             </mat-menu>
 
         </div>
@@ -47,6 +47,10 @@
             </div>
         </div>
         <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="login()">
+                <mat-icon>login</mat-icon>
+                <span>Iniciar sesión</span>
+            </button>
             <button mat-menu-item (click)="editUser()">
                 <mat-icon>edit</mat-icon>
                 <span>Editar usuario</span>
