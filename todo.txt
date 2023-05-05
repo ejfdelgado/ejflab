@@ -7,6 +7,7 @@ ng generate module views/humanpose --route humanpose --module app.module
 ng generate component components/payupopup
 ng generate component mycommon/components/scrollfile
 ng generate pipe mycommon/pipes/fechaCard
+ng generate pipe mycommon/pipes/sortByName
 
 Hacer un validador de formulario de backend y front end con base en:
 https://angular-training-guide.rangle.io/forms/reactive-forms/reactive-forms_custom_validation

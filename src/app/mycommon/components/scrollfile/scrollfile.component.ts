@@ -26,6 +26,8 @@ export class ScrollfileComponent implements OnInit {
   deleteFile: EventEmitter<ElementItemData> = new EventEmitter();
   @Output('openFile')
   openFile: EventEmitter<ElementItemData> = new EventEmitter();
+  @Output('onBlur')
+  onBlur: EventEmitter<any> = new EventEmitter();
 
   constructor() {}
 

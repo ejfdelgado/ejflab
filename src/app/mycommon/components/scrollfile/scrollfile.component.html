@@ -1,5 +1,5 @@
 <mat-icon>description</mat-icon>
-<span class="noselect nombre">{{ elemento.name }}</span>
+<span class="noselect nombre" [(ngModel)]="elemento.name" contenteditable (blur)="onBlur.emit($event)"></span>
 <button (click)="openFile.emit(elemento)">
     <mat-icon>edit</mat-icon>
 </button>

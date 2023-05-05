@@ -24,6 +24,7 @@ import { TensorflowComponent } from './components/tensorflow/tensorflow.componen
 import { ThreejsComponent } from './components/threejs/threejs.component';
 import { PrejsonComponent } from './components/prejson/prejson.component';
 import { ScrollfileComponent } from './components/scrollfile/scrollfile.component';
+import { SortByNamePipe } from './pipes/sort-by-name.pipe';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { ScrollfileComponent } from './components/scrollfile/scrollfile.componen
     ThreejsComponent,
     PrejsonComponent,
     ScrollfileComponent,
+    SortByNamePipe,
   ],
   imports: [
     FontAwesomeModule,

@@ -24,4 +24,12 @@ export class ScrollfilesComponent implements OnInit {
 
   noneFun(): void {}
 
+  onBlurContentEditable() {
+    this.sortByName();
+  }
+  sortByName() {
+    return this.archivos.sort((a, b) => {
+      return ('' + a.name).localeCompare(b.name);
+    });
+  }
 }
