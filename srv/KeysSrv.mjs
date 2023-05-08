@@ -90,7 +90,7 @@ export class KeysSrv {
     static async cifrarWeb(req, res, next) {
         const key = General.readParam(req, "key");
         const payload = General.readParam(req, "payload");
-        const resultado = ModuloDatoSeguro.cifrar(payload, key);
+        const resultado = ModuloDatoSeguroBack.cifrarSimple(payload, key);
         console.log(resultado);
         res.status(200).send(resultado);
     }
@@ -98,7 +98,7 @@ export class KeysSrv {
     static async decifrarWeb(req, res, next) {
         const key = General.readParam(req, "key");
         const payload = General.readParam(req, "payload");
-        const resultado = ModuloDatoSeguro.decifrar(payload, key);
+        const resultado = ModuloDatoSeguroBack.decifrarSimple(payload, key);
         res.status(200).send(resultado);
     }
 }

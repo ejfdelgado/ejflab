@@ -5,7 +5,11 @@ import { General } from "./common/General.mjs";
 export class MyPdf {
     static async localRender(template) {
         const source = fs.readFileSync(`./src/assets/templates/pdf/${template}`, { encoding: "utf8" });
-        const browser = await puppeteer.launch({ headless: 'new' });
+        const browser = await puppeteer.launch({
+            //args: ['--no-sandbox', '--disable-setuid-sandbox'],
+            args: ['--no-sandbox']
+            //headless: 'new'
+        });
         const page = await browser.newPage();
         await page.setContent(source);
         await page.emulateMediaType('print');

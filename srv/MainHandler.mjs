@@ -6,6 +6,7 @@ import { MainReplacer } from "./MainReplacer.mjs";
 import { MyRoutes } from "../srcJs/MyRoutes.js";
 import { PageSrv } from "./PageSrv.mjs";
 import { ModuloDatoSeguro } from "../srcJs/ModuloDatoSeguro.js";
+import { ModuloDatoSeguroBack } from "../srcJs/ModuloDatoSeguroBack.mjs";
 
 export class MainHandler {
     static LOCAL_FOLDER = path.resolve() + "/dist/bundle";
@@ -30,7 +31,7 @@ export class MainHandler {
             // Acá se debe inyectar el password y el json se lee de local y se cifra
             replaces.time = "" + new Date().getTime();
             replaces.pass = ModuloDatoSeguro.generateKey();
-            replaces.firebase = ModuloDatoSeguro.cifrar(JSON.parse(firebaseJson), replaces.pass);
+            replaces.firebase = ModuloDatoSeguroBack.cifrarSimple(JSON.parse(firebaseJson), replaces.pass);
             MainReplacer.replace(rta, replaces, theUrl);
         }
         MainHandler.makeResponse(rta, req, res);
