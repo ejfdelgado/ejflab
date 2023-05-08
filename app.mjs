@@ -16,6 +16,7 @@ import { KeysSrv } from "./srv/KeysSrv.mjs";
 import { Usuario } from "./srv/common/Usuario.mjs";
 import { SecretsSrv } from "./srv/SecretsSrv.mjs";
 import { PayUSrv } from "./srv/PayUSrv.mjs";
+import { MyPdf } from "./srv/MyPdf.mjs";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -31,6 +32,8 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
+app.get('/srv/pdf/render', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyPdf.render)]);
+
 app.get('/srv/payu/ping', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(PayUSrv.ping)]);
 app.get('/srv/payu/paymentmethods', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(PayUSrv.paymentmethods)]);
 app.get('/srv/payu/psebanks', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(PayUSrv.psebanks)]);
