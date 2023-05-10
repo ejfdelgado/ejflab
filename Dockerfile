@@ -14,6 +14,7 @@ COPY --chown=node:node . .
 
 ENV PORT=8080
 ENV ENV=pro
+ENV GOOGLE_APPLICATION_CREDENTIALS=/home/node/app/llaves/ejfexperiments-c2ef2a890ca5.json
 
 EXPOSE 8080
 
