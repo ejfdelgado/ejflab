@@ -11,3 +11,18 @@ gcloud projects get-iam-policy ejfexperiments
 export ENV=pro
 
 gcloud auth login
+
+sudo docker build --platform linux/x86_64 -t ejfdelgado/mainapp:v1.0 .
+Successfully tagged ejfdelgado/mainapp:v1.0
+
+sudo docker images
+
+sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 ejfdelgado/mainapp:v1.0
+
+sudo docker ps
+
+sudo docker kill 7bfe7bcc214d
+
+sudo docker container prune 
+
+sudo docker login -u your_dockerhub_username 
