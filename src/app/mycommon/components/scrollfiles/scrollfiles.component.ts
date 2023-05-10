@@ -11,6 +11,12 @@ import {
   ElementPairItemData,
 } from '../scrollfile/scrollfile.component';
 
+export interface ScrollFilesActionData {
+  callback: Function;
+  label: string;
+  icon: string;
+}
+
 @Component({
   selector: 'app-scrollfiles',
   templateUrl: './scrollfiles.component.html',
@@ -19,14 +25,12 @@ import {
 export class ScrollfilesComponent implements OnInit {
   @Input()
   archivos: { [key: string]: ElementItemData };
-  @Output('uploadFile')
-  uploadFile: EventEmitter<void> = new EventEmitter();
+  @Input()
+  actions: Array<ScrollFilesActionData>;
   @Output('deleteFile')
   deleteFile: EventEmitter<ElementPairItemData> = new EventEmitter();
   @Output('openFile')
   openFile: EventEmitter<ElementPairItemData> = new EventEmitter();
-  @Output('saveAll')
-  saveAll: EventEmitter<void> = new EventEmitter();
 
   constructor(public cdr: ChangeDetectorRef) {}
 

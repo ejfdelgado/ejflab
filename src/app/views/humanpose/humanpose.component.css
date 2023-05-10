@@ -49,6 +49,48 @@
   width: 20vw;
   background-color: olive;
   max-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.body_part .right_part app-scrollfiles {
+  flex: 1;
+}
+
+.tab_scroll_files {
+  display: flex;
+  flex-direction: row;
+}
+
+.tab_scroll_files button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tab_scroll_files button,
+.tab_scroll_files button * {
+  color: #b3b3b3;
+  background-color: #525200;
+}
+
+.tab_scroll_files button.highlight,
+.tab_scroll_files button.highlight * {
+  color: black;
+  background-color: #808000;
+}
+
+button.mat-menu-item {
+  width: unset;
+  text-align: center;
+  line-height: unset;
+  height: unset;
+}
+
+button.mat-menu-item .mat-icon {
+  margin-right: unset;
+  vertical-align: unset;
 }
 
 .foot_part {

@@ -8,12 +8,29 @@
             <div class="multiple_views" [ngStyle]="{'display': (currentView == 'tensorflow' ? 'flex' : 'none')}">
                 <app-tensorflow [model]="model.tensorflow"></app-tensorflow>
             </div>
-            <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}" [model]="model.archivos">
+            <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}"
+                [model]="model.archivosCsv">
             </app-prejson>
         </div>
         <div class="right_part">
-            <app-scrollfiles [archivos]="model.archivos" (uploadFile)="uploadFile()" (deleteFile)="deleteFile($event)"
-                (openFile)="openFile($event)" (saveAll)="saveAll()">
+            <div class="tab_scroll_files">
+                <button (click)="showFiles('csv')" class="mat-menu-item"
+                    [ngClass]="{'highlight': listedFiles == 'csv'}">
+                    <mat-icon>table_view</mat-icon>
+                    <span>Archivos CSV</span>
+                </button>
+                <button (click)="showFiles('tensorflow')" class="mat-menu-item"
+                    [ngClass]="{'highlight': listedFiles == 'tensorflow'}">
+                    <mat-icon>psychology</mat-icon>
+                    <span>Redes</span>
+                </button>
+            </div>
+            <app-scrollfiles *ngIf="listedFiles == 'csv'" [archivos]="model.archivosCsv"
+                (openFile)="openCsvFile($event)" (deleteFile)="deleteCsvFile($event)" [actions]="scrollFiles1Actions">
+            </app-scrollfiles>
+            <app-scrollfiles *ngIf="listedFiles == 'tensorflow'" [archivos]="model.archivosTensorflow"
+                (openFile)="openTensorflowFile($event)" (deleteFile)="deleteTensorflowFile($event)"
+                [actions]="scrollFiles2Actions">
             </app-scrollfiles>
         </div>
     </div>

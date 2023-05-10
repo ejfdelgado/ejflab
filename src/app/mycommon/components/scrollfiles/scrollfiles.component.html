@@ -2,18 +2,14 @@
     <div class="parent_scroll_container">
         <div class="scroll_container">
             <app-scrollfile (deleteFile)="deleteFile.emit($event)" (openFile)="openFile.emit($event)"
-            (onBlur)="onBlurContentEditable()"
-                *ngFor="let elemento of archivos | keyvalue | sortByName" [elemento]="elemento"></app-scrollfile>
+                (onBlur)="onBlurContentEditable()" *ngFor="let elemento of archivos | keyvalue | sortByName"
+                [elemento]="elemento"></app-scrollfile>
         </div>
     </div>
     <div class="footer">
-        <button (click)="uploadFile.emit()" mat-menu-item>
-            <mat-icon>upload_file</mat-icon>
-            <span>Subir</span>
-        </button>
-        <button (click)="saveAll.emit()" mat-menu-item>
-            <mat-icon>save</mat-icon>
-            <span>Guardar</span>
+        <button *ngFor="let action of actions" (click)="action.callback()" mat-menu-item>
+            <mat-icon>{{ action.icon }}</mat-icon>
+            <span>{{ action.label }}</span>
         </button>
     </div>
 </div>

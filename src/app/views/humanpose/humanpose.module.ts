@@ -7,10 +7,12 @@ import { MycommonModule } from 'src/app/mycommon/mycommon.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { MatInputModule } from '@angular/material/input';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [HumanposeComponent],
   imports: [
+    MatIconModule,
     CommonModule,
     MycommonModule,
     //FormsModule,

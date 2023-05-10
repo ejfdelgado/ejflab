@@ -3,6 +3,7 @@ import {
   ElementItemData,
   ElementPairItemData,
 } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
+import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';
@@ -11,7 +12,8 @@ import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
 
 export interface HumanPoseLocalModel {
-  archivos: { [key: string]: ElementItemData };
+  archivosCsv: { [key: string]: ElementItemData };
+  archivosTensorflow: { [key: string]: ElementItemData };
   timeline: Array<any>;
   tensorflow: MyTensorflowData;
 }
@@ -25,7 +27,8 @@ export class HumanposeComponent implements OnInit {
   localTitle: string = 'Entrenamiento para calificar movimientos';
   @ViewChild('three_ref') threeRef: ElementRef;
   model: HumanPoseLocalModel = {
-    archivos: {},
+    archivosCsv: {},
+    archivosTensorflow: {},
     timeline: [],
     tensorflow: {
       in: [
@@ -66,7 +69,10 @@ export class HumanposeComponent implements OnInit {
   @ViewChild('myScrollNav')
   scrollNav: ScrollnavComponent;
   public extraOptions: Array<OptionData> = [];
+  public scrollFiles1Actions: Array<ScrollFilesActionData> = [];
+  public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
   public currentView: string = 'tensorflow';
+  public listedFiles: string = 'csv';
 
   constructor(private modalSrv: ModalService) {
     this.extraOptions.push({
@@ -96,6 +102,26 @@ export class HumanposeComponent implements OnInit {
       icon: 'bug_report',
       label: 'Debug',
     });
+    this.scrollFiles1Actions.push({
+      callback: this.uploadCsvFile.bind(this),
+      icon: 'upload_file',
+      label: 'Subir CSV',
+    });
+    this.scrollFiles1Actions.push({
+      callback: this.saveAll.bind(this),
+      icon: 'save',
+      label: 'Guardar',
+    });
+    this.scrollFiles2Actions.push({
+      callback: this.addTensorflowModel.bind(this),
+      icon: 'add',
+      label: 'Agregar',
+    });
+    this.scrollFiles2Actions.push({
+      callback: this.saveAll.bind(this),
+      icon: 'save',
+      label: 'Guardar',
+    });
   }
 
   setView(type: string) {
@@ -103,10 +129,10 @@ export class HumanposeComponent implements OnInit {
   }
 
   async loadData() {
-    this.model.archivos = {};
+    this.model.archivosCsv = {};
   }
 
-  async uploadFile() {
+  async uploadCsvFile() {
     const nuevoArchivo: ElementItemData = {
       name: 'Archivo2.csv',
       url: '/ruta/a/archivo2.csv',
@@ -115,11 +141,24 @@ export class HumanposeComponent implements OnInit {
     };
     const id = await IdGen.nuevo();
     if (typeof id == 'string') {
-      this.model.archivos[id] = nuevoArchivo;
+      this.model.archivosCsv[id] = nuevoArchivo;
     }
   }
 
-  async deleteFile(pair: ElementPairItemData) {
+  async addTensorflowModel() {
+    const nuevoArchivo: ElementItemData = {
+      name: 'Archivo2.csv',
+      url: '/ruta/a/archivo2.csv',
+      date: new Date().getTime(),
+      checked: false,
+    };
+    const id = await IdGen.nuevo();
+    if (typeof id == 'string') {
+      this.model.archivosTensorflow[id] = nuevoArchivo;
+    }
+  }
+
+  async deleteCsvFile(pair: ElementPairItemData) {
     const response = await this.modalSrv.confirm({
       title: '¿Está seguro?',
       txt: 'Esta acción no se puede deshacer.',
@@ -127,8 +166,21 @@ export class HumanposeComponent implements OnInit {
     if (!response) {
       return;
     }
-    if (pair.key in this.model.archivos) {
-      delete this.model.archivos[pair.key];
+    if (pair.key in this.model.archivosCsv) {
+      delete this.model.archivosCsv[pair.key];
+    }
+  }
+
+  async deleteTensorflowFile(pair: ElementPairItemData) {
+    const response = await this.modalSrv.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    if (pair.key in this.model.archivosCsv) {
+      delete this.model.archivosCsv[pair.key];
     }
   }
 
@@ -140,7 +192,7 @@ export class HumanposeComponent implements OnInit {
     console.log(`Ask to show in 3d renderer ${JSON.stringify(row)}`);
   }
 
-  async openFile(oneFile: ElementPairItemData) {
+  async openCsvFile(oneFile: ElementPairItemData) {
     this.model.timeline = [
       { d1: 1, d2: 4, out: 2 },
       { d1: 2, d2: 4, out: 0 },
@@ -151,6 +203,14 @@ export class HumanposeComponent implements OnInit {
       this.scrollNav.computeWindow();
       this.scrollNav.detectChanges();
     }, 0);
+  }
+
+  async openTensorflowFile(oneFile: ElementPairItemData) {
+    console.log('TODO');
+  }
+
+  showFiles(key: string) {
+    this.listedFiles = key;
   }
 
   ngOnInit(): void {}
