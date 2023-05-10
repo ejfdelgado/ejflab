@@ -6,11 +6,11 @@ resource "google_cloud_run_v2_service" "mainapp" {
   template {
     max_instance_request_concurrency = 80
     containers {
-      image = "gcr.io/ejfexperiments/mainapp:v1.0"
+      image = "gcr.io/ejfexperiments/mainapp:v1.1"
       resources {
         limits = {
           # 512Mi
-          memory = "1Gi"
+          memory = "2Gi"
           # '1', '2', '4', and '8' 1000m 250m 500m
           cpu = "1000m"
         }

@@ -47,6 +47,7 @@
     "moment": "^2.29.4",
     "node-rsa": "^1.1.1",
     "phin": "^3.7.0",
+    "puppeteer": "^20.1.2",
     "readable-stream-clone": "0.0.7",
     "sharp": "^0.31.3",
     "socket.io": "^4.5.4",

@@ -12,6 +12,13 @@ ng generate pipe mycommon/pipes/sortByName
 Hacer un validador de formulario de backend y front end con base en:
 https://angular-training-guide.rangle.io/forms/reactive-forms/reactive-forms_custom_validation
 
+9 FAILED_PRECONDITION: The database (default) is disabled for project ejfexperiments. The database has an App Engine app and this app is disabled. Please refer to https://cloud.google.com/firestore/docs/app-engine-requirement to unlink your database from App Engine
+
+curl -X PATCH \
+--header "Authorization: Bearer $(gcloud auth print-access-token)" \
+--header "Content-type: application/json" \
+--data '{"app_engine_integration_mode": "DISABLED"}' \
+"https://firestore.googleapis.com/v1/projects/ejfexperiments/databases/(default)?updateMask=appEngineIntegrationMode"
 
 Requerimientos no funcionales:
 1. Se valida un JSON, cada campo por separado, se debe tener una librería de campos.
