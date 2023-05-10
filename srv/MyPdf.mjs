@@ -2,6 +2,12 @@ import fs from "fs";
 import puppeteer from 'puppeteer';
 import { General } from "./common/General.mjs";
 
+//npm i --save puppeteer
+
+//Recuperar en app.mjs
+//import { MyPdf } from "./srv/MyPdf.mjs";
+//app.get('/srv/pdf/render', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyPdf.render)]);
+
 export class MyPdf {
     static async localRender(template) {
         const source = fs.readFileSync(`./src/assets/templates/pdf/${template}`, { encoding: "utf8" });
