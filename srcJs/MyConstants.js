@@ -63,7 +63,7 @@ class MyConstants {
 }
 
 try {
-    if (location.hostname == "mylocalhost") {
+    if (location.hostname == "localhost") {
         MyConstants.SRV_ROOT = "http://localhost:8081/";
     }
 } catch (err) {

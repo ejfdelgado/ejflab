@@ -3,7 +3,7 @@
         <div class="scroll_container">
             <app-scrollfile (deleteFile)="deleteFile.emit($event)" (openFile)="openFile.emit($event)"
             (onBlur)="onBlurContentEditable()"
-                *ngFor="let elemento of archivos | sortByName" [elemento]="elemento"></app-scrollfile>
+                *ngFor="let elemento of archivos | keyvalue | sortByName" [elemento]="elemento"></app-scrollfile>
         </div>
     </div>
     <div class="footer">

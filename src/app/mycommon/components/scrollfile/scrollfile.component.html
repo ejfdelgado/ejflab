@@ -1,10 +1,10 @@
 <mat-icon>description</mat-icon>
-<span class="noselect nombre" [(ngModel)]="elemento.name" contenteditable (blur)="onBlur.emit($event)"></span>
+<span class="noselect nombre" [(ngModel)]="elemento.value.name" contenteditable (blur)="onBlur.emit($event)"></span>
 <button (click)="openFile.emit(elemento)">
     <mat-icon>edit</mat-icon>
 </button>
 <button (click)="toggleCheck(elemento)">
-    <mat-icon>{{ elemento.checked ? "check_circle" : "radio_button_unchecked" }}</mat-icon>
+    <mat-icon>{{ elemento.value.checked ? "check_circle" : "radio_button_unchecked" }}</mat-icon>
 </button>
 <button (click)="downloadFile(elemento)">
     <mat-icon>download</mat-icon>

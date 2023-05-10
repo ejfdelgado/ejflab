@@ -83,8 +83,7 @@ function myTest() {
         }
     }
 
-
-
+    console.log(MyTemplate.interpolate("Todo salió bien ${person.name}", { person: { name: "Amigo" } }));
 }
 
 myTest();

@@ -11,6 +11,10 @@ const pIfFin = "\\$\\s*\\[\\s*endif\\s*\\]";
 const pElse = "\\$\\s*\\[\\s*else\\s*\\]";
 
 class MyTemplate extends CsvWithFilters {
+    static interpolate(text, model) {
+        const renderer = new MyTemplate();
+        return renderer.render(text, model);
+    }
     // ${algo} -> algo
     static getBiggerOpenClose(text, startPattern, endPattern, openIndex, closeIndex, extractDataFun, elsePattern = null, elseIndex = 4) {
         let startOrEnd;

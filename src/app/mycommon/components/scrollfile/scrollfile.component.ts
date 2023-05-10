@@ -14,6 +14,11 @@ export interface ElementItemData {
   checked?: boolean;
 }
 
+export interface ElementPairItemData {
+  key: string;
+  value: ElementItemData;
+}
+
 @Component({
   selector: 'app-scrollfile',
   templateUrl: './scrollfile.component.html',
@@ -21,11 +26,11 @@ export interface ElementItemData {
 })
 export class ScrollfileComponent implements OnInit {
   @Input('elemento')
-  elemento: ElementItemData;
+  elemento: ElementPairItemData;
   @Output('deleteFile')
-  deleteFile: EventEmitter<ElementItemData> = new EventEmitter();
+  deleteFile: EventEmitter<ElementPairItemData> = new EventEmitter();
   @Output('openFile')
-  openFile: EventEmitter<ElementItemData> = new EventEmitter();
+  openFile: EventEmitter<ElementPairItemData> = new EventEmitter();
   @Output('onBlur')
   onBlur: EventEmitter<any> = new EventEmitter();
 
@@ -33,15 +38,15 @@ export class ScrollfileComponent implements OnInit {
 
   ngOnInit(): void {}
 
-  toggleCheck(ele: ElementItemData): void {
-    if (ele.checked === true) {
-      ele.checked = false;
+  toggleCheck(ele: ElementPairItemData): void {
+    if (ele.value.checked === true) {
+      ele.value.checked = false;
     } else {
-      ele.checked = true;
+      ele.value.checked = true;
     }
   }
 
-  downloadFile(ele: ElementItemData): void {
+  downloadFile(ele: ElementPairItemData): void {
     // Download file
     console.log('TODO download');
   }

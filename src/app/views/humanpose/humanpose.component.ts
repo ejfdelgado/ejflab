@@ -1,13 +1,17 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { ElementItemData } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
+import {
+  ElementItemData,
+  ElementPairItemData,
+} from 'src/app/mycommon/components/scrollfile/scrollfile.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';
 import { ThreejsComponent } from 'src/app/mycommon/components/threejs/threejs.component';
 import { ModalService } from 'src/services/modal.service';
+import { IdGen } from 'srcJs/IdGen';
 
 export interface HumanPoseLocalModel {
-  archivos: Array<ElementItemData>;
+  archivos: { [key: string]: ElementItemData };
   timeline: Array<any>;
   tensorflow: MyTensorflowData;
 }
@@ -21,7 +25,7 @@ export class HumanposeComponent implements OnInit {
   localTitle: string = 'Entrenamiento para calificar movimientos';
   @ViewChild('three_ref') threeRef: ElementRef;
   model: HumanPoseLocalModel = {
-    archivos: [],
+    archivos: {},
     timeline: [],
     tensorflow: {
       in: [
@@ -99,7 +103,7 @@ export class HumanposeComponent implements OnInit {
   }
 
   async loadData() {
-    this.model.archivos = [];
+    this.model.archivos = {};
   }
 
   async uploadFile() {
@@ -109,10 +113,13 @@ export class HumanposeComponent implements OnInit {
       date: new Date().getTime(),
       checked: false,
     };
-    this.model.archivos.push(nuevoArchivo);
+    const id = await IdGen.nuevo();
+    if (typeof id == 'string') {
+      this.model.archivos[id] = nuevoArchivo;
+    }
   }
 
-  async deleteFile(oneFile: ElementItemData) {
+  async deleteFile(pair: ElementPairItemData) {
     const response = await this.modalSrv.confirm({
       title: '¿Está seguro?',
       txt: 'Esta acción no se puede deshacer.',
@@ -120,9 +127,8 @@ export class HumanposeComponent implements OnInit {
     if (!response) {
       return;
     }
-    const index = this.model.archivos.indexOf(oneFile);
-    if (index >= 0) {
-      this.model.archivos.splice(index, 1);
+    if (pair.key in this.model.archivos) {
+      delete this.model.archivos[pair.key];
     }
   }
 
@@ -134,7 +140,7 @@ export class HumanposeComponent implements OnInit {
     console.log(`Ask to show in 3d renderer ${JSON.stringify(row)}`);
   }
 
-  async openFile(oneFile: ElementItemData) {
+  async openFile(oneFile: ElementPairItemData) {
     this.model.timeline = [
       { d1: 1, d2: 4, out: 2 },
       { d1: 2, d2: 4, out: 0 },
