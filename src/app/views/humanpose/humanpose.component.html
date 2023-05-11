@@ -5,8 +5,25 @@
     <div class="body_part">
         <div class="left_part">
             <app-threejs #three_ref [ngStyle]="{'display': (currentView == 'threejs' ? 'flex' : 'none')}"></app-threejs>
-            <div class="multiple_views" [ngStyle]="{'display': (currentView == 'tensorflow' ? 'flex' : 'none')}">
-                <app-tensorflow [model]="model.tensorflow"></app-tensorflow>
+            <div class="multiple_views_parent" [ngStyle]="{'display': (currentView == 'tensorflow' ? 'flex' : 'none')}">
+                <div class="tab_scroll_files">
+                    <button (click)="showTensorflowDetail('configuration')" class="mat-menu-item"
+                        [ngClass]="{'highlight': tensorflowDetail == 'configuration'}">
+                        <mat-icon>settings</mat-icon>
+                        <span>Configuración</span>
+                    </button>
+                    <button (click)="showTensorflowDetail('training')" class="mat-menu-item"
+                        [ngClass]="{'highlight': tensorflowDetail == 'training'}">
+                        <mat-icon>model_training</mat-icon>
+                        <span>Entrenamiento</span>
+                    </button>
+                </div>
+                <div class="multiple_views">
+                    <app-tensorflow *ngIf="tensorflowDetail == 'configuration'" [model]="model.tensorflow">
+                    </app-tensorflow>
+                    <app-tensorflowtrain *ngIf="tensorflowDetail == 'training'">
+                        </app-tensorflowtrain>
+                </div>
             </div>
             <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}"
                 [model]="model.archivosCsv">

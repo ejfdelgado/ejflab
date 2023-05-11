@@ -25,6 +25,7 @@ import { ThreejsComponent } from './components/threejs/threejs.component';
 import { PrejsonComponent } from './components/prejson/prejson.component';
 import { ScrollfileComponent } from './components/scrollfile/scrollfile.component';
 import { SortByNamePipe } from './pipes/sort-by-name.pipe';
+import { TensorflowtrainComponent } from './components/tensorflowtrain/tensorflowtrain.component';
 
 @NgModule({
   declarations: [
@@ -46,6 +47,7 @@ import { SortByNamePipe } from './pipes/sort-by-name.pipe';
     PrejsonComponent,
     ScrollfileComponent,
     SortByNamePipe,
+    TensorflowtrainComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -74,6 +76,7 @@ import { SortByNamePipe } from './pipes/sort-by-name.pipe';
     TensorflowComponent,
     ThreejsComponent,
     PrejsonComponent,
+    TensorflowtrainComponent,
   ],
 })
 export class MycommonModule {}

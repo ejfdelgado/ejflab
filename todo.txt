@@ -2,10 +2,17 @@ src/app/app.component.ts
 https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
+Generar el formulario para entrenamiento:
+- Definir la cantidad de epochs,
+- Un toggle que permita definir si es un reentrenamiento o comenzar desde cero.
+- Un boton que diga entrenar.
+- Integrar la funcionalidad de red neuronal.
+- Agregar la visualización de loose.
+
 ng new proyecto001
 ng generate module views/humanpose --route humanpose --module app.module
 ng generate component components/payupopup
-ng generate component mycommon/components/scrollfile
+ng generate component mycommon/components/tensorflowtrain
 ng generate pipe mycommon/pipes/fechaCard
 ng generate pipe mycommon/pipes/sortByName
 

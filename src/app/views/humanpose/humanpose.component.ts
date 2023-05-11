@@ -73,6 +73,7 @@ export class HumanposeComponent implements OnInit {
   public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
   public currentView: string = 'tensorflow';
   public listedFiles: string = 'csv';
+  public tensorflowDetail: string = 'configuration';
 
   constructor(private modalSrv: ModalService) {
     this.extraOptions.push({
@@ -115,7 +116,7 @@ export class HumanposeComponent implements OnInit {
     this.scrollFiles2Actions.push({
       callback: this.addTensorflowModel.bind(this),
       icon: 'add',
-      label: 'Agregar',
+      label: 'Agregar Red',
     });
     this.scrollFiles2Actions.push({
       callback: this.saveAll.bind(this),
@@ -211,6 +212,10 @@ export class HumanposeComponent implements OnInit {
 
   showFiles(key: string) {
     this.listedFiles = key;
+  }
+
+  showTensorflowDetail(key: string) {
+    this.tensorflowDetail = key;
   }
 
   ngOnInit(): void {}
