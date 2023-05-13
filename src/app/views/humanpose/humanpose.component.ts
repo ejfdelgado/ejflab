@@ -31,6 +31,10 @@ import { WebcamService } from 'src/services/webcam.service';
 import { LoginService } from 'src/services/login.service';
 import { IndicatorService } from 'src/services/indicator.service';
 
+type VIEW_OPTIONS = 'prejson' | 'threejs' | 'tensorflow';
+type FILE_VIEW_OPTIONS = 'csv' | 'tensorflow';
+type TENSORFLOW_DETAIL_VIEW_OPTIONS = 'configuration' | 'training' | 'data';
+
 export interface HumanPoseLocalModel {
   archivosCsv: { [key: string]: ElementItemData };
   archivosTensorflow: { [key: string]: ElementItemData };
@@ -97,9 +101,9 @@ export class HumanposeComponent
   public extraOptions: Array<OptionData> = [];
   public scrollFiles1Actions: Array<ScrollFilesActionData> = [];
   public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
-  public currentView: string = 'prejson'; // prejson threejs tensorflow
-  public listedFiles: string = 'csv'; // csv tensorflow
-  public tensorflowDetail: string = 'configuration'; // configuration training
+  public currentView: VIEW_OPTIONS = 'prejson';
+  public listedFiles: FILE_VIEW_OPTIONS = 'csv';
+  public tensorflowDetail: TENSORFLOW_DETAIL_VIEW_OPTIONS = 'data';
 
   constructor(
     public override route: ActivatedRoute,
@@ -175,7 +179,7 @@ export class HumanposeComponent
     });
   }
 
-  setView(type: string) {
+  setView(type: VIEW_OPTIONS) {
     this.currentView = type;
   }
 
@@ -277,11 +281,11 @@ export class HumanposeComponent
     console.log('TODO');
   }
 
-  showFiles(key: string) {
+  showFiles(key: FILE_VIEW_OPTIONS) {
     this.listedFiles = key;
   }
 
-  showTensorflowDetail(key: string) {
+  showTensorflowDetail(key: TENSORFLOW_DETAIL_VIEW_OPTIONS) {
     this.tensorflowDetail = key;
   }
 

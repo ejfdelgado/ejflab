@@ -95,6 +95,8 @@ button.mat-menu-item {
   text-align: center;
   line-height: unset;
   height: unset;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 button.mat-menu-item .mat-icon {

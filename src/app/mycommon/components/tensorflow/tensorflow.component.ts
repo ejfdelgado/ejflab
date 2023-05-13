@@ -53,6 +53,8 @@ export class TensorflowComponent implements OnInit {
   model: MyTensorflowData;
   @Input('data')
   data: MyTensorflowDataData;
+  @Input('view')
+  view: 'data' | 'neural_network' | 'training' | 'all';
 
   activationOptions: Array<ComboBoxData> = [
     { val: 'relu', txt: 'relu' },
