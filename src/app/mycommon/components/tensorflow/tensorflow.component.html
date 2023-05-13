@@ -1,6 +1,7 @@
 <div class="theparent flex_row">
     <div class="flex_column flex_1 flex_gap_5 margin_5">
-        <div *ngIf="['all', 'data'].indexOf(view) >= 0" class="local_section flex_column">
+        <div *ngIf="data != undefined && data != null && ['all', 'data'].indexOf(view) >= 0"
+            class="local_section flex_column">
             <p class="subtitulo">Datos de entrada</p>
             <div class="flex_row">
                 <div class="flex_column flex_1 flex_gap_5">
@@ -30,7 +31,8 @@
                 </div>
             </div>
         </div>
-        <div *ngIf="['all', 'data'].indexOf(view) >= 0" class="local_section flex_column">
+        <div *ngIf="data != undefined && data != null && ['all', 'data'].indexOf(view) >= 0"
+            class="local_section flex_column">
             <p class="subtitulo">Dato de salida</p>
             <div class="flex_row flex_gap_5">
                 <div class="flex_column flex_1">

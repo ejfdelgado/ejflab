@@ -36,7 +36,7 @@ type FILE_VIEW_OPTIONS = 'csv' | 'tensorflow';
 type TENSORFLOW_DETAIL_VIEW_OPTIONS = 'configuration' | 'training' | 'data';
 
 export interface HumanPoseLocalModel {
-  archivosCsv: { [key: string]: ElementItemData };
+  //archivosCsv: { [key: string]: ElementItemData };
   archivosTensorflow: { [key: string]: ElementItemData };
   timeline: Array<any>;
   data: MyTensorflowDataData;
@@ -55,7 +55,6 @@ export class HumanposeComponent
   localTitle: string = 'Entrenamiento para calificar movimientos';
   @ViewChild('three_ref') threeRef: ElementRef;
   model: HumanPoseLocalModel = {
-    archivosCsv: {},
     archivosTensorflow: {},
     timeline: [],
     data: {
@@ -101,8 +100,8 @@ export class HumanposeComponent
   public extraOptions: Array<OptionData> = [];
   public scrollFiles1Actions: Array<ScrollFilesActionData> = [];
   public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
-  public currentView: VIEW_OPTIONS = 'prejson';
   public listedFiles: FILE_VIEW_OPTIONS = 'csv';
+  public currentView: VIEW_OPTIONS = 'tensorflow';
   public tensorflowDetail: TENSORFLOW_DETAIL_VIEW_OPTIONS = 'data';
 
   constructor(
@@ -179,6 +178,23 @@ export class HumanposeComponent
     });
   }
 
+  override onTupleReadDone() {
+    if (!this.tupleModel.data) {
+      this.tupleModel.data = {
+        in: [],
+        out: {
+          column: '',
+          min: 0,
+          max: 1,
+          ngroups: 0,
+        },
+      };
+    }
+    super.onTupleReadDone();
+  }
+
+  override onTupleWriteDone() {}
+
   setView(type: VIEW_OPTIONS) {
     this.currentView = type;
   }
@@ -251,8 +267,8 @@ export class HumanposeComponent
     if (!response) {
       return;
     }
-    if (pair.key in this.model.archivosCsv) {
-      delete this.model.archivosCsv[pair.key];
+    if (pair.key in this.model.archivosTensorflow) {
+      delete this.model.archivosTensorflow[pair.key];
     }
   }
 

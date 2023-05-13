@@ -25,13 +25,13 @@
                 </div>
                 <div class="multiple_views">
                     <app-tensorflow *ngIf="tensorflowDetail == 'configuration'" [view]="'neural_network'"
-                        [model]="model.tensorflow" [data]="model.data">
+                        [model]="model.tensorflow" [data]="tupleModel?.data">
                     </app-tensorflow>
                     <app-tensorflow *ngIf="tensorflowDetail == 'data'" [view]="'data'" [model]="model.tensorflow"
-                        [data]="model.data">
+                        [data]="tupleModel?.data">
                     </app-tensorflow>
                     <app-tensorflow *ngIf="tensorflowDetail == 'training'" [view]="'training'"
-                        [model]="model.tensorflow" [data]="model.data">
+                        [model]="model.tensorflow" [data]="tupleModel?.data">
                     </app-tensorflow>
                 </div>
             </div>

@@ -52,7 +52,7 @@ export class TensorflowComponent implements OnInit {
   @Input('model')
   model: MyTensorflowData;
   @Input('data')
-  data: MyTensorflowDataData;
+  data: MyTensorflowDataData | null | undefined;
   @Input('view')
   view: 'data' | 'neural_network' | 'training' | 'all';
 
@@ -88,6 +88,9 @@ export class TensorflowComponent implements OnInit {
   constructor(private modalSrv: ModalService) {}
 
   async removeColumnDataIn(el: MyTensorflowInData) {
+    if (!this.data) {
+      return;
+    }
     const response = await this.modalSrv.confirm({
       title: '¿Está seguro?',
       txt: 'Esta acción no se puede deshacer.',
@@ -102,6 +105,9 @@ export class TensorflowComponent implements OnInit {
   }
 
   addDataIn() {
+    if (!this.data) {
+      return;
+    }
     this.data.in.push({
       column: '',
       min: 0,
