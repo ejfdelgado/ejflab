@@ -12,6 +12,7 @@ export interface ElementItemData {
   name: string;
   date?: number;
   checked?: boolean;
+  otherData?: any;
 }
 
 export interface ElementPairItemData {

@@ -37,10 +37,10 @@ type TENSORFLOW_DETAIL_VIEW_OPTIONS = 'configuration' | 'training' | 'data';
 
 export interface HumanPoseLocalModel {
   //archivosCsv: { [key: string]: ElementItemData };
-  archivosTensorflow: { [key: string]: ElementItemData };
+  //data: MyTensorflowDataData;
+  //tensorflow: MyTensorflowData | null;
+  //archivosTensorflow: { [key: string]: ElementItemData };
   timeline: Array<any>;
-  data: MyTensorflowDataData;
-  tensorflow: MyTensorflowData;
 }
 
 @Component({
@@ -54,46 +54,9 @@ export class HumanposeComponent
 {
   localTitle: string = 'Entrenamiento para calificar movimientos';
   @ViewChild('three_ref') threeRef: ElementRef;
+  neuralNetworkModel: MyTensorflowData | null = null;
   model: HumanPoseLocalModel = {
-    archivosTensorflow: {},
     timeline: [],
-    data: {
-      in: [
-        {
-          column: 'pink',
-          min: 0,
-          max: 1,
-        },
-        {
-          column: 'small',
-          min: 0,
-          max: 1,
-        },
-      ],
-      out: {
-        column: 'quality',
-        min: 0,
-        max: 1,
-        ngroups: 2,
-      },
-    },
-    tensorflow: {
-      layers: [
-        {
-          units: 3,
-          activation: 'relu',
-        },
-      ],
-      compile: {
-        loss: 'binaryCrossentropy',
-        metrics: ['accuracy'],
-      },
-      fit: {
-        shuffle: true,
-        epochs: 20,
-        validationSplit: 0.1,
-      },
-    },
   };
   @ViewChild('myScrollNav')
   scrollNav: ScrollnavComponent;
@@ -193,7 +156,9 @@ export class HumanposeComponent
     super.onTupleReadDone();
   }
 
-  override onTupleWriteDone() {}
+  override onTupleWriteDone() {
+    console.log('Writed OK!');
+  }
 
   setView(type: VIEW_OPTIONS) {
     this.currentView = type;
@@ -233,15 +198,31 @@ export class HumanposeComponent
   }
 
   async addTensorflowModel() {
+    const id = await IdGen.nuevo();
+    if (!('archivosTensorflow' in this.tupleModel)) {
+      this.tupleModel.archivosTensorflow = {};
+    }
     const nuevoArchivo: ElementItemData = {
-      name: 'Archivo2.csv',
-      url: '/ruta/a/archivo2.csv',
+      name: `Red ${id}`,
+      url: '',
       date: new Date().getTime(),
       checked: false,
+      otherData: {
+        layers: [],
+        compile: {
+          loss: 'binaryCrossentropy',
+          metrics: ['accuracy'],
+        },
+        fit: {
+          shuffle: true,
+          epochs: 20,
+          validationSplit: 0.1,
+        },
+      },
     };
-    const id = await IdGen.nuevo();
+
     if (typeof id == 'string') {
-      this.model.archivosTensorflow[id] = nuevoArchivo;
+      this.tupleModel.archivosTensorflow[id] = nuevoArchivo;
     }
   }
 
@@ -267,8 +248,8 @@ export class HumanposeComponent
     if (!response) {
       return;
     }
-    if (pair.key in this.model.archivosTensorflow) {
-      delete this.model.archivosTensorflow[pair.key];
+    if (pair.key in this.tupleModel.archivosTensorflow) {
+      delete this.tupleModel.archivosTensorflow[pair.key];
     }
   }
 
@@ -294,7 +275,8 @@ export class HumanposeComponent
   }
 
   async openTensorflowFile(oneFile: ElementPairItemData) {
-    console.log('TODO');
+    const otherData = oneFile.value.otherData as MyTensorflowData;
+    this.neuralNetworkModel = otherData;
   }
 
   showFiles(key: FILE_VIEW_OPTIONS) {

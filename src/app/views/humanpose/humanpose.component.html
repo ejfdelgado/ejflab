@@ -24,14 +24,13 @@
                     </button>
                 </div>
                 <div class="multiple_views">
-                    <app-tensorflow *ngIf="tensorflowDetail == 'configuration'" [view]="'neural_network'"
-                        [model]="model.tensorflow" [data]="tupleModel?.data">
+                    <app-tensorflow *ngIf="tensorflowDetail == 'configuration' && neuralNetworkModel"
+                        [view]="'neural_network'" [model]="neuralNetworkModel" [data]="tupleModel?.data">
                     </app-tensorflow>
-                    <app-tensorflow *ngIf="tensorflowDetail == 'data'" [view]="'data'" [model]="model.tensorflow"
-                        [data]="tupleModel?.data">
+                    <app-tensorflow *ngIf="tensorflowDetail == 'data'" [view]="'data'" [data]="tupleModel?.data">
                     </app-tensorflow>
-                    <app-tensorflow *ngIf="tensorflowDetail == 'training'" [view]="'training'"
-                        [model]="model.tensorflow" [data]="tupleModel?.data">
+                    <app-tensorflow *ngIf="tensorflowDetail == 'training' && neuralNetworkModel" [view]="'training'"
+                        [model]="neuralNetworkModel" [data]="tupleModel?.data">
                     </app-tensorflow>
                 </div>
             </div>
@@ -54,7 +53,7 @@
             <app-scrollfiles *ngIf="listedFiles == 'csv'" [archivos]="tupleModel?.archivosCsv"
                 (openFile)="openCsvFile($event)" (deleteFile)="deleteCsvFile($event)" [actions]="scrollFiles1Actions">
             </app-scrollfiles>
-            <app-scrollfiles *ngIf="listedFiles == 'tensorflow'" [archivos]="model.archivosTensorflow"
+            <app-scrollfiles *ngIf="listedFiles == 'tensorflow'" [archivos]="tupleModel?.archivosTensorflow"
                 (openFile)="openTensorflowFile($event)" (deleteFile)="deleteTensorflowFile($event)"
                 [actions]="scrollFiles2Actions">
             </app-scrollfiles>
