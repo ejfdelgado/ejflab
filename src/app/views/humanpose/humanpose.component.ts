@@ -52,7 +52,6 @@ export class HumanposeComponent
   extends BaseComponent
   implements OnInit, OnDestroy
 {
-  localTitle: string = 'Entrenamiento para calificar movimientos';
   @ViewChild('three_ref') threeRef: ElementRef;
   neuralNetworkModel: MyTensorflowData | null = null;
   model: HumanPoseLocalModel = {
@@ -61,6 +60,8 @@ export class HumanposeComponent
   @ViewChild('myScrollNav')
   scrollNav: ScrollnavComponent;
   public extraOptions: Array<OptionData> = [];
+  scrollFiles1Selected: ElementPairItemData | null = null;
+  scrollFiles2Selected: ElementPairItemData | null = null;
   public scrollFiles1Actions: Array<ScrollFilesActionData> = [];
   public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
   public listedFiles: FILE_VIEW_OPTIONS = 'csv';
@@ -139,6 +140,22 @@ export class HumanposeComponent
       icon: 'save',
       label: 'Guardar',
     });
+  }
+
+  getLocalTitle(): string {
+    let myTitle = '';
+    if (this.scrollFiles1Selected != null) {
+      myTitle += this.scrollFiles1Selected.value.name;
+    } else {
+      myTitle += 'Archivo de Datos';
+    }
+    myTitle += ' / ';
+    if (this.scrollFiles2Selected != null) {
+      myTitle += this.scrollFiles2Selected.value.name;
+    } else {
+      myTitle += 'Red Neuronal';
+    }
+    return myTitle;
   }
 
   override onTupleReadDone() {
@@ -242,13 +259,16 @@ export class HumanposeComponent
 
   async deleteTensorflowFile(pair: ElementPairItemData) {
     const response = await this.modalService.confirm({
-      title: '¿Está seguro?',
+      title: `¿Seguro que desea borrar ${pair.value.name}?`,
       txt: 'Esta acción no se puede deshacer.',
     });
     if (!response) {
       return;
     }
     if (pair.key in this.tupleModel.archivosTensorflow) {
+      if (pair.value.url != '') {
+        await this.fileService.delete(pair.value.url);
+      }
       delete this.tupleModel.archivosTensorflow[pair.key];
     }
   }
@@ -262,6 +282,7 @@ export class HumanposeComponent
   }
 
   async openCsvFile(oneFile: ElementPairItemData) {
+    this.scrollFiles1Selected = oneFile;
     this.model.timeline = [
       { d1: 1, d2: 4, out: 2 },
       { d1: 2, d2: 4, out: 0 },
@@ -275,6 +296,7 @@ export class HumanposeComponent
   }
 
   async openTensorflowFile(oneFile: ElementPairItemData) {
+    this.scrollFiles2Selected = oneFile;
     const otherData = oneFile.value.otherData as MyTensorflowData;
     this.neuralNetworkModel = otherData;
   }
