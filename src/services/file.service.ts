@@ -1,6 +1,8 @@
+import { HttpClient } from '@angular/common/http';
 import { EventEmitter, Injectable } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { catchError, of, Subscription } from 'rxjs';
 import { HttpOptionsData } from 'src/interfaces/login-data.interface';
+import { MyConstants } from 'srcJs/MyConstants';
 import { MyRoutes } from 'srcJs/MyRoutes';
 import { HttpService } from './http.service';
 
@@ -50,7 +52,7 @@ export class FileService {
   evento: EventEmitter<FileRequestData>;
   eventResponse: EventEmitter<FileResponseData>;
   callback: Function | null = null;
-  constructor(private httpSrv: HttpService) {
+  constructor(private httpSrv: HttpService, private httpClient: HttpClient) {
     this.evento = new EventEmitter<FileRequestData>();
     this.eventResponse = new EventEmitter<FileResponseData>();
 
@@ -77,6 +79,41 @@ export class FileService {
     // Connect to other callback
     this.callback = callback;
     this.evento.emit(request);
+  }
+
+  // FileService.getCompleteUrl
+  static getCompleteUrl(url: string | null) {
+    if (url == null) {
+      return null;
+    }
+    let theUrl = url;
+    if (typeof MyConstants.SRV_ROOT == 'string') {
+      theUrl = MyConstants.SRV_ROOT + url.replace(/^\/+/, '');
+    }
+    if (theUrl.startsWith('/')) {
+      theUrl = `${location.origin}${theUrl}`;
+    }
+    return theUrl;
+  }
+
+  async readPlainText(url: string) {
+    const theUrl = FileService.getCompleteUrl(url);
+    if (theUrl == null) {
+      throw new Error('Can not read null url');
+    }
+    const respuesta = await new Promise<string>((resolve, reject) => {
+      this.httpClient
+        .get(theUrl, { responseType: 'text' })
+        .pipe(
+          catchError((error) => {
+            return of('');
+          })
+        )
+        .subscribe((data) => {
+          resolve(data);
+        });
+    });
+    return respuesta;
   }
 
   async delete(url: string): Promise<void> {

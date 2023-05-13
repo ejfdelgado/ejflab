@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import {
   ChangeDetectorRef,
   Component,
@@ -90,6 +91,13 @@ export class BaseComponent implements OnInit, OnDestroy {
         }
       }
     }
+  }
+
+  public async saveTextFile(options: FileSaveData, suffix: string = '') {
+    options.base64 =
+      'data:text/plain;base64,' +
+      Buffer.from(options.base64, 'utf8').toString('base64');
+    return this.saveFile(options);
   }
 
   public async saveFile(options: FileSaveData, suffix: string = '') {

@@ -361,20 +361,6 @@ export class AudioeditorComponent implements OnInit {
     }
   }
 
-  getCompleteUrl(url: string | null) {
-    if (url == null) {
-      return null;
-    }
-    let theUrl = url;
-    if (typeof this.options.useRoot == 'string') {
-      theUrl = this.options.useRoot + url.replace(/^\/+/, '');
-    }
-    if (theUrl.startsWith('/')) {
-      theUrl = `${location.origin}${theUrl}`;
-    }
-    return theUrl;
-  }
-
   async processFile(responseData: FileResponseData) {
     const base64Response = await fetch(responseData.base64);
     const blob = await base64Response.blob();

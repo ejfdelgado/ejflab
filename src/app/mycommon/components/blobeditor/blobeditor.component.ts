@@ -37,32 +37,18 @@ export class BlobeditorComponent implements OnInit {
   ngOnInit(): void {}
 
   async download() {
-    let theUrl = this.getCompleteUrl(this.url + '&download=1');
+    const theUrl = FileService.getCompleteUrl(this.url + '&download=1');
     if (theUrl) {
       window.open(theUrl, '_blank');
     }
   }
 
   async share() {
-    let theUrl = this.getCompleteUrl(this.url);
+    const theUrl = FileService.getCompleteUrl(this.url);
     if (theUrl) {
       this.clipboard.copy(theUrl);
       this.modalSrv.alert({ title: 'Ok!', txt: 'Enlace copiado' });
     }
-  }
-
-  getCompleteUrl(url: string | null) {
-    if (url == null) {
-      return null;
-    }
-    let theUrl = url;
-    if (typeof this.options.useRoot == 'string') {
-      theUrl = this.options.useRoot + url.replace(/^\/+/, '');
-    }
-    if (theUrl.startsWith('/')) {
-      theUrl = `${location.origin}${theUrl}`;
-    }
-    return theUrl;
   }
 
   getFileName() {

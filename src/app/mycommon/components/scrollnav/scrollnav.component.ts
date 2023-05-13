@@ -14,7 +14,6 @@ import {
 import { MyColor } from 'srcJs/MyColor.js';
 
 export interface ScrollNavData {
-  columnName: string;
   testName: string;
   elwidth: number;
   startix: number;
@@ -30,8 +29,12 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   public model: ScrollNavData;
   @Input()
   data: Array<any>;
+  @Input()
+  columnName: string;
   @Output('showPose')
   showPose: EventEmitter<any> = new EventEmitter();
+  @Output('markCurrentFileAsChanged')
+  markCurrentFileAsChanged: EventEmitter<any> = new EventEmitter();
   public currentClass: any = {
     number: 0,
     color: '#FFFFFF',
@@ -75,7 +78,6 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   static STEP_COLORS: any = MyColor.getStepColors(32);
   constructor(public cdr: ChangeDetectorRef) {
     this.model = {
-      columnName: 'out',
       testName: 'test',
       elwidth: 5,
       startix: 0,
@@ -181,7 +183,8 @@ export class ScrollnavComponent implements OnInit, AfterViewInit {
   }
 
   assignCurrentClassToStep(selectedStep: any) {
-    selectedStep[this.model.columnName] = this.currentClass.number;
+    selectedStep[this.columnName] = this.currentClass.number;
+    this.markCurrentFileAsChanged.emit();
   }
 
   getRealStep(delta: number) {

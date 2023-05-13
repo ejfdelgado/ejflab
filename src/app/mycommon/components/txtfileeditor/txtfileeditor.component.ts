@@ -124,25 +124,18 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   async download() {
-    let theUrl = this.getCompleteUrl(this.url + '&download=1');
-    window.open(theUrl, '_blank');
+    const theUrl = FileService.getCompleteUrl(this.url + '&download=1');
+    if (theUrl != null) {
+      window.open(theUrl, '_blank');
+    }
   }
 
   async share() {
-    let theUrl = this.getCompleteUrl(this.url);
-    this.clipboard.copy(theUrl);
-    this.modalSrv.alert({ title: 'Ok!', txt: 'Enlace copiado' });
-  }
-
-  getCompleteUrl(url: string) {
-    let theUrl = url;
-    if (typeof this.options.useRoot == 'string') {
-      theUrl = this.options.useRoot + url.replace(/^\/+/, '');
+    const theUrl = FileService.getCompleteUrl(this.url);
+    if (theUrl != null) {
+      this.clipboard.copy(theUrl);
+      this.modalSrv.alert({ title: 'Ok!', txt: 'Enlace copiado' });
     }
-    if (theUrl.startsWith('/')) {
-      theUrl = `${location.origin}${theUrl}`;
-    }
-    return theUrl;
   }
 
   processFile(textInput: any) {
@@ -160,7 +153,10 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   async leer(url: string) {
-    const theUrl = this.getCompleteUrl(url);
+    const theUrl = FileService.getCompleteUrl(url);
+    if (theUrl == null) {
+      throw new Error('No puede leer una url nula');
+    }
     const respuesta = await new Promise<string>((resolve, reject) => {
       this.httpClient
         .get(theUrl, { responseType: 'text' })

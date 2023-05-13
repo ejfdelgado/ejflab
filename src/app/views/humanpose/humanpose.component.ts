@@ -30,6 +30,8 @@ import { FileResponseData, FileService } from 'src/services/file.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { LoginService } from 'src/services/login.service';
 import { IndicatorService } from 'src/services/indicator.service';
+import { CsvParser } from 'srcJs/CsvParser';
+import { CsvFormatter } from 'srcJs/CsvFormatter';
 
 type VIEW_OPTIONS = 'prejson' | 'threejs' | 'tensorflow';
 type FILE_VIEW_OPTIONS = 'csv' | 'tensorflow';
@@ -41,6 +43,11 @@ export interface HumanPoseLocalModel {
   //tensorflow: MyTensorflowData | null;
   //archivosTensorflow: { [key: string]: ElementItemData };
   timeline: Array<any>;
+}
+
+export interface TimeLineTracker {
+  loadDate: number;
+  changedDate: number;
 }
 
 @Component({
@@ -64,8 +71,9 @@ export class HumanposeComponent
   scrollFiles2Selected: ElementPairItemData | null = null;
   public scrollFiles1Actions: Array<ScrollFilesActionData> = [];
   public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
+  public theTimeLineTracker: { [key: string]: TimeLineTracker } = {};
   public listedFiles: FILE_VIEW_OPTIONS = 'csv';
-  public currentView: VIEW_OPTIONS = 'tensorflow';
+  public currentView: VIEW_OPTIONS = 'prejson';
   public tensorflowDetail: TENSORFLOW_DETAIL_VIEW_OPTIONS = 'data';
 
   constructor(
@@ -96,12 +104,6 @@ export class HumanposeComponent
     this.extraOptions.push({
       action: () => {
         this.setView('threejs');
-        setTimeout(() => {
-          if (this.threeRef) {
-            console.log(this.threeRef);
-            (this.threeRef as unknown as ThreejsComponent).onResize(null);
-          }
-        }, 0);
       },
       icon: 'directions_run',
       label: 'Espacio 3D',
@@ -179,6 +181,15 @@ export class HumanposeComponent
 
   setView(type: VIEW_OPTIONS) {
     this.currentView = type;
+
+    if (type == 'threejs') {
+      setTimeout(() => {
+        if (this.threeRef) {
+          console.log(this.threeRef);
+          (this.threeRef as unknown as ThreejsComponent).onResize(null);
+        }
+      }, 0);
+    }
   }
 
   async uploadCsvFile() {
@@ -202,7 +213,7 @@ export class HumanposeComponent
         };
         const response = await this.saveFile({
           base64: responseData.base64,
-          fileName: `${id}/${responseData.fileName}`,
+          fileName: `csv/${id}.csv`,
         });
         nuevoArchivo.url = response.key;
         if (!('archivosCsv' in this.tupleModel)) {
@@ -252,8 +263,12 @@ export class HumanposeComponent
       return;
     }
     if (pair.key in this.tupleModel.archivosCsv) {
-      await this.fileService.delete(pair.value.url);
-      delete this.tupleModel.archivosCsv[pair.key];
+      const wait = this.indicator.start();
+      try {
+        await this.fileService.delete(pair.value.url);
+        delete this.tupleModel.archivosCsv[pair.key];
+      } catch (err) {}
+      wait.done();
     }
   }
 
@@ -266,15 +281,71 @@ export class HumanposeComponent
       return;
     }
     if (pair.key in this.tupleModel.archivosTensorflow) {
-      if (pair.value.url != '') {
-        await this.fileService.delete(pair.value.url);
+      const wait = this.indicator.start();
+      try {
+        if (pair.value.url != '') {
+          await this.fileService.delete(pair.value.url);
+        }
+        delete this.tupleModel.archivosTensorflow[pair.key];
+      } catch (err) {}
+      wait.done();
+    }
+  }
+
+  markCurrentFileAsChanged() {
+    if (this.scrollFiles1Selected != null) {
+      const key = this.scrollFiles1Selected.key;
+      const actual = this.theTimeLineTracker[key];
+      if (actual) {
+        const ahora = new Date().getTime();
+        actual.changedDate = ahora;
       }
-      delete this.tupleModel.archivosTensorflow[pair.key];
     }
   }
 
   async saveAll() {
     this.saveTuple();
+    // Recorro el tracker
+    const llaves = Object.keys(this.theTimeLineTracker);
+    for (let i = 0; i < llaves.length; i++) {
+      const llave = llaves[i];
+      const actual = this.theTimeLineTracker[llave];
+      if (actual.changedDate > actual.loadDate) {
+        // Force to write
+        const timeline = this.model.timeline;
+        const myParser = new CsvFormatter();
+        myParser.setSeparator(';');
+        try {
+          const header = this.getHeaderDefinition();
+          const csvContent = myParser.parse(timeline, header, true, '');
+          await this.saveTextFile({
+            base64: csvContent,
+            fileName: `csv/${llave}.csv`,
+          });
+        } catch (err: any) {
+          this.modalService.error(err);
+        }
+      }
+    }
+  }
+
+  getHeaderDefinition(useFilter = ''): string {
+    let header = '';
+    // Itero los inputs
+    const columnasIn = this.tupleModel?.data?.in;
+    if (columnasIn instanceof Array) {
+      for (let j = 0; j < columnasIn.length; j++) {
+        const columnName = columnasIn[j].column;
+        header += columnName + useFilter + ';';
+      }
+      const outData = this.tupleModel?.data?.out;
+      if (outData && outData.column) {
+        // Tomo el output
+        header += outData.column + useFilter;
+        return header;
+      }
+    }
+    throw new Error('Se debe configurar primero las entradas y salida');
   }
 
   async showPose(row: any) {
@@ -282,23 +353,40 @@ export class HumanposeComponent
   }
 
   async openCsvFile(oneFile: ElementPairItemData) {
-    this.scrollFiles1Selected = oneFile;
-    this.model.timeline = [
-      { d1: 1, d2: 4, out: 2 },
-      { d1: 2, d2: 4, out: 0 },
-      { d1: 1, d2: 4, out: 1 },
-    ];
-    setTimeout(() => {
-      this.scrollNav.computeDimensions();
-      this.scrollNav.computeWindow();
-      this.scrollNav.detectChanges();
-    }, 0);
+    const wait = this.indicator.start();
+    try {
+      this.scrollFiles1Selected = oneFile;
+      const url = oneFile.value.url;
+      const dataCsv = await this.fileService.readPlainText(url);
+      const parser = new CsvParser();
+      parser.registerFunction('number', (val: any) => {
+        return parseFloat(val);
+      });
+      const skipFirstLine = true;
+      const header: any = this.getHeaderDefinition('|number');
+      this.model.timeline = parser.parse(dataCsv, header, skipFirstLine);
+      const ahora = new Date().getTime();
+      this.theTimeLineTracker = {}; // Solo puedo tener uno abierto...
+      this.theTimeLineTracker[oneFile.key] = {
+        loadDate: ahora,
+        changedDate: ahora,
+      };
+      this.setView('threejs');
+      setTimeout(() => {
+        this.scrollNav.computeDimensions();
+        this.scrollNav.computeWindow();
+        this.scrollNav.detectChanges();
+      }, 0);
+    } catch (err) {}
+    wait.done();
   }
 
   async openTensorflowFile(oneFile: ElementPairItemData) {
     this.scrollFiles2Selected = oneFile;
     const otherData = oneFile.value.otherData as MyTensorflowData;
     this.neuralNetworkModel = otherData;
+    this.setView('tensorflow');
+    this.tensorflowDetail = 'training';
   }
 
   showFiles(key: FILE_VIEW_OPTIONS) {

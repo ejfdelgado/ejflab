@@ -2,6 +2,17 @@ src/app/app.component.ts
 https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
+- Que guarde el archivo csv después de modificado, detectar cuando fue cambiado
+- Lanzar el entrenamiento de tensorflow
+  - Leer los csv selecionados
+  - Unirlos en un solo paquete
+  - Lanzar
+  - Conectar la visualización
+- poner el logo de la persona y quitarlo automaticamente cuando se desloegea
+- evitar que después de guardar se quede leyendo indefinidamente
+
+https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Fejfexperiments%2Fdatabases%2F(default)&gsessionid=xD7TtVhPZW9y1-kMkuVL0ZWVxf887eNYXZSWUxDj_ec&SID=CGzNDjRtq9M9pyCN5ktbMA&RID=36157&AID=272&zx=31lts6whg5wn&t=1
+
 Generar el formulario para entrenamiento:
 - Definir la cantidad de epochs,
 - Un toggle que permita definir si es un reentrenamiento o comenzar desde cero.

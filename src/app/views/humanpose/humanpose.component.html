@@ -34,7 +34,8 @@
                     </app-tensorflow>
                 </div>
             </div>
-            <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}" [model]="tupleModel">
+            <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}"
+                [model]="{theTimeLineTracker, tupleModel}">
             </app-prejson>
         </div>
         <div class="right_part">
@@ -60,7 +61,9 @@
         </div>
     </div>
     <div class="foot_part">
-        <app-scrollnav #myScrollNav [data]="model.timeline" (showPose)="showPose($event)"></app-scrollnav>
+        <app-scrollnav *ngIf="tupleModel?.data" #myScrollNav [columnName]="tupleModel.data.out.column"
+            [data]="model.timeline" (showPose)="showPose($event)"
+            (markCurrentFileAsChanged)="markCurrentFileAsChanged()"></app-scrollnav>
     </div>
 
 </div>
