@@ -21,6 +21,7 @@ export interface frameVideoRequestData {
 
 export interface FileRequestData {
   type: string; // file, fileimage, photo, fileimage-photo, fileaudio
+  mimeType?: string;
   defaultFileName?: string | null;
 }
 

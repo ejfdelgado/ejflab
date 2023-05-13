@@ -1,4 +1,11 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
 import {
   ElementItemData,
   ElementPairItemData,
@@ -6,15 +13,29 @@ import {
 import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { ScrollnavComponent } from 'src/app/mycommon/components/scrollnav/scrollnav.component';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
-import { MyTensorflowData } from 'src/app/mycommon/components/tensorflow/tensorflow.component';
+import {
+  MyTensorflowData,
+  MyTensorflowDataData,
+} from 'src/app/mycommon/components/tensorflow/tensorflow.component';
 import { ThreejsComponent } from 'src/app/mycommon/components/threejs/threejs.component';
 import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
+import { BaseComponent } from 'src/app/components/base/base.component';
+import { ActivatedRoute } from '@angular/router';
+import { BackendPageService } from 'src/services/backendPage.service';
+import { AuthService } from 'src/services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TupleService } from 'src/services/tuple.service';
+import { FileResponseData, FileService } from 'src/services/file.service';
+import { WebcamService } from 'src/services/webcam.service';
+import { LoginService } from 'src/services/login.service';
+import { IndicatorService } from 'src/services/indicator.service';
 
 export interface HumanPoseLocalModel {
   archivosCsv: { [key: string]: ElementItemData };
   archivosTensorflow: { [key: string]: ElementItemData };
   timeline: Array<any>;
+  data: MyTensorflowDataData;
   tensorflow: MyTensorflowData;
 }
 
@@ -23,14 +44,17 @@ export interface HumanPoseLocalModel {
   templateUrl: './humanpose.component.html',
   styleUrls: ['./humanpose.component.css'],
 })
-export class HumanposeComponent implements OnInit {
+export class HumanposeComponent
+  extends BaseComponent
+  implements OnInit, OnDestroy
+{
   localTitle: string = 'Entrenamiento para calificar movimientos';
   @ViewChild('three_ref') threeRef: ElementRef;
   model: HumanPoseLocalModel = {
     archivosCsv: {},
     archivosTensorflow: {},
     timeline: [],
-    tensorflow: {
+    data: {
       in: [
         {
           column: 'pink',
@@ -49,6 +73,8 @@ export class HumanposeComponent implements OnInit {
         max: 1,
         ngroups: 2,
       },
+    },
+    tensorflow: {
       layers: [
         {
           units: 3,
@@ -71,11 +97,35 @@ export class HumanposeComponent implements OnInit {
   public extraOptions: Array<OptionData> = [];
   public scrollFiles1Actions: Array<ScrollFilesActionData> = [];
   public scrollFiles2Actions: Array<ScrollFilesActionData> = [];
-  public currentView: string = 'tensorflow';
-  public listedFiles: string = 'csv';
-  public tensorflowDetail: string = 'configuration';
+  public currentView: string = 'prejson'; // prejson threejs tensorflow
+  public listedFiles: string = 'csv'; // csv tensorflow
+  public tensorflowDetail: string = 'configuration'; // configuration training
 
-  constructor(private modalSrv: ModalService) {
+  constructor(
+    public override route: ActivatedRoute,
+    public override pageService: BackendPageService,
+    public override cdr: ChangeDetectorRef,
+    public override authService: AuthService,
+    public override dialog: MatDialog,
+    public override tupleService: TupleService,
+    public override fileService: FileService,
+    public override modalService: ModalService,
+    public override webcamService: WebcamService,
+    public loginSrv: LoginService,
+    //
+    private indicator: IndicatorService
+  ) {
+    super(
+      route,
+      pageService,
+      cdr,
+      authService,
+      dialog,
+      tupleService,
+      fileService,
+      modalService,
+      webcamService
+    );
     this.extraOptions.push({
       action: () => {
         this.setView('threejs');
@@ -129,21 +179,37 @@ export class HumanposeComponent implements OnInit {
     this.currentView = type;
   }
 
-  async loadData() {
-    this.model.archivosCsv = {};
+  async uploadCsvFile() {
+    const processFileThis = this.processFile.bind(this);
+    this.fileService.sendRequest(
+      { type: 'file', mimeType: 'text/plain, text/csv' },
+      processFileThis
+    );
   }
 
-  async uploadCsvFile() {
-    const nuevoArchivo: ElementItemData = {
-      name: 'Archivo2.csv',
-      url: '/ruta/a/archivo2.csv',
-      date: new Date().getTime(),
-      checked: false,
-    };
-    const id = await IdGen.nuevo();
-    if (typeof id == 'string') {
-      this.model.archivosCsv[id] = nuevoArchivo;
-    }
+  async processFile(responseData: FileResponseData) {
+    const wait = this.indicator.start();
+    try {
+      const id = await IdGen.nuevo();
+      if (typeof id == 'string') {
+        const nuevoArchivo: ElementItemData = {
+          name: responseData.fileName,
+          date: new Date().getTime(),
+          checked: false,
+          url: '',
+        };
+        const response = await this.saveFile({
+          base64: responseData.base64,
+          fileName: `${id}/${responseData.fileName}`,
+        });
+        nuevoArchivo.url = response.key;
+        if (!('archivosCsv' in this.tupleModel)) {
+          this.tupleModel.archivosCsv = {};
+        }
+        this.tupleModel.archivosCsv[id] = nuevoArchivo;
+      }
+    } catch (err) {}
+    wait.done();
   }
 
   async addTensorflowModel() {
@@ -160,20 +226,21 @@ export class HumanposeComponent implements OnInit {
   }
 
   async deleteCsvFile(pair: ElementPairItemData) {
-    const response = await this.modalSrv.confirm({
-      title: '¿Está seguro?',
+    const response = await this.modalService.confirm({
+      title: `¿Seguro que desea borrar ${pair.value.name}?`,
       txt: 'Esta acción no se puede deshacer.',
     });
     if (!response) {
       return;
     }
-    if (pair.key in this.model.archivosCsv) {
-      delete this.model.archivosCsv[pair.key];
+    if (pair.key in this.tupleModel.archivosCsv) {
+      await this.fileService.delete(pair.value.url);
+      delete this.tupleModel.archivosCsv[pair.key];
     }
   }
 
   async deleteTensorflowFile(pair: ElementPairItemData) {
-    const response = await this.modalSrv.confirm({
+    const response = await this.modalService.confirm({
       title: '¿Está seguro?',
       txt: 'Esta acción no se puede deshacer.',
     });
@@ -186,7 +253,7 @@ export class HumanposeComponent implements OnInit {
   }
 
   async saveAll() {
-    console.log('TODO saveAll');
+    this.saveTuple();
   }
 
   async showPose(row: any) {
@@ -218,5 +285,11 @@ export class HumanposeComponent implements OnInit {
     this.tensorflowDetail = key;
   }
 
-  ngOnInit(): void {}
+  override async ngOnInit() {
+    await super.ngOnInit();
+  }
+
+  override ngOnDestroy() {
+    super.ngOnDestroy();
+  }
 }

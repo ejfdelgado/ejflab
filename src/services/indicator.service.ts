@@ -64,4 +64,10 @@ export class IndicatorService {
     this.notify();
     return wait;
   }
+  wait(promesa: Promise<any>) {
+    const luego = this.start();
+    promesa.finally(() => {
+      luego.done();
+    });
+  }
 }

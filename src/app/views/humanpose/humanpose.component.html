@@ -19,14 +19,15 @@
                     </button>
                 </div>
                 <div class="multiple_views">
-                    <app-tensorflow *ngIf="tensorflowDetail == 'configuration'" [model]="model.tensorflow">
+                    <app-tensorflow *ngIf="tensorflowDetail == 'configuration'" [model]="model.tensorflow"
+                        [data]="model.data">
                     </app-tensorflow>
                     <app-tensorflowtrain *ngIf="tensorflowDetail == 'training'">
-                        </app-tensorflowtrain>
+                    </app-tensorflowtrain>
                 </div>
             </div>
             <app-prejson [ngStyle]="{'display': (currentView == 'prejson' ? 'flex' : 'none')}"
-                [model]="model.archivosCsv">
+                [model]="tupleModel">
             </app-prejson>
         </div>
         <div class="right_part">
@@ -42,7 +43,7 @@
                     <span>Redes</span>
                 </button>
             </div>
-            <app-scrollfiles *ngIf="listedFiles == 'csv'" [archivos]="model.archivosCsv"
+            <app-scrollfiles *ngIf="listedFiles == 'csv'" [archivos]="tupleModel?.archivosCsv"
                 (openFile)="openCsvFile($event)" (deleteFile)="deleteCsvFile($event)" [actions]="scrollFiles1Actions">
             </app-scrollfiles>
             <app-scrollfiles *ngIf="listedFiles == 'tensorflow'" [archivos]="model.archivosTensorflow"

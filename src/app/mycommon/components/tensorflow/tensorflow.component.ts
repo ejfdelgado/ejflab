@@ -27,9 +27,12 @@ export interface MyTensorflowFitData {
   validationSplit: number;
 }
 
-export interface MyTensorflowData {
+export interface MyTensorflowDataData {
   in: Array<MyTensorflowInData>;
   out: MyTensorflowOutData;
+}
+
+export interface MyTensorflowData {
   layers: Array<MyTensorflowLayerData>;
   compile: MyTensorflowCompileData;
   fit: MyTensorflowFitData;
@@ -48,6 +51,8 @@ export interface ComboBoxData {
 export class TensorflowComponent implements OnInit {
   @Input('model')
   model: MyTensorflowData;
+  @Input('data')
+  data: MyTensorflowDataData;
 
   activationOptions: Array<ComboBoxData> = [
     { val: 'relu', txt: 'relu' },
@@ -88,14 +93,14 @@ export class TensorflowComponent implements OnInit {
     if (!response) {
       return;
     }
-    const indice = this.model.in.indexOf(el);
+    const indice = this.data.in.indexOf(el);
     if (indice >= 0) {
-      this.model.in.splice(indice, 1);
+      this.data.in.splice(indice, 1);
     }
   }
 
   addDataIn() {
-    this.model.in.push({
+    this.data.in.push({
       column: '',
       min: 0,
       max: 1,

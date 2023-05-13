@@ -335,5 +335,16 @@ export class CalendarComponent implements OnInit {
       }
       this.dias.push(dia);
     }
+
+    setTimeout(() => {
+      const hoyElArray: HTMLCollectionOf<Element> =
+        document.getElementsByClassName('hoy');
+      const hoyEl = hoyElArray.item(0);
+      hoyEl?.scrollIntoView({
+        behavior: 'smooth', // smooth, instant
+        block: 'center', // One of start, center, end, or nearest
+        inline: 'center', //start, center, end, or nearest
+      });
+    });
   }
 }

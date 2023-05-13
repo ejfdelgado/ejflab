@@ -5,8 +5,12 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class SortByNamePipe implements PipeTransform {
   transform(value: any[]): any[] {
-    return value.sort((a, b) => {
-      return ('' + a.value.name).localeCompare(b.value.name);
-    });
+    if (value instanceof Array) {
+      return value.sort((a, b) => {
+        return ('' + a.value.name).localeCompare(b.value.name);
+      });
+    } else {
+      return [];
+    }
   }
 }

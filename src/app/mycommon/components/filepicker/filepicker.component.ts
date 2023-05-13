@@ -33,6 +33,9 @@ export class FilepickerComponent implements OnInit {
     if (payload.type == 'file') {
       // Open file picker image
       nativeElement.accept = '';
+      if (typeof payload.mimeType == 'string') {
+        nativeElement.accept = payload.mimeType;
+      }
       nativeElement.click();
     } else if (payload.type == 'fileimage') {
       // Open file picker general file
