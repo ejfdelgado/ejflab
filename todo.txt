@@ -2,12 +2,14 @@ src/app/app.component.ts
 https://fonts.google.com/icons <mat-icon>edit</mat-icon>
 https://fontawesome.com/icons?d=gallery
 
-- Que guarde el archivo csv después de modificado, detectar cuando fue cambiado
 - Lanzar el entrenamiento de tensorflow
-  - Leer los csv selecionados
-  - Unirlos en un solo paquete
+  - Leer los csv selecionados, validar los inputs name y output name.
+  - Unirlos en un solo array
   - Lanzar
   - Conectar la visualización
+  - Guardar el modelo generado como archivo de texto plano
+  
+- en la barra inferior de scroll colocar el número del frame donde está, debe ser de input también
 - poner el logo de la persona y quitarlo automaticamente cuando se desloegea
 - evitar que después de guardar se quede leyendo indefinidamente
 

@@ -72,6 +72,14 @@ class MyUtilities {
 
         return tokens;
     }
+    static isHidden(el) {
+        let is = (el.offsetParent === null);
+        if (!is) {
+            const style = window.getComputedStyle(el);
+            return (style.display === 'none');
+        }
+        return is;
+    }
 }
 
 module.exports = {

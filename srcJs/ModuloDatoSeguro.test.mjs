@@ -37,4 +37,5 @@ Al llegar a la cima de la colina, Tío Conejo gritó: \
 Entonces, Tío Conejo se acercó a la piedra más grande y la empujó con todas sus fuerzas. La piedra rodó rápidamente. \
 Tío Tigre estaba tan emocionado que no vio la enorme piedra que lo aplastó, dejándolo adolorido por meses. \
 Tío Conejo huyó saltando de alegría.";
-console.log(ModuloDatoSeguroBack.ofuscarTexto(texto))
+console.log(ModuloDatoSeguroBack.ofuscarTexto(texto, true, true, "/"));
+console.log(ModuloDatoSeguroBack.ofuscarTexto("Un computador no puede procesar una imagen que tenga esto", true, true, "/"))

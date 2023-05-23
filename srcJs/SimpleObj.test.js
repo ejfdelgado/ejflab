@@ -25,6 +25,9 @@ const testGetValue = () => {
             console.log(`case ${i + 1} OK! ${JSON.stringify(myExpected)} equals ${JSON.stringify(response)}`);
         }
     }
+
+    console.log(JSON.stringify(SimpleObj.convertMapToArray({ "0": "Primero", "1": "Segundo" })));
+    console.log(JSON.stringify(SimpleObj.convertMapToArray({ "1": "Primero", "2": "Segundo" })));
 }
 
 testGetValue();

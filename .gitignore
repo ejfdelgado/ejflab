@@ -5,6 +5,7 @@
 /tmp
 /out-tsc
 /bazel-out
+c++/**/build
 
 /srcJs/test
 

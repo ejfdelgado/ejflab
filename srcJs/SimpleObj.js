@@ -1,4 +1,15 @@
 class SimpleObj {
+    static convertMapToArray(myMap) {
+        const keys = Object.keys(myMap);
+        const response = [];
+        for (let i = 0; i < keys.length; i++) {
+            const myKey = parseInt(keys[i]);
+            if (!isNaN(myKey)) {
+                response[myKey] = myMap[keys[i]];
+            }
+        }
+        return response;
+    }
     static getValue(obj, key, myDefault = undefined) {
         let current = obj;
         const canIterate = (some) => {

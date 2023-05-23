@@ -20,7 +20,10 @@ Successfully tagged ejfdelgado/mainapp:v1.0
 
 sudo docker images
 
-sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 ejfdelgado/mainapp:v1.0
+sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 -p 41061:22 ejfdelgado/mainapp:v1.0
+
+ssh root@localhost -p 41061
+//use password root
 
 sudo docker ps
 

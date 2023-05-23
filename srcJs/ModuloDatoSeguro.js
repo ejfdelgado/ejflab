@@ -50,30 +50,90 @@ class ModuloDatoSeguro {
     }
     return undefined;
   }
-  static ofuscarTexto(txt) {
-    const partes = txt.split(/\s+/g);
-    return partes.map((pal, i) => {
-      const tam = pal.length;
-      if (tam <= 3) {
-        return pal;
-      } else {
-        const arreglo = pal.split('');
-        const primer = arreglo.splice(0, 1);
-        const ultimo = arreglo.splice(arreglo.length - 1, 1);
-        const copy = [].concat(arreglo);
-        //const desordenado = [];
-        const desordenado = arreglo.map((character, i) => {
-          let aleatorio = Math.floor(Math.random() * (copy.length - 1));
-          if (copy.length > 1 && aleatorio == i) {
-            aleatorio += 1;
-          }
-          const actual = copy.splice(aleatorio, 1);
-          //desordenado.push(actual);
-          return actual;
-        });
-        return primer + desordenado.join('') + ultimo;
+  static ofuscarTexto(txt, switchOrder = true, switchLettersWithNumbers = true, useSpace = " ") {
+    let salida = "";
+    const REMAPPING = {
+      "i": "1",
+      "I": "1",
+      "a": "4",
+      "A": "4",
+      "e": "3",
+      "E": "3",
+      "s": "5",
+      "S": "5",
+      "t": "7",
+      "T": "7",
+      "o": "0",
+      "O": "0",
+    };
+    const remapLet = (some) => {
+      if (!switchLettersWithNumbers) {
+        return some;
       }
-    }).join(" ");
+      const nueva = REMAPPING[some];
+      if (!nueva) {
+        return some;
+      }
+      return nueva;
+    };
+    const remapArray = (some) => {
+      let nuevo = "";
+      for (let j = 0; j < some.length; j++) {
+        nuevo += remapLet(some[j]);
+      }
+      return nuevo;
+    };
+    const REGEX = /[a-zA-ZáéíóúüÁÉÍÓÚñÑ]/;
+    let pal = [];
+    let copy = null;
+    const mapFun = (character, i) => {
+      let aleatorio = Math.floor(Math.random() * (copy.length - 1));
+      if (aleatorio == i && copy.length > 1) {
+        aleatorio += 1;
+      }
+      const actual = copy.splice(aleatorio, 1)[0];
+      return actual;
+
+    };
+    const procesarPalabra = () => {
+      if (pal.length > 0) {
+        if (pal.length <= 3) {
+          salida += remapArray(pal.join(''));
+        } else {
+          const ini = remapLet(pal.splice(0, 1)[0]);
+          const fin = remapLet(pal.splice(pal.length - 1, 1)[0]);
+          salida += ini;
+
+          if (switchOrder) {
+            copy = [].concat(pal);
+            pal = pal.map(mapFun);
+            salida += remapArray(pal.join(''));
+          } else {
+            salida += remapArray(pal.join(''));
+          }
+          salida += fin;
+        }
+        pal = [];
+      }
+    };
+    for (let i = 0; i < txt.length; i++) {
+      const act = txt[i];
+      if (REGEX.test(act)) {
+        // Busco la palabra completa
+        pal.push(act);
+      } else {
+        // Se revisa si hay una palabra antes
+        procesarPalabra();
+        // Pasa derecho
+        if (act == " ") {
+          salida += useSpace;
+        } else {
+          salida += act;
+        }
+      }
+    }
+    procesarPalabra();
+    return salida;
   }
 }
 
