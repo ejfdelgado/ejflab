@@ -4,6 +4,7 @@ sudo apt-get install -y cmake g++ wget unzip
 sudo apt-get -y install python3-pip
 pip3 install numpy
 sudo ln -s /usr/bin/python3 /usr/bin/python
+sudo apt-get -y install libpango1.0-dev
 
 cd /tmp/sources/build-docker/json-3.11.2
 cmake  ../../json-3.11.2
@@ -14,11 +15,10 @@ cmake  ../../opencv-4.x
 cmake --build . -- -j 8
 
 cd /tmp/sources/build-docker/leptonica-1.74.3
-cmake  ../../leptonica-1.74.3
+cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_PROG=OFF -DSW_BUILD=OFF -DBUILD_SHARED_LIBS=ON  ../../leptonica-1.74.3
 make
 make install
 
-export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig
 cd /tmp/sources/build-docker/tesseract-4.1.2
 cmake  ../../tesseract-4.1.2
 cmake --build . -- -j 8
@@ -37,10 +37,10 @@ bazel build --jobs 8 //tensorflow/cc:ops
 # All
 bazel build --jobs 8 //tensorflow:libtensorflow_all.so
 
-
+export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig
 export OpenCV_DIR=/tmp/sources/build-docker/opencv-4.x
 export nlohmann_json_DIR=/tmp/sources/build-docker/json-3.11.2
-export Leptonica_DIR=/tmp/sources/build-docker/leptonica-1.79.0
+export Leptonica_DIR=/tmp/sources/build-docker/leptonica-1.74.3
 export Tesseract_DIR=/tmp/sources/build-docker/tesseract-4.1.2
 
 cd /tmp/sources/workspace/calibrate/build
