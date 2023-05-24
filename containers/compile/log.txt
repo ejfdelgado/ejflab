@@ -1,5 +1,9 @@
 sudo apt-get update
+sudo apt install -y bazel-3.1.0
 sudo apt-get install -y cmake g++ wget unzip
+sudo apt-get -y install python3-pip
+pip3 install numpy
+sudo ln -s /usr/bin/python3 /usr/bin/python
 
 cd /tmp/sources/build-docker/json-3.11.2
 cmake  ../../json-3.11.2
@@ -9,9 +13,39 @@ cd /tmp/sources/build-docker/opencv-4.x
 cmake  ../../opencv-4.x
 cmake --build . -- -j 8
 
+cd /tmp/sources/build-docker/leptonica-1.74.3
+cmake  ../../leptonica-1.74.3
+make
+make install
+
+export PKG_CONFIG_PATH=/usr/local/lib/x86_64-linux-gnu/pkgconfig
+cd /tmp/sources/build-docker/tesseract-4.1.2
+cmake  ../../tesseract-4.1.2
+cmake --build . -- -j 8
+
+cd /tmp/sources/tensorflow-2.4.2
+./configure
+bazel build --jobs 4 -c opt --config=monolithic //tensorflow:libtensorflow_cc.so
+# Compilar Lite
+bazel build --jobs 8 //tensorflow/lite:libtensorflowlite.so
+# Compilar el framework
+bazel build --jobs 4 -c opt //tensorflow:libtensorflow_framework.so
+# Compilar Client
+bazel build --jobs 8 //tensorflow/cc:client_session
+# Ops
+bazel build --jobs 8 //tensorflow/cc:ops
+# All
+bazel build --jobs 8 //tensorflow:libtensorflow_all.so
+
+
 export OpenCV_DIR=/tmp/sources/build-docker/opencv-4.x
 export nlohmann_json_DIR=/tmp/sources/build-docker/json-3.11.2
+export Leptonica_DIR=/tmp/sources/build-docker/leptonica-1.79.0
+export Tesseract_DIR=/tmp/sources/build-docker/tesseract-4.1.2
+
 cd /tmp/sources/workspace/calibrate/build
 cmake  ../.
 cmake --build . -- -j 8
 node shared-libs.js ./solvePnP
+
+

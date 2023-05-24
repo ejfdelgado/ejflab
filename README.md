@@ -38,8 +38,6 @@ sudo docker push ejfdelgado/mainapp:v1.0
 
 gcloud auth configure-docker
 
-sudo docker tag ejfdelgado/mainapp:v1.0 gcr.io/ejfexperiments/mainapp:v1.0
-docker push gcr.io/ejfexperiments/mainapp:v1.0
 
 
 
