@@ -44,6 +44,8 @@ docker push gcr.io/ejfexperiments/mainapp:v1.0
 
 
 
-sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.1 .
-docker push gcr.io/ejfexperiments/mainapp:v1.1
-sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.1
+
+
+sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.2 .
+docker push gcr.io/ejfexperiments/mainapp:v1.2
+sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.2

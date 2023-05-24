@@ -49,8 +49,13 @@ std::vector<cv::Point2f> guessPoints(std::vector<Data3D> questionIn, std::vector
 
     cv::solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 
-    // std::cout << "rvec: " << rvec << std::endl;
-    // std::cout << "tvec: " << tvec << std::endl;
+    cv::Mat aux = cv::Mat::eye(3, 3, CV_32F);
+    // Converts a rotation matrix to a rotation vector or vice versa.
+    cv::Rodrigues(rvec, aux);
+
+    std::cout << "rvec: " << rvec << std::endl;
+    std::cout << "aux: " << aux << std::endl;
+    std::cout << "tvec: " << tvec << std::endl;
 
     std::vector<cv::Point2f> projectedPoints;
     cv::projectPoints(question, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);

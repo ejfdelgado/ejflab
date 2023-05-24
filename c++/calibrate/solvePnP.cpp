@@ -10,6 +10,14 @@
 
 int main(int argc, char *argv[])
 {
+    std::string argument = argv[1];
+    std::cout << argument << std::endl;
+    json data = json::parse(argument);
+    data["pi"] = 3.141;
+    data["happy"] = true;
+    std::string s = data.dump();
+    std::cout << s << std::endl;
+
     std::vector<Data3D> question = {{.1, .1, -.1}, {.2, .1, .4}};
     std::vector<Data2D> ref2D = {{282, 274}, {397, 227}, {577, 271}, {462, 318}, {270, 479}, {450, 523}, {566, 475}};
     std::vector<Data3D> ref3D = {{.5, .5, -.5}, {.5, .5, .5}, {-.5, .5, .5}, {-.5, .5, -.5}, {.5, -.5, -.5}, {-.5, -.5, -.5}, {-.5, -.5, .5}};

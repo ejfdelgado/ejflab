@@ -8,6 +8,9 @@
 #include <regex>
 #include <sstream>
 #include <unordered_map>
+//https://github.com/nlohmann/json/tree/v3.11.2#cmake
+#include <nlohmann/json.hpp>
+using json = nlohmann::json;
 
 template <typename T>
 std::vector<T> parseStringVector(std::string texto)
