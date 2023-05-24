@@ -5,8 +5,8 @@ import { General } from "./common/General.mjs";
 
 export class MyShell {
 
-    //http://localhost:8081/srv/shell?cmd=solvePnP&payload={"a": 4}
-    //http://localhost:8081/srv/shell?cmd=ls%20-la
+    //http://localhost:80/srv/shell?cmd=solvePnP&payload={"a": 4}
+    //http://localhost:80/srv/shell?cmd=ls%20-la
     static async run(req, res, next) {
         const cmd = General.readParam(req, "cmd");
         const payload = General.readParam(req, "payload");

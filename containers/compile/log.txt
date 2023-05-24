@@ -1,0 +1,17 @@
+sudo apt-get update
+sudo apt-get install -y cmake g++ wget unzip
+
+cd /tmp/sources/build-docker/json-3.11.2
+cmake  ../../json-3.11.2
+cmake --build . -- -j 8
+
+cd /tmp/sources/build-docker/opencv-4.x
+cmake  ../../opencv-4.x
+cmake --build . -- -j 8
+
+export OpenCV_DIR=/tmp/sources/build-docker/opencv-4.x
+export nlohmann_json_DIR=/tmp/sources/build-docker/json-3.11.2
+cd /tmp/sources/workspace/calibrate/build
+cmake  ../.
+cmake --build . -- -j 8
+node shared-libs.js ./solvePnP
