@@ -29,6 +29,16 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     }
   }
 
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(ev: MouseEvent) {
+    if (!this.scene) {
+      return;
+    }
+    const canvasEl = this.canvasRef.nativeElement;
+    const bounds = canvasEl.getBoundingClientRect();
+    this.scene.onMouseMove(ev, bounds);
+  }
+
   ngAfterViewInit(): void {
     this.computeDimensions();
     if (this.bounds == null) {
@@ -43,6 +53,7 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
   loop() {
     if (this.scene != null && this.scene.camera) {
       this.scene.camera?.updateProjectionMatrix();
+      this.scene.update();
       this.scene.renderer?.render(this.scene, this.scene.camera);
       this.scene.orbitals?.update();
       requestAnimationFrame(() => {

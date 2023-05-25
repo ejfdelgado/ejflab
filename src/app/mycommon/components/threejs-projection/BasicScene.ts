@@ -3,11 +3,14 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
+import { BufferAttribute, Camera, Object3D } from 'three';
 /**
  * A class to set up some basic scene elements to minimize code in the
  * main execution file.
  */
 export class BasicScene extends THREE.Scene {
+  PRECISION = 2;
+  MARKER_SIZE = 0.1;
   camera: THREE.PerspectiveCamera | null = null;
   renderer: THREE.Renderer | null = null;
   orbitals: OrbitControls | null = null;
@@ -15,12 +18,55 @@ export class BasicScene extends THREE.Scene {
   lightCount: number = 6;
   lightDistance: number = 3;
   bounds: DOMRect;
+  mouse = new THREE.Vector2();
+  raycaster = new THREE.Raycaster();
+  pickableObjects: THREE.Mesh[] = [];
+  intersectedObject: THREE.Object3D | null;
+
+  normalMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  highlightedMaterial = new THREE.MeshBasicMaterial({
+    wireframe: true,
+    color: 0x00ff00,
+  });
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
     super();
     this.canvasRef = canvasRef;
     this.bounds = bounds;
+  }
+
+  update(): void {
+    if (!this.camera) {
+      return;
+    }
+    this.raycaster.setFromCamera(this.mouse, this.camera);
+    const intersects = this.raycaster.intersectObjects(this.pickableObjects);
+
+    let intersectedEl = null;
+    if (intersects.length > 0) {
+      intersectedEl = intersects[0];
+      this.intersectedObject = intersectedEl.object;
+    } else {
+      this.intersectedObject = null;
+    }
+    this.pickableObjects.forEach((o: THREE.Mesh, i) => {
+      if (this.intersectedObject && this.intersectedObject.name === o.name) {
+        this.pickableObjects[i].material = this.highlightedMaterial;
+      } else {
+        this.pickableObjects[i].material = this.normalMaterial;
+      }
+    });
+  }
+
+  onMouseMove(event: MouseEvent, bounds: DOMRect) {
+    if (!this.renderer) {
+      return;
+    }
+    this.mouse.set(
+      ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
+      -((event.clientY - bounds.top) / bounds.height) * 2 + 1
+    );
   }
 
   // await this.loadObjMtl('/assets/3d/mycube/mycube.obj', '/assets/3d/mycube/mycube.mtl');
@@ -48,6 +94,51 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
+  addCubeVertex(point: THREE.Vector3) {
+    const key = [
+      point.x.toFixed(this.PRECISION),
+      point.y.toFixed(this.PRECISION),
+      point.z.toFixed(this.PRECISION),
+    ].join(',');
+    const geometry = new THREE.BoxGeometry(
+      this.MARKER_SIZE,
+      this.MARKER_SIZE,
+      this.MARKER_SIZE
+    );
+    const generatedName = `DOT_${key}`;
+    const found = this.getObjectByName(generatedName);
+    if (!found) {
+      const cube = new THREE.Mesh(geometry, this.normalMaterial);
+      cube.name = generatedName;
+      cube.position.set(point.x, point.y, point.z);
+      this.pickableObjects.push(cube);
+      this.add(cube);
+    }
+  }
+
+  explodeMeshVertex(mesh: THREE.Mesh) {
+    // Iterate vertex
+    const point = new THREE.Vector3();
+    const positionAttribute: any = mesh.geometry.getAttribute('position');
+    for (let i = 0; i < positionAttribute.count; i++) {
+      point.fromBufferAttribute(positionAttribute, i);
+      mesh.localToWorld(point);
+      this.addCubeVertex(point);
+    }
+  }
+
+  addObjectLocal(object: THREE.Group) {
+    for (let i = 0; i < object.children.length; i++) {
+      const child = object.children[i];
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        this.explodeMeshVertex(mesh);
+      }
+    }
+
+    this.add(object);
+  }
+
   //await this.loadObj('/assets/3d/mycube/mycube.obj');
   async loadObj(path: string, materials?: MTLLoader.MaterialCreator) {
     return new Promise((resolve, reject) => {
@@ -58,7 +149,7 @@ export class BasicScene extends THREE.Scene {
       loader.load(
         path,
         (object) => {
-          this.add(object);
+          this.addObjectLocal(object);
           resolve(object);
         },
         (xhr) => {
