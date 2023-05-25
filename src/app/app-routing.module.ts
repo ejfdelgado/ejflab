@@ -15,13 +15,6 @@ const routes: Routes = [
     loadChildren: () =>
       import('./views/home/home.module').then((m) => m.HomeModule),
   },
-  {
-    path: 'humanpose',
-    loadChildren: () =>
-      import('./views/humanpose/humanpose.module').then(
-        (m) => m.HumanposeModule
-      ),
-  },
 ];
 
 /*
@@ -33,6 +26,7 @@ const PAGINAS = [
   { id: 'callgame', module: 'CallgameModule' },
   { id: 'tale', module: 'TaleModule' },
   { id: 'humanpose', module: 'HumanposeModule' },
+  { id: 'projection', module: 'ProjectionModule' },
 ];
 
 for (let i = 0; i < PAGINAS.length; i++) {

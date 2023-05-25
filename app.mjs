@@ -19,6 +19,7 @@ import { PayUSrv } from "./srv/PayUSrv.mjs";
 import { MyPdf } from "./srv/MyPdf.mjs";
 
 import { MyShell } from "./srv/MyShell.mjs";
+import { OpenCVSrv } from "./srv/OpenCVSrv.mjs";
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -34,6 +35,7 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
+app.post('/srv/opencv/solvepnp', [commonHeaders, express.json(), handleErrorsDecorator(OpenCVSrv.solvePnP)]);
 app.get('/srv/pdf/render', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyPdf.render)]);
 app.get('/srv/shell', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyShell.run)]);
 

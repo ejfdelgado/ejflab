@@ -58,14 +58,14 @@ export class PayuService {
         showIndicator: true,
       }
     );
-    console.log(response);
+    //console.log(response);
   }
 
   async getPubKey(payload: any) {
     const response = await this.httpService.post<any>(`srv/sec/pub`, payload, {
       showIndicator: true,
     });
-    console.log(response);
+    //console.log(response);
   }
 
   async openConfiguration() {
