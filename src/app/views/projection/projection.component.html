@@ -1,1 +1,16 @@
-<p>projection works!</p>
+<div class="level_0">
+    <div class="head_part">
+        <app-statusbar [title]="'Título'" [extraOptions]="extraOptions"></app-statusbar>
+    </div>
+    <div class="body_part">
+        <div class="left_part">
+            <app-threejs-projection #three_ref
+                [ngStyle]="{'display': 'flex', 'position': (fullScreen ? 'fixed': 'absolute')}">
+            </app-threejs-projection>
+
+        </div>
+        <div class="right_part">
+
+        </div>
+    </div>
+</div>

@@ -1,15 +1,115 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  HostListener,
+  Inject,
+  OnInit,
+} from '@angular/core';
+import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-projection',
   templateUrl: './projection.component.html',
-  styleUrls: ['./projection.component.css']
+  styleUrls: ['./projection.component.css'],
 })
 export class ProjectionComponent implements OnInit {
+  public extraOptions: Array<OptionData> = [];
 
-  constructor() { }
+  public fullScreen: boolean = false;
+  private observer?: any;
+  public elem: any;
+
+  constructor(
+    @Inject(DOCUMENT) private document: any,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
+    this.elem = document.documentElement;
+    this.initResizeObserver();
   }
 
+  ngOnDestroy() {
+    this.observer?.unobserve(this.elem);
+  }
+
+  openFullscreen() {
+    if (this.elem.requestFullscreen) {
+      this.elem.requestFullscreen();
+    } else if (this.elem.mozRequestFullScreen) {
+      /* Firefox */
+      this.elem.mozRequestFullScreen();
+    } else if (this.elem.webkitRequestFullscreen) {
+      /* Chrome, Safari and Opera */
+      this.elem.webkitRequestFullscreen();
+    } else if (this.elem.msRequestFullscreen) {
+      /* IE/Edge */
+      this.elem.msRequestFullscreen();
+    }
+  }
+
+  /* Close fullscreen */
+  closeFullscreen() {
+    if (typeof document.exitFullscreen == 'function') {
+      this.document.exitFullscreen();
+    } else if (this.document.mozCancelFullScreen) {
+      /* Firefox */
+      this.document.mozCancelFullScreen();
+    } else if (this.document.webkitExitFullscreen) {
+      /* Chrome, Safari and Opera */
+      this.document.webkitExitFullscreen();
+    } else if (this.document.msExitFullscreen) {
+      /* IE/Edge */
+      this.document.msExitFullscreen();
+    }
+  }
+
+  isInUserFullscreenMode() {
+    return !!this.document.fullscreenElement;
+  }
+
+  isInFullscreenMode() {
+    return (
+      this.isInUserFullscreenMode() ||
+      (<any>window).fullScreen ||
+      (window.innerWidth === screen.width &&
+        window.innerHeight === screen.height)
+    );
+  }
+
+  @HostListener('document:fullscreenchange')
+  @HostListener('document:webkitfullscreenchange')
+  @HostListener('document:mozfullscreenchange')
+  @HostListener('document:MSFullscreenChange')
+  onFullscreenChange() {
+    this.changeDetectorRef.detectChanges();
+  }
+
+  initResizeObserver() {
+    this.observer = new (<any>window).ResizeObserver((entries: any) => {
+      this.changeDetectorRef.detectChanges();
+    });
+
+    this.observer.observe(this.elem);
+  }
+
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //console.log(event);
+    if (event.ctrlKey && event.shiftKey) {
+      switch (event.code) {
+        case 'NumpadAdd':
+          this.fullScreen = !this.fullScreen;
+          if (this.fullScreen) {
+            this.openFullscreen();
+          } else {
+            this.closeFullscreen();
+          }
+          break;
+        default:
+          console.log(event.code);
+      }
+    }
+  }
 }
