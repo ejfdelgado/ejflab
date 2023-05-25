@@ -7,6 +7,7 @@ import {
 } from '@angular/core';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { DOCUMENT } from '@angular/common';
+import { OpenCVService } from 'src/services/opencv.service';
 
 @Component({
   selector: 'app-projection',
@@ -22,12 +23,38 @@ export class ProjectionComponent implements OnInit {
 
   constructor(
     @Inject(DOCUMENT) private document: any,
-    private changeDetectorRef: ChangeDetectorRef
+    private changeDetectorRef: ChangeDetectorRef,
+    private opencvSrv: OpenCVService
   ) {}
 
   ngOnInit(): void {
     this.elem = document.documentElement;
     this.initResizeObserver();
+    this.solvePnP();
+  }
+
+  async solvePnP() {
+    const response = await this.opencvSrv.solvePnP({
+      v2: [
+        [282, 274],
+        [397, 227],
+        [577, 271],
+        [462, 318],
+        [270, 479],
+        [450, 523],
+        [566, 475],
+      ],
+      v3: [
+        [0.5, 0.5, -0.5],
+        [0.5, 0.5, 0.5],
+        [-0.5, 0.5, 0.5],
+        [-0.5, 0.5, -0.5],
+        [0.5, -0.5, -0.5],
+        [-0.5, -0.5, -0.5],
+        [-0.5, -0.5, 0.5],
+      ],
+    });
+    console.log(JSON.stringify(response, null, 4));
   }
 
   ngOnDestroy() {
