@@ -11,7 +11,8 @@
     "src/app/views/cv/*.ts",
     "src/app/views/calendar/*.ts",
     "src/app/views/callgame/*.ts",
-    "src/app/views/customers/*.ts",
-    "src/app/views/tale/*.ts"
+    "src/app/views/tale/*.ts",
+    "src/app/views/humanpose/*.ts",
+    "src/app/views/projection/*.ts"
   ]
 }

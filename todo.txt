@@ -25,7 +25,7 @@ Generar el formulario para entrenamiento:
 ng new proyecto001
 ng generate module views/projection --route projection --module app.module
 ng generate component components/payupopup
-ng generate component mycommon/components/tensorflowtrain
+ng generate component mycommon/components/threejs-projection
 ng generate pipe mycommon/pipes/fechaCard
 ng generate pipe mycommon/pipes/sortByName
 
