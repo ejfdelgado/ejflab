@@ -1,6 +1,11 @@
 ## ssh root@localhost -p 41061
+## Container:
 ## export OpenCV_DIR=/tmp/sources/build-docker/opencv-4.x
 ## export nlohmann_json_DIR=/tmp/sources/build-docker/json-3.11.2
+## Local
+## export OpenCV_DIR=/home/ejfdelgado/desarrollo/vaale/build
+## export nlohmann_json_DIR=/home/ejfdelgado/desarrollo/c++/build-local/json-3.11.2
+## 
 ## cd /tmp/sources/workspace/calibrate
 ## mkdir build && cd build
 ## cmake ../

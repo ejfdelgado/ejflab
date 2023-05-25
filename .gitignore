@@ -2,11 +2,11 @@
 
 # Compiled output
 /dist
-/bin
+/bin*
 /tmp
 /out-tsc
 /bazel-out
-c++/**/build
+/c++/**/build*
 
 /srcJs/test
 

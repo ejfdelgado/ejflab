@@ -48,7 +48,11 @@ async function analize() {
             pathFiles.push(path.trim());
         }
     }
-    const DEST_DIR = "./LIBS";
+    const DEST_ROOT = "./bin"
+    if (!fs.existsSync(DEST_ROOT)) {
+        fs.mkdirSync(DEST_ROOT);
+    }
+    const DEST_DIR = `${DEST_ROOT}/libs`;
     if (!fs.existsSync(DEST_DIR)) {
         fs.mkdirSync(DEST_DIR);
     }
@@ -56,8 +60,9 @@ async function analize() {
     for (let i = 0; i < pathFiles.length; i++) {
         await copyFile(pathFiles[i], DEST_DIR);
     }
+    await copyFile(executable, DEST_ROOT);
     // Zip folder
-    const zipRes = await runExecutable("zip", ["-r", "shared-libs.zip", DEST_DIR]);
+    // const zipRes = await runExecutable("zip", ["-r", "shared-libs.zip", DEST_DIR]);
 }
 
 analize();
