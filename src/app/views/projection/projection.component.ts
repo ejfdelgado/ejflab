@@ -8,6 +8,18 @@ import {
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { DOCUMENT } from '@angular/common';
 import { OpenCVService } from 'src/services/opencv.service';
+import { CalibData } from 'src/app/mycommon/components/threejs-projection/threejs-projection.component';
+
+export interface ViewModelData {
+  name: string;
+  pairs: CalibData;
+}
+
+export interface GlobalModelData {
+  calib: {
+    [key: string]: ViewModelData;
+  };
+}
 
 @Component({
   selector: 'app-projection',
@@ -20,6 +32,15 @@ export class ProjectionComponent implements OnInit {
   public fullScreen: boolean = false;
   private observer?: any;
   public elem: any;
+  public mymodel: GlobalModelData = {
+    calib: {
+      a: {
+        name: 'Projector #1',
+        pairs: {},
+      },
+    },
+  };
+  public currentView: ViewModelData | null = this.mymodel.calib['a'];
 
   constructor(
     @Inject(DOCUMENT) private document: any,
@@ -31,6 +52,13 @@ export class ProjectionComponent implements OnInit {
     this.elem = document.documentElement;
     this.initResizeObserver();
     this.solvePnP();
+  }
+
+  getCurrentPair() {
+    if (!this.currentView) {
+      return null;
+    }
+    return this.currentView.pairs;
   }
 
   async solvePnP() {

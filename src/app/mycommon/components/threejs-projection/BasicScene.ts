@@ -5,6 +5,17 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { BufferAttribute, Camera, Object3D } from 'three';
 import { EventEmitter } from '@angular/core';
+
+export interface DotModelData {
+  v3: { x: number; y: number; z: number };
+  v2?: { x: number; y: number };
+}
+
+export interface KeyValueDotModelData {
+  key: string;
+  value: DotModelData;
+}
+
 /**
  * A class to set up some basic scene elements to minimize code in the
  * main execution file.
@@ -30,7 +41,7 @@ export class BasicScene extends THREE.Scene {
     wireframe: true,
     color: 0x00ff00,
   });
-  public dot3DSelected = new EventEmitter<any>();
+  public dot3DSelected = new EventEmitter<KeyValueDotModelData | null>();
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -39,6 +50,7 @@ export class BasicScene extends THREE.Scene {
     this.bounds = bounds;
   }
 
+  // Called for ever
   update(): void {
     if (!this.camera) {
       return;
@@ -67,6 +79,10 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
+  selectKeyPoint(key: string) {
+    this.selectedObjectName = key;
+  }
+
   onMouseClick(event: MouseEvent, bounds: DOMRect) {
     if (!this.renderer || !this.camera) {
       return;
@@ -78,9 +94,13 @@ export class BasicScene extends THREE.Scene {
         this.intersectedObject.position.x;
         this.dot3DSelected.emit({
           key: this.selectedObjectName,
-          x: this.intersectedObject.position.x,
-          y: this.intersectedObject.position.y,
-          z: this.intersectedObject.position.z,
+          value: {
+            v3: {
+              x: this.intersectedObject.position.x,
+              y: this.intersectedObject.position.y,
+              z: this.intersectedObject.position.z,
+            },
+          },
         });
       } else {
         this.selectedObjectName = null;

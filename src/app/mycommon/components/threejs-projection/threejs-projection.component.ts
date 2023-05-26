@@ -3,14 +3,14 @@ import {
   Component,
   ElementRef,
   HostListener,
+  Input,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { BasicScene } from './BasicScene';
+import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
 
-export interface DotModelData {
-  v2?: { x: number; y: number };
-  v3: { x: number; y: number; z: number };
+export interface CalibData {
+  [key: string]: DotModelData;
 }
 
 @Component({
@@ -29,7 +29,7 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     style: null,
   };
   selectedDot: string | null = null;
-  DOTS_MODEL: { [key: string]: DotModelData } = {};
+  @Input() DOTS_MODEL: CalibData | null;
 
   constructor() {
     const style: any = {};
@@ -45,7 +45,18 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     this.DOT_OPTIONS.style = style;
   }
 
-  get2DCoordinates(dotData: any) {
+  select2DPoint(dotData: KeyValueDotModelData) {
+    //console.log(`${key} ${JSON.stringify(dot)}`);
+    if (!this.scene) {
+      return;
+    }
+    const key = dotData.key;
+    const dot = dotData.value;
+    this.selectedDot = key;
+    this.scene.selectKeyPoint(key);
+  }
+
+  get2DCoordinates(dotData: KeyValueDotModelData) {
     if (!this.scene || !dotData.value.v2) {
       return {};
     }
@@ -53,8 +64,10 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     const key = dotData.key;
     const dot = dotData.value;
     const style: any = {};
-    style['left'] = dot.v2.x * bounds.width + 'px';
-    style['top'] = dot.v2.y * bounds.height + 'px';
+    if (dot.v2) {
+      style['left'] = dot.v2.x * bounds.width + 'px';
+      style['top'] = dot.v2.y * bounds.height + 'px';
+    }
     return style;
   }
 
@@ -68,7 +81,7 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
 
   @HostListener('click', ['$event'])
   onMouseClick(event: MouseEvent) {
-    if (!this.scene) {
+    if (!this.scene || !this.DOTS_MODEL) {
       return;
     }
     const canvasEl = this.canvasRef.nativeElement;
@@ -95,13 +108,16 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     this.scene.onMouseMove(ev, bounds);
   }
 
-  listenSelected3DPoint(data: any) {
+  listenSelected3DPoint(data: KeyValueDotModelData) {
+    if (!this.DOTS_MODEL) {
+      return;
+    }
     if (data == null) {
       this.selectedDot = null;
     } else {
       this.selectedDot = data.key;
       if (!(data.key in this.DOTS_MODEL)) {
-        this.DOTS_MODEL[data.key] = { v3: { x: data.x, y: data.y, z: data.z } };
+        this.DOTS_MODEL[data.key] = data.value;
       }
     }
   }

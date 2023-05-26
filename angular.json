@@ -46,6 +46,8 @@
               "srcJs/ModuloDatoSeguroFront",
               "srcJs/MyDatesFront",
               "srcJs/MyColor.js",
+              "srcJs/CsvFormatter",
+              "srcJs/CsvParser",
               "@ffmpeg/ffmpeg",
               "@tensorflow/tfjs",
               "@tensorflow/tfjs-vis"
