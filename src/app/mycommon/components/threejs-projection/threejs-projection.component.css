@@ -7,3 +7,21 @@
   bottom: 0;
   overflow: hidden;
 }
+
+.onedot {
+  width: 0px;
+  height: 0px;
+  position: relative;
+}
+
+.onedot_center {
+  border-style: solid;
+  border-color: black;
+  background: #00FF00;
+  border-radius: 100%;
+  position: relative;
+}
+
+.onedot_center.selected {
+  background: #FF0000;
+}

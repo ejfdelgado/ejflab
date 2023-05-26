@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { BufferAttribute, Camera, Object3D } from 'three';
+import { EventEmitter } from '@angular/core';
 /**
  * A class to set up some basic scene elements to minimize code in the
  * main execution file.
@@ -21,13 +22,15 @@ export class BasicScene extends THREE.Scene {
   mouse = new THREE.Vector2();
   raycaster = new THREE.Raycaster();
   pickableObjects: THREE.Mesh[] = [];
-  intersectedObject: THREE.Object3D | null;
-
+  intersectedObject: THREE.Object3D | null = null;
+  selectedObjectName: string | null = null;
   normalMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+  selectedMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   highlightedMaterial = new THREE.MeshBasicMaterial({
     wireframe: true,
     color: 0x00ff00,
   });
+  public dot3DSelected = new EventEmitter<any>();
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -51,12 +54,39 @@ export class BasicScene extends THREE.Scene {
       this.intersectedObject = null;
     }
     this.pickableObjects.forEach((o: THREE.Mesh, i) => {
-      if (this.intersectedObject && this.intersectedObject.name === o.name) {
-        this.pickableObjects[i].material = this.highlightedMaterial;
+      const current = this.pickableObjects[i];
+      if (current.name == this.selectedObjectName) {
+        current.material = this.selectedMaterial;
       } else {
-        this.pickableObjects[i].material = this.normalMaterial;
+        if (this.intersectedObject && this.intersectedObject.name === o.name) {
+          current.material = this.highlightedMaterial;
+        } else {
+          current.material = this.normalMaterial;
+        }
       }
     });
+  }
+
+  onMouseClick(event: MouseEvent, bounds: DOMRect) {
+    if (!this.renderer || !this.camera) {
+      return;
+    }
+    if (event.shiftKey) {
+      // Se debe seleccionar el vertice actual si lo hay...
+      if (this.intersectedObject) {
+        this.selectedObjectName = this.intersectedObject.name;
+        this.intersectedObject.position.x;
+        this.dot3DSelected.emit({
+          key: this.selectedObjectName,
+          x: this.intersectedObject.position.x,
+          y: this.intersectedObject.position.y,
+          z: this.intersectedObject.position.z,
+        });
+      } else {
+        this.selectedObjectName = null;
+        this.dot3DSelected.emit(null);
+      }
+    }
   }
 
   onMouseMove(event: MouseEvent, bounds: DOMRect) {
@@ -100,14 +130,14 @@ export class BasicScene extends THREE.Scene {
       point.y.toFixed(this.PRECISION),
       point.z.toFixed(this.PRECISION),
     ].join(',');
-    const geometry = new THREE.BoxGeometry(
-      this.MARKER_SIZE,
-      this.MARKER_SIZE,
-      this.MARKER_SIZE
-    );
     const generatedName = `DOT_${key}`;
     const found = this.getObjectByName(generatedName);
     if (!found) {
+      const geometry = new THREE.BoxGeometry(
+        this.MARKER_SIZE,
+        this.MARKER_SIZE,
+        this.MARKER_SIZE
+      );
       const cube = new THREE.Mesh(geometry, this.normalMaterial);
       cube.name = generatedName;
       cube.position.set(point.x, point.y, point.z);
@@ -124,6 +154,16 @@ export class BasicScene extends THREE.Scene {
       point.fromBufferAttribute(positionAttribute, i);
       mesh.localToWorld(point);
       this.addCubeVertex(point);
+    }
+  }
+
+  setMaterial(object: THREE.Object3D, material: THREE.MeshBasicMaterial) {
+    for (let i = 0; i < object.children.length; i++) {
+      const child = object.children[i];
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        mesh.material = material;
+      }
     }
   }
 
