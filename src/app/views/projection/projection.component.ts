@@ -49,8 +49,8 @@ export class ProjectionComponent implements OnInit {
               z: 1,
             },
             v2: {
-              x: 0.758316361167685,
-              y: 0.4431818181818182,
+              x: 0.7503429355281207,
+              y: 0.45863309352517984,
             },
           },
           'DOT_1.00,1.00,1.00': {
@@ -60,8 +60,8 @@ export class ProjectionComponent implements OnInit {
               z: 1,
             },
             v2: {
-              x: 0.8513238289205702,
-              y: 0.4909090909090909,
+              x: 0.8367626886145405,
+              y: 0.49640287769784175,
             },
           },
           'DOT_-1.00,-1.00,1.00': {
@@ -71,8 +71,8 @@ export class ProjectionComponent implements OnInit {
               z: 1,
             },
             v2: {
-              x: 0.7379497623896809,
-              y: 0.5568181818181818,
+              x: 0.7311385459533608,
+              y: 0.5467625899280576,
             },
           },
           'DOT_1.00,-1.00,1.00': {
@@ -82,8 +82,8 @@ export class ProjectionComponent implements OnInit {
               z: 1,
             },
             v2: {
-              x: 0.8214528173794976,
-              y: 0.6113636363636363,
+              x: 0.8093278463648834,
+              y: 0.5881294964028777,
             },
           },
           'DOT_1.00,-1.00,-1.00': {
@@ -93,8 +93,8 @@ export class ProjectionComponent implements OnInit {
               z: -1,
             },
             v2: {
-              x: 0.845213849287169,
-              y: 0.553409090909091,
+              x: 0.831275720164609,
+              y: 0.5431654676258992,
             },
           },
           'DOT_1.00,1.00,-1.00': {
@@ -104,8 +104,8 @@ export class ProjectionComponent implements OnInit {
               z: -1,
             },
             v2: {
-              x: 0.8737270875763747,
-              y: 0.43977272727272726,
+              x: 0.8573388203017832,
+              y: 0.4568345323741007,
             },
           },
           'DOT_-1.00,1.00,-1.00': {
@@ -115,8 +115,8 @@ export class ProjectionComponent implements OnInit {
               z: -1,
             },
             v2: {
-              x: 0.7868295994568907,
-              y: 0.4,
+              x: 0.7777777777777778,
+              y: 0.4226618705035971,
             },
           },
         },
@@ -166,14 +166,19 @@ export class ProjectionComponent implements OnInit {
     const pairs = this.currentView.pairs;
     const keys = Object.keys(pairs);
 
-    const focalLength = camera.getFocalLength();
-    console.log(`focalLength = ${focalLength}`);
+    //Returns the focal length of the current .fov in respect to .filmGauge.
+    const focalLengthCamera = camera.getFocalLength();
 
+    const boundsCamera = {
+      width: camera.getFilmWidth(),
+      height: camera.getFilmHeight(),
+    };
+    //camera.setFocalLength(23);
     const payload: SolvePnPData = {
       v2: [],
       v3: [],
-      size: [[bounds.width, bounds.height]],
-      focal: [[bounds.height, bounds.height]],
+      size: [[boundsCamera.width, boundsCamera.height]],
+      focal: [[focalLengthCamera, focalLengthCamera]],
     };
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -182,8 +187,8 @@ export class ProjectionComponent implements OnInit {
         continue;
       }
       payload.v2.push([
-        actual.v2.x * bounds.width,
-        actual.v2.y * bounds.height,
+        actual.v2.x * boundsCamera.width,
+        actual.v2.y * boundsCamera.height,
       ]);
       payload.v3.push([actual.v3.x, actual.v3.y, actual.v3.z]);
     }

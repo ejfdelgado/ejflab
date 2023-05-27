@@ -295,7 +295,7 @@ export class BasicScene extends THREE.Scene {
 
   initialize(debug: boolean = true, addGridHelper: boolean = true) {
     this.camera = new THREE.PerspectiveCamera(
-      60,
+      35,
       this.bounds.width / this.bounds.height,
       0.1,
       50000
