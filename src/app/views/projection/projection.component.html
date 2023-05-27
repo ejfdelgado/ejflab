@@ -5,12 +5,21 @@
     <div class="body_part">
         <div class="left_part">
             <app-threejs-projection #three_ref [DOTS_MODEL]="getCurrentPair()" [seeCalibPoints]="states.seeCalibPoints"
-                [ngStyle]="{'display': 'flex', 'position': (fullScreen ? 'fixed': 'absolute')}">
+                [ngStyle]="{'display': 'flex', 'position': (states.fullScreen ? 'fixed': 'absolute')}">
             </app-threejs-projection>
 
         </div>
-        <div class="right_part">
-            <pre>{{ true | json }}</pre>
+        <div class="right_part" *ngIf="!states.fullScreen || states.openedFloatingMenu"
+            [ngStyle]="{'bottom': states.menuTop.bottom+'px', 'right': states.menuTop.right+'px'}"
+            [ngClass]="{'floating': states.fullScreen && states.openedFloatingMenu}">
+            <div class="top_menu_control" *ngIf="states.fullScreen && states.openedFloatingMenu"
+                (mousedown)="mouseDownMenuTop($event)" (mouseup)="mouseUpMenuTop($event)">
+                <div class="drag_handler"></div>
+                <mat-icon class="close_icon" (click)="closeFloating()">close</mat-icon>
+            </div>
+            <div *ngIf="!states.fullScreen || states.openedFloatingMenu" class="scroll_menu_container">
+                <app-menu-control [mymodel]="mymodel"></app-menu-control>
+            </div>
         </div>
     </div>
 </div>

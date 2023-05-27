@@ -50,9 +50,13 @@ export class ThreejsProjectionComponent
   }
 
   ngOnChanges(changes: any) {
+    if (!this.scene) {
+      return;
+    }
     if (changes.seeCalibPoints) {
       const actual = changes.seeCalibPoints.currentValue;
-      this.scene?.setCalibPointsVisibility(actual);
+      this.scene.setCalibPointsVisibility(actual);
+      this.scene.setSeeCalibPoints(actual);
     }
   }
 

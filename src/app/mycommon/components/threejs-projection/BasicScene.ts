@@ -42,12 +42,17 @@ export class BasicScene extends THREE.Scene {
     color: 0x00ff00,
   });
   public dot3DSelected = new EventEmitter<KeyValueDotModelData | null>();
+  seeCalibPoints: boolean = false;
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
     super();
     this.canvasRef = canvasRef;
     this.bounds = bounds;
+  }
+
+  setSeeCalibPoints(value: boolean) {
+    this.seeCalibPoints = value;
   }
 
   // Called for ever
@@ -225,6 +230,7 @@ export class BasicScene extends THREE.Scene {
       cube.name = generatedName;
       cube.position.set(point.x, point.y, point.z);
       this.pickableObjects.push(cube);
+      cube.visible = this.seeCalibPoints;
       this.add(cube);
     }
   }

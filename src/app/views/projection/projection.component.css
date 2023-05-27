@@ -29,6 +29,47 @@
   position: relative;
 }
 
+.body_part .right_part {
+  width: 20vw;
+  background-color: black;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.body_part .right_part.floating {
+  position: fixed;
+  height: 52vh;
+  border: 2px solid;
+  border-radius: 11px;
+  padding-top: 44px;
+  overflow: hidden;
+}
+
+.body_part .right_part .top_menu_control {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 44px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.body_part .right_part .drag_handler {
+  flex: 1;
+  background-color: black;
+  height: 100%;
+}
+
+.body_part .right_part .close_icon {
+  cursor: pointer;
+  color: white;
+}
+
 .body_part .left_part > * {
   position: absolute;
   left: 0;
@@ -37,12 +78,19 @@
   bottom: 0;
 }
 
-.body_part .right_part {
-  width: 20vw;
-  background-color: olive;
-  max-height: 100%;
-  display: flex;
-  flex-direction: column;
+.body_part .right_part .scroll_menu_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  overflow-y: scroll;
+  background-color: white;
+  padding: 5px;
+}
+
+.body_part .right_part.floating .scroll_menu_container {
+  top: 44px;
 }
 
 button.mat-menu-item {

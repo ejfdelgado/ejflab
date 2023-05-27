@@ -28,8 +28,8 @@ export interface GlobalModelData {
 
 /*
 TODO
+- Floating workspace...
 - Edit FOV 10 - 70 degrees -> make part of model
-- Show Hide Green Points
 
 */
 
@@ -41,11 +41,21 @@ TODO
 export class ProjectionComponent implements OnInit {
   @ViewChild('three_ref') threeRef: ElementRef;
   public extraOptions: Array<OptionData> = [];
-  public fullScreen: boolean = false;
   private observer?: any;
   public elem: any;
   public states = {
-    seeCalibPoints: true,
+    openedFloatingMenu: false,
+    fullScreen: false,
+    seeCalibPoints: false,
+    menuTop: {
+      dragging: false,
+      right: 0,
+      bottom: 0,
+      startx: 0,
+      starty: 0,
+      oldBottom: 10,
+      oldRight: 10,
+    },
   };
   public mymodel: GlobalModelData = {
     calib: {
@@ -161,6 +171,10 @@ export class ProjectionComponent implements OnInit {
       icon: 'directions_run',
       label: 'Switch Calib Points',
     });
+  }
+
+  closeFloating() {
+    this.states.openedFloatingMenu = false;
   }
 
   ngOnInit(): void {
@@ -302,16 +316,45 @@ export class ProjectionComponent implements OnInit {
     this.observer.observe(this.elem);
   }
 
+  mouseDownMenuTop(ev: MouseEvent) {
+    this.states.menuTop.dragging = true;
+    this.states.menuTop.startx = ev.screenX;
+    this.states.menuTop.starty = ev.screenY;
+    this.states.menuTop.oldBottom = this.states.menuTop.bottom;
+    this.states.menuTop.oldRight = this.states.menuTop.right;
+  }
+
+  mouseUpMenuTop(ev: MouseEvent) {
+    this.states.menuTop.dragging = false;
+  }
+
+  @HostListener('mousemove', ['$event'])
+  onMouseMove(ev: any) {
+    if (this.states.menuTop.dragging) {
+      const menuTop = this.states.menuTop;
+      menuTop.bottom = menuTop.oldBottom + (menuTop.starty - ev.screenY);
+      menuTop.right = menuTop.oldRight + (menuTop.startx - ev.screenX);
+    }
+  }
+
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //console.log(event);
     if (event.ctrlKey && event.shiftKey) {
       switch (event.code) {
         case 'NumpadAdd':
-          this.fullScreen = !this.fullScreen;
-          if (this.fullScreen) {
+          this.states.fullScreen = !this.states.fullScreen;
+          if (this.states.fullScreen) {
+            this.states.openedFloatingMenu = true;
+            this.states.menuTop.bottom = this.states.menuTop.oldBottom;
+            this.states.menuTop.right = this.states.menuTop.oldRight;
             this.openFullscreen();
           } else {
+            this.states.openedFloatingMenu = false;
+            this.states.menuTop.oldBottom = this.states.menuTop.bottom;
+            this.states.menuTop.oldRight = this.states.menuTop.right;
+            this.states.menuTop.bottom = 0;
+            this.states.menuTop.right = 0;
             this.closeFullscreen();
           }
           break;
