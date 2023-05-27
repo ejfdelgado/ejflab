@@ -79,35 +79,9 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
-  updateProjectionMatrix(
-    rodriguez: Array<Array<number>>,
-    tvec: Array<Array<number>>
-  ) {
+  resetCameraTecnic1() {
     if (!this.camera) {
       return;
-    }
-    const projectionMatrix = new THREE.Matrix4();
-    projectionMatrix.set(
-      rodriguez[0][0],
-      rodriguez[0][1],
-      rodriguez[0][2],
-      tvec[0][0],
-      rodriguez[1][0],
-      rodriguez[1][1],
-      rodriguez[1][2],
-      tvec[0][1],
-      rodriguez[2][0],
-      rodriguez[2][1],
-      rodriguez[2][2],
-      tvec[0][2],
-      0,
-      0,
-      0,
-      1
-    );
-
-    if (this.orbitals) {
-      this.orbitals.reset();
     }
     this.camera.matrix
       .identity()
@@ -116,7 +90,64 @@ export class BasicScene extends THREE.Scene {
         this.camera.quaternion,
         this.camera.scale
       );
+  }
+
+  resetCameraTecnic2(invertUp: boolean) {
+    if (!this.camera) {
+      return;
+    }
+    this.camera.position.x = 0;
+    this.camera.position.y = 0;
+    this.camera.position.z = 0;
+
+    if (invertUp) {
+      this.camera.up = new THREE.Vector3(0, 1, 0);
+      this.camera.lookAt(new THREE.Vector3(0, 0, -1));
+    } else {
+      this.camera.up = new THREE.Vector3(0, -1, 0);
+      this.camera.lookAt(new THREE.Vector3(0, 0, 1));
+    }
+
+    this.camera.updateMatrix();
+  }
+
+  updateProjectionMatrix(
+    rodriguez: Array<Array<number>>,
+    tvec: Array<Array<number>>,
+    t: Array<Array<number>>
+  ) {
+    if (!this.camera) {
+      return;
+    }
+    let projectionMatrix = new THREE.Matrix4();
+    projectionMatrix.set(
+      t[0][0],
+      t[1][0],
+      t[2][0],
+      t[3][0],
+      t[0][1],
+      t[1][1],
+      t[2][1],
+      t[3][1],
+      t[0][2],
+      t[1][2],
+      t[2][2],
+      t[3][2],
+      t[0][3],
+      t[1][3],
+      t[2][3],
+      t[3][3]
+    );
+
+    if (this.orbitals) {
+      this.orbitals.reset();
+    }
+
+    //this.resetCameraTecnic1();
+    this.resetCameraTecnic2(false);
     this.camera.applyMatrix4(projectionMatrix);
+    this.camera.updateProjectionMatrix();
+
   }
 
   selectKeyPoint(key: string) {
@@ -264,14 +295,14 @@ export class BasicScene extends THREE.Scene {
 
   initialize(debug: boolean = true, addGridHelper: boolean = true) {
     this.camera = new THREE.PerspectiveCamera(
-      35,
+      60,
       this.bounds.width / this.bounds.height,
       0.1,
-      1000
+      50000
     );
-    this.camera.position.z = 12;
-    this.camera.position.y = 12;
-    this.camera.position.x = 12;
+    this.camera.position.x = 10;
+    this.camera.position.y = 10;
+    this.camera.position.z = 10;
     this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     this.renderer = new THREE.WebGLRenderer({
@@ -279,7 +310,7 @@ export class BasicScene extends THREE.Scene {
       alpha: true,
     });
     this.renderer.setSize(this.bounds.width, this.bounds.height);
-    this.orbitals = new OrbitControls(this.camera, this.renderer.domElement);
+    //this.orbitals = new OrbitControls(this.camera, this.renderer.domElement);
 
     if (addGridHelper) {
       this.add(new THREE.GridHelper(10, 10, 'red'));

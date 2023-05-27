@@ -41,7 +41,85 @@ export class ProjectionComponent implements OnInit {
     calib: {
       a: {
         name: 'Projector #1',
-        pairs: {},
+        pairs: {
+          'DOT_-1.00,1.00,1.00': {
+            v3: {
+              x: -1,
+              y: 1,
+              z: 1,
+            },
+            v2: {
+              x: 0.758316361167685,
+              y: 0.4431818181818182,
+            },
+          },
+          'DOT_1.00,1.00,1.00': {
+            v3: {
+              x: 1,
+              y: 1,
+              z: 1,
+            },
+            v2: {
+              x: 0.8513238289205702,
+              y: 0.4909090909090909,
+            },
+          },
+          'DOT_-1.00,-1.00,1.00': {
+            v3: {
+              x: -1,
+              y: -1,
+              z: 1,
+            },
+            v2: {
+              x: 0.7379497623896809,
+              y: 0.5568181818181818,
+            },
+          },
+          'DOT_1.00,-1.00,1.00': {
+            v3: {
+              x: 1,
+              y: -1,
+              z: 1,
+            },
+            v2: {
+              x: 0.8214528173794976,
+              y: 0.6113636363636363,
+            },
+          },
+          'DOT_1.00,-1.00,-1.00': {
+            v3: {
+              x: 1,
+              y: -1,
+              z: -1,
+            },
+            v2: {
+              x: 0.845213849287169,
+              y: 0.553409090909091,
+            },
+          },
+          'DOT_1.00,1.00,-1.00': {
+            v3: {
+              x: 1,
+              y: 1,
+              z: -1,
+            },
+            v2: {
+              x: 0.8737270875763747,
+              y: 0.43977272727272726,
+            },
+          },
+          'DOT_-1.00,1.00,-1.00': {
+            v3: {
+              x: -1,
+              y: 1,
+              z: -1,
+            },
+            v2: {
+              x: 0.7868295994568907,
+              y: 0.4,
+            },
+          },
+        },
       },
     },
   };
@@ -80,17 +158,23 @@ export class ProjectionComponent implements OnInit {
     const threejsComponent = this
       .threeRef as unknown as ThreejsProjectionComponent;
     const bounds = threejsComponent.bounds;
-    if (!bounds) {
+    const scene = threejsComponent.scene;
+    const camera = scene?.camera;
+    if (!bounds || !scene || !camera) {
       return;
     }
     const pairs = this.currentView.pairs;
     const keys = Object.keys(pairs);
+
+    const focalLength = camera.getFocalLength();
+    console.log(`focalLength = ${focalLength}`);
+
     const payload: SolvePnPData = {
       v2: [],
       v3: [],
+      size: [[bounds.width, bounds.height]],
+      focal: [[bounds.height, bounds.height]],
     };
-    const aspectRatio = bounds.height / bounds.width;
-    console.log(`${bounds.width}x${bounds.height} = ${aspectRatio}`);
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const actual = pairs[key];
@@ -98,19 +182,19 @@ export class ProjectionComponent implements OnInit {
         continue;
       }
       payload.v2.push([
-        //actual.v2.x * bounds.width / 100,
-        //actual.v2.y * bounds.height / 100,
-        actual.v2.x * aspectRatio * 10,
-        actual.v2.y * 10,
+        actual.v2.x * bounds.width,
+        actual.v2.y * bounds.height,
       ]);
       payload.v3.push([actual.v3.x, actual.v3.y, actual.v3.z]);
     }
+    //console.log(JSON.stringify(payload, null, 4));
     const response = await this.opencvSrv.solvePnP(payload);
-    if (response && response.aux && response.tvec) {
+    if (response && response.aux && response.tvec && response.t) {
       if (threejsComponent.scene) {
         threejsComponent.scene.updateProjectionMatrix(
           response.aux,
-          response.tvec
+          response.tvec,
+          response.t
         );
       }
     }

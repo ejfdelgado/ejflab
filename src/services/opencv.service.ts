@@ -5,9 +5,12 @@ import { HttpService } from './http.service';
 export interface SolvePnPData {
   v2: Array<Array<number>>;
   v3: Array<Array<number>>;
+  size: Array<Array<number>>;
+  focal: Array<Array<number>>;
   aux?: Array<Array<number>>;
   rvec?: Array<Array<number>>;
   tvec?: Array<Array<number>>;
+  t?: Array<Array<number>>;
 }
 
 @Injectable({

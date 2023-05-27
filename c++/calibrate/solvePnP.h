@@ -78,14 +78,27 @@ std::vector<Data3D> json2Data3DVector(json *v2)
     return ref2D;
 }
 
-void computeCamera(json *data, std::vector<Data2D> ref2D, std::vector<Data3D> ref3D)
+void computeCamera(json *data, std::vector<Data2D> ref2D, std::vector<Data3D> ref3D, std::vector<Data2D> size, std::vector<Data2D> focal)
 {
+    double width = size[0].x;
+    double height = size[0].y;
+    double focalX = focal[0].x;
+    double focalY = focal[0].y;
+
+    /*
+    f_x  0    c_x
+    0    f_y  c_y
+    0    0    1
+    */
+    double newCameraM[3][3] = {
+        {focalX, 0, width * 0.5},
+        {0, focalY, height * 0.5},
+        {0, 0, 1}};
+    cv::Mat cameraMatrix = cv::Mat(3, 3, CV_64FC1, newCameraM);
+
     // Read points
     std::vector<cv::Point2f> imagePoints = Generate2DPoints(ref2D);
     std::vector<cv::Point3f> objectPoints = Generate3DPoints(ref3D);
-
-    cv::Mat cameraMatrix(3, 3, cv::DataType<double>::type);
-    cv::setIdentity(cameraMatrix);
 
     cv::Mat distCoeffs(4, 1, cv::DataType<double>::type);
     distCoeffs.at<double>(0) = 0;
@@ -98,13 +111,25 @@ void computeCamera(json *data, std::vector<Data2D> ref2D, std::vector<Data3D> re
 
     cv::solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 
-    cv::Mat aux = cv::Mat::eye(3, 3, CV_32F);
+    cv::Mat R = cv::Mat::eye(3, 3, CV_32F);
     // Converts a rotation matrix to a rotation vector or vice versa.
-    cv::Rodrigues(rvec, aux);
+    cv::Rodrigues(rvec, R);
+
+    R = R.t();        // rotation of inverse
+    tvec = -R * tvec; // translation of inverse
+
+    cv::Mat T(4, 4, R.type());                      // T is 4x4
+    T(cv::Range(0, 3), cv::Range(0, 3)) = R * 1;    // copies R into T
+    T(cv::Range(0, 3), cv::Range(3, 4)) = tvec * 1; // copies tvec into T
+    // fill the last row of T (NOTE: depending on your types, use float or double)
+    double *p = T.ptr<double>(3);
+    p[0] = p[1] = p[2] = 0;
+    p[3] = 1;
 
     (*data)["rvec"] = cvMat2json(rvec);
     (*data)["tvec"] = cvMat2json(tvec);
-    (*data)["aux"] = cvMat2json(aux);
+    (*data)["aux"] = cvMat2json(R);
+    (*data)["t"] = cvMat2json(T);
 }
 
 std::vector<cv::Point2f> guessPoints(std::vector<Data3D> questionIn, std::vector<Data2D> ref2D, std::vector<Data3D> ref3D)
