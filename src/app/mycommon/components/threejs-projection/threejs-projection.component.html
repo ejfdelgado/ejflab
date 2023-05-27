@@ -1,6 +1,6 @@
 <div #myparent class="theparent">
     <div class="onedot no_caret" *ngFor="let dot of DOTS_MODEL | keyvalue" [ngStyle]="get2DCoordinates(dot)">
-        <div *ngIf="dot.value.v2" class="onedot_center no_caret" [ngClass]="{'selected': selectedDot == dot.key}"
+        <div *ngIf="seeCalibPoints && dot.value.v2" class="onedot_center no_caret" [ngClass]="{'selected': selectedDot == dot.key}"
             (click)="select2DPoint(dot)" [ngStyle]="DOT_OPTIONS.style">
         </div>
     </div>

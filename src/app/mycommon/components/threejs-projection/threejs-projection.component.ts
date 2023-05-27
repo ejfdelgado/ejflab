@@ -4,6 +4,7 @@ import {
   ElementRef,
   HostListener,
   Input,
+  OnChanges,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -18,7 +19,9 @@ export interface CalibData {
   templateUrl: './threejs-projection.component.html',
   styleUrls: ['./threejs-projection.component.css'],
 })
-export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
+export class ThreejsProjectionComponent
+  implements OnInit, AfterViewInit, OnChanges
+{
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
   scene: BasicScene | null = null;
@@ -30,6 +33,7 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
   };
   selectedDot: string | null = null;
   @Input() DOTS_MODEL: CalibData | null;
+  @Input() seeCalibPoints: boolean;
 
   constructor() {
     const style: any = {};
@@ -43,6 +47,13 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     style['left'] = tam + 'px';
     style['top'] = tam + 'px';
     this.DOT_OPTIONS.style = style;
+  }
+
+  ngOnChanges(changes: any) {
+    if (changes.seeCalibPoints) {
+      const actual = changes.seeCalibPoints.currentValue;
+      this.scene?.setCalibPointsVisibility(actual);
+    }
   }
 
   select2DPoint(dotData: KeyValueDotModelData) {
@@ -172,7 +183,7 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
           this.removeSelectedPoint();
           break;
         default:
-          //console.log(event.code);
+        //console.log(event.code);
       }
     }
   }

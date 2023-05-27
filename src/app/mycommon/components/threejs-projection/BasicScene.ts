@@ -111,11 +111,7 @@ export class BasicScene extends THREE.Scene {
     this.camera.updateMatrix();
   }
 
-  updateProjectionMatrix(
-    rodriguez: Array<Array<number>>,
-    tvec: Array<Array<number>>,
-    t: Array<Array<number>>
-  ) {
+  calibCamera(t: Array<Array<number>>) {
     if (!this.camera) {
       return;
     }
@@ -139,15 +135,11 @@ export class BasicScene extends THREE.Scene {
       t[3][3]
     );
 
-    if (this.orbitals) {
-      this.orbitals.reset();
-    }
+    this.setOrbitControls(false);
 
-    //this.resetCameraTecnic1();
     this.resetCameraTecnic2(false);
     this.camera.applyMatrix4(projectionMatrix);
     this.camera.updateProjectionMatrix();
-
   }
 
   selectKeyPoint(key: string) {
@@ -293,6 +285,33 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
+  setCalibPointsVisibility(visible: boolean) {
+    this.pickableObjects.forEach((o: THREE.Mesh, i) => {
+      const current = this.pickableObjects[i];
+      current.visible = visible;
+    });
+  }
+
+  setOrbitControls(enable: boolean) {
+    if (enable) {
+      if (this.orbitals || !this.camera || !this.renderer) {
+        return;
+      }
+      this.camera.position.x = 10;
+      this.camera.position.y = 10;
+      this.camera.position.z = 10;
+
+      this.camera.up = new THREE.Vector3(0, 1, 0);
+      this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+      this.orbitals = new OrbitControls(this.camera, this.renderer.domElement);
+    } else {
+      if (this.orbitals) {
+        this.orbitals.dispose();
+        this.orbitals = null;
+      }
+    }
+  }
+
   initialize(debug: boolean = true, addGridHelper: boolean = true) {
     this.camera = new THREE.PerspectiveCamera(
       35,
@@ -300,17 +319,13 @@ export class BasicScene extends THREE.Scene {
       0.1,
       50000
     );
-    this.camera.position.x = 10;
-    this.camera.position.y = 10;
-    this.camera.position.z = 10;
-    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvasRef,
       alpha: true,
     });
     this.renderer.setSize(this.bounds.width, this.bounds.height);
-    //this.orbitals = new OrbitControls(this.camera, this.renderer.domElement);
+    this.setOrbitControls(true);
 
     if (addGridHelper) {
       this.add(new THREE.GridHelper(10, 10, 'red'));

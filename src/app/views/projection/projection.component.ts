@@ -26,6 +26,13 @@ export interface GlobalModelData {
   };
 }
 
+/*
+TODO
+- Edit FOV 10 - 70 degrees -> make part of model
+- Show Hide Green Points
+
+*/
+
 @Component({
   selector: 'app-projection',
   templateUrl: './projection.component.html',
@@ -37,6 +44,9 @@ export class ProjectionComponent implements OnInit {
   public fullScreen: boolean = false;
   private observer?: any;
   public elem: any;
+  public states = {
+    seeCalibPoints: true,
+  };
   public mymodel: GlobalModelData = {
     calib: {
       a: {
@@ -132,10 +142,24 @@ export class ProjectionComponent implements OnInit {
   ) {
     this.extraOptions.push({
       action: () => {
-        this.solvePnP();
+        this.calibCamera();
       },
       icon: 'directions_run',
       label: 'Calibrate Camera',
+    });
+    this.extraOptions.push({
+      action: () => {
+        this.useOrbitControls();
+      },
+      icon: 'directions_run',
+      label: 'Use Orbit Controls',
+    });
+    this.extraOptions.push({
+      action: () => {
+        this.switchCalibPoints();
+      },
+      icon: 'directions_run',
+      label: 'Switch Calib Points',
     });
   }
 
@@ -151,7 +175,20 @@ export class ProjectionComponent implements OnInit {
     return this.currentView.pairs;
   }
 
-  async solvePnP() {
+  switchCalibPoints() {
+    this.states.seeCalibPoints = !this.states.seeCalibPoints;
+  }
+
+  useOrbitControls() {
+    if (!this.threeRef) {
+      return;
+    }
+    const threejsComponent = this
+      .threeRef as unknown as ThreejsProjectionComponent;
+    threejsComponent.scene?.setOrbitControls(true);
+  }
+
+  async calibCamera() {
     if (!this.currentView || !this.threeRef) {
       return;
     }
@@ -196,11 +233,7 @@ export class ProjectionComponent implements OnInit {
     const response = await this.opencvSrv.solvePnP(payload);
     if (response && response.aux && response.tvec && response.t) {
       if (threejsComponent.scene) {
-        threejsComponent.scene.updateProjectionMatrix(
-          response.aux,
-          response.tvec,
-          response.t
-        );
+        threejsComponent.scene.calibCamera(response.t);
       }
     }
   }

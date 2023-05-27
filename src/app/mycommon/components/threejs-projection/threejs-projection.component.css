@@ -17,11 +17,11 @@
 .onedot_center {
   border-style: solid;
   border-color: black;
-  background: #00FF00;
+  background: #00ff00;
   border-radius: 100%;
   position: relative;
 }
 
 .onedot_center.selected {
-  background: #FF0000;
+  background: #ff0000;
 }

@@ -4,7 +4,7 @@
     </div>
     <div class="body_part">
         <div class="left_part">
-            <app-threejs-projection #three_ref [DOTS_MODEL]="getCurrentPair()"
+            <app-threejs-projection #three_ref [DOTS_MODEL]="getCurrentPair()" [seeCalibPoints]="states.seeCalibPoints"
                 [ngStyle]="{'display': 'flex', 'position': (fullScreen ? 'fixed': 'absolute')}">
             </app-threejs-projection>
 
