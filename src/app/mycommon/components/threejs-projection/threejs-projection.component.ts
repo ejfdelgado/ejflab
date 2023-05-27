@@ -108,6 +108,15 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
     this.scene.onMouseMove(ev, bounds);
   }
 
+  removeSelectedPoint() {
+    if (!this.selectedDot || !this.DOTS_MODEL) {
+      return;
+    }
+    if (this.selectedDot in this.DOTS_MODEL) {
+      delete this.DOTS_MODEL[this.selectedDot];
+    }
+  }
+
   listenSelected3DPoint(data: KeyValueDotModelData) {
     if (!this.DOTS_MODEL) {
       return;
@@ -153,4 +162,18 @@ export class ThreejsProjectionComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {}
+
+  @HostListener('document:keypress', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    //console.log(event);
+    if (event.ctrlKey && event.shiftKey) {
+      switch (event.code) {
+        case 'NumpadMultiply':
+          this.removeSelectedPoint();
+          break;
+        default:
+          //console.log(event.code);
+      }
+    }
+  }
 }

@@ -1,14 +1,19 @@
 import {
   ChangeDetectorRef,
   Component,
+  ElementRef,
   HostListener,
   Inject,
   OnInit,
+  ViewChild,
 } from '@angular/core';
 import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.component';
 import { DOCUMENT } from '@angular/common';
-import { OpenCVService } from 'src/services/opencv.service';
-import { CalibData } from 'src/app/mycommon/components/threejs-projection/threejs-projection.component';
+import { OpenCVService, SolvePnPData } from 'src/services/opencv.service';
+import {
+  CalibData,
+  ThreejsProjectionComponent,
+} from 'src/app/mycommon/components/threejs-projection/threejs-projection.component';
 
 export interface ViewModelData {
   name: string;
@@ -27,8 +32,8 @@ export interface GlobalModelData {
   styleUrls: ['./projection.component.css'],
 })
 export class ProjectionComponent implements OnInit {
+  @ViewChild('three_ref') threeRef: ElementRef;
   public extraOptions: Array<OptionData> = [];
-
   public fullScreen: boolean = false;
   private observer?: any;
   public elem: any;
@@ -46,12 +51,19 @@ export class ProjectionComponent implements OnInit {
     @Inject(DOCUMENT) private document: any,
     private changeDetectorRef: ChangeDetectorRef,
     private opencvSrv: OpenCVService
-  ) {}
+  ) {
+    this.extraOptions.push({
+      action: () => {
+        this.solvePnP();
+      },
+      icon: 'directions_run',
+      label: 'Calibrate Camera',
+    });
+  }
 
   ngOnInit(): void {
     this.elem = document.documentElement;
     this.initResizeObserver();
-    this.solvePnP();
   }
 
   getCurrentPair() {
@@ -62,27 +74,46 @@ export class ProjectionComponent implements OnInit {
   }
 
   async solvePnP() {
-    const response = await this.opencvSrv.solvePnP({
-      v2: [
-        [282, 274],
-        [397, 227],
-        [577, 271],
-        [462, 318],
-        [270, 479],
-        [450, 523],
-        [566, 475],
-      ],
-      v3: [
-        [0.5, 0.5, -0.5],
-        [0.5, 0.5, 0.5],
-        [-0.5, 0.5, 0.5],
-        [-0.5, 0.5, -0.5],
-        [0.5, -0.5, -0.5],
-        [-0.5, -0.5, -0.5],
-        [-0.5, -0.5, 0.5],
-      ],
-    });
-    console.log(JSON.stringify(response, null, 4));
+    if (!this.currentView || !this.threeRef) {
+      return;
+    }
+    const threejsComponent = this
+      .threeRef as unknown as ThreejsProjectionComponent;
+    const bounds = threejsComponent.bounds;
+    if (!bounds) {
+      return;
+    }
+    const pairs = this.currentView.pairs;
+    const keys = Object.keys(pairs);
+    const payload: SolvePnPData = {
+      v2: [],
+      v3: [],
+    };
+    const aspectRatio = bounds.height / bounds.width;
+    console.log(`${bounds.width}x${bounds.height} = ${aspectRatio}`);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      const actual = pairs[key];
+      if (!actual.v2) {
+        continue;
+      }
+      payload.v2.push([
+        //actual.v2.x * bounds.width / 100,
+        //actual.v2.y * bounds.height / 100,
+        actual.v2.x * aspectRatio * 10,
+        actual.v2.y * 10,
+      ]);
+      payload.v3.push([actual.v3.x, actual.v3.y, actual.v3.z]);
+    }
+    const response = await this.opencvSrv.solvePnP(payload);
+    if (response && response.aux && response.tvec) {
+      if (threejsComponent.scene) {
+        threejsComponent.scene.updateProjectionMatrix(
+          response.aux,
+          response.tvec
+        );
+      }
+    }
   }
 
   ngOnDestroy() {
@@ -163,7 +194,7 @@ export class ProjectionComponent implements OnInit {
           }
           break;
         default:
-          console.log(event.code);
+        //console.log(event.code);
       }
     }
   }

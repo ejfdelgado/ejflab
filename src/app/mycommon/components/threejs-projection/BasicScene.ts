@@ -79,6 +79,46 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
+  updateProjectionMatrix(
+    rodriguez: Array<Array<number>>,
+    tvec: Array<Array<number>>
+  ) {
+    if (!this.camera) {
+      return;
+    }
+    const projectionMatrix = new THREE.Matrix4();
+    projectionMatrix.set(
+      rodriguez[0][0],
+      rodriguez[0][1],
+      rodriguez[0][2],
+      tvec[0][0],
+      rodriguez[1][0],
+      rodriguez[1][1],
+      rodriguez[1][2],
+      tvec[0][1],
+      rodriguez[2][0],
+      rodriguez[2][1],
+      rodriguez[2][2],
+      tvec[0][2],
+      0,
+      0,
+      0,
+      1
+    );
+
+    if (this.orbitals) {
+      this.orbitals.reset();
+    }
+    this.camera.matrix
+      .identity()
+      .decompose(
+        this.camera.position,
+        this.camera.quaternion,
+        this.camera.scale
+      );
+    this.camera.applyMatrix4(projectionMatrix);
+  }
+
   selectKeyPoint(key: string) {
     this.selectedObjectName = key;
   }
@@ -232,6 +272,7 @@ export class BasicScene extends THREE.Scene {
     this.camera.position.z = 12;
     this.camera.position.y = 12;
     this.camera.position.x = 12;
+    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
 
     this.renderer = new THREE.WebGLRenderer({
       canvas: this.canvasRef,
