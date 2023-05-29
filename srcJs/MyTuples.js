@@ -5,6 +5,51 @@ const MAX_BUFFER_CHANGES = 3;
 
 class MyTuples {
     static TIPOS_BASICOS = ["string", "number", "boolean"];
+    static arrayCompress({ someArray, maxLength = 65535 }) {
+        const response = [];
+        let actualString = "[";
+        let actualCount = 0;
+        for (let i = 0; i < someArray.length; i++) {
+            const actual = JSON.stringify(someArray[i]);
+            if (actual.length > maxLength - 2) {
+                throw new Error(`Can't compress with size ${maxLength} one item has size ${actual.length}`);
+            }
+            let caracteresExtra = 1;
+            if (actualCount > 0) {
+                caracteresExtra++;
+            }
+            if (actualString.length + actual.length > maxLength - caracteresExtra) {
+                // Se hace push y se crea un nuevo string
+                actualString += "]";
+                response.push(actualString);
+                actualString = "[";
+                actualString += actual;
+                actualCount = 1;
+            } else {
+                if (actualCount > 0) {
+                    actualString += ",";
+                }
+                actualString += actual;
+                actualCount += 1;
+            }
+        }
+        // Se agrega el último
+        if (actualString.length > 0) {
+            actualString += "]";
+            response.push(actualString);
+        }
+        return response;
+    };
+    static arrayUnCompress(someArray) {
+        const response = [];
+        for (let i = 0; i < someArray.length; i++) {
+            const actual = JSON.parse(someArray[i]);
+            for (let j = 0; j < actual.length; j++) {
+                response.push(actual[j]);
+            }
+        }
+        return response;
+    }
     static convertFromBD(model) {
         const response = {};
         model.forEach((value) => {

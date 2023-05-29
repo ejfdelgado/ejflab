@@ -249,4 +249,45 @@ const testArray = () => {
     }
 }
 
-testConverter();
+const testArrayCompress = () => {
+    const casos = [
+        { i: { someArray: [1, 23, 3, 4], maxLength: 5 }, myExpected: ["[1]", "[23]", "[3,4]"] },
+        { i: { someArray: [1, 230, 3, 4], maxLength: 5 }, myExpected: ["[1]", "[230]", "[3,4]"] },
+        { i: { someArray: [1, 2301, 3, 4], maxLength: 5 }, myExpected: "Can't compress with size 5 one item has size 4" },
+        { i: { someArray: [1, 2, 3, 4], maxLength: 5 }, myExpected: ["[1,2]", "[3,4]"] },
+    ];
+
+    for (let i = 0; i < casos.length; i++) {
+        const caso = casos[i];
+        let myActual = null;
+        let myRaw = null;
+        try {
+            myRaw = MyTuples.arrayCompress(caso.i);
+            myActual = sortify(myRaw);
+        } catch (err) {
+            myActual = sortify(err.message);
+        }
+
+        myExpected = sortify(caso.myExpected);
+        if (myExpected != myActual) {
+            throw Error(`Compresion fallida expected: ${myExpected} actual ${myActual}`);
+        } else {
+            console.log(`Case compress ${i + 1} Ok`);
+        }
+
+        if (caso.myExpected instanceof Array) {
+            // Se valida la descompresión
+            const uncompressed = MyTuples.arrayUnCompress(myRaw);
+            const unCompressExpected = sortify(caso.i.someArray);
+            const unCompressActual = sortify(uncompressed);
+            if (unCompressExpected != unCompressActual) {
+                throw Error(`Descompresion fallida expected: ${unCompressExpected} actual ${unCompressActual}`);
+            } else {
+                console.log(`Case uncompress ${i + 1} Ok`);
+            }
+        }
+    }
+}
+
+testArrayCompress();
+//testConverter();
