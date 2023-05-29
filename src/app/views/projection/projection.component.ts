@@ -4,6 +4,7 @@ import {
   ElementRef,
   HostListener,
   Inject,
+  OnChanges,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -36,11 +37,15 @@ export interface GlobalModelData {
   };
 }
 
+export interface LocalModelData {
+  currentViewName: string | null;
+  currentView: ViewModelData | null;
+}
+
 /*
 TODO
 - Floating workspace...
 - Edit FOV 10 - 70 degrees -> make part of model
-
 */
 
 @Component({
@@ -48,7 +53,10 @@ TODO
   templateUrl: './projection.component.html',
   styleUrls: ['./projection.component.css'],
 })
-export class ProjectionComponent extends BaseComponent implements OnInit {
+export class ProjectionComponent
+  extends BaseComponent
+  implements OnInit, OnChanges
+{
   @ViewChild('three_ref') threeRef: ElementRef;
   public extraOptions: Array<OptionData> = [];
   private observer?: any;
@@ -68,92 +76,12 @@ export class ProjectionComponent extends BaseComponent implements OnInit {
     },
   };
   public mymodel: GlobalModelData = {
-    calib: {
-      a: {
-        name: 'Projector #1',
-        pairs: {
-          'DOT_-1.00,1.00,1.00': {
-            v3: {
-              x: -1,
-              y: 1,
-              z: 1,
-            },
-            v2: {
-              x: 0.7503429355281207,
-              y: 0.45863309352517984,
-            },
-          },
-          'DOT_1.00,1.00,1.00': {
-            v3: {
-              x: 1,
-              y: 1,
-              z: 1,
-            },
-            v2: {
-              x: 0.8367626886145405,
-              y: 0.49640287769784175,
-            },
-          },
-          'DOT_-1.00,-1.00,1.00': {
-            v3: {
-              x: -1,
-              y: -1,
-              z: 1,
-            },
-            v2: {
-              x: 0.7311385459533608,
-              y: 0.5467625899280576,
-            },
-          },
-          'DOT_1.00,-1.00,1.00': {
-            v3: {
-              x: 1,
-              y: -1,
-              z: 1,
-            },
-            v2: {
-              x: 0.8093278463648834,
-              y: 0.5881294964028777,
-            },
-          },
-          'DOT_1.00,-1.00,-1.00': {
-            v3: {
-              x: 1,
-              y: -1,
-              z: -1,
-            },
-            v2: {
-              x: 0.831275720164609,
-              y: 0.5431654676258992,
-            },
-          },
-          'DOT_1.00,1.00,-1.00': {
-            v3: {
-              x: 1,
-              y: 1,
-              z: -1,
-            },
-            v2: {
-              x: 0.8573388203017832,
-              y: 0.4568345323741007,
-            },
-          },
-          'DOT_-1.00,1.00,-1.00': {
-            v3: {
-              x: -1,
-              y: 1,
-              z: -1,
-            },
-            v2: {
-              x: 0.7777777777777778,
-              y: 0.4226618705035971,
-            },
-          },
-        },
-      },
-    },
+    calib: {},
   };
-  public currentView: ViewModelData | null = this.mymodel.calib['a'];
+  public localModel: LocalModelData = {
+    currentViewName: null,
+    currentView: null,
+  };
 
   constructor(
     public override route: ActivatedRoute,
@@ -208,19 +136,36 @@ export class ProjectionComponent extends BaseComponent implements OnInit {
     this.saveTuple();
   }
 
+  ngOnChanges(changes: any) {
+    console.log(JSON.stringify(changes));
+    /*if (changes.seeCalibPoints) {
+      const actual = changes.seeCalibPoints.currentValue;
+
+    }
+    */
+  }
+
   override onTupleReadDone() {
     if (!this.tupleModel.data) {
       this.tupleModel.data = {
-        in: [],
-        out: {
-          column: '',
-          min: 0,
-          max: 1,
-          ngroups: 0,
-        },
+        calib: {},
       };
     }
+    this.mymodel = this.tupleModel.data;
     super.onTupleReadDone();
+    console.log('Read OK!');
+    /*
+    setTimeout(() => {
+      this.tupleModel.data = {
+        calib: {},
+      };
+      this.saveAll();
+    });
+    */
+  }
+
+  override onTupleWriteDone() {
+    console.log('Writed OK!');
   }
 
   closeFloating() {
@@ -234,10 +179,10 @@ export class ProjectionComponent extends BaseComponent implements OnInit {
   }
 
   getCurrentPair() {
-    if (!this.currentView) {
+    if (!this.localModel.currentView) {
       return null;
     }
-    return this.currentView.pairs;
+    return this.localModel.currentView.pairs;
   }
 
   switchCalibPoints() {
@@ -254,7 +199,7 @@ export class ProjectionComponent extends BaseComponent implements OnInit {
   }
 
   async calibCamera() {
-    if (!this.currentView || !this.threeRef) {
+    if (!this.localModel.currentView || !this.threeRef) {
       return;
     }
     const threejsComponent = this
@@ -265,7 +210,7 @@ export class ProjectionComponent extends BaseComponent implements OnInit {
     if (!bounds || !scene || !camera) {
       return;
     }
-    const pairs = this.currentView.pairs;
+    const pairs = this.localModel.currentView.pairs;
     const keys = Object.keys(pairs);
 
     //Returns the focal length of the current .fov in respect to .filmGauge.
@@ -312,29 +257,22 @@ export class ProjectionComponent extends BaseComponent implements OnInit {
     if (this.elem.requestFullscreen) {
       this.elem.requestFullscreen();
     } else if (this.elem.mozRequestFullScreen) {
-      /* Firefox */
       this.elem.mozRequestFullScreen();
     } else if (this.elem.webkitRequestFullscreen) {
-      /* Chrome, Safari and Opera */
       this.elem.webkitRequestFullscreen();
     } else if (this.elem.msRequestFullscreen) {
-      /* IE/Edge */
       this.elem.msRequestFullscreen();
     }
   }
 
-  /* Close fullscreen */
   closeFullscreen() {
     if (typeof document.exitFullscreen == 'function') {
       this.document.exitFullscreen();
     } else if (this.document.mozCancelFullScreen) {
-      /* Firefox */
       this.document.mozCancelFullScreen();
     } else if (this.document.webkitExitFullscreen) {
-      /* Chrome, Safari and Opera */
       this.document.webkitExitFullscreen();
     } else if (this.document.msExitFullscreen) {
-      /* IE/Edge */
       this.document.msExitFullscreen();
     }
   }

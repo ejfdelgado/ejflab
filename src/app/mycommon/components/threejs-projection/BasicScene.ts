@@ -217,7 +217,10 @@ export class BasicScene extends THREE.Scene {
       point.x.toFixed(this.PRECISION),
       point.y.toFixed(this.PRECISION),
       point.z.toFixed(this.PRECISION),
-    ].join(',');
+    ]
+      .join('_')
+      .replace(/[-]/g, '_')
+      .replace(/[\.]/g, '_');
     const generatedName = `DOT_${key}`;
     const found = this.getObjectByName(generatedName);
     if (!found) {

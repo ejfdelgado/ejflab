@@ -6,6 +6,7 @@ import { ProjectionComponent } from './projection.component';
 import { MycommonModule } from 'src/app/mycommon/mycommon.module';
 import { MatIconModule } from '@angular/material/icon';
 import { MenuControlComponent } from './components/menu-control/menu-control.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [ProjectionComponent, MenuControlComponent],
@@ -14,6 +15,7 @@ import { MenuControlComponent } from './components/menu-control/menu-control.com
     CommonModule,
     MycommonModule,
     ProjectionRoutingModule,
+    FormsModule,
   ],
 })
 export class ProjectionModule {}

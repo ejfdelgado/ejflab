@@ -18,7 +18,7 @@
                 <mat-icon class="close_icon" (click)="closeFloating()">close</mat-icon>
             </div>
             <div *ngIf="!states.fullScreen || states.openedFloatingMenu" class="scroll_menu_container">
-                <app-menu-control [mymodel]="mymodel"></app-menu-control>
+                <app-menu-control [mymodel]="mymodel" [localModel]="localModel" (saveEvent)="saveAll()"></app-menu-control>
             </div>
         </div>
     </div>

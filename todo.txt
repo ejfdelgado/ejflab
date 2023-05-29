@@ -1,6 +1,6 @@
 src/app/app.component.ts
-https://fonts.google.com/icons <mat-icon>edit</mat-icon>
-https://fontawesome.com/icons?d=gallery
+https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>edit</mat-icon>
+https://fontawesome.com/icons?d=gallery FontAwesome
 
 - Lanzar el entrenamiento de tensorflow
   - Leer los csv selecionados, validar los inputs name y output name.

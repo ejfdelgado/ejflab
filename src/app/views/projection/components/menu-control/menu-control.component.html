@@ -1,1 +1,20 @@
-<pre>{{ mymodel | json }}</pre>
+<button (click)="saveEvent.emit()" mat-menu-item>
+    <mat-icon>save</mat-icon>
+    <span>Guardar</span>
+</button>
+<label>Vista:</label>
+<select [(ngModel)]="localModel.currentViewName" (ngModelChange)="changedView($event)">
+    <option disabled hidden [value]="null">-- vista --</option>
+    <option *ngFor="let c of getViewOptionsList()" [ngValue]="c.val">{{c.txt}}</option>
+</select>
+<button (click)="addView()" mat-menu-item>
+    <mat-icon>add</mat-icon>
+    <span>Agregar Vista</span>
+</button>
+<div *ngIf="localModel.currentViewName != null">
+    <button (click)="removeView(localModel.currentViewName)" mat-menu-item>
+        <mat-icon>close</mat-icon>
+        <span>Borrar Vista</span>
+    </button>
+</div>
+<pre>{{ localModel.currentView | json }}</pre>
