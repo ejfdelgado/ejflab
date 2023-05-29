@@ -14,6 +14,16 @@ import {
   CalibData,
   ThreejsProjectionComponent,
 } from 'src/app/mycommon/components/threejs-projection/threejs-projection.component';
+import { BaseComponent } from 'src/app/components/base/base.component';
+import { ActivatedRoute } from '@angular/router';
+import { BackendPageService } from 'src/services/backendPage.service';
+import { AuthService } from 'src/services/auth.service';
+import { MatDialog } from '@angular/material/dialog';
+import { TupleService } from 'src/services/tuple.service';
+import { FileService } from 'src/services/file.service';
+import { ModalService } from 'src/services/modal.service';
+import { WebcamService } from 'src/services/webcam.service';
+import { LoginService } from 'src/services/login.service';
 
 export interface ViewModelData {
   name: string;
@@ -38,7 +48,7 @@ TODO
   templateUrl: './projection.component.html',
   styleUrls: ['./projection.component.css'],
 })
-export class ProjectionComponent implements OnInit {
+export class ProjectionComponent extends BaseComponent implements OnInit {
   @ViewChild('three_ref') threeRef: ElementRef;
   public extraOptions: Array<OptionData> = [];
   private observer?: any;
@@ -146,10 +156,31 @@ export class ProjectionComponent implements OnInit {
   public currentView: ViewModelData | null = this.mymodel.calib['a'];
 
   constructor(
+    public override route: ActivatedRoute,
+    public override pageService: BackendPageService,
+    public override cdr: ChangeDetectorRef,
+    public override authService: AuthService,
+    public override dialog: MatDialog,
+    public override tupleService: TupleService,
+    public override fileService: FileService,
+    public override modalService: ModalService,
+    public override webcamService: WebcamService,
+    public loginSrv: LoginService,
+    //
     @Inject(DOCUMENT) private document: any,
-    private changeDetectorRef: ChangeDetectorRef,
     private opencvSrv: OpenCVService
   ) {
+    super(
+      route,
+      pageService,
+      cdr,
+      authService,
+      dialog,
+      tupleService,
+      fileService,
+      modalService,
+      webcamService
+    );
     this.extraOptions.push({
       action: () => {
         this.calibCamera();
@@ -173,11 +204,31 @@ export class ProjectionComponent implements OnInit {
     });
   }
 
+  async saveAll() {
+    this.saveTuple();
+  }
+
+  override onTupleReadDone() {
+    if (!this.tupleModel.data) {
+      this.tupleModel.data = {
+        in: [],
+        out: {
+          column: '',
+          min: 0,
+          max: 1,
+          ngroups: 0,
+        },
+      };
+    }
+    super.onTupleReadDone();
+  }
+
   closeFloating() {
     this.states.openedFloatingMenu = false;
   }
 
-  ngOnInit(): void {
+  override async ngOnInit() {
+    await super.ngOnInit();
     this.elem = document.documentElement;
     this.initResizeObserver();
   }
@@ -252,7 +303,8 @@ export class ProjectionComponent implements OnInit {
     }
   }
 
-  ngOnDestroy() {
+  override ngOnDestroy() {
+    super.ngOnDestroy();
     this.observer?.unobserve(this.elem);
   }
 
@@ -305,12 +357,12 @@ export class ProjectionComponent implements OnInit {
   @HostListener('document:mozfullscreenchange')
   @HostListener('document:MSFullscreenChange')
   onFullscreenChange() {
-    this.changeDetectorRef.detectChanges();
+    this.cdr.detectChanges();
   }
 
   initResizeObserver() {
     this.observer = new (<any>window).ResizeObserver((entries: any) => {
-      this.changeDetectorRef.detectChanges();
+      this.cdr.detectChanges();
     });
 
     this.observer.observe(this.elem);
