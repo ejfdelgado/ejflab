@@ -66,6 +66,15 @@ export class PageService {
     }
     return response;
   }
+  async deleteAllTuples(page: CardComponentData): Promise<boolean> {
+    let response = { count: 0 };
+    do {
+      response = await this.httpService.delete<any>(`srv/${page.id}/tup`, {
+        showIndicator: true,
+      });
+    } while (typeof response.count == 'number' && response.count > 0);
+    return true;
+  }
   async delete(page: CardComponentData): Promise<boolean> {
     const response = await this.httpService.delete<null>(`srv/${page.id}/pg`, {
       showIndicator: true,

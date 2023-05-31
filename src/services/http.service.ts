@@ -314,9 +314,8 @@ export class HttpService {
               return of(null);
             })
           )
-          .subscribe((data) => {
-            //console.log(data);
-            resolve(null);
+          .subscribe((data: any) => {
+            resolve(data);
           });
       });
       return respuesta;

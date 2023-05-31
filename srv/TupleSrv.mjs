@@ -17,6 +17,32 @@ const MAX_READ_SIZE = 60;
 }
 */
 export class TupleSrv {
+
+    static async deleteAll(req, res, next) {
+        const pageId = req.params['pageId'];
+        const { max, offset } = General.readMaxOffset(req, MAX_READ_SIZE);
+        if (!pageId) {
+            throw new MalaPeticionException("Falta el id");
+        }
+        // Se debe validar el permiso de borrado
+        // TODO
+
+        // Se debe realizar la lectura como tal
+        const where = [
+            { key: "pg", oper: "==", value: pageId },
+        ];
+        const response = await MyStore.paginate(TUPLE_TYPE, [{ name: "act", dir: 'asc' }], offset, max, where);
+
+        const batch = MyStore.getBatch();
+        for (let i = 0; i < response.length; i++) {
+            const actual = response[i];
+            MyStore.deleteById(TUPLE_TYPE, actual.id, batch);
+        }
+        // Commit the batch
+        await batch.commit();
+        res.status(200).send({ count: response.length });
+    }
+
     static async read(req, res, next) {
         const AHORA = MyDatesBack.getDayAsContinuosNumberHmmSSmmm(new Date());
         // Se debe leer el parametro id, offset, max

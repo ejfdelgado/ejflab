@@ -137,7 +137,7 @@ export class ProjectionComponent
   }
 
   ngOnChanges(changes: any) {
-    console.log(JSON.stringify(changes));
+    //console.log(JSON.stringify(changes));
     /*if (changes.seeCalibPoints) {
       const actual = changes.seeCalibPoints.currentValue;
 

@@ -64,7 +64,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: any) {
-    console.log(JSON.stringify(changes));
+    //console.log(JSON.stringify(changes));
   }
 
   getViewOptionsList(): Array<MyOptionData> {
