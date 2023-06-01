@@ -80,6 +80,7 @@ import { ThreejsProjectionComponent } from './components/threejs-projection/thre
     PrejsonComponent,
     TensorflowtrainComponent,
     ThreejsProjectionComponent,
+    SortByNamePipe,
   ],
 })
 export class MycommonModule {}

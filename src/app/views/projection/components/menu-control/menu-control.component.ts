@@ -6,10 +6,17 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
+import { BlobOptionsData } from 'src/app/mycommon/components/blobeditor/blobeditor.component';
+import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
-import { GlobalModelData, LocalModelData } from '../../projection.component';
+import { MyConstants } from 'srcJs/MyConstants';
+import {
+  GlobalModelData,
+  LocalModelData,
+  Model3DData,
+} from '../../projection.component';
 
 export interface MyOptionData {
   val: string;
@@ -26,9 +33,55 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Input() localModel: LocalModelData;
   @Output() saveEvent = new EventEmitter<void>();
 
-  constructor(public modalService: ModalService) {}
+  blobOptions: BlobOptionsData = {
+    useRoot: MyConstants.SRV_ROOT,
+    autosave: true,
+  };
+
+  constructor(
+    public fileService: FileService,
+    public modalService: ModalService
+  ) {}
 
   ngOnInit(): void {}
+
+  async add3DModel() {
+    const id = await IdGen.nuevo();
+    if (id == null) {
+      return;
+    }
+    if (!this.mymodel.models) {
+      this.mymodel.models = {};
+    }
+    this.mymodel.models[id] = {
+      name: `Model ${id}`,
+      startTime: 0,
+    };
+  }
+
+  async delete3DModel(key: string) {
+    if (!(key in this.mymodel.models)) {
+      return;
+    }
+    const actual: Model3DData = this.mymodel.models[key];
+    const response = await this.modalService.confirm({
+      title: `¿Seguro que desea borrar el modelo ${actual.name}?`,
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    const promesasBorrar = [];
+    if (actual.objUrl) {
+      promesasBorrar.push(this.fileService.delete(actual.objUrl));
+    }
+    if (actual.videoUrl) {
+      promesasBorrar.push(this.fileService.delete(actual.videoUrl));
+    }
+    await Promise.all(promesasBorrar);
+    delete this.mymodel.models[key];
+    //this.saveEvent.emit();
+  }
 
   changedView(viewId: string) {
     this.localModel.currentView = this.mymodel.calib[viewId];

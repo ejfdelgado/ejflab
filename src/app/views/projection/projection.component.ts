@@ -26,6 +26,13 @@ import { ModalService } from 'src/services/modal.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { LoginService } from 'src/services/login.service';
 
+export interface Model3DData {
+  name: string;
+  objUrl?: string;
+  videoUrl?: string;
+  startTime: number;
+}
+
 export interface ViewModelData {
   name: string;
   pairs: CalibData;
@@ -34,6 +41,9 @@ export interface ViewModelData {
 export interface GlobalModelData {
   calib: {
     [key: string]: ViewModelData;
+  };
+  models: {
+    [key: string]: Model3DData;
   };
 }
 
@@ -77,6 +87,7 @@ export class ProjectionComponent
   };
   public mymodel: GlobalModelData = {
     calib: {},
+    models: {},
   };
   public localModel: LocalModelData = {
     currentViewName: null,

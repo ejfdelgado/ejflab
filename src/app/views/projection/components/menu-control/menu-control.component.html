@@ -17,8 +17,20 @@
         <span>Borrar Vista</span>
     </button>
 </div>
-<button (click)="playSound()" mat-menu-item>
-    <mat-icon>play</mat-icon>
-    <span>Play</span>
+<button (click)="add3DModel()" mat-menu-item>
+    <mat-icon>add</mat-icon>
+    <span>Agregar Modelo 3D</span>
 </button>
-<pre>{{ localModel.currentView | json }}</pre>
+<div *ngFor="let model of mymodel.models | keyvalue | sortByName">
+    <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'" [url]="model.value.objUrl"
+        (urlChange)="model.value.objUrl=$event; saveEvent.emit();">
+    </app-blobeditor>
+    <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'" [url]="model.value.videoUrl"
+        (urlChange)="model.value.videoUrl=$event; saveEvent.emit();">
+    </app-blobeditor>
+    <pre>{{ model.value | json }}</pre>
+    <button (click)="delete3DModel(model.key)" mat-menu-item>
+        <mat-icon>delete</mat-icon>
+        <span>Borrar Modelo</span>
+    </button>
+</div>

@@ -24,6 +24,7 @@ export interface BlobOptionsData {
 export class BlobeditorComponent implements OnInit {
   faEllipsisVerticalIcon = faEllipsisVertical;
   @Input() options: BlobOptionsData;
+  @Input() subFolder?: string;
   @Input() url: string | null;
   @Output() urlChange = new EventEmitter<string | null>();
   @Output() eventSave = new EventEmitter<FileBase64Data>();
@@ -79,12 +80,25 @@ export class BlobeditorComponent implements OnInit {
     const processFileThis = this.processFile.bind(this);
     this.fileService.sendRequest({ type: 'file' }, processFileThis);
   }
-
+  getSubFolder(): string {
+    if (typeof this.subFolder == 'string') {
+      // Se asegura que no comience con slash y que termine con slash y que no tenga backslash
+      return (
+        this.subFolder
+          .replace(/[\\]/, '/')
+          .replace(/^[/]/, '')
+          .replace(/[/]$/, '')
+          .replace(/[/]{2,}/, '/') + '/'
+      );
+    } else {
+      return '';
+    }
+  }
   async processFile(responseData: FileResponseData) {
     if (this.options.autosave === true) {
       const response = await this.saveFile({
         base64: responseData.base64,
-        fileName: responseData.fileName,
+        fileName: this.getSubFolder() + responseData.fileName,
         erasefile: this.url, // send old file
       });
       this.url = response.key;
