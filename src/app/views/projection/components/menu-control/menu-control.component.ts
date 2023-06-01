@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
+import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { GlobalModelData, LocalModelData } from '../../projection.component';
 
 export interface MyOptionData {
@@ -65,6 +66,15 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: any) {
     //console.log(JSON.stringify(changes));
+  }
+
+  async playSound() {
+    try {
+      const response = await ModuloSonido.preload(['/assets/sounds/end.mp3']);
+      await ModuloSonido.play('/assets/sounds/end.mp3');
+    } catch (err: any) {
+      this.modalService.error(err);
+    }
   }
 
   getViewOptionsList(): Array<MyOptionData> {

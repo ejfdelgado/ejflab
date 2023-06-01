@@ -60,136 +60,28 @@ const generateLongCsv = (n) => {
 const testComunidad = () => {
     const db = [
         {
-            "REPORTE": {
-                "veryOldStatus": null,
-                "points": 792,
-                "oldStatus": "1",
-                "VOTES": [
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 1,
-                        "points": 50,
-                        "numWin": 1
-                    },
-                    {
-                        "votes": 2,
-                        "points": 50,
-                        "numWin": 1
-                    }
-                ],
-                "DONATIONS": {
-                    "count": 34,
-                    "points": 68
-                },
-                "REPOSTS": {
-                    "count": 3,
-                    "points": 3
-                },
-                "STARS": [
-                    {
-                        "stars": 4,
-                        "points": 40
-                    },
-                    {
-                        "stars": 4,
-                        "points": 40
-                    },
-                    {
-                        "stars": 5,
-                        "points": 50
-                    },
-                    {
-                        "stars": 5,
-                        "points": 50
-                    },
-                    {
-                        "stars": 5,
-                        "points": 50
-                    },
-                    {
-                        "stars": 4,
-                        "points": 40
-                    }
-                ],
-                "SHARE": {
-                    "events": 7,
-                    "points": 8
-                },
-                "newStatus": "1",
-                "updated": 1685546454903,
-                "cutDate": 1654442454903
+            "uid": "pmVbGBVQVvhG6QEP0EcenbmvSSH3",
+            "picture": "https://storage.googleapis.com/panal-comunidad-dev-public/profile/edelgado@panal.co/me",
+            "email": "edelgado@panal.co",
+            "bio": "Esta es mi biografía!",
+            "versionchat": 20230418,
+            "name": "Princess Peach",
+            "search": [
+                "edelgado@panal.co"
+            ],
+            "pushkey": {
+                "2c14e44e-abed-40bb-8c4e-02c2d0f08c4d": "ExponentPushToken[9YfB6jJHu63Yhgt8ieQxRw]",
+                "3f0d6cad-e387-4d17-8f04-7fdeeac42ad9": "ExponentPushToken[NULrDTKP-lH0YIlDDhiOjf]",
+                "cacce296-c1da-4f24-9ea7-aa7e679f0af9": "ExponentPushToken[-Yb3drMHWy6zAr-SKHVQCw]",
+                "d8814585-fe19-4472-854f-3a96d9a11ee9": "ExponentPushToken[5YxMh6Cu5_VjdLamJNloUu]"
             },
-            "email": "edgar.jose.fernando.delgado@gmail.com",
-            "AAAAMMDD": 20230531
+            "donorType": "3",
+            "created": 1670861237000,
+            "version": 8,
+            "versionstatus": 20230601,
+            "id": "edelgado@panal.co"
         }
     ];
-
-    for (let i = 0; i < db.length; i++) {
-        const actual = db[i];
-        let stars_detail = {
-            count: 0,
-            points: 0,
-        };
-        let votes_detail = {
-            count: 0,
-            points: 0,
-        };
-        const starts = actual.REPORTE.STARS;
-        for (let j = 0; j < starts.length; j++) {
-            const detalle = starts[j];
-            stars_detail.count += detalle.stars;
-            stars_detail.points += detalle.points;
-        }
-        const votes = actual.REPORTE.VOTES;
-        for (let j = 0; j < votes.length; j++) {
-            const detalle = votes[j];
-            votes_detail.count += detalle.votes;
-            votes_detail.points += detalle.points;
-        }
-        actual.starts = stars_detail;
-        actual.votes = votes_detail;
-        actual.share = {
-            count: actual.REPORTE.SHARE.events,
-            points: actual.REPORTE.SHARE.points,
-        };
-        delete actual.REPORTE.STARS;
-        delete actual.REPORTE.VOTES;
-        delete actual.REPORTE.SHARE;
-    }
 
     const myParser = new CsvFormatter();
     const STATUS = {
@@ -200,17 +92,11 @@ const testComunidad = () => {
         "3": "Donador Black",
     };
     myParser.registerFunction("status", CsvFormatterFilters.map(STATUS));
+    myParser.registerFunction("date", MyDates.toAAAAMMDDHHmmss);
     const response = myParser.parse(db, "email;\
-    REPORTE.newStatus|status;\
-    REPORTE.points;\
-    REPORTE.REPOSTS.count;\
-    REPORTE.REPOSTS.points;\
-    starts.count;\
-    starts.points;\
-    votes.count;\
-    votes.points;\
-    share.count;\
-    share.points;\
+    name;\
+    donorType|status;\
+    created|date\
     ", true);
     console.log(response);
 }

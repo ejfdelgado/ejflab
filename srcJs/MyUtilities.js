@@ -80,6 +80,28 @@ class MyUtilities {
         }
         return is;
     }
+    static downloadTextData({ text = "", mime = "text/plain", filename = "file.txt" }) {
+        function downloadBlob(blob, name) {
+            const blobUrl = URL.createObjectURL(blob);
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = name;
+            document.body.appendChild(link);
+            link.dispatchEvent(
+                new MouseEvent('click', {
+                    bubbles: true,
+                    cancelable: true,
+                    view: window
+                })
+            );
+            document.body.removeChild(link);
+        }
+        function text2Blob(bstr, mime) {
+            return new Blob([bstr], { type: mime });
+        }
+        const blob2 = text2Blob(text, mime);
+        downloadBlob(blob2, filename);
+    }
 }
 
 module.exports = {
