@@ -151,6 +151,7 @@ class MyDates {
         const dia = fecha.getUTCDate();
         return dia + 100 * mes + anio * 10000;
     }
+    // Esta función es muy peligrosa porque supera MAX SAFE INTEGER constant is 9007199254740991
     static getDayAsContinuosNumberHmmSSmmm(fecha) {
         const anio = fecha.getUTCFullYear();
         const mes = fecha.getUTCMonth() + 1;

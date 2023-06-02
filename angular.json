@@ -48,6 +48,7 @@
               "srcJs/MyColor.js",
               "srcJs/CsvFormatter",
               "srcJs/CsvParser",
+              "srcJs/ModuloSonido",
               "@ffmpeg/ffmpeg",
               "@tensorflow/tfjs",
               "@tensorflow/tfjs-vis"

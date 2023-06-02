@@ -156,8 +156,10 @@ export class BaseComponent implements OnInit, OnDestroy {
               this.tupleModel = evento.body;
               this.onTupleReadDone();
             } else if (evento.status == 'news') {
+              console.log('news');
               // Stop read indicator
               this.tupleModel = evento.body;
+              this.onTupleNews();
             } else if (evento.status == 'write_wip') {
               // Show write indicator
             } else if (evento.status == 'write_done') {
@@ -171,6 +173,11 @@ export class BaseComponent implements OnInit, OnDestroy {
   }
 
   onTupleReadDone() {
+    // detect changes
+    this.cdr.detectChanges();
+  }
+
+  onTupleNews() {
     // detect changes
     this.cdr.detectChanges();
   }

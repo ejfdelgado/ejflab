@@ -156,6 +156,11 @@ export class ProjectionComponent
     */
   }
 
+  override onTupleNews() {
+    this.mymodel = this.tupleModel.data;
+    super.onTupleNews();
+  }
+
   override onTupleReadDone() {
     if (!this.tupleModel.data) {
       this.tupleModel.data = {
@@ -165,14 +170,6 @@ export class ProjectionComponent
     this.mymodel = this.tupleModel.data;
     super.onTupleReadDone();
     console.log('Read OK!');
-    /*
-    setTimeout(() => {
-      this.tupleModel.data = {
-        calib: {},
-      };
-      this.saveAll();
-    });
-    */
   }
 
   override onTupleWriteDone() {

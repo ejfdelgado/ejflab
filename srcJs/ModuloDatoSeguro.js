@@ -40,11 +40,11 @@ class ModuloDatoSeguro {
     const desencriptado = AES.decrypt(texto, llave).toString(Utf8);
     return JSON.parse(desencriptado);
   }
-  static decifrarConListaDeLlaves(texto, llaves) {
+  static decifrarConListaDeLlavesInterno(texto, llaves, AES, Utf8) {
     for (let i = 0; i < llaves.length; i++) {
       try {
         const llave = llaves[i];
-        const temp = ModuloDatoSeguro.decifrar(texto, llave);
+        const temp = ModuloDatoSeguro.decifrarSimple(texto, llave, AES, Utf8);
         return temp;
       } catch (err) { }
     }

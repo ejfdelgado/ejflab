@@ -14,7 +14,7 @@ import {
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { BackendPageService } from './backendPage.service';
-import { ModuloDatoSeguro } from 'srcJs/ModuloDatoSeguro';
+import { ModuloDatoSeguroFront } from 'srcJs/ModuloDatoSeguroFront';
 
 export interface TupleTempData {
   pg: string;
@@ -73,8 +73,10 @@ export class TupleServiceInstance {
       if (evento.status == 'read_first' && evento.t) {
         subscription.unsubscribe();
         let maxTime = evento.t;
-        const checkNews = (cutTime: number) => {
-          //console.log(`checkNews cutTime:${cutTime}`);
+        let lastMaxTime = 0;
+        const checkNews = (cutTime: number, label: string) => {
+          lastMaxTime = cutTime;
+          //console.log(`checkNews ${label} cutTime:${cutTime}`);
           const myCollection = collection(firestore, 'pro-tuple-temp');
           const consulta = query(
             myCollection,
@@ -98,27 +100,28 @@ export class TupleServiceInstance {
                       if (llaves == null) {
                         llaves = await backendPageService.getPageKeys();
                       }
-                      actual.body = ModuloDatoSeguro.decifrarConListaDeLlaves(
-                        actual.cifrado,
-                        llaves
-                      );
+                      actual.body =
+                        ModuloDatoSeguroFront.decifrarConListaDeLlaves(
+                          actual.cifrado,
+                          llaves
+                        );
                     }
                     if (actual.body) {
                       actual.body.t = actual.t;
-                      if (actual.t > maxTime) {
-                        maxTime = actual.t;
-                      }
                       this.myLiveChanges[llave] = actual.body;
                     }
                   }
+                  if (actual.t > maxTime) {
+                    maxTime = actual.t;
+                  }
                 }
                 this.applyNewChanges();
-                checkNews(maxTime);
+                checkNews(maxTime, 'inside');
               }
             }
           );
         };
-        checkNews(evento.t);
+        checkNews(evento.t, 'outside');
       }
     });
 

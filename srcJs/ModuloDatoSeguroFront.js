@@ -30,6 +30,10 @@ class ModuloDatoSeguroFront extends ModuloDatoSeguro {
         return super.decifrarSimple(texto, llave, AES, Utf8);
     }
 
+    static decifrarConListaDeLlaves(texto, llaves) {
+        return super.decifrarConListaDeLlavesInterno(texto, llaves, AES, Utf8);
+    }
+
     static cifrar = function (objeto, llavePublica) {
         llavePublica = llavePublica.replace('\n', '');
         const key = ModuloDatoSeguro.generateKey(10);
