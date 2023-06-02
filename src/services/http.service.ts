@@ -210,7 +210,11 @@ export class HttpService {
           return Promise.resolve(JSON.parse(JSON.stringify(cached)));
         }
       }
-      if (options?.rawString === true) {
+      if (options?.isBlob === true) {
+        first = this.http.get(myUrl, {
+          responseType: 'blob',
+        });
+      } else if (options?.rawString === true) {
         first = this.http.get(myUrl, {
           responseType: 'text',
         });

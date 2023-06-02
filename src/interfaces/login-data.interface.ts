@@ -23,6 +23,7 @@ export interface HttpOptionsData {
   pageSize?: number;
   key?: string;
   rawString?: boolean;
+  isBlob?: boolean;
   useCache?: boolean;
 }
 

@@ -43,6 +43,7 @@ export class BasicScene extends THREE.Scene {
   });
   public dot3DSelected = new EventEmitter<KeyValueDotModelData | null>();
   seeCalibPoints: boolean = false;
+  registry: Array<THREE.Group> = [];
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -187,8 +188,51 @@ export class BasicScene extends THREE.Scene {
     );
   }
 
-  // await this.loadObjMtl('/assets/3d/mycube/mycube.obj', '/assets/3d/mycube/mycube.mtl');
-  async loadObjMtl(pathObj: string, pathMtl: string) {
+  removeObjectByName(uid: string) {
+    const found: any = this.getObjectByName(uid);
+    if (found) {
+      const indice = this.registry.indexOf(found);
+      if (indice >= 0) {
+        this.registry.splice(indice, 1);
+      } else {
+        console.log(`object ${uid} is not in the registry`);
+      }
+      this.remove(found);
+    } else {
+      console.log(`object ${uid} not found`);
+    }
+  }
+
+  //await this.loadObj('/assets/3d/mycube/mycube.obj', 'uid');
+  async loadObj(
+    path: string,
+    uid: string,
+    materials?: MTLLoader.MaterialCreator
+  ) {
+    return new Promise((resolve, reject) => {
+      const loader = new OBJLoader();
+      if (materials) {
+        loader.setMaterials(materials);
+      }
+      loader.load(
+        path,
+        (object) => {
+          object.name = uid;
+          this.addObjectLocal(object);
+          resolve(object);
+        },
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        function (error) {
+          reject(error);
+        }
+      );
+    });
+  }
+
+  // await this.loadObjMtl('/assets/3d/mycube/mycube.obj', 'uid','/assets/3d/mycube/mycube.mtl');
+  async loadObjMtl(pathObj: string, pathMtl: string, uid: string) {
     return new Promise((resolve, reject) => {
       const mtlLoader = new MTLLoader();
       mtlLoader.load(
@@ -196,7 +240,7 @@ export class BasicScene extends THREE.Scene {
         async (materials) => {
           materials.preload();
           try {
-            const model = await this.loadObj(pathObj, materials);
+            const model = await this.loadObj(pathObj, uid, materials);
             resolve(model);
           } catch (err) {
             reject(err);
@@ -258,40 +302,27 @@ export class BasicScene extends THREE.Scene {
       }
     }
   }
-
-  addObjectLocal(object: THREE.Group) {
-    for (let i = 0; i < object.children.length; i++) {
-      const child = object.children[i];
-      if ((child as THREE.Mesh).isMesh) {
-        const mesh = child as THREE.Mesh;
-        this.explodeMeshVertex(mesh);
-      }
+  recomputeVertex() {
+    // Quitar todos los pickableObjects
+    for (let i = 0; i < this.pickableObjects.length; i++) {
+      const actual = this.pickableObjects[i];
+      this.remove(actual);
     }
 
-    this.add(object);
-  }
-
-  //await this.loadObj('/assets/3d/mycube/mycube.obj');
-  async loadObj(path: string, materials?: MTLLoader.MaterialCreator) {
-    return new Promise((resolve, reject) => {
-      const loader = new OBJLoader();
-      if (materials) {
-        loader.setMaterials(materials);
-      }
-      loader.load(
-        path,
-        (object) => {
-          this.addObjectLocal(object);
-          resolve(object);
-        },
-        (xhr) => {
-          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-        },
-        function (error) {
-          reject(error);
+    for (let j = 0; j < this.registry.length; j++) {
+      const object = this.registry[j];
+      for (let i = 0; i < object.children.length; i++) {
+        const child = object.children[i];
+        if ((child as THREE.Mesh).isMesh) {
+          const mesh = child as THREE.Mesh;
+          this.explodeMeshVertex(mesh);
         }
-      );
-    });
+      }
+    }
+  }
+  addObjectLocal(object: THREE.Group) {
+    this.registry.push(object);
+    this.add(object);
   }
 
   setCalibPointsVisibility(visible: boolean) {
@@ -355,11 +386,6 @@ export class BasicScene extends THREE.Scene {
       this.lights.push(light);
       this.add(new THREE.PointLightHelper(light, 0.5, 0xff9900));
     }
-
-    this.loadObjMtl(
-      '/assets/3d/mycube/mycube.obj',
-      '/assets/3d/mycube/mycube.mtl'
-    );
   }
 
   setBounds(bounds: DOMRect) {

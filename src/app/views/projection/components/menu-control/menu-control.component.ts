@@ -32,6 +32,11 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Input() mymodel: GlobalModelData;
   @Input() localModel: LocalModelData;
   @Output() saveEvent = new EventEmitter<void>();
+  @Output() load3DModel = new EventEmitter<{
+    uid: string;
+    url: string | null;
+  }>();
+  @Output() remove3DModel = new EventEmitter<string>();
 
   blobOptions: BlobOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
@@ -82,6 +87,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     await Promise.all(promesasBorrar);
     delete this.mymodel.models[key];
     this.saveEvent.emit();
+    this.remove3DModel.emit(key);
   }
 
   changedView(viewId: string) {

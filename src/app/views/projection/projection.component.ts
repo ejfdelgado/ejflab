@@ -25,6 +25,7 @@ import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { LoginService } from 'src/services/login.service';
+import { HttpService } from 'src/services/http.service';
 
 export interface Model3DData {
   name: string;
@@ -107,7 +108,8 @@ export class ProjectionComponent
     public loginSrv: LoginService,
     //
     @Inject(DOCUMENT) private document: any,
-    private opencvSrv: OpenCVService
+    private opencvSrv: OpenCVService,
+    private readonly httpSrv: HttpService
   ) {
     super(
       route,
@@ -161,7 +163,7 @@ export class ProjectionComponent
     super.onTupleNews();
   }
 
-  override onTupleReadDone() {
+  override async onTupleReadDone() {
     if (!this.tupleModel.data) {
       this.tupleModel.data = {
         calib: {},
@@ -169,7 +171,28 @@ export class ProjectionComponent
     }
     this.mymodel = this.tupleModel.data;
     super.onTupleReadDone();
+    // Itero los modelos y los cargo...
+    const models = this.mymodel.models;
+    const llaves = Object.keys(models);
+    const promesas = [];
+    for (let i = 0; i < llaves.length; i++) {
+      const uid = llaves[i];
+      const modelo = models[uid];
+      if (modelo.objUrl) {
+        promesas.push(this.add3DObject(uid, modelo.objUrl, false));
+      }
+    }
+    await Promise.all(promesas);
+    this.recomputeVertex();
     console.log('Read OK!');
+  }
+
+  async recomputeVertex() {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.recomputeVertex();
   }
 
   override onTupleWriteDone() {
@@ -197,23 +220,44 @@ export class ProjectionComponent
     this.states.seeCalibPoints = !this.states.seeCalibPoints;
   }
 
-  useOrbitControls() {
-    if (!this.threeRef) {
+  async add3DObject(uid: string, url: string | null, recomputeVertex: boolean) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent || url == null) {
       return;
     }
-    const threejsComponent = this
-      .threeRef as unknown as ThreejsProjectionComponent;
-    threejsComponent.scene?.setOrbitControls(true);
+    // Load the url
+    const object: any = await this.httpSrv.get(url, { isBlob: true });
+    const nextUrl = URL.createObjectURL(object);
+    await threeComponent.scene?.loadObj(nextUrl, uid);
+    if (recomputeVertex) {
+      this.recomputeVertex();
+    }
+  }
+
+  remove3DObject(uid: string) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.removeObjectByName(uid);
+    this.recomputeVertex();
+  }
+
+  useOrbitControls() {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.setOrbitControls(true);
   }
 
   async calibCamera() {
-    if (!this.localModel.currentView || !this.threeRef) {
+    const threeComponent = this.getThreeComponent();
+    if (!this.localModel.currentView || !this.threeRef || !threeComponent) {
       return;
     }
-    const threejsComponent = this
-      .threeRef as unknown as ThreejsProjectionComponent;
-    const bounds = threejsComponent.bounds;
-    const scene = threejsComponent.scene;
+    const bounds = threeComponent.bounds;
+    const scene = threeComponent.scene;
     const camera = scene?.camera;
     if (!bounds || !scene || !camera) {
       return;
@@ -250,8 +294,8 @@ export class ProjectionComponent
     //console.log(JSON.stringify(payload, null, 4));
     const response = await this.opencvSrv.solvePnP(payload);
     if (response && response.aux && response.tvec && response.t) {
-      if (threejsComponent.scene) {
-        threejsComponent.scene.calibCamera(response.t);
+      if (threeComponent.scene) {
+        threeComponent.scene.calibCamera(response.t);
       }
     }
   }
@@ -333,6 +377,18 @@ export class ProjectionComponent
       menuTop.bottom = menuTop.oldBottom + (menuTop.starty - ev.screenY);
       menuTop.right = menuTop.oldRight + (menuTop.startx - ev.screenX);
     }
+  }
+
+  getThreeComponent() {
+    if (!this.threeRef) {
+      return null;
+    }
+    const threejsComponent = this
+      .threeRef as unknown as ThreejsProjectionComponent;
+    if (!threejsComponent) {
+      return null;
+    }
+    return threejsComponent;
   }
 
   @HostListener('document:keypress', ['$event'])

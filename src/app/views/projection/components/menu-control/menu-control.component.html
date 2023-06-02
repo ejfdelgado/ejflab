@@ -23,10 +23,10 @@
 </button>
 <div *ngFor="let model of mymodel.models | keyvalue | sortByName">
     <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'" [url]="model.value.objUrl"
-        (urlChange)="model.value.objUrl=$event; saveEvent.emit();">
+        (urlChange)="model.value.objUrl=$event; load3DModel.emit({uid: model.key, url: $event}); saveEvent.emit();">
     </app-blobeditor>
     <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'" [url]="model.value.videoUrl"
-        (urlChange)="model.value.videoUrl=$event; saveEvent.emit();">
+        (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
     </app-blobeditor>
     <pre>{{ model.value | json }}</pre>
     <button (click)="delete3DModel(model.key)" mat-menu-item>
