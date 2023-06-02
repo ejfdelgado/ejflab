@@ -229,6 +229,7 @@ export class ProjectionComponent
     const object: any = await this.httpSrv.get(url, { isBlob: true });
     const nextUrl = URL.createObjectURL(object);
     await threeComponent.scene?.loadObj(nextUrl, uid);
+    URL.revokeObjectURL(nextUrl);
     if (recomputeVertex) {
       this.recomputeVertex();
     }

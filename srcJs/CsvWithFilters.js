@@ -11,10 +11,10 @@ class CsvWithFilters {
             },
         };
     }
-    registerClass(myClass) {
-        if (myClass.name) {
-            this.filterRegistry.classes[myClass.name] = myClass;
-            console.log(`registerClass(${myClass.name}) OK`);
+    registerClass(name, myClass) {
+        if (name) {
+            this.filterRegistry.classes[name] = myClass;
+            console.log(`registerClass(${name}) OK`);
         }
     }
     registerFunction(key, myFunction) {
