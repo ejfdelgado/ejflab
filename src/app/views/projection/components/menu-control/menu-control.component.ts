@@ -57,6 +57,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
       name: `Model ${id}`,
       startTime: 0,
     };
+    this.saveEvent.emit();
   }
 
   async delete3DModel(key: string) {
@@ -80,7 +81,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     }
     await Promise.all(promesasBorrar);
     delete this.mymodel.models[key];
-    //this.saveEvent.emit();
+    this.saveEvent.emit();
   }
 
   changedView(viewId: string) {
@@ -98,6 +99,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     delete this.mymodel.calib[viewId];
     this.localModel.currentView = null;
     this.localModel.currentViewName = null;
+    this.saveEvent.emit();
   }
 
   async addView() {
@@ -115,6 +117,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
       this.localModel.currentViewName = id;
       this.changedView(id);
     }
+    this.saveEvent.emit();
   }
 
   ngOnChanges(changes: any) {
