@@ -17,6 +17,7 @@ import {
   LocalModelData,
   Model3DData,
 } from '../../projection.component';
+import { VideoCanvasEventData } from '../video-canvas/video-canvas.component';
 
 export interface MyOptionData {
   val: string;
@@ -37,6 +38,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     url: string | null;
   }>();
   @Output() remove3DModel = new EventEmitter<string>();
+  @Output() imageOut = new EventEmitter<VideoCanvasEventData>();
 
   blobOptions: BlobOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
@@ -61,6 +63,10 @@ export class MenuControlComponent implements OnInit, OnChanges {
     this.mymodel.models[id] = {
       name: `Model ${id}`,
       startTime: 0,
+      texture: {
+        width: 192,
+        height: 108,
+      },
     };
     this.saveEvent.emit();
   }

@@ -5,6 +5,7 @@ import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
 import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { BufferAttribute, Camera, Object3D } from 'three';
 import { EventEmitter } from '@angular/core';
+import { VideoCanvasEventData } from 'src/app/views/projection/components/video-canvas/video-canvas.component';
 
 export interface DotModelData {
   v3: { x: number; y: number; z: number };
@@ -293,6 +294,29 @@ export class BasicScene extends THREE.Scene {
     }
   }
 
+  assignMaterial(event: VideoCanvasEventData) {
+    const uid = event.uid;
+    const found: any = this.getObjectByName(uid);
+    if (found) {
+      const videoTexture = new THREE.VideoTexture(event.video);
+      videoTexture.encoding = THREE.sRGBEncoding;
+      videoTexture.needsUpdate = true;
+      const videoMaterial = new THREE.MeshPhongMaterial({
+        map: videoTexture,
+        emissiveMap: videoTexture,
+        side: THREE.FrontSide,
+        emissive: 0xffffff,
+        emissiveIntensity: 1,
+      });
+      videoMaterial.needsUpdate = true;
+      found.traverse(function (child: any) {
+        if (child instanceof THREE.Mesh) {
+          child.material = videoMaterial;
+        }
+      });
+    }
+  }
+
   setMaterial(object: THREE.Object3D, material: THREE.MeshBasicMaterial) {
     for (let i = 0; i < object.children.length; i++) {
       const child = object.children[i];
@@ -367,13 +391,16 @@ export class BasicScene extends THREE.Scene {
     this.renderer.setSize(this.bounds.width, this.bounds.height);
     this.setOrbitControls(true);
 
+    /*
     if (addGridHelper) {
       this.add(new THREE.GridHelper(10, 10, 'red'));
       this.add(new THREE.AxesHelper(3));
     }
+    */
 
-    this.background = new THREE.Color(0xefefef);
+    this.background = new THREE.Color(0x000000);
 
+    /*
     for (let i = 0; i < this.lightCount; i++) {
       const light = new THREE.PointLight(0xffffff, 1);
       let lightX =
@@ -386,6 +413,7 @@ export class BasicScene extends THREE.Scene {
       this.lights.push(light);
       this.add(new THREE.PointLightHelper(light, 0.5, 0xff9900));
     }
+    */
   }
 
   setBounds(bounds: DOMRect) {

@@ -26,12 +26,17 @@ import { ModalService } from 'src/services/modal.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { LoginService } from 'src/services/login.service';
 import { HttpService } from 'src/services/http.service';
+import {
+  VideoCanvasEventData,
+  VideoCanvasOptions,
+} from './components/video-canvas/video-canvas.component';
 
 export interface Model3DData {
   name: string;
   objUrl?: string;
   videoUrl?: string;
   startTime: number;
+  texture: VideoCanvasOptions;
 }
 
 export interface ViewModelData {
@@ -51,6 +56,8 @@ export interface GlobalModelData {
 export interface LocalModelData {
   currentViewName: string | null;
   currentView: ViewModelData | null;
+  useVideo: boolean;
+  timeSeconds: number;
 }
 
 /*
@@ -93,6 +100,8 @@ export class ProjectionComponent
   public localModel: LocalModelData = {
     currentViewName: null,
     currentView: null,
+    useVideo: false,
+    timeSeconds: 0,
   };
 
   constructor(
@@ -156,6 +165,14 @@ export class ProjectionComponent
 
     }
     */
+  }
+
+  receiveVideo(event: VideoCanvasEventData) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.assignMaterial(event);
   }
 
   override onTupleNews() {

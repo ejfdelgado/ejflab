@@ -19,7 +19,8 @@
             </div>
             <div *ngIf="!states.fullScreen || states.openedFloatingMenu" class="scroll_menu_container">
                 <app-menu-control [mymodel]="mymodel" [localModel]="localModel" (saveEvent)="saveAll()"
-                    (remove3DModel)="remove3DObject($event)" (load3DModel)="add3DObject($event.uid, $event.url, true)">
+                    (imageOut)="receiveVideo($event)" (remove3DModel)="remove3DObject($event)"
+                    (load3DModel)="add3DObject($event.uid, $event.url, true)">
                 </app-menu-control>
             </div>
         </div>

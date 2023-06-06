@@ -2,6 +2,8 @@
     <mat-icon>save</mat-icon>
     <span>Guardar</span>
 </button>
+<input type="checkbox" [(ngModel)]="localModel.useVideo" />
+<input type="number" [(ngModel)]="localModel.timeSeconds" />
 <label>Vista:</label>
 <select [(ngModel)]="localModel.currentViewName" (ngModelChange)="changedView($event)">
     <option disabled hidden [value]="null">-- vista --</option>
@@ -29,8 +31,12 @@
         (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
     </app-blobeditor>
     <pre>{{ model.value | json }}</pre>
+    <app-video-canvas [url]="model.value.videoUrl" [uid]="model.key" [timeSeconds]="localModel.timeSeconds"
+        [useVideo]="localModel.useVideo" (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
+    </app-video-canvas>
     <button (click)="delete3DModel(model.key)" mat-menu-item>
         <mat-icon>delete</mat-icon>
         <span>Borrar Modelo</span>
     </button>
 </div>
+<pre>{{ localModel | json }}</pre>

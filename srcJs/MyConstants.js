@@ -4,7 +4,7 @@ class MyConstants {
         URL_BASE: "https://storage.googleapis.com",
         PUBLIC: `labs-pro-public`,
         PRIVATE: `labs-pro-private`,
-        MAX_MB: 5,
+        MAX_MB: 50,
     }
     static USER = {
         DEFAULT_IMAGE: '/assets/img/defavatar.jpg',

@@ -207,7 +207,11 @@ export class HttpService {
       if (options?.useCache === true && cacheKey != null) {
         if (cacheKey in HttpService.CACHE) {
           const cached: any = HttpService.CACHE[cacheKey];
-          return Promise.resolve(JSON.parse(JSON.stringify(cached)));
+          if (options?.isBlob === true) {
+            return Promise.resolve(cached);
+          } else {
+            return Promise.resolve(JSON.parse(JSON.stringify(cached)));
+          }
         }
       }
       if (options?.isBlob === true) {
