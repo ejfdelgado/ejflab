@@ -36,6 +36,7 @@ export class BasicScene extends THREE.Scene {
   pickableObjects: THREE.Mesh[] = [];
   intersectedObject: THREE.Object3D | null = null;
   selectedObjectName: string | null = null;
+  defaultMaterial: THREE.MeshPhongMaterial | null = null;
   normalMaterial = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
   selectedMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
   highlightedMaterial = new THREE.MeshBasicMaterial({
@@ -344,8 +345,22 @@ export class BasicScene extends THREE.Scene {
       }
     }
   }
+
+  useDefaultMaterial() {
+    if (this.defaultMaterial == null) {
+      return;
+    }
+    for (let j = 0; j < this.registry.length; j++) {
+      const object = this.registry[j];
+      this.setMaterial(object, this.defaultMaterial);
+    }
+  }
+
   addObjectLocal(object: THREE.Group) {
     this.registry.push(object);
+    if (this.defaultMaterial != null) {
+      this.setMaterial(object, this.defaultMaterial);
+    }
     this.add(object);
   }
 
@@ -414,6 +429,16 @@ export class BasicScene extends THREE.Scene {
       this.add(new THREE.PointLightHelper(light, 0.5, 0xff9900));
     }
     */
+
+    const loader = new THREE.TextureLoader();
+    const texture = loader.load('assets/img/chess.jpg');
+    this.defaultMaterial = new THREE.MeshPhongMaterial({
+      map: texture,
+      emissiveMap: texture,
+      side: THREE.FrontSide,
+      emissive: 0xffffff,
+      emissiveIntensity: 1,
+    });
   }
 
   setBounds(bounds: DOMRect) {
