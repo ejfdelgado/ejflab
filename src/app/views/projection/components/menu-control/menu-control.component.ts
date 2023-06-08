@@ -16,6 +16,7 @@ import {
   GlobalModelData,
   LocalModelData,
   Model3DData,
+  TheStateViewData,
 } from '../../projection.component';
 import { VideoCanvasEventData } from '../video-canvas/video-canvas.component';
 
@@ -37,6 +38,7 @@ export interface MyOptionData {
 export class MenuControlComponent implements OnInit, OnChanges {
   @Input() mymodel: GlobalModelData;
   @Input() localModel: LocalModelData;
+  @Input() states: TheStateViewData;
   @Output() saveEvent = new EventEmitter<void>();
   @Output() load3DModel = new EventEmitter<{
     uid: string;
@@ -44,6 +46,11 @@ export class MenuControlComponent implements OnInit, OnChanges {
   }>();
   @Output() remove3DModel = new EventEmitter<string>();
   @Output() imageOut = new EventEmitter<VideoCanvasEventData>();
+  @Output() fullScreenEvent = new EventEmitter<boolean>();
+  @Output() calibrateEvent = new EventEmitter<void>();
+  @Output() useControlsEvent = new EventEmitter<void>();
+  @Output() askErasePointEvent = new EventEmitter<string>();
+  @Output() askLocatePointEvent = new EventEmitter<string>();
 
   tabOptions: Array<TabElementData> = [
     {
@@ -81,27 +88,27 @@ export class MenuControlComponent implements OnInit, OnChanges {
   }
 
   askErasePoint(key: string) {
-    console.log(`askErasePoint ${key}`);
+    this.askErasePointEvent.emit(key);
   }
 
   askLocatePoint(key: string) {
-    console.log(`askLocatePoint ${key}`);
+    this.askLocatePointEvent.emit(key);
   }
 
   calibrateView() {
-    console.log(`calibrateView`);
+    this.calibrateEvent.emit();
   }
 
   useOrbitControls() {
-    console.log(`useOrbitControls`);
+    this.useControlsEvent.emit();
   }
 
   turnReferencePoints(value: boolean) {
-    console.log(`turnReferencePoints ${value}`);
+    this.states.seeCalibPoints = value;
   }
 
   turnFullscreen(value: boolean) {
-    console.log(`turnFullscreen ${value}`);
+    this.fullScreenEvent.emit(value);
   }
 
   format2DPoint(point: any) {

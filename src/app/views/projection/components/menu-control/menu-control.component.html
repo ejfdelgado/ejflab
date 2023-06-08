@@ -1,8 +1,10 @@
-<button class="my_button_with_text margin_y_5 full_width" (click)="turnFullscreen(true)" mat-menu-item>
+<button *ngIf="states.fullScreen === false" class="my_button_with_text margin_y_5 full_width"
+    (click)="turnFullscreen(true)" mat-menu-item>
     <mat-icon>fullscreen</mat-icon>
     <span>Ver pantalla completa</span>
 </button>
-<button class="my_button_with_text margin_y_5 full_width" (click)="turnFullscreen(false)" mat-menu-item>
+<button *ngIf="states.fullScreen === true" class="my_button_with_text margin_y_5 full_width"
+    (click)="turnFullscreen(false)" mat-menu-item>
     <mat-icon>fullscreen_exit</mat-icon>
     <span>Salir de pantalla completa</span>
 </button>
@@ -38,11 +40,13 @@
             <mat-icon>view_in_ar</mat-icon>
             <span>Calibrar</span>
         </button>
-        <button class="my_button_with_text margin_y_5 full_width" (click)="turnReferencePoints(true)" mat-menu-item>
+        <button *ngIf="states.seeCalibPoints === false" class="my_button_with_text margin_y_5 full_width"
+            (click)="turnReferencePoints(true)" mat-menu-item>
             <mat-icon>visibility</mat-icon>
             <span>Ver puntos de referencia</span>
         </button>
-        <button class="my_button_with_text margin_y_5 full_width" (click)="turnReferencePoints(false)" mat-menu-item>
+        <button *ngIf="states.seeCalibPoints === true" class="my_button_with_text margin_y_5 full_width"
+            (click)="turnReferencePoints(false)" mat-menu-item>
             <mat-icon>visibility_off</mat-icon>
             <span>Esconder puntos de referencia</span>
         </button>
@@ -56,7 +60,8 @@
                         <div class="my_action" (click)="askErasePoint(onePoint.key)">
                             <mat-icon>close</mat-icon>
                         </div>
-                        <div class="flex_column my_content" (click)="askLocatePoint(onePoint.key)">
+                        <div class="flex_column my_content" [ngClass]="{'active': states.selectedDot == onePoint.key}"
+                            (click)="askLocatePoint(onePoint.key)">
                             <div class="point_label">Punto 2D:</div>
                             <div class="point_value">{{ format2DPoint(onePoint.value.v2) }}</div>
                             <div class="point_label">Punto 3D:</div>

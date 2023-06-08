@@ -62,6 +62,22 @@ export interface LocalModelData {
   timeSeconds: number;
 }
 
+export interface TheStateViewData {
+  openedFloatingMenu: boolean;
+  fullScreen: boolean;
+  seeCalibPoints: boolean;
+  selectedDot: string | null;
+  menuTop: {
+    dragging: boolean;
+    right: number;
+    bottom: number;
+    startx: number;
+    starty: number;
+    oldBottom: number;
+    oldRight: number;
+  };
+}
+
 /*
 TODO
 - Floating workspace...
@@ -81,10 +97,11 @@ export class ProjectionComponent
   public extraOptions: Array<OptionData> = [];
   private observer?: any;
   public elem: any;
-  public states = {
+  public states: TheStateViewData = {
     openedFloatingMenu: false,
     fullScreen: false,
     seeCalibPoints: false,
+    selectedDot: null,
     menuTop: {
       dragging: false,
       right: 0,
@@ -264,12 +281,45 @@ export class ProjectionComponent
     this.recomputeVertex();
   }
 
+  async askErasePoint(key: string) {
+    if (!this.localModel.currentView) {
+      return;
+    }
+    const response = await this.modalService.confirm({
+      txt: 'Esta acción no se puede deshacer',
+      title: '¿Seguro?',
+    });
+    if (!response) {
+      return;
+    }
+    if (key in this.localModel.currentView.pairs) {
+      delete this.localModel.currentView.pairs[key];
+    }
+    this.saveAll();
+  }
+
+  askLocatePoint(key: string) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.select2DPoint({ key, value: { v3: { x: 0, y: 0, z: 0 } } });
+  }
+
   useOrbitControls() {
     const threeComponent = this.getThreeComponent();
     if (!threeComponent) {
       return;
     }
     threeComponent.scene?.setOrbitControls(true);
+  }
+
+  resizeScene() {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.onResize({});
   }
 
   async calibCamera() {
@@ -355,12 +405,12 @@ export class ProjectionComponent
   }
 
   isInFullscreenMode() {
-    return (
+    let isFullScreen =
       this.isInUserFullscreenMode() ||
       (<any>window).fullScreen ||
       (window.innerWidth === screen.width &&
-        window.innerHeight === screen.height)
-    );
+        window.innerHeight === screen.height);
+    return isFullScreen;
   }
 
   @HostListener('document:fullscreenchange')
@@ -369,11 +419,19 @@ export class ProjectionComponent
   @HostListener('document:MSFullscreenChange')
   onFullscreenChange() {
     this.cdr.detectChanges();
+    this.states.fullScreen = this.isInFullscreenMode();
+    console.log(`onFullscreenChange ${this.states.fullScreen}`);
+    this.updateComponentsToFullScreen();
   }
 
   initResizeObserver() {
     this.observer = new (<any>window).ResizeObserver((entries: any) => {
       this.cdr.detectChanges();
+      this.states.fullScreen = this.isInFullscreenMode();
+      setTimeout(() => {
+        console.log(`ResizeObserver ${this.states.fullScreen}`);
+        this.updateComponentsToFullScreen();
+      }, 0);
     });
 
     this.observer.observe(this.elem);
@@ -412,26 +470,38 @@ export class ProjectionComponent
     return threejsComponent;
   }
 
+  updateComponentsToFullScreen() {
+    if (this.states.fullScreen) {
+      this.states.openedFloatingMenu = true;
+      this.states.menuTop.bottom = this.states.menuTop.oldBottom;
+      this.states.menuTop.right = this.states.menuTop.oldRight;
+    } else {
+      this.states.openedFloatingMenu = false;
+      this.states.menuTop.oldBottom = this.states.menuTop.bottom;
+      this.states.menuTop.oldRight = this.states.menuTop.right;
+      this.states.menuTop.bottom = 0;
+      this.states.menuTop.right = 0;
+    }
+    this.resizeScene();
+  }
+
+  turnFullscreen(value: boolean) {
+    this.states.fullScreen = value;
+    this.updateComponentsToFullScreen();
+    if (this.states.fullScreen) {
+      this.openFullscreen();
+    } else {
+      this.closeFullscreen();
+    }
+  }
+
   @HostListener('document:keypress', ['$event'])
   handleKeyboardEvent(event: KeyboardEvent) {
     //console.log(event);
     if (event.ctrlKey && event.shiftKey) {
       switch (event.code) {
         case 'NumpadAdd':
-          this.states.fullScreen = !this.states.fullScreen;
-          if (this.states.fullScreen) {
-            this.states.openedFloatingMenu = true;
-            this.states.menuTop.bottom = this.states.menuTop.oldBottom;
-            this.states.menuTop.right = this.states.menuTop.oldRight;
-            this.openFullscreen();
-          } else {
-            this.states.openedFloatingMenu = false;
-            this.states.menuTop.oldBottom = this.states.menuTop.bottom;
-            this.states.menuTop.oldRight = this.states.menuTop.right;
-            this.states.menuTop.bottom = 0;
-            this.states.menuTop.right = 0;
-            this.closeFullscreen();
-          }
+          this.turnFullscreen(!this.states.fullScreen);
           break;
         default:
         //console.log(event.code);

@@ -2,10 +2,12 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  EventEmitter,
   HostListener,
   Input,
   OnChanges,
   OnInit,
+  Output,
   ViewChild,
 } from '@angular/core';
 import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
@@ -32,6 +34,8 @@ export class ThreejsProjectionComponent
     style: null,
   };
   selectedDot: string | null = null;
+  @Output() selectedDotEvent = new EventEmitter<string | null>();
+  @Output() modelChangedEvent = new EventEmitter<void>();
   @Input() DOTS_MODEL: CalibData | null;
   @Input() seeCalibPoints: boolean;
 
@@ -66,8 +70,8 @@ export class ThreejsProjectionComponent
       return;
     }
     const key = dotData.key;
-    const dot = dotData.value;
     this.selectedDot = key;
+    this.selectedDotEvent.emit(this.selectedDot);
     this.scene.selectKeyPoint(key);
   }
 
@@ -108,7 +112,15 @@ export class ThreejsProjectionComponent
         // Debo capturar la posición x y y
         const x = (event.clientX - bounds.left) / bounds.width;
         const y = (event.clientY - bounds.top) / bounds.height;
+        if (!(this.selectedDot in this.DOTS_MODEL)) {
+          // En caso de que haya 3d seleccionado, se agrega
+          const recuperado = this.scene.getSelectedVertex();
+          if (recuperado) {
+            this.DOTS_MODEL[this.selectedDot] = recuperado.value;
+          }
+        }
         this.DOTS_MODEL[this.selectedDot].v2 = { x, y };
+        this.modelChangedEvent.emit();
       }
     }
   }
@@ -129,6 +141,7 @@ export class ThreejsProjectionComponent
     }
     if (this.selectedDot in this.DOTS_MODEL) {
       delete this.DOTS_MODEL[this.selectedDot];
+      this.modelChangedEvent.emit();
     }
   }
 
@@ -138,10 +151,13 @@ export class ThreejsProjectionComponent
     }
     if (data == null) {
       this.selectedDot = null;
+      this.selectedDotEvent.emit(this.selectedDot);
     } else {
       this.selectedDot = data.key;
+      this.selectedDotEvent.emit(this.selectedDot);
       if (!(data.key in this.DOTS_MODEL)) {
         this.DOTS_MODEL[data.key] = data.value;
+        this.modelChangedEvent.emit();
       }
     }
   }

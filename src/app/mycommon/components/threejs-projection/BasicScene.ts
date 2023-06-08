@@ -150,6 +150,25 @@ export class BasicScene extends THREE.Scene {
     this.camera.updateProjectionMatrix();
   }
 
+  getSelectedVertex(): KeyValueDotModelData | null {
+    if (this.selectedObjectName) {
+      const object = this.getObjectByName(this.selectedObjectName);
+      if (object) {
+        return {
+          key: this.selectedObjectName,
+          value: {
+            v3: {
+              x: object.position.x,
+              y: object.position.y,
+              z: object.position.z,
+            },
+          },
+        };
+      }
+    }
+    return null;
+  }
+
   selectKeyPoint(key: string) {
     this.selectedObjectName = key;
   }
@@ -162,7 +181,6 @@ export class BasicScene extends THREE.Scene {
       // Se debe seleccionar el vertice actual si lo hay...
       if (this.intersectedObject) {
         this.selectedObjectName = this.intersectedObject.name;
-        this.intersectedObject.position.x;
         this.dot3DSelected.emit({
           key: this.selectedObjectName,
           value: {

@@ -5,9 +5,9 @@
     <div class="body_part">
         <div class="left_part">
             <app-threejs-projection #three_ref [DOTS_MODEL]="getCurrentPair()" [seeCalibPoints]="states.seeCalibPoints"
-                [ngStyle]="{'display': 'flex', 'position': (states.fullScreen ? 'fixed': 'absolute')}">
+                [ngStyle]="{'display': 'flex', 'position': (states.fullScreen ? 'fixed': 'absolute')}"
+                (selectedDotEvent)="states.selectedDot=$event;" (modelChangedEvent)="saveAll()">
             </app-threejs-projection>
-
         </div>
         <div class="right_part" *ngIf="!states.fullScreen || states.openedFloatingMenu"
             [ngStyle]="{'bottom': states.menuTop.bottom+'px', 'right': states.menuTop.right+'px'}"
@@ -18,9 +18,11 @@
                 <mat-icon class="close_icon" (click)="closeFloating()">close</mat-icon>
             </div>
             <div *ngIf="!states.fullScreen || states.openedFloatingMenu" class="scroll_menu_container">
-                <app-menu-control [mymodel]="mymodel" [localModel]="localModel" (saveEvent)="saveAll()"
-                    (imageOut)="receiveVideo($event)" (remove3DModel)="remove3DObject($event)"
-                    (load3DModel)="add3DObject($event.uid, $event.url, true)">
+                <app-menu-control [mymodel]="mymodel" [states]="states" [localModel]="localModel"
+                    (saveEvent)="saveAll()" (imageOut)="receiveVideo($event)" (remove3DModel)="remove3DObject($event)"
+                    (load3DModel)="add3DObject($event.uid, $event.url, true)" (fullScreenEvent)="turnFullscreen($event)"
+                    (calibrateEvent)="calibCamera()" (useControlsEvent)="useOrbitControls()"
+                    (askErasePointEvent)="askErasePoint($event)" (askLocatePointEvent)="askLocatePoint($event)">
                 </app-menu-control>
             </div>
         </div>
