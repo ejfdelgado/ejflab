@@ -62,6 +62,9 @@ export class TupleSrv {
             { key: "pg", oper: "==", value: pageId },
         ];
         const response = await MyStore.paginate(TUPLE_TYPE, [{ name: "act", dir: 'asc' }], offset, max, where);
+        for (let i = 0; i < response.length; i++) {
+            const actual = response[i];
+        }
         res.status(200).send({
             t: AHORA,
             payload: response,
@@ -116,7 +119,7 @@ export class TupleSrv {
                 v: actual.v,
                 act: AHORA,
             };
-            MyStore.updateById(TUPLE_TYPE, `${pageId}:${actual.k}`, payload, batch);
+            MyStore.updateOrCreateById(TUPLE_TYPE, `${pageId}:${actual.k}`, payload, batch);
         }
 
         // Place the live changes

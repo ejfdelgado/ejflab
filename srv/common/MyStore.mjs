@@ -101,6 +101,16 @@ export class MyStore {
         return document;
     }
 
+    static async updateOrCreateById(collection, id, payload, firestoreInstance = null) {
+        const localKey = `${process.env.ENV}-${collection}/${id}`;
+        const document = firestore.doc(localKey);
+        if (firestoreInstance == null) {
+            await document.set(payload, { merge: true });
+        } else {
+            firestoreInstance.set(document, payload, { merge: true });// no retorna promesa, sino la misma instancia
+        }
+    }
+
     static async updateById(collection, id, payload, firestoreInstance = null) {
         const document = firestore.doc(`${process.env.ENV}-${collection}/${id}`);
         if (firestoreInstance == null) {

@@ -1,42 +1,105 @@
-<button (click)="saveEvent.emit()" mat-menu-item>
-    <mat-icon>save</mat-icon>
-    <span>Guardar</span>
+<button class="my_button_with_text margin_y_5 full_width" (click)="turnFullscreen(true)" mat-menu-item>
+    <mat-icon>fullscreen</mat-icon>
+    <span>Ver pantalla completa</span>
 </button>
-<input type="checkbox" [(ngModel)]="localModel.useVideo" />
-<input type="number" [(ngModel)]="localModel.timeSeconds" />
-<label>Vista:</label>
-<select [(ngModel)]="localModel.currentViewName" (ngModelChange)="changedView($event)">
-    <option disabled hidden [value]="null">-- vista --</option>
-    <option *ngFor="let c of getViewOptionsList()" [ngValue]="c.val">{{c.txt}}</option>
-</select>
-<button (click)="addView()" mat-menu-item>
-    <mat-icon>add</mat-icon>
-    <span>Agregar Vista</span>
+<button class="my_button_with_text margin_y_5 full_width" (click)="turnFullscreen(false)" mat-menu-item>
+    <mat-icon>fullscreen_exit</mat-icon>
+    <span>Salir de pantalla completa</span>
 </button>
-<div *ngIf="localModel.currentViewName != null">
-    <button (click)="removeView(localModel.currentViewName)" mat-menu-item>
-        <mat-icon>close</mat-icon>
-        <span>Borrar Vista</span>
-    </button>
+<div class="mi_tab">
+    <div *ngFor="let myTab of tabOptions" class="one_tab" (click)="openTab(myTab.id)"
+        [ngClass]="{'active': localModel.currentTab == myTab.id}">
+        <div class="el_texto">{{myTab.label}}</div>
+    </div>
 </div>
-<button (click)="add3DModel()" mat-menu-item>
-    <mat-icon>add</mat-icon>
-    <span>Agregar Modelo 3D</span>
-</button>
-<div *ngFor="let model of mymodel.models | keyvalue | sortByName">
-    <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'" [url]="model.value.objUrl"
-        (urlChange)="model.value.objUrl=$event; load3DModel.emit({uid: model.key, url: $event}); saveEvent.emit();">
-    </app-blobeditor>
-    <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'" [url]="model.value.videoUrl"
-        (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
-    </app-blobeditor>
-    <pre>{{ model.value | json }}</pre>
-    <app-video-canvas [url]="model.value.videoUrl" [uid]="model.key" [timeSeconds]="localModel.timeSeconds"
-        [useVideo]="localModel.useVideo" (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
-    </app-video-canvas>
-    <button (click)="delete3DModel(model.key)" mat-menu-item>
-        <mat-icon>delete</mat-icon>
-        <span>Borrar Modelo</span>
+<div class="tab_view" *ngIf="localModel.currentTab == 'views'">
+    <label class="my_label">Selecciona o crea una vista:</label>
+    <div class="input_with_icon_container">
+        <select class="my_input" [(ngModel)]="localModel.currentViewName" (ngModelChange)="changedView($event)">
+            <option disabled hidden [value]="null">-- vista --</option>
+            <option *ngFor="let c of getViewOptionsList()" [ngValue]="c.val">{{c.txt}}</option>
+        </select>
+        <button class="my_button" (click)="addView()" mat-menu-item>
+            <mat-icon>add</mat-icon>
+        </button>
+    </div>
+    <button class="my_button_with_text margin_y_5 full_width" (click)="useOrbitControls()" mat-menu-item>
+        <mat-icon>3d_rotation</mat-icon>
+        <span>Usar controles</span>
     </button>
+    <div *ngIf="localModel.currentView" class="my_panel">
+        <label class="my_label">Nombre:</label>
+        <input class="my_input" type="text" [(ngModel)]="localModel.currentView.name"
+            (ngModelChange)="saveEvent.emit();" />
+        <label class="my_label">Field of View (grados °):</label>
+        <input class="my_input" type="number" [(ngModel)]="localModel.currentView.fov"
+            (ngModelChange)="saveEvent.emit();" />
+        <button class="my_button_with_text margin_y_5" (click)="calibrateView()" mat-menu-item>
+            <mat-icon>view_in_ar</mat-icon>
+            <span>Calibrar</span>
+        </button>
+        <button class="my_button_with_text margin_y_5 full_width" (click)="turnReferencePoints(true)" mat-menu-item>
+            <mat-icon>visibility</mat-icon>
+            <span>Ver puntos de referencia</span>
+        </button>
+        <button class="my_button_with_text margin_y_5 full_width" (click)="turnReferencePoints(false)" mat-menu-item>
+            <mat-icon>visibility_off</mat-icon>
+            <span>Esconder puntos de referencia</span>
+        </button>
+    </div>
+    <div *ngIf="localModel.currentView" class="my_panel vh2">
+        <div class="my_decoration">
+            <div class="mi_titulo">Puntos de referencia</div>
+            <div class="mi_scroll">
+                <div *ngIf="localModel.currentView" class="flex_column">
+                    <div *ngFor="let onePoint of localModel.currentView.pairs | keyvalue" class="one_point_item">
+                        <div class="my_action" (click)="askErasePoint(onePoint.key)">
+                            <mat-icon>close</mat-icon>
+                        </div>
+                        <div class="flex_column my_content" (click)="askLocatePoint(onePoint.key)">
+                            <div class="point_label">Punto 2D:</div>
+                            <div class="point_value">{{ format2DPoint(onePoint.value.v2) }}</div>
+                            <div class="point_label">Punto 3D:</div>
+                            <div class="point_value">{{ format3DPoint(onePoint.value.v3) }}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="localModel.currentViewName != null">
+        <button class="my_button_with_text" (click)="removeView(localModel.currentViewName)" mat-menu-item>
+            <mat-icon>close</mat-icon>
+            <span>Borrar Vista</span>
+        </button>
+    </div>
 </div>
-<pre>{{ localModel | json }}</pre>
+<div class="tab_view" *ngIf="localModel.currentTab == 'object3d'">
+    <button (click)="add3DModel()" mat-menu-item>
+        <mat-icon>add</mat-icon>
+        <span>Agregar Modelo 3D</span>
+    </button>
+    <div *ngFor="let model of mymodel.models | keyvalue | sortByName">
+        <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'" [url]="model.value.objUrl"
+            (urlChange)="model.value.objUrl=$event; load3DModel.emit({uid: model.key, url: $event}); saveEvent.emit();">
+        </app-blobeditor>
+        <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'" [url]="model.value.videoUrl"
+            (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
+        </app-blobeditor>
+        <pre>{{ model.value | json }}</pre>
+        <app-video-canvas [url]="model.value.videoUrl" [uid]="model.key" [timeSeconds]="localModel.timeSeconds"
+            [useVideo]="localModel.useVideo" (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
+        </app-video-canvas>
+        <button (click)="delete3DModel(model.key)" mat-menu-item>
+            <mat-icon>delete</mat-icon>
+            <span>Borrar Modelo</span>
+        </button>
+    </div>
+</div>
+<div class="tab_view" *ngIf="localModel.currentTab == 'play'">
+    <input type="checkbox" [(ngModel)]="localModel.useVideo" />
+    <input type="number" [(ngModel)]="localModel.timeSeconds" />
+</div>
+<div class="tab_view" *ngIf="localModel.currentTab == 'debug_local_model'">
+    <pre>{{ localModel | json }}</pre>
+</div>

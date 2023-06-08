@@ -41,6 +41,7 @@ export interface Model3DData {
 
 export interface ViewModelData {
   name: string;
+  fov: number;
   pairs: CalibData;
 }
 
@@ -54,6 +55,7 @@ export interface GlobalModelData {
 }
 
 export interface LocalModelData {
+  currentTab: string;
   currentViewName: string | null;
   currentView: ViewModelData | null;
   useVideo: boolean;
@@ -98,6 +100,7 @@ export class ProjectionComponent
     models: {},
   };
   public localModel: LocalModelData = {
+    currentTab: 'views',
     currentViewName: null,
     currentView: null,
     useVideo: false,

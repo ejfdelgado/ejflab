@@ -19,6 +19,11 @@ import {
 } from '../../projection.component';
 import { VideoCanvasEventData } from '../video-canvas/video-canvas.component';
 
+export interface TabElementData {
+  label: string;
+  id: string;
+}
+
 export interface MyOptionData {
   val: string;
   txt: string;
@@ -40,6 +45,25 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() remove3DModel = new EventEmitter<string>();
   @Output() imageOut = new EventEmitter<VideoCanvasEventData>();
 
+  tabOptions: Array<TabElementData> = [
+    {
+      label: 'Vistas',
+      id: 'views',
+    },
+    {
+      label: 'Objetos 3D',
+      id: 'object3d',
+    },
+    {
+      label: 'Play',
+      id: 'play',
+    },
+    {
+      label: 'Debug',
+      id: 'debug_local_model',
+    },
+  ];
+
   blobOptions: BlobOptionsData = {
     useRoot: MyConstants.SRV_ROOT,
     autosave: true,
@@ -51,6 +75,52 @@ export class MenuControlComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {}
+
+  openTab(tab: string) {
+    this.localModel.currentTab = tab;
+  }
+
+  askErasePoint(key: string) {
+    console.log(`askErasePoint ${key}`);
+  }
+
+  askLocatePoint(key: string) {
+    console.log(`askLocatePoint ${key}`);
+  }
+
+  calibrateView() {
+    console.log(`calibrateView`);
+  }
+
+  useOrbitControls() {
+    console.log(`useOrbitControls`);
+  }
+
+  turnReferencePoints(value: boolean) {
+    console.log(`turnReferencePoints ${value}`);
+  }
+
+  turnFullscreen(value: boolean) {
+    console.log(`turnFullscreen ${value}`);
+  }
+
+  format2DPoint(point: any) {
+    if (point) {
+      return `${point.x.toFixed(2)}, ${point.y.toFixed(2)}`;
+    } else {
+      return '-';
+    }
+  }
+
+  format3DPoint(point: any) {
+    if (point) {
+      return `${point.x.toFixed(2)}, ${point.y.toFixed(2)}, ${point.z.toFixed(
+        2
+      )}`;
+    } else {
+      return '-';
+    }
+  }
 
   async add3DModel() {
     const id = await IdGen.nuevo();
@@ -124,6 +194,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     this.mymodel.calib[id] = {
       name: `Vista ${count}`,
       pairs: {},
+      fov: 35,
     };
     if (this.localModel.currentViewName == null) {
       this.localModel.currentViewName = id;
