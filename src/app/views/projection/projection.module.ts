@@ -9,14 +9,13 @@ import { MenuControlComponent } from './components/menu-control/menu-control.com
 import { FormsModule } from '@angular/forms';
 import { SortByNamePipe } from 'src/app/mycommon/pipes/sort-by-name.pipe';
 import { VideoCanvasComponent } from './components/video-canvas/video-canvas.component';
-import { ThreejsProjectionComponent } from './components/threejs-projection/threejs-projection.component';
+import { ThreejsModule } from 'src/app/libs/threejs/threejs.module';
 
 @NgModule({
   declarations: [
     ProjectionComponent,
     MenuControlComponent,
     VideoCanvasComponent,
-    ThreejsProjectionComponent,
   ],
   imports: [
     MatIconModule,
@@ -24,6 +23,7 @@ import { ThreejsProjectionComponent } from './components/threejs-projection/thre
     MycommonModule,
     ProjectionRoutingModule,
     FormsModule,
+    ThreejsModule,
   ],
 })
 export class ProjectionModule {}

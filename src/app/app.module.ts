@@ -40,6 +40,7 @@ import { WebcamComponent } from './components/webcam/webcam.component';
 import { WebcamModule } from 'ngx-webcam';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PayupopupComponent } from './components/payupopup/payupopup.component';
+import { ThreejsModule } from './libs/threejs/threejs.module';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { PayupopupComponent } from './components/payupopup/payupopup.component';
     MatIconModule,
     MycommonModule,
     WebcamModule,
+    ThreejsModule,
   ],
   providers: [
     ScreenTrackingService,
