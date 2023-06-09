@@ -12,7 +12,7 @@ import { BaseComponent } from 'src/app/components/base/base.component';
 import {
   AudioCutData,
   AudioOptionsData,
-} from 'src/app/mycommon/components/audioeditor/audioeditor.component';
+} from 'src/app/libs/wavesurfer/audioeditor/audioeditor.component';
 import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/imagepicker.component';
 import {
   CanvasOptionsData,

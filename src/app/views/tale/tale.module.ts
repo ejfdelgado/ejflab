@@ -8,6 +8,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contenteditable-accessor';
+import { WavesurferModule } from 'src/app/libs/wavesurfer/wavesurfer.module';
 
 @NgModule({
   declarations: [TaleComponent],
@@ -19,7 +20,8 @@ import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contentedit
     MatIconModule,
     FormsModule,
     ReactiveFormsModule,
-    ContenteditableValueAccessorModule
+    ContenteditableValueAccessorModule,
+    WavesurferModule,
   ],
 })
 export class TaleModule {}

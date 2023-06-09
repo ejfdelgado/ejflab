@@ -14,7 +14,6 @@ import { ContenteditableValueAccessorModule } from '@tinkoff/angular-contentedit
 import { BlobeditorComponent } from './components/blobeditor/blobeditor.component';
 import { FileordevicepopupComponent } from './components/fileordevicepopup/fileordevicepopup.component';
 import { FilepickerComponent } from './components/filepicker/filepicker.component';
-import { AudioeditorComponent } from './components/audioeditor/audioeditor.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.component';
 import { MatSliderModule } from '@angular/material/slider';
@@ -35,7 +34,6 @@ import { SortByNamePipe } from './pipes/sort-by-name.pipe';
     BlobeditorComponent,
     FileordevicepopupComponent,
     FilepickerComponent,
-    AudioeditorComponent,
     CanvaseditorComponent,
     ScrollnavComponent,
     ScrollfilesComponent,
@@ -63,7 +61,6 @@ import { SortByNamePipe } from './pipes/sort-by-name.pipe';
     BlobeditorComponent,
     FilepickerComponent,
     FileordevicepopupComponent,
-    AudioeditorComponent,
     CanvaseditorComponent,
     ScrollnavComponent,
     ScrollfilesComponent,

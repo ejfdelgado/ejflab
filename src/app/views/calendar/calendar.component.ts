@@ -263,14 +263,14 @@ export class CalendarComponent implements OnInit {
         legible: elDia + 100 * mes + anio * 10000,
       };
 
-      if (dia.legible < 20230501) {
-        if (this.esPar && elDia % 2 != 0) {
+      if (dia.legible >= 20230501 && dia.legible <= 20230612) {
+        if (this.esPar && elDia % 2 == 0) {
           dia.sad = true;
         } else {
           dia.happy = true;
         }
       } else {
-        if (this.esPar && elDia % 2 == 0) {
+        if (this.esPar && elDia % 2 != 0) {
           dia.sad = true;
         } else {
           dia.happy = true;

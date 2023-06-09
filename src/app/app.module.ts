@@ -41,6 +41,8 @@ import { WebcamModule } from 'ngx-webcam';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { PayupopupComponent } from './components/payupopup/payupopup.component';
 import { ThreejsModule } from './libs/threejs/threejs.module';
+import { WavesurferModule } from './libs/wavesurfer/wavesurfer.module';
+import { TensorflowModule } from './libs/tensorflow/tensorflow.module';
 
 @NgModule({
   declarations: [
@@ -81,6 +83,8 @@ import { ThreejsModule } from './libs/threejs/threejs.module';
     MycommonModule,
     WebcamModule,
     ThreejsModule,
+    WavesurferModule,
+    TensorflowModule,
   ],
   providers: [
     ScreenTrackingService,

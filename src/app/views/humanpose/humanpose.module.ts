@@ -7,17 +7,11 @@ import { MycommonModule } from 'src/app/mycommon/mycommon.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
-import { ThreejsComponent } from './components/threejs/threejs.component';
-import { TensorflowtrainComponent } from './components/tensorflowtrain/tensorflowtrain.component';
-import { TensorflowComponent } from './components/tensorflow/tensorflow.component';
+import { ThreejsModule } from 'src/app/libs/threejs/threejs.module';
+import { TensorflowModule } from 'src/app/libs/tensorflow/tensorflow.module';
 
 @NgModule({
-  declarations: [
-    HumanposeComponent,
-    ThreejsComponent,
-    TensorflowtrainComponent,
-    TensorflowComponent,
-  ],
+  declarations: [HumanposeComponent],
   imports: [
     MatIconModule,
     CommonModule,
@@ -25,6 +19,8 @@ import { TensorflowComponent } from './components/tensorflow/tensorflow.componen
     FormsModule,
     HumanposeRoutingModule,
     MatInputModule,
+    ThreejsModule,
+    TensorflowModule,
   ],
 })
 export class HumanposeModule {}
