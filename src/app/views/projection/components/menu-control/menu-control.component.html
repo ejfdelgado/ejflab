@@ -51,7 +51,7 @@
             <span>Esconder puntos de referencia</span>
         </button>
     </div>
-    <div *ngIf="localModel.currentView" class="my_panel vh2">
+    <div *ngIf="localModel.currentView && states.seeCalibPoints === true" class="my_panel vh2">
         <div class="my_decoration">
             <div class="mi_titulo">Puntos de referencia</div>
             <div class="mi_scroll">
@@ -80,25 +80,41 @@
     </div>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'object3d'">
-    <button (click)="add3DModel()" mat-menu-item>
+    <button class="my_button_with_text full_width margin_y_5" (click)="add3DModel()" mat-menu-item>
         <mat-icon>add</mat-icon>
         <span>Agregar Modelo 3D</span>
     </button>
-    <div *ngFor="let model of mymodel.models | keyvalue | sortByName">
-        <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'" [url]="model.value.objUrl"
-            (urlChange)="model.value.objUrl=$event; load3DModel.emit({uid: model.key, url: $event}); saveEvent.emit();">
-        </app-blobeditor>
-        <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'" [url]="model.value.videoUrl"
-            (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
-        </app-blobeditor>
-        <pre>{{ model.value | json }}</pre>
-        <app-video-canvas [url]="model.value.videoUrl" [uid]="model.key" [timeSeconds]="localModel.timeSeconds"
-            [useVideo]="localModel.useVideo" (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
-        </app-video-canvas>
-        <button (click)="delete3DModel(model.key)" mat-menu-item>
-            <mat-icon>delete</mat-icon>
-            <span>Borrar Modelo</span>
-        </button>
+    <div class="my_panel" *ngFor="let model of mymodel.models | keyvalue | sortByName">
+        <div class="my_decoration my_panel_h">
+            <div class="my_panel padding_5">
+                <label class="my_label">Nombre:</label>
+                <input class="my_input" type="text" [(ngModel)]="model.value.name"
+                    (ngModelChange)="saveEvent.emit();" />
+                <label class="my_label">Inicia en (segundos):</label>
+                <input class="my_input" type="number" min="0" [(ngModel)]="model.value.startTime"
+                    (ngModelChange)="changedFovEvent.emit($event); saveEvent.emit();" />
+                <label class="my_label">Archivo *.obj:</label>
+                <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'"
+                    [url]="model.value.objUrl"
+                    (urlChange)="model.value.objUrl=$event; load3DModel.emit({uid: model.key, url: $event}); saveEvent.emit();">
+                </app-blobeditor>
+                <label class="my_label">Archivo de video:</label>
+                <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'"
+                    [url]="model.value.videoUrl"
+                    (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
+                </app-blobeditor>
+
+                <app-video-canvas class="invisible" [url]="model.value.videoUrl" [uid]="model.key"
+                    [timeSeconds]="localModel.timeSeconds" [useVideo]="localModel.useVideo"
+                    (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
+                </app-video-canvas>
+                <button class="my_button_with_text full_width margin_y_5" (click)="delete3DModel(model.key)"
+                    mat-menu-item>
+                    <mat-icon>delete</mat-icon>
+                    <span>Borrar Modelo</span>
+                </button>
+            </div>
+        </div>
     </div>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'play'">

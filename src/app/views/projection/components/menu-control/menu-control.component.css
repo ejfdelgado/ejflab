@@ -6,6 +6,10 @@ button {
   margin: 5px 0;
 }
 
+.padding_5 {
+  padding: 5px;
+}
+
 .mi_tab {
   display: flex;
   width: 100%;
@@ -84,6 +88,12 @@ button {
   display: flex;
   width: 100%;
   flex-direction: column;
+}
+
+.my_panel_h {
+  display: flex;
+  width: 100%;
+  flex-direction: row;
 }
 
 .my_panel.vh3 {

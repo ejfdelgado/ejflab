@@ -57,12 +57,12 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   tabOptions: Array<TabElementData> = [
     {
-      label: 'Vistas',
-      id: 'views',
-    },
-    {
       label: 'Objetos 3D',
       id: 'object3d',
+    },
+    {
+      label: 'Vistas',
+      id: 'views',
     },
     {
       label: 'Play',

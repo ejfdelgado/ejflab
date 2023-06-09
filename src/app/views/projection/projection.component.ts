@@ -117,7 +117,7 @@ export class ProjectionComponent
     models: {},
   };
   public localModel: LocalModelData = {
-    currentTab: 'views',
+    currentTab: 'object3d',
     currentViewName: null,
     currentView: null,
     useVideo: false,
