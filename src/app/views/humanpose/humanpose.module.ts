@@ -5,21 +5,26 @@ import { HumanposeRoutingModule } from './humanpose-routing.module';
 import { HumanposeComponent } from './humanpose.component';
 import { MycommonModule } from 'src/app/mycommon/mycommon.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
+import { ThreejsComponent } from './components/threejs/threejs.component';
+import { TensorflowtrainComponent } from './components/tensorflowtrain/tensorflowtrain.component';
+import { TensorflowComponent } from './components/tensorflow/tensorflow.component';
 
 @NgModule({
-  declarations: [HumanposeComponent],
+  declarations: [
+    HumanposeComponent,
+    ThreejsComponent,
+    TensorflowtrainComponent,
+    TensorflowComponent,
+  ],
   imports: [
     MatIconModule,
     CommonModule,
     MycommonModule,
-    //FormsModule,
-    //ReactiveFormsModule,
+    FormsModule,
     HumanposeRoutingModule,
-    //BrowserModule,
-    //MatInputModule,
+    MatInputModule,
   ],
 })
 export class HumanposeModule {}

@@ -20,13 +20,9 @@ import { CanvaseditorComponent } from './components/canvaseditor/canvaseditor.co
 import { MatSliderModule } from '@angular/material/slider';
 import { ScrollnavComponent } from './components/scrollnav/scrollnav.component';
 import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.component';
-import { TensorflowComponent } from './components/tensorflow/tensorflow.component';
-import { ThreejsComponent } from './components/threejs/threejs.component';
 import { PrejsonComponent } from './components/prejson/prejson.component';
 import { ScrollfileComponent } from './components/scrollfile/scrollfile.component';
 import { SortByNamePipe } from './pipes/sort-by-name.pipe';
-import { TensorflowtrainComponent } from './components/tensorflowtrain/tensorflowtrain.component';
-import { ThreejsProjectionComponent } from './components/threejs-projection/threejs-projection.component';
 
 @NgModule({
   declarations: [
@@ -43,13 +39,9 @@ import { ThreejsProjectionComponent } from './components/threejs-projection/thre
     CanvaseditorComponent,
     ScrollnavComponent,
     ScrollfilesComponent,
-    TensorflowComponent,
-    ThreejsComponent,
     PrejsonComponent,
     ScrollfileComponent,
     SortByNamePipe,
-    TensorflowtrainComponent,
-    ThreejsProjectionComponent,
   ],
   imports: [
     FontAwesomeModule,
@@ -75,11 +67,7 @@ import { ThreejsProjectionComponent } from './components/threejs-projection/thre
     CanvaseditorComponent,
     ScrollnavComponent,
     ScrollfilesComponent,
-    TensorflowComponent,
-    ThreejsComponent,
     PrejsonComponent,
-    TensorflowtrainComponent,
-    ThreejsProjectionComponent,
     SortByNamePipe,
   ],
 })

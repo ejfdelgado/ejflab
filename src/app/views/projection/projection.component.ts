@@ -14,7 +14,7 @@ import { OpenCVService, SolvePnPData } from 'src/services/opencv.service';
 import {
   CalibData,
   ThreejsProjectionComponent,
-} from 'src/app/mycommon/components/threejs-projection/threejs-projection.component';
+} from './components/threejs-projection/threejs-projection.component';
 import { BaseComponent } from 'src/app/components/base/base.component';
 import { ActivatedRoute } from '@angular/router';
 import { BackendPageService } from 'src/services/backendPage.service';

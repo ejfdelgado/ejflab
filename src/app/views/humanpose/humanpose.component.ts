@@ -16,8 +16,8 @@ import { OptionData } from 'src/app/mycommon/components/statusbar/statusbar.comp
 import {
   MyTensorflowData,
   MyTensorflowDataData,
-} from 'src/app/mycommon/components/tensorflow/tensorflow.component';
-import { ThreejsComponent } from 'src/app/mycommon/components/threejs/threejs.component';
+} from './components/tensorflow/tensorflow.component';
+import { ThreejsComponent } from './components/threejs/threejs.component';
 import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
 import { BaseComponent } from 'src/app/components/base/base.component';

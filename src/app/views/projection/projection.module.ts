@@ -9,9 +9,15 @@ import { MenuControlComponent } from './components/menu-control/menu-control.com
 import { FormsModule } from '@angular/forms';
 import { SortByNamePipe } from 'src/app/mycommon/pipes/sort-by-name.pipe';
 import { VideoCanvasComponent } from './components/video-canvas/video-canvas.component';
+import { ThreejsProjectionComponent } from './components/threejs-projection/threejs-projection.component';
 
 @NgModule({
-  declarations: [ProjectionComponent, MenuControlComponent, VideoCanvasComponent],
+  declarations: [
+    ProjectionComponent,
+    MenuControlComponent,
+    VideoCanvasComponent,
+    ThreejsProjectionComponent,
+  ],
   imports: [
     MatIconModule,
     CommonModule,

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { ModalService } from 'src/services/modal.service';
 
 export interface MyTensorflowLayerData {
@@ -48,7 +48,7 @@ export interface ComboBoxData {
   templateUrl: './tensorflow.component.html',
   styleUrls: ['./tensorflow.component.css'],
 })
-export class TensorflowComponent implements OnInit {
+export class TensorflowComponent implements OnInit, OnChanges {
   @Input('model')
   model: MyTensorflowData;
   @Input('data')
@@ -102,6 +102,10 @@ export class TensorflowComponent implements OnInit {
     if (indice >= 0) {
       this.data.in.splice(indice, 1);
     }
+  }
+
+  ngOnChanges(changes: any) {
+    //console.log(JSON.stringify(changes));
   }
 
   addDataIn() {
