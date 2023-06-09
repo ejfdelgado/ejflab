@@ -17,6 +17,7 @@ import {
   LocalModelData,
   Model3DData,
   TheStateViewData,
+  ViewModelData,
 } from '../../projection.component';
 import { VideoCanvasEventData } from '../video-canvas/video-canvas.component';
 
@@ -51,6 +52,8 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() useControlsEvent = new EventEmitter<void>();
   @Output() askErasePointEvent = new EventEmitter<string>();
   @Output() askLocatePointEvent = new EventEmitter<string>();
+  @Output() changedFovEvent = new EventEmitter<number>();
+  @Output() changedViewEvent = new EventEmitter<ViewModelData>();
 
   tabOptions: Array<TabElementData> = [
     {
@@ -175,11 +178,13 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   changedView(viewId: string) {
     this.localModel.currentView = this.mymodel.calib[viewId];
+    this.changedFovEvent.emit(this.localModel.currentView.fov);
+    this.changedViewEvent.emit(this.localModel.currentView);
   }
 
   async removeView(viewId: string) {
     const response = await this.modalService.confirm({
-      title: `¿Seguro que desea borrar la vista ${viewId}?`,
+      title: `¿Seguro que desea borrar la vista ${this.mymodel.calib[viewId].name}?`,
       txt: 'Esta acción no se puede deshacer.',
     });
     if (!response) {

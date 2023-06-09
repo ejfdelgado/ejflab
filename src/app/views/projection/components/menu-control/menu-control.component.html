@@ -34,8 +34,8 @@
         <input class="my_input" type="text" [(ngModel)]="localModel.currentView.name"
             (ngModelChange)="saveEvent.emit();" />
         <label class="my_label">Field of View (grados °):</label>
-        <input class="my_input" type="number" [(ngModel)]="localModel.currentView.fov"
-            (ngModelChange)="saveEvent.emit();" />
+        <input class="my_input" type="number" min="20" max="100" [(ngModel)]="localModel.currentView.fov"
+            (ngModelChange)="changedFovEvent.emit($event); saveEvent.emit();" />
         <button class="my_button_with_text margin_y_5" (click)="calibrateView()" mat-menu-item>
             <mat-icon>view_in_ar</mat-icon>
             <span>Calibrar</span>

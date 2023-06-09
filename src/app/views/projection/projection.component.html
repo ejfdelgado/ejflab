@@ -22,7 +22,8 @@
                     (saveEvent)="saveAll()" (imageOut)="receiveVideo($event)" (remove3DModel)="remove3DObject($event)"
                     (load3DModel)="add3DObject($event.uid, $event.url, true)" (fullScreenEvent)="turnFullscreen($event)"
                     (calibrateEvent)="calibCamera()" (useControlsEvent)="useOrbitControls()"
-                    (askErasePointEvent)="askErasePoint($event)" (askLocatePointEvent)="askLocatePoint($event)">
+                    (askErasePointEvent)="askErasePoint($event)" (askLocatePointEvent)="askLocatePoint($event)"
+                    (changedFovEvent)="changedFov($event)" (changedViewEvent)="changedView($event)">
                 </app-menu-control>
             </div>
         </div>

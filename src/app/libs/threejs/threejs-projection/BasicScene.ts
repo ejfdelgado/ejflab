@@ -100,6 +100,24 @@ export class BasicScene extends THREE.Scene {
       );
   }
 
+  resetView() {
+    if (!this.camera) {
+      return;
+    }
+    this.camera.zoom = 1;
+    this.setOrbitControls(false);
+    this.setOrbitControls(true);
+    this.camera.updateProjectionMatrix();
+  }
+
+  setFov(fov: number) {
+    if (!this.camera) {
+      return;
+    }
+    this.camera.fov = fov;
+    this.camera.updateProjectionMatrix();
+  }
+
   resetCameraTecnic2(invertUp: boolean) {
     if (!this.camera) {
       return;

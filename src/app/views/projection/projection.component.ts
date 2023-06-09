@@ -158,20 +158,22 @@ export class ProjectionComponent
       icon: 'directions_run',
       label: 'Calibrate Camera',
     });
-    this.extraOptions.push({
-      action: () => {
-        this.useOrbitControls();
-      },
-      icon: 'directions_run',
-      label: 'Use Orbit Controls',
-    });
-    this.extraOptions.push({
-      action: () => {
-        this.switchCalibPoints();
-      },
-      icon: 'directions_run',
-      label: 'Switch Calib Points',
-    });
+  }
+
+  changedView(view: ViewModelData) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent || !threeComponent.scene) {
+      return;
+    }
+    threeComponent.scene.resetView();
+  }
+
+  changedFov(dato: number) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent || !threeComponent.scene) {
+      return;
+    }
+    threeComponent.scene.setFov(dato);
   }
 
   async saveAll() {
