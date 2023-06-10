@@ -25,7 +25,10 @@
     ],
     "responseHeader": [
       "Content-Type",
-      "Access-Control-Allow-Origin"
+      "Access-Control-Allow-Origin",
+      "authorization",
+      "x-host",
+      "x-referer"
     ],
     "maxAgeSeconds": 3600
   }

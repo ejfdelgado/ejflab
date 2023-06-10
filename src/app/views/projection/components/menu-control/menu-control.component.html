@@ -12,6 +12,17 @@
     <mat-icon>3d_rotation</mat-icon>
     <span>Usar controles</span>
 </button>
+<button *ngIf="states.seeCalibPoints === false" class="my_button_with_text margin_y_5 full_width"
+    (click)="turnReferencePoints(true)" mat-menu-item>
+    <mat-icon>visibility</mat-icon>
+    <span>Ver puntos de referencia</span>
+</button>
+<button *ngIf="states.seeCalibPoints === true" class="my_button_with_text margin_y_5 full_width"
+    (click)="turnReferencePoints(false)" mat-menu-item>
+    <mat-icon>visibility_off</mat-icon>
+    <span>Esconder puntos de referencia</span>
+</button>
+<!-- Top Side -->
 <div class="mi_tab">
     <div *ngFor="let myTab of tabOptions" class="one_tab" (click)="openTab(myTab.id)"
         [ngClass]="{'active': localModel.currentTab == myTab.id}">
@@ -46,15 +57,9 @@
             <mat-icon>view_in_ar</mat-icon>
             <span>Calibrar</span>
         </button>
-        <button *ngIf="states.seeCalibPoints === false" class="my_button_with_text margin_y_5 full_width"
-            (click)="turnReferencePoints(true)" mat-menu-item>
-            <mat-icon>visibility</mat-icon>
-            <span>Ver puntos de referencia</span>
-        </button>
-        <button *ngIf="states.seeCalibPoints === true" class="my_button_with_text margin_y_5 full_width"
-            (click)="turnReferencePoints(false)" mat-menu-item>
-            <mat-icon>visibility_off</mat-icon>
-            <span>Esconder puntos de referencia</span>
+        <button class="my_button_with_text full_width margin_y_5" (click)="askEraseAllPoints()" mat-menu-item>
+            <mat-icon>close</mat-icon>
+            <span>Borrar puntos de referencia</span>
         </button>
     </div>
     <div *ngIf="localModel.currentView && states.seeCalibPoints === true" class="my_panel vh2">

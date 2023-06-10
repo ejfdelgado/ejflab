@@ -298,6 +298,21 @@ export class ProjectionComponent
     this.recomputeVertex();
   }
 
+  async askEraseAllPoints() {
+    if (!this.localModel.currentView) {
+      return;
+    }
+    const response = await this.modalService.confirm({
+      txt: 'Esta acción no se puede deshacer',
+      title: '¿Seguro?',
+    });
+    if (!response) {
+      return;
+    }
+    this.localModel.currentView.pairs = {};
+    this.saveAll();
+  }
+
   async askErasePoint(key: string) {
     if (!this.localModel.currentView) {
       return;

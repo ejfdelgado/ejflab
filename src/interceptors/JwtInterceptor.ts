@@ -10,6 +10,8 @@ import { switchMap } from 'rxjs/operators';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 
+const URLS_NO_TOKEN = ['https://storage.googleapis.com'];
+
 @Injectable()
 export class JwtInterceptor implements HttpInterceptor {
   constructor(private route: ActivatedRoute, private auth: AuthService) {}
@@ -27,15 +29,28 @@ export class JwtInterceptor implements HttpInterceptor {
           });
           return next.handle(requestClone);
         } else {
-          const headers = request.headers
-            //.append('Origin', location.origin)
-            //.append('Access-Control-Allow-Origin', '*')
+          const url = request.url;
+          const partes = /^(https?:\/\/[^\/]+)/.exec(url);
+          let addAuthorization = true;
+          if (partes != null) {
+            const dominio = partes[1];
+            if (URLS_NO_TOKEN.indexOf(dominio) >= 0) {
+              addAuthorization = false;
+            }
+          }
+
+          let headers = request.headers
             .append('X-Referer', location.href)
-            .append('X-Host', location.origin)
-            .append('Authorization', 'Bearer ' + token);
+            .append('X-Host', location.origin);
+
+          if (addAuthorization) {
+            headers = headers.append('Authorization', 'Bearer ' + token);
+          }
+
           const requestClone = request.clone({
             headers,
           });
+
           return next.handle(requestClone);
         }
       })

@@ -64,6 +64,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() askLocatePointEvent = new EventEmitter<string>();
   @Output() changedFovEvent = new EventEmitter<number>();
   @Output() changedViewEvent = new EventEmitter<ViewModelData>();
+  @Output() askEraseAllPointsEvent = new EventEmitter<void>();
 
   @ViewChildren(VideoCanvasComponent)
   videoListRef: QueryList<VideoCanvasComponent>;
@@ -177,6 +178,10 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   askErasePoint(key: string) {
     this.askErasePointEvent.emit(key);
+  }
+
+  askEraseAllPoints() {
+    this.askEraseAllPointsEvent.emit();
   }
 
   askLocatePoint(key: string) {
