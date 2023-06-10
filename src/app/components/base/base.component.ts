@@ -49,6 +49,7 @@ export class BaseComponent implements OnInit, OnDestroy {
   pageSubscription: Subscription | null = null;
   tupleSubscription: Subscription | null = null;
   tupleServiceInstance: TupleServiceInstance | null;
+  saveState: string | null = null;
   constructor(
     public route: ActivatedRoute,
     public pageService: BackendPageService,
@@ -167,19 +168,23 @@ export class BaseComponent implements OnInit, OnDestroy {
             //console.log(JSON.stringify(evento));
             if (evento.status == 'read_wip') {
               // Show read indicator
+              this.saveState = 'processing';
             } else if (evento.status == 'read_done') {
               // Stop read indicator
               this.tupleModel = evento.body;
               this.onTupleReadDone();
+              this.saveState = 'done';
             } else if (evento.status == 'news') {
               console.log('news');
               // Stop read indicator
               this.tupleModel = evento.body;
               this.onTupleNews();
-            } else if (evento.status == 'write_wip') {
+            } else if (evento.status == 'save_wip') {
               // Show write indicator
-            } else if (evento.status == 'write_done') {
+              this.saveState = 'processing';
+            } else if (evento.status == 'save_done') {
               // Stop write indicator
+              this.saveState = 'done';
               this.onTupleWriteDone();
             }
           }

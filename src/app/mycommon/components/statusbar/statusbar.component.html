@@ -44,6 +44,19 @@
         </div>
         <div class="relleno mi_titulo">{{ title }}</div>
     </div>
+    <div *ngIf="saveState !== null" class="usuario_container">
+        <div class="menu_icon_user_parent">
+            <!--div class="save_status">
+                <mat-icon>save</mat-icon>
+            </div-->
+            <div *ngIf="saveState == 'processing'" class="save_status rotating">
+                <mat-icon>settings</mat-icon>
+            </div>
+            <div *ngIf="saveState == 'done'" class="save_status scaling">
+                <mat-icon>done</mat-icon>
+            </div>
+        </div>
+    </div>
     <div class="usuario_container">
         <div class="menu_icon_user_parent" [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
             <div class="menu_icon_user">

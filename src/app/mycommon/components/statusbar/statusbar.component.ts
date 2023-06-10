@@ -27,6 +27,7 @@ export class StatusbarComponent implements OnInit {
   title: string | null;
   @Input('extraOptions')
   extraOptions: Array<OptionData> = [];
+  @Input('saveState') saveState: string | null = null;
 
   constructor(
     private loginSrv: LoginService,

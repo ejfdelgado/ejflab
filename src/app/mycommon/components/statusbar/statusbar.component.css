@@ -51,3 +51,42 @@
   flex-direction: column;
   justify-content: center;
 }
+
+.save_status {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.save_status mat-icon {
+  transform: scale(2);
+  color: white;
+}
+
+@keyframes myrotation {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(359deg);
+  }
+}
+
+@keyframes myscale {
+  from {
+    transform: scale(0);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.rotating {
+  animation: myrotation 2s infinite linear;
+}
+
+.scaling {
+  animation: myscale 2s linear;
+}
