@@ -36,6 +36,7 @@ export interface Model3DData {
   name: string;
   objUrl?: string;
   videoUrl?: string;
+  useLoop?: boolean;
   startTime: number;
   texture: VideoCanvasOptions;
 }

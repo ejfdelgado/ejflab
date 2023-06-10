@@ -16,6 +16,7 @@ import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { MyConstants } from 'srcJs/MyConstants';
+import { MyDatesFront } from 'srcJs/MyDatesFront';
 import {
   GlobalModelData,
   LocalModelData,
@@ -37,6 +38,8 @@ export interface MyOptionData {
   val: string;
   txt: string;
 }
+
+const OFFSET_MILLIS_START_TIME = 6000;
 
 @Component({
   selector: 'app-menu-control',
@@ -64,6 +67,9 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   @ViewChildren(VideoCanvasComponent)
   videoListRef: QueryList<VideoCanvasComponent>;
+  localTimeout: any = null;
+  localInterval: any = null;
+  localFormatTime: string = '';
 
   tabOptions: Array<TabElementData> = [
     {
@@ -107,7 +113,19 @@ export class MenuControlComponent implements OnInit, OnChanges {
     });
   }
 
+  clearOldExecution() {
+    if (this.localTimeout != null) {
+      clearTimeout(this.localTimeout);
+      this.localTimeout = null;
+    }
+    if (this.localInterval != null) {
+      clearInterval(this.localInterval);
+      this.localInterval = null;
+    }
+  }
+
   stopPlayer() {
+    this.clearOldExecution();
     const videos = this.videoListRef;
     videos.forEach(async (item) => {
       await item.stop();
@@ -115,7 +133,23 @@ export class MenuControlComponent implements OnInit, OnChanges {
   }
 
   configureTimerToPlay(startTime: number) {
-    console.log(`Configure ${startTime}`);
+    if (startTime == 0) {
+      this.stopPlayer();
+    } else {
+      this.clearOldExecution();
+      const ahora = new Date().getTime();
+      const diferencia = startTime - ahora;
+      this.localTimeout = setTimeout(() => {
+        this.mymodel.globalState.playingState = 'preparing';
+        this.autoStartPlay();
+        this.saveEvent.emit();
+      }, diferencia);
+
+      this.localInterval = setInterval(() => {
+        const ahoraLocal = new Date().getTime();
+        this.localFormatTime = MyDatesFront.toHHMMssmm(ahoraLocal - startTime);
+      }, 250);
+    }
   }
 
   prepareToPlay() {
@@ -124,7 +158,8 @@ export class MenuControlComponent implements OnInit, OnChanges {
       this.mymodel.globalState = {};
     }
     this.mymodel.globalState.playingState = 'preparing';
-    this.mymodel.globalState.playTime = new Date().getTime() + 5000;
+    this.mymodel.globalState.playTime =
+      new Date().getTime() + OFFSET_MILLIS_START_TIME;
     this.saveEvent.emit();
   }
 

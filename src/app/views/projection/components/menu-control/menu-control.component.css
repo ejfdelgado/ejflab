@@ -178,3 +178,9 @@ button {
 .one_point_item .point_value {
   font-weight: bold;
 }
+
+.timer_count {
+  font-size: 30px;
+  text-align: center;
+  margin: 10px;
+}

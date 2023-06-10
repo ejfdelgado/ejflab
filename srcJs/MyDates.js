@@ -177,6 +177,10 @@ class MyDates {
         return ('0' + n).slice(-2);
     }
 
+    static lPad3(n) {
+        return ('00' + n).slice(-3);
+    }
+
     static listGenerator(min, max, pad = false) {
         const response = [];
         if (!pad) {
@@ -208,6 +212,32 @@ class MyDates {
         const mes1 = siguiente.getMonth() + 1;
         const dia1 = siguiente.getDate();
         return anio1 + MyDates.lPad2(mes1) + MyDates.lPad2(dia1);
+    }
+
+    static toHHMMssmm(siguiente) {
+        const esNegativo = (siguiente < 0);
+        if (esNegativo) {
+            siguiente *= -1;
+        }
+        const segundosTemp = Math.floor(siguiente / 1000);
+        const milis = siguiente - 1000 * segundosTemp;
+        const segundos = segundosTemp % 60;
+        let minutosTemp = (segundosTemp - segundos) / 60;
+        const minutos = minutosTemp % 60;
+        const hora = (minutosTemp - minutos) / 60;
+        if (hora > 0) {
+            return `${esNegativo ? '-' : ''}${MyDates.lPad2(hora)}:${MyDates.lPad2(minutos)}:${MyDates.lPad2(segundos)}.${MyDates.lPad3(milis)}`;
+        } else {
+            if (minutos > 0) {
+                return `${esNegativo ? '-' : ''}${MyDates.lPad2(minutos)}:${MyDates.lPad2(segundos)}.${MyDates.lPad3(milis)}`;
+            } else {
+                if (segundos > 0) {
+                    return `${esNegativo ? '-' : ''}${MyDates.lPad2(segundos)}.${MyDates.lPad3(milis)}`;
+                } else {
+                    return `${esNegativo ? '-' : ''}00.${MyDates.lPad3(milis)}`;
+                }
+            }
+        }
     }
 
     static toAAAAMMDDHHmmss(siguiente, predeterminado = "") {

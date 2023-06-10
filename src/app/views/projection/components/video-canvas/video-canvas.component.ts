@@ -36,6 +36,7 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
   private context: CanvasRenderingContext2D | null;
   @Input() timeSeconds: number;
   @Input() uid: string;
+  @Input() useLoop?: boolean;
   @Input() useVideo: boolean | null;
   @Input() url: string | null;
   @Input() options: VideoCanvasOptions;
@@ -76,6 +77,7 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
     if (!this.video) {
       throw new Error(`No hay video para ${this.uid}`);
     }
+    this.video.loop = this.useLoop === true;
     return this.video.play();
   }
 
@@ -117,7 +119,7 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
       return;
     }
     // TODO borrar esiguiente línea
-    theUrl = 'assets/video/somevideo.mp4';
+    //theUrl = 'assets/video/somevideo.mp4';
     this.currentUrl = theUrl;
     const object: any = await this.httpSrv.get(theUrl, {
       isBlob: true,

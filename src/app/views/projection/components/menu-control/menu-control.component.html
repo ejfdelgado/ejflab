@@ -20,8 +20,8 @@
 </div>
 <div class="invisible" *ngFor="let model of mymodel.models | keyvalue">
     <app-video-canvas #videoListRef *ngIf="model.value.videoUrl" [url]="model.value.videoUrl" [uid]="model.key"
-        [timeSeconds]="localModel.timeSeconds" [useVideo]="localModel.useVideo" (imageOut)="imageOut.emit($event)"
-        [options]="model.value.texture">
+        [timeSeconds]="localModel.timeSeconds" [useLoop]="model.value.useLoop" [useVideo]="localModel.useVideo"
+        (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
     </app-video-canvas>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'views'">
@@ -107,9 +107,10 @@
                 </app-blobeditor>
                 <label class="my_label">Archivo de video:</label>
                 <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'"
-                    [url]="model.value.videoUrl"
-                    (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
+                    [url]="model.value.videoUrl" (urlChange)="model.value.videoUrl=$event; saveEvent.emit();">
                 </app-blobeditor>
+                <label class="my_label">Bucle infinito:</label>
+                <input type="checkbox" [(ngModel)]="model.value.useLoop" (ngModelChange)="saveEvent.emit();" />
                 <button class="my_button_with_text full_width margin_y_5" (click)="delete3DModel(model.key)"
                     mat-menu-item>
                     <mat-icon>delete</mat-icon>
@@ -123,17 +124,19 @@
     <div class="my_panel">
         <label class="my_label">Pregargar videos:</label>
         <input type="checkbox" [(ngModel)]="localModel.useVideo" />
-        <button class="my_button_with_text full_width margin_y_5" (click)="prepareToPlay()" mat-menu-item>
+        <button *ngIf="mymodel.globalState.playingState === 'stoped'" class="my_button_with_text full_width margin_y_5"
+            (click)="prepareToPlay()" mat-menu-item>
             <mat-icon>play_arrow</mat-icon>
             <span>Reproducir</span>
         </button>
-        <button class="my_button_with_text full_width margin_y_5" (click)="callToStop()" mat-menu-item>
+        <button *ngIf="mymodel.globalState.playingState !== 'stoped'" class="my_button_with_text full_width margin_y_5"
+            (click)="callToStop()" mat-menu-item>
             <mat-icon>stop</mat-icon>
             <span>Detener</span>
         </button>
         <div *ngIf="mymodel.globalState.playingState == 'preparing' || mymodel.globalState.playingState == 'playing'"
             class="timer_count">
-            {{ states.currentPlayTime }}
+            {{ localFormatTime }}
         </div>
     </div>
 
