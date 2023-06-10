@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { catchError, Observable, of } from 'rxjs';
 import { HttpOptionsData } from 'src/interfaces/login-data.interface';

@@ -53,3 +53,8 @@ sudo docker login -u ejfdelgado
 sudo docker push ejfdelgado/mainapp:v1.0
 
 gcloud auth configure-docker
+
+gsutil cors set cors.json gs://labs-pro-public
+gcloud storage buckets update gs://labs-pro-public --cors-file=cors.json
+
+gcloud storage buckets describe gs://labs-pro-public --format="default(cors)"

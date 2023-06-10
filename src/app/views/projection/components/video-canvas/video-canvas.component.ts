@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import { HttpService } from 'src/services/http.service';
+import { MyConstants } from 'srcJs/MyConstants';
 
 export interface VideoCanvasOptions {
   width: number;
@@ -123,7 +124,8 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
     // TODO borrar esiguiente línea
     //theUrl = 'assets/video/somevideo.mp4';
     this.currentUrl = theUrl;
-    const object: any = await this.httpSrv.get(theUrl, {
+    const publicUrl = MyConstants.getPublicUrl(theUrl, false);
+    const object: any = await this.httpSrv.get(publicUrl, {
       isBlob: true,
       useCache: true,
     });

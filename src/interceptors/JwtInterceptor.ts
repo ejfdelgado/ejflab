@@ -28,9 +28,11 @@ export class JwtInterceptor implements HttpInterceptor {
           return next.handle(requestClone);
         } else {
           const headers = request.headers
-            .append('Authorization', 'Bearer ' + token)
+            //.append('Origin', location.origin)
+            //.append('Access-Control-Allow-Origin', '*')
             .append('X-Referer', location.href)
-            .append('X-Host', location.origin);
+            .append('X-Host', location.origin)
+            .append('Authorization', 'Bearer ' + token);
           const requestClone = request.clone({
             headers,
           });

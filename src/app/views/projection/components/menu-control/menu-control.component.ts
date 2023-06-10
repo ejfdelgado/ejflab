@@ -95,6 +95,12 @@ export class MenuControlComponent implements OnInit, OnChanges {
     autosave: true,
   };
 
+  blobOptionsPublic: BlobOptionsData = {
+    useRoot: MyConstants.SRV_ROOT,
+    autosave: true,
+    isPublic: true,
+  };
+
   constructor(
     public fileService: FileService,
     public modalService: ModalService

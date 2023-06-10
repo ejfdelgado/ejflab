@@ -65,6 +65,9 @@ class MyConstants {
         return [];
     }
     static resolveDomain(path) {
+        if (/https?:\/\//.test(path)) {
+            return '';
+        }
         if (location.hostname == "localhost") {
             return MyConstants.SRV_ROOT;
         }
@@ -73,6 +76,16 @@ class MyConstants {
             return MyConstants.SRV_ROOT;
         } else {
             return domain;
+        }
+    }
+    //MyConstants.getPublicUrl()
+    static getPublicUrl(keyName, addRandom = true) {
+        keyName = keyName.replace(/\?.*$/, "");
+        if (addRandom) {
+            const time = new Date().getTime();
+            return `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}?t=${time}`;
+        } else {
+            return `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
         }
     }
 }

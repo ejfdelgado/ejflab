@@ -37,6 +37,7 @@ export interface FileSaveData {
   base64: string;
   fileName: string;
   erasefile?: string | null;
+  isPublic?: boolean;
 }
 
 export interface FileSaveResponseData {
@@ -124,6 +125,16 @@ export class FileService {
     await this.httpSrv.delete(url, {}, options);
   }
 
+  async makePublic(key: string) {
+    const idPage = this.getIdPage();
+    const URL = `srv/${idPage}/makefilepub`;
+    const options: HttpOptionsData = {
+      showIndicator: true,
+    };
+    const response: any = await this.httpSrv.post(URL, { key }, options);
+    return response;
+  }
+
   async generateGif(payload: frameVideoRequestData) {
     const idPage = this.getIdPage();
     const URL = `srv/${idPage}/makegif`;
@@ -162,7 +173,7 @@ export class FileService {
         fileName: `/${idPage}/${payload.fileName}`,
         foldertype: 'OWN',
         isplainfile: '1',
-        isprivate: '1',
+        isprivate: payload.isPublic === true ? '0' : '1',
         erasefile: payload.erasefile,
       }
     );

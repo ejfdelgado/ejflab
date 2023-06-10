@@ -14,6 +14,7 @@ export interface BlobOptionsData {
   useRoot?: string;
   isEditable?: boolean;
   autosave?: boolean;
+  isPublic?: boolean;
 }
 
 @Component({
@@ -36,6 +37,10 @@ export class BlobeditorComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {}
+
+  makePublic() {
+    //console.log(`this.url=${this.url}`);
+  }
 
   async download() {
     const theUrl = FileService.getCompleteUrl(this.url + '&download=1');
@@ -100,6 +105,7 @@ export class BlobeditorComponent implements OnInit {
         base64: responseData.base64,
         fileName: this.getSubFolder() + responseData.fileName,
         erasefile: this.url, // send old file
+        isPublic: this.options.isPublic,
       });
       this.url = response.key;
       this.urlChange.emit(this.url);

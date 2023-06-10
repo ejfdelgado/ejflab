@@ -254,6 +254,14 @@ export class MyFileService {
         res.status(200).send({ uri: res.locals.uri, key: res.locals.key, bucket: res.locals.bucket });
     }
 
+    static async setFilePublicSrv(req, res, next) {
+        const key = General.readParam(req, "key");
+        await privateBucket
+            .file(key)
+            .makePublic();
+        res.status(200).send({ ok: true });
+    }
+
     static async uploadFile(req, res, next) {
 
         if (!req.headers.filename) {
@@ -289,7 +297,7 @@ export class MyFileService {
         let bucketRef = defaultBucket;
         let bucketName = MyConstants.BUCKET.PUBLIC;
         let isPublic = true;
-        if (req.headers.isprivate) {//es undefined si no se manda
+        if (req.headers.isprivate !== undefined && req.headers.isprivate !== '0') {
             bucketRef = privateBucket;
             bucketName = MyConstants.BUCKET.PRIVATE;
             isPublic = false;

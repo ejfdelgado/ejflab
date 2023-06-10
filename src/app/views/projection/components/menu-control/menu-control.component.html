@@ -106,7 +106,7 @@
                     (urlChange)="model.value.objUrl=$event; load3DModel.emit({uid: model.key, url: $event}); saveEvent.emit();">
                 </app-blobeditor>
                 <label class="my_label">Archivo de video:</label>
-                <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/video'"
+                <app-blobeditor [options]="blobOptionsPublic" [subFolder]="'models/'+model.key+'/video'"
                     [url]="model.value.videoUrl" (urlChange)="model.value.videoUrl=$event; saveEvent.emit();">
                 </app-blobeditor>
                 <label class="my_label">Bucle infinito:</label>
@@ -122,7 +122,7 @@
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'play'">
     <div class="my_panel">
-        <label class="my_label">Pregargar videos:</label>
+        <label class="my_label">Precargar videos:</label>
         <input type="checkbox" [(ngModel)]="localModel.useVideo" />
         <button *ngIf="mymodel.globalState.playingState === 'stoped'" class="my_button_with_text full_width margin_y_5"
             (click)="prepareToPlay()" mat-menu-item>
