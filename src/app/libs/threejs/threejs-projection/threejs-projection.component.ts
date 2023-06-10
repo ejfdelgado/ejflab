@@ -10,6 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
+import { GlobalModelData } from 'src/app/views/projection/projection.component';
 import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
 
 export interface CalibData {
@@ -34,10 +35,12 @@ export class ThreejsProjectionComponent
     style: null,
   };
   selectedDot: string | null = null;
+  mousePosition: { x: number; y: number } = { x: 0, y: 0 };
   @Output() selectedDotEvent = new EventEmitter<string | null>();
   @Output() modelChangedEvent = new EventEmitter<void>();
   @Input() DOTS_MODEL: CalibData | null;
   @Input() seeCalibPoints: boolean;
+  @Input() mymodel: GlobalModelData;
 
   constructor() {
     const style: any = {};
@@ -133,6 +136,8 @@ export class ThreejsProjectionComponent
     const canvasEl = this.canvasRef.nativeElement;
     const bounds = canvasEl.getBoundingClientRect();
     this.scene.onMouseMove(ev, bounds);
+    this.mousePosition.x = ev.clientX - bounds.left;
+    this.mousePosition.y = ev.clientY - bounds.top;
   }
 
   removeSelectedPoint() {

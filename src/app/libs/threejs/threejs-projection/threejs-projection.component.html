@@ -1,10 +1,14 @@
-<div #myparent class="theparent">
+<div #myparent class="theparent no_caret">
     <div class="onedot no_caret" *ngFor="let dot of DOTS_MODEL | keyvalue" [ngStyle]="get2DCoordinates(dot)">
-        <div *ngIf="seeCalibPoints && dot.value.v2" class="onedot_center no_caret" [ngClass]="{'selected': selectedDot == dot.key}"
-            (click)="select2DPoint(dot)" [ngStyle]="DOT_OPTIONS.style">
+        <div *ngIf="seeCalibPoints && dot.value.v2" class="onedot_center no_caret"
+            [ngClass]="{'selected': selectedDot == dot.key}" (click)="select2DPoint(dot)" [ngStyle]="DOT_OPTIONS.style">
         </div>
     </div>
-    <canvas #mycanvas width="1" height="1">
+    <div *ngIf="mymodel.globalState.playingState === 'stoped'" class="my_custom_cursor no_caret"
+        [ngStyle]="{'left': mousePosition.x+'px', 'top': mousePosition.y+'px'}">
+        <img class="no_caret" src="/assets/img/cursorx2.png" />
+    </div>
+    <canvas #mycanvas class="canvas_style" width="1" height="1">
         Tu navegador no admite el elemento &lt;canvas&gt;.
     </canvas>
 </div>

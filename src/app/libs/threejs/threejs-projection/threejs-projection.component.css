@@ -8,7 +8,8 @@
   overflow: hidden;
 }
 
-.onedot {
+.onedot,
+.my_custom_cursor {
   width: 0px;
   height: 0px;
   position: relative;
@@ -24,4 +25,19 @@
 
 .onedot_center.selected {
   background: #ff0000;
+}
+
+.canvas_style {
+  cursor: none;
+}
+
+.my_custom_cursor,
+.my_custom_cursor * {
+  pointer-events: none;
+}
+
+.my_custom_cursor img {
+  position: relative;
+  left: -51px;
+  top: -51px;
 }
