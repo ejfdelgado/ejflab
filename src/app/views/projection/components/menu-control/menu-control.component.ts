@@ -1,10 +1,14 @@
 import {
   Component,
+  ElementRef,
   EventEmitter,
   Input,
   OnChanges,
   OnInit,
   Output,
+  QueryList,
+  ViewChild,
+  ViewChildren,
 } from '@angular/core';
 import { BlobOptionsData } from 'src/app/mycommon/components/blobeditor/blobeditor.component';
 import { FileService } from 'src/services/file.service';
@@ -19,7 +23,10 @@ import {
   TheStateViewData,
   ViewModelData,
 } from '../../projection.component';
-import { VideoCanvasEventData } from '../video-canvas/video-canvas.component';
+import {
+  VideoCanvasComponent,
+  VideoCanvasEventData,
+} from '../video-canvas/video-canvas.component';
 
 export interface TabElementData {
   label: string;
@@ -55,6 +62,9 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() changedFovEvent = new EventEmitter<number>();
   @Output() changedViewEvent = new EventEmitter<ViewModelData>();
 
+  @ViewChildren(VideoCanvasComponent)
+  videoListRef: QueryList<VideoCanvasComponent>;
+
   tabOptions: Array<TabElementData> = [
     {
       label: 'Objetos 3D',
@@ -88,6 +98,40 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   openTab(tab: string) {
     this.localModel.currentTab = tab;
+  }
+
+  autoStartPlay() {
+    const videos = this.videoListRef;
+    videos.forEach(async (item) => {
+      await item.play();
+    });
+  }
+
+  stopPlayer() {
+    const videos = this.videoListRef;
+    videos.forEach(async (item) => {
+      await item.stop();
+    });
+  }
+
+  configureTimerToPlay(startTime: number) {
+    console.log(`Configure ${startTime}`);
+  }
+
+  prepareToPlay() {
+    // Asigna la fecha y hora para iniciar.
+    if (!this.mymodel.globalState) {
+      this.mymodel.globalState = {};
+    }
+    this.mymodel.globalState.playingState = 'preparing';
+    this.mymodel.globalState.playTime = new Date().getTime() + 5000;
+    this.saveEvent.emit();
+  }
+
+  callToStop() {
+    this.mymodel.globalState.playingState = 'stoped';
+    this.mymodel.globalState.playTime = 0;
+    this.saveEvent.emit();
   }
 
   askErasePoint(key: string) {

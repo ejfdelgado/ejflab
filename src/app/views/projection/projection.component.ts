@@ -30,6 +30,7 @@ import {
   VideoCanvasEventData,
   VideoCanvasOptions,
 } from './components/video-canvas/video-canvas.component';
+import { MenuControlComponent } from './components/menu-control/menu-control.component';
 
 export interface Model3DData {
   name: string;
@@ -46,6 +47,10 @@ export interface ViewModelData {
 }
 
 export interface GlobalModelData {
+  globalState: {
+    playingState?: string; //stoped|preparing
+    playTime?: number;
+  };
   calib: {
     [key: string]: ViewModelData;
   };
@@ -67,6 +72,7 @@ export interface TheStateViewData {
   fullScreen: boolean;
   seeCalibPoints: boolean;
   selectedDot: string | null;
+  currentPlayTime: number;
   menuTop: {
     dragging: boolean;
     right: number;
@@ -78,12 +84,6 @@ export interface TheStateViewData {
   };
 }
 
-/*
-TODO
-- Floating workspace...
-- Edit FOV 10 - 70 degrees -> make part of model
-*/
-
 @Component({
   selector: 'app-projection',
   templateUrl: './projection.component.html',
@@ -94,6 +94,7 @@ export class ProjectionComponent
   implements OnInit, OnChanges
 {
   @ViewChild('three_ref') threeRef: ElementRef;
+  @ViewChild('menuControlRef') menuControlRef: ElementRef;
   public extraOptions: Array<OptionData> = [];
   private observer?: any;
   public elem: any;
@@ -102,6 +103,7 @@ export class ProjectionComponent
     fullScreen: false,
     seeCalibPoints: false,
     selectedDot: null,
+    currentPlayTime: 0,
     menuTop: {
       dragging: false,
       right: 0,
@@ -113,11 +115,15 @@ export class ProjectionComponent
     },
   };
   public mymodel: GlobalModelData = {
+    globalState: {
+      playingState: 'stoped',
+      playTime: 0,
+    },
     calib: {},
     models: {},
   };
   public localModel: LocalModelData = {
-    currentTab: 'object3d',
+    currentTab: 'play',
     currentViewName: null,
     currentView: null,
     useVideo: false,
@@ -203,6 +209,14 @@ export class ProjectionComponent
   }
 
   override async onTupleReadDone() {
+    this.addKeyListener(
+      'data.globalState.playTime',
+      (key: string, value: any) => {
+        if (typeof value == 'number') {
+          this.getMenuControlComponent().configureTimerToPlay(value);
+        }
+      }
+    );
     if (!this.tupleModel.data) {
       this.tupleModel.data = {
         calib: {},
@@ -458,6 +472,18 @@ export class ProjectionComponent
       menuTop.bottom = menuTop.oldBottom + (menuTop.starty - ev.screenY);
       menuTop.right = menuTop.oldRight + (menuTop.startx - ev.screenX);
     }
+  }
+
+  getMenuControlComponent(): MenuControlComponent {
+    if (!this.menuControlRef) {
+      throw new Error('No hay menu control');
+    }
+    const threejsComponent = this
+      .menuControlRef as unknown as MenuControlComponent;
+    if (!threejsComponent) {
+      throw new Error('No hay menu control');
+    }
+    return threejsComponent;
   }
 
   getThreeComponent() {

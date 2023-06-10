@@ -18,7 +18,7 @@
                 <mat-icon class="close_icon" (click)="closeFloating()">close</mat-icon>
             </div>
             <div *ngIf="!states.fullScreen || states.openedFloatingMenu" class="scroll_menu_container">
-                <app-menu-control [mymodel]="mymodel" [states]="states" [localModel]="localModel"
+                <app-menu-control #menuControlRef [mymodel]="mymodel" [states]="states" [localModel]="localModel"
                     (saveEvent)="saveAll()" (imageOut)="receiveVideo($event)" (remove3DModel)="remove3DObject($event)"
                     (load3DModel)="add3DObject($event.uid, $event.url, true)" (fullScreenEvent)="turnFullscreen($event)"
                     (calibrateEvent)="calibCamera()" (useControlsEvent)="useOrbitControls()"

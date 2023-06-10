@@ -271,7 +271,7 @@ class MyTuples {
                 myFreeze = JSON.stringify(resultado.t);
                 return JSON.parse(myFreeze);
             },
-            affect: (batch) => {
+            affect: (batch, listenerKeys = [], callback = null) => {
                 const tuplas1 = MyTuples.getTuples(JSON.parse(myFreeze));
                 const llavesBorrar = batch["-"];
                 const llavesNuevasModificadas = batch["*"].concat(batch["+"]);
@@ -279,11 +279,17 @@ class MyTuples {
                 //Borro las tuplas
                 for (let i = 0; i < llavesBorrar.length; i++) {
                     const llaveBorrar = llavesBorrar[i].k;
+                    if (callback !== null && listenerKeys.indexOf(llaveBorrar) >= 0) {
+                        callback(llaveBorrar, undefined);
+                    }
                     delete tuplas1[llaveBorrar];
                 }
                 //Reemplazo las tuplas
                 for (let i = 0; i < llavesNuevasModificadas.length; i++) {
                     const nuevaModificar = llavesNuevasModificadas[i];
+                    if (callback !== null && listenerKeys.indexOf(nuevaModificar.k) >= 0) {
+                        callback(nuevaModificar.k, nuevaModificar.v);
+                    }
                     tuplas1[nuevaModificar.k] = nuevaModificar.v;
                 }
                 const resultado = MyTuples.getObject(tuplas1, {});
@@ -296,7 +302,7 @@ class MyTuples {
             setProcesor: (p) => {
                 procesor = p;
             },
-            trackDifferences: (nuevo) => {
+            trackDifferences: (nuevo, listenerKeys = [], callback = null) => {
                 const tuplas2 = MyTuples.getTuples(nuevo);
                 const tuplas1 = MyTuples.getTuples(JSON.parse(myFreeze));
 
@@ -321,6 +327,9 @@ class MyTuples {
 
                 for (let i = 0; i < nuevas.length; i++) {
                     const llave = nuevas[i];
+                    if (callback != null && listenerKeys.indexOf(llave) >= 0) {
+                        callback(llave, tuplas2[llave]);
+                    }
                     batch["+"].push({
                         k: llave,
                         v: tuplas2[llave],
@@ -328,6 +337,9 @@ class MyTuples {
                 }
                 for (let i = 0; i < borradas.length; i++) {
                     const llave = borradas[i];
+                    if (callback != null && listenerKeys.indexOf(llave) >= 0) {
+                        callback(llave, undefined);
+                    }
                     batch["-"].push({
                         k: llave,
                     });
@@ -343,6 +355,9 @@ class MyTuples {
                         valor2 = JSON.stringify(valor2);
                     }
                     if (valor1 !== valor2) {
+                        if (callback != null && listenerKeys.indexOf(llave) >= 0) {
+                            callback(llave, tuplas2[llave]);
+                        }
                         batch["*"].push({
                             k: llave,
                             v: tuplas2[llave],

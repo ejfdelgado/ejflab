@@ -8,11 +8,21 @@
     <mat-icon>fullscreen_exit</mat-icon>
     <span>Salir de pantalla completa</span>
 </button>
+<button class="my_button_with_text margin_y_5 full_width" (click)="useOrbitControls()" mat-menu-item>
+    <mat-icon>3d_rotation</mat-icon>
+    <span>Usar controles</span>
+</button>
 <div class="mi_tab">
     <div *ngFor="let myTab of tabOptions" class="one_tab" (click)="openTab(myTab.id)"
         [ngClass]="{'active': localModel.currentTab == myTab.id}">
         <div class="el_texto">{{myTab.label}}</div>
     </div>
+</div>
+<div class="invisible" *ngFor="let model of mymodel.models | keyvalue">
+    <app-video-canvas #videoListRef *ngIf="model.value.videoUrl" [url]="model.value.videoUrl" [uid]="model.key"
+        [timeSeconds]="localModel.timeSeconds" [useVideo]="localModel.useVideo" (imageOut)="imageOut.emit($event)"
+        [options]="model.value.texture">
+    </app-video-canvas>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'views'">
     <label class="my_label">Selecciona o crea una vista:</label>
@@ -25,10 +35,6 @@
             <mat-icon>add</mat-icon>
         </button>
     </div>
-    <button class="my_button_with_text margin_y_5 full_width" (click)="useOrbitControls()" mat-menu-item>
-        <mat-icon>3d_rotation</mat-icon>
-        <span>Usar controles</span>
-    </button>
     <div *ngIf="localModel.currentView" class="my_panel">
         <label class="my_label">Nombre:</label>
         <input class="my_input" type="text" [(ngModel)]="localModel.currentView.name"
@@ -73,7 +79,8 @@
         </div>
     </div>
     <div *ngIf="localModel.currentViewName != null">
-        <button class="my_button_with_text" (click)="removeView(localModel.currentViewName)" mat-menu-item>
+        <button class="my_button_with_text full_width margin_y_5" (click)="removeView(localModel.currentViewName)"
+            mat-menu-item>
             <mat-icon>close</mat-icon>
             <span>Borrar Vista</span>
         </button>
@@ -103,11 +110,6 @@
                     [url]="model.value.videoUrl"
                     (urlChange)="model.value.videoUrl=$event; remove3DModel.emit(model.key); saveEvent.emit();">
                 </app-blobeditor>
-
-                <app-video-canvas class="invisible" [url]="model.value.videoUrl" [uid]="model.key"
-                    [timeSeconds]="localModel.timeSeconds" [useVideo]="localModel.useVideo"
-                    (imageOut)="imageOut.emit($event)" [options]="model.value.texture">
-                </app-video-canvas>
                 <button class="my_button_with_text full_width margin_y_5" (click)="delete3DModel(model.key)"
                     mat-menu-item>
                     <mat-icon>delete</mat-icon>
@@ -118,9 +120,24 @@
     </div>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'play'">
-    <input type="checkbox" [(ngModel)]="localModel.useVideo" />
-    <input type="number" [(ngModel)]="localModel.timeSeconds" />
+    <div class="my_panel">
+        <label class="my_label">Pregargar videos:</label>
+        <input type="checkbox" [(ngModel)]="localModel.useVideo" />
+        <button class="my_button_with_text full_width margin_y_5" (click)="prepareToPlay()" mat-menu-item>
+            <mat-icon>play_arrow</mat-icon>
+            <span>Reproducir</span>
+        </button>
+        <button class="my_button_with_text full_width margin_y_5" (click)="callToStop()" mat-menu-item>
+            <mat-icon>stop</mat-icon>
+            <span>Detener</span>
+        </button>
+        <div *ngIf="mymodel.globalState.playingState == 'preparing' || mymodel.globalState.playingState == 'playing'"
+            class="timer_count">
+            {{ states.currentPlayTime }}
+        </div>
+    </div>
+
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'debug_local_model'">
-    <pre>{{ localModel | json }}</pre>
+    <pre>{{ mymodel.globalState | json }}</pre>
 </div>

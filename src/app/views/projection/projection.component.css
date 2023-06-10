@@ -30,7 +30,7 @@
 }
 
 .body_part .right_part {
-  width: 20vw;
+  width: 400px;
   background-color: black;
   max-height: 100%;
   display: flex;

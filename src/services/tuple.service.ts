@@ -130,10 +130,54 @@ export class TupleServiceInstance {
     }, 0);
   }
 
+  fastMapListenerKeys: Array<string> = [];
+  mapListener: { [key: string]: Array<Function> } = {};
+  addListener(key: string, callback: Function) {
+    if (!(key in this.mapListener)) {
+      this.mapListener[key] = [];
+    }
+    const indice = this.mapListener[key].indexOf(callback);
+    if (indice < 0) {
+      this.mapListener[key].push(callback);
+    }
+    this.fastMapListenerKeys = Object.keys(this.mapListener);
+  }
+
+  removeListener(key: string, callback?: Function) {
+    if (!(key in this.mapListener)) {
+      return;
+    }
+    if (callback) {
+      const indice = this.mapListener[key].indexOf(callback);
+      if (indice >= 0) {
+        this.mapListener[key].splice(indice, 1);
+        if (this.mapListener[key].length == 0) {
+          delete this.mapListener[key];
+        }
+      }
+    } else {
+      delete this.mapListener[key];
+    }
+    this.fastMapListenerKeys = Object.keys(this.mapListener);
+  }
+
+  removeAllListener() {
+    this.mapListener = {};
+  }
+
+  notifyObservers(someKey: string, someValue: any) {
+    const arreglo = this.mapListener[someKey];
+    for (let j = 0; j < arreglo.length; j++) {
+      const someFun = arreglo[j];
+      someFun(someKey, someValue);
+    }
+  }
+
   applyNewChanges() {
     if (this.model == null) {
       return;
     }
+    const notifyObserversThis = this.notifyObservers.bind(this);
     // Convertir el modelo en una lista ordenada de lo más viejo a lo más nuevo
     const lista = [];
     const llaves = Object.keys(this.myLiveChanges);
@@ -153,7 +197,11 @@ export class TupleServiceInstance {
     for (let i = 0; i < lista.length; i++) {
       const differences = lista[i];
       if (!this.builder.isOwnChange(differences)) {
-        this.model = this.builder.affect(differences);
+        this.model = this.builder.affect(
+          differences,
+          this.fastMapListenerKeys,
+          notifyObserversThis
+        );
         changeCount++;
       }
     }
@@ -191,7 +239,12 @@ export class TupleServiceInstance {
     this.evento.emit({ status: 'read_done', body: this.model });
   }
   save(model: any) {
-    this.builder.trackDifferences(model);
+    const notifyObserversThis = this.notifyObservers.bind(this);
+    this.builder.trackDifferences(
+      model,
+      this.fastMapListenerKeys,
+      notifyObserversThis
+    );
   }
 }
 

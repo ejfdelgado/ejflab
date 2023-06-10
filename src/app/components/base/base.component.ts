@@ -111,6 +111,22 @@ export class BaseComponent implements OnInit, OnDestroy {
     }
   }
 
+  public addKeyListener(key: string, callback: Function) {
+    if (this.tupleServiceInstance) {
+      this.tupleServiceInstance.addListener(key, callback);
+    } else {
+      throw new Error('No puede configurar el evento');
+    }
+  }
+
+  public removeKeyListener(key: string, callback?: Function) {
+    if (this.tupleServiceInstance) {
+      this.tupleServiceInstance.removeListener(key, callback);
+    } else {
+      throw new Error('No puede configurar el evento');
+    }
+  }
+
   public saveTuple() {
     if (this.tupleServiceInstance) {
       this.tupleServiceInstance.save(this.tupleModel);
