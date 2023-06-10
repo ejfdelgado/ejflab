@@ -1,14 +1,20 @@
 # Ejflab1
 
 Para mandar a Cloud Run de Google
-sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.3 .
-sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.3
+npm run build_local
+sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.5 .
+sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.5
 http://mylocalhost.com/projection
-docker push gcr.io/ejfexperiments/mainapp:v1.3
+Luego para detenerlo:
+sudo docker ps
+sudo docker stop da174c79ce24
+docker push gcr.io/ejfexperiments/mainapp:v1.5
 Luego usar terraform:
 cd terra
 terraform apply
-https://mainapp-7b6hvjg6ia-uc.a.run.app/
+https://mainapp-7b6hvjg6ia-uc.a.run.app/projection
+Para borrar las versiones viejas:
+gcloud container images delete gcr.io/ejfexperiments/mainapp:v1.4
 
 git config --global user.name "Edgar Delgado"
 git config --global user.email "edgar.jose.fernando.delgado@gmail.com"

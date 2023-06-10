@@ -1,5 +1,9 @@
 class MyConstants {
     static SRV_ROOT = "/";
+    static CLOUD_RUN_URL = "https://mainapp-7b6hvjg6ia-uc.a.run.app/";
+    static DOMAIN_ROUTER = {
+        "srv/opencv/solvepnp": MyConstants.CLOUD_RUN_URL
+    };
     static BUCKET = {
         URL_BASE: "https://storage.googleapis.com",
         PUBLIC: `labs-pro-public`,
@@ -59,6 +63,17 @@ class MyConstants {
             }
         }
         return [];
+    }
+    static resolveDomain(path) {
+        if (location.hostname == "localhost") {
+            return MyConstants.SRV_ROOT;
+        }
+        let domain = MyConstants.DOMAIN_ROUTER[path];
+        if (!domain) {
+            return MyConstants.SRV_ROOT;
+        } else {
+            return domain;
+        }
     }
 }
 

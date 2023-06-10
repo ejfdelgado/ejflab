@@ -73,7 +73,7 @@ export class HttpService {
       wait = this.indicatorSrv.start();
     }
     try {
-      const UPLOAD_URL = `${MyConstants.SRV_ROOT}${subUrl}`;
+      const UPLOAD_URL = `${MyConstants.resolveDomain(subUrl)}${subUrl}`;
       const accessToken = await this.auth.getIdToken();
       const extraText = Buffer.from(JSON.stringify(extra)).toString('base64');
       let extension: string | null = null;
@@ -196,7 +196,7 @@ export class HttpService {
     if (!options || options.showIndicator !== false) {
       wait = this.indicatorSrv.start();
     }
-    const myUrl = `${MyConstants.SRV_ROOT}${path}`;
+    const myUrl = `${MyConstants.resolveDomain(path)}${path}`;
     let cacheKey: string | null = null;
     if (options?.useCache === true) {
       cacheKey = myUrl; // TODO include POST payload MD5
@@ -257,6 +257,7 @@ export class HttpService {
       }
     }
   }
+
   async post<Type>(
     path: string,
     payload: any,
@@ -269,7 +270,7 @@ export class HttpService {
     try {
       const respuesta = await new Promise<Type | null>((resolve, reject) => {
         this.http
-          .post<Type>(`${MyConstants.SRV_ROOT}${path}`, payload)
+          .post<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload)
           .pipe(
             catchError((error) => {
               if (!options || options.showError !== false) {
@@ -308,7 +309,7 @@ export class HttpService {
     try {
       const respuesta = await new Promise<Type | null>((resolve, reject) => {
         this.http
-          .delete<Type>(`${MyConstants.SRV_ROOT}${path}`, payload)
+          .delete<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload)
           .pipe(
             catchError((error) => {
               if (!options || options.showError !== false) {

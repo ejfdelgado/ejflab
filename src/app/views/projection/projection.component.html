@@ -9,15 +9,14 @@
                 (selectedDotEvent)="states.selectedDot=$event;" (modelChangedEvent)="saveAll()">
             </app-threejs-projection>
         </div>
-        <div class="right_part" *ngIf="!states.fullScreen || states.openedFloatingMenu"
-            [ngStyle]="{'bottom': states.menuTop.bottom+'px', 'right': states.menuTop.right+'px'}"
-            [ngClass]="{'floating': states.fullScreen && states.openedFloatingMenu}">
+        <div class="right_part" [ngStyle]="{'bottom': states.menuTop.bottom+'px', 'right': states.menuTop.right+'px'}"
+            [ngClass]="{'floating': states.fullScreen && states.openedFloatingMenu, 'invisible': !(!states.fullScreen || states.openedFloatingMenu)}">
             <div class="top_menu_control" *ngIf="states.fullScreen && states.openedFloatingMenu"
                 (mousedown)="mouseDownMenuTop($event)" (mouseup)="mouseUpMenuTop($event)">
                 <div class="drag_handler"></div>
                 <mat-icon class="close_icon" (click)="closeFloating()">close</mat-icon>
             </div>
-            <div *ngIf="!states.fullScreen || states.openedFloatingMenu" class="scroll_menu_container">
+            <div class="scroll_menu_container">
                 <app-menu-control #menuControlRef [mymodel]="mymodel" [states]="states" [localModel]="localModel"
                     (saveEvent)="saveAll()" (imageOut)="receiveVideo($event)" (remove3DModel)="remove3DObject($event)"
                     (load3DModel)="add3DObject($event.uid, $event.url, true)" (fullScreenEvent)="turnFullscreen($event)"

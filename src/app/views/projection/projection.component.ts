@@ -482,7 +482,7 @@ export class ProjectionComponent
     const threejsComponent = this
       .menuControlRef as unknown as MenuControlComponent;
     if (!threejsComponent) {
-      throw new Error('No hay menu control');
+      throw new Error('No hay three component');
     }
     return threejsComponent;
   }

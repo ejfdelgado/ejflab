@@ -17,6 +17,7 @@
 .vscode
 c\+\+
 .dockerignore
+*.mp4
 
 # Node.js dependencies:
 node_modules
