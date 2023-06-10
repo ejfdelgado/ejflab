@@ -1,5 +1,15 @@
 # Ejflab1
 
+Para mandar a Cloud Run de Google
+sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.3 .
+sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.3
+http://mylocalhost.com/projection
+docker push gcr.io/ejfexperiments/mainapp:v1.3
+Luego usar terraform:
+cd terra
+terraform apply
+https://mainapp-7b6hvjg6ia-uc.a.run.app/
+
 git config --global user.name "Edgar Delgado"
 git config --global user.email "edgar.jose.fernando.delgado@gmail.com"
 gcloud config set account edgar.jose.fernando.delgado@gmail.com
@@ -36,13 +46,3 @@ sudo docker login -u ejfdelgado
 sudo docker push ejfdelgado/mainapp:v1.0
 
 gcloud auth configure-docker
-
-
-
-
-
-
-
-sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.2 .
-docker push gcr.io/ejfexperiments/mainapp:v1.2
-sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.2

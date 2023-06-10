@@ -75,7 +75,8 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
 
   async play() {
     if (!this.video) {
-      throw new Error(`No hay video para ${this.uid}`);
+      //throw new Error(`No hay video para ${this.uid}`);
+      return;
     }
     this.video.loop = this.useLoop === true;
     return this.video.play();
@@ -83,7 +84,8 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
 
   async stop() {
     if (!this.video) {
-      throw new Error(`No hay video para ${this.uid}`);
+      //throw new Error(`No hay video para ${this.uid}`);
+      return;
     }
     this.video.currentTime = 0;
     this.video.pause();

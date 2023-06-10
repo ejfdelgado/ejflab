@@ -7,7 +7,7 @@
 ## export nlohmann_json_DIR=/home/ejfdelgado/desarrollo/c++/build-local/json-3.11.2
 ## 
 ## cd /tmp/sources/workspace/calibrate
-## mkdir build && cd build
+## rm -R build && mkdir build && cd build
 ## cmake ../
 ## make -j 8
 ## ./solvePnP "{\"v2\": [[282, 274], [397, 227], [577, 271], [462, 318], [270, 479], [450, 523], [566, 475]], \"v3\": [[0.5, 0.5, -0.5], [0.5, 0.5, 0.5], [-0.5, 0.5, 0.5], [-0.5, 0.5, -0.5], [0.5, -0.5, -0.5], [-0.5, -0.5, -0.5], [-0.5, -0.5, 0.5]]}"
