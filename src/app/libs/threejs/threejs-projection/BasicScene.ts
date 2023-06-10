@@ -346,6 +346,9 @@ export class BasicScene extends THREE.Scene {
         emissiveIntensity: 1,
       });
       videoMaterial.needsUpdate = true;
+      //videoMaterial.side = THREE.DoubleSide;
+      videoMaterial.side = THREE.FrontSide;
+      //videoMaterial.side = THREE.BackSide;
       found.traverse(function (child: any) {
         if (child instanceof THREE.Mesh) {
           child.material = videoMaterial;
@@ -475,6 +478,9 @@ export class BasicScene extends THREE.Scene {
       emissive: 0xffffff,
       emissiveIntensity: 1,
     });
+    this.defaultMaterial.side = THREE.DoubleSide;
+    //this.defaultMaterial.side = THREE.FrontSide;
+    //this.defaultMaterial.side = THREE.BackSide;
   }
 
   setBounds(bounds: DOMRect) {

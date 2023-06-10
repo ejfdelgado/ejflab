@@ -129,17 +129,17 @@
     <div class="my_panel">
         <label class="my_label">Precargar videos:</label>
         <input type="checkbox" [(ngModel)]="localModel.useVideo" />
-        <button *ngIf="mymodel.globalState.playingState === 'stoped'" class="my_button_with_text full_width margin_y_5"
+        <button *ngIf="mymodel.globalState?.playingState === 'stoped'" class="my_button_with_text full_width margin_y_5"
             (click)="prepareToPlay()" mat-menu-item>
             <mat-icon>play_arrow</mat-icon>
             <span>Reproducir</span>
         </button>
-        <button *ngIf="mymodel.globalState.playingState !== 'stoped'" class="my_button_with_text full_width margin_y_5"
+        <button *ngIf="mymodel.globalState?.playingState !== 'stoped'" class="my_button_with_text full_width margin_y_5"
             (click)="callToStop()" mat-menu-item>
             <mat-icon>stop</mat-icon>
             <span>Detener</span>
         </button>
-        <div *ngIf="mymodel.globalState.playingState == 'preparing' || mymodel.globalState.playingState == 'playing'"
+        <div *ngIf="mymodel.globalState?.playingState == 'preparing' || mymodel.globalState?.playingState == 'playing'"
             class="timer_count">
             {{ localFormatTime }}
         </div>

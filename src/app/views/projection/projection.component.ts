@@ -206,6 +206,15 @@ export class ProjectionComponent
 
   override onTupleNews() {
     this.mymodel = this.tupleModel.data;
+    if (!this.mymodel.globalState) {
+      this.mymodel.globalState = {
+        playingState: 'stoped',
+        playTime: 0,
+      };
+    }
+    if (!this.mymodel.models) {
+      this.mymodel.models = {};
+    }
     super.onTupleNews();
   }
 
@@ -221,19 +230,26 @@ export class ProjectionComponent
     if (!this.tupleModel.data) {
       this.tupleModel.data = {
         calib: {},
+        models: {},
+        globalState: {
+          playingState: 'stoped',
+          playTime: 0,
+        },
       };
     }
     this.mymodel = this.tupleModel.data;
     super.onTupleReadDone();
     // Itero los modelos y los cargo...
     const models = this.mymodel.models;
-    const llaves = Object.keys(models);
     const promesas = [];
-    for (let i = 0; i < llaves.length; i++) {
-      const uid = llaves[i];
-      const modelo = models[uid];
-      if (modelo.objUrl) {
-        promesas.push(this.add3DObject(uid, modelo.objUrl, false));
+    if (models != null && models != undefined) {
+      const llaves = Object.keys(models);
+      for (let i = 0; i < llaves.length; i++) {
+        const uid = llaves[i];
+        const modelo = models[uid];
+        if (modelo.objUrl) {
+          promesas.push(this.add3DObject(uid, modelo.objUrl, false));
+        }
       }
     }
     await Promise.all(promesas);

@@ -4,7 +4,7 @@
             [ngClass]="{'selected': selectedDot == dot.key}" (click)="select2DPoint(dot)" [ngStyle]="DOT_OPTIONS.style">
         </div>
     </div>
-    <div *ngIf="mymodel.globalState.playingState === 'stoped'" class="my_custom_cursor no_caret"
+    <div *ngIf="mymodel.globalState?.playingState === 'stoped'" class="my_custom_cursor no_caret"
         [ngStyle]="{'left': mousePosition.x+'px', 'top': mousePosition.y+'px'}">
         <img class="no_caret" src="/assets/img/cursorx2.png" />
     </div>
