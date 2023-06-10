@@ -2,25 +2,26 @@
 
 Para mandar a Cloud Run de Google
 npm run build_local
-sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.5 .
-sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.5
-http://mylocalhost.com/projection
-Luego para detenerlo:
-sudo docker ps
-sudo docker stop da174c79ce24
-docker push gcr.io/ejfexperiments/mainapp:v1.5
+sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.6 .
+    sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.6
+    http://mylocalhost.com/projection
+    Luego para detenerlo:
+    sudo docker ps
+    sudo docker stop da174c79ce24
+docker push gcr.io/ejfexperiments/mainapp:v1.6
 Luego usar terraform:
 cd terra
 terraform apply
 https://mainapp-7b6hvjg6ia-uc.a.run.app/projection
 Para borrar las versiones viejas:
-gcloud container images delete gcr.io/ejfexperiments/mainapp:v1.4
+gcloud container images delete gcr.io/ejfexperiments/mainapp:v1.5
 
 git config --global user.name "Edgar Delgado"
 git config --global user.email "edgar.jose.fernando.delgado@gmail.com"
 gcloud config set account edgar.jose.fernando.delgado@gmail.com
 export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json
 gcloud config set project ejfexperiments
+export BIN_DIR=bin-local
 export ENV=pro
 
 gcloud projects list --sort-by=projectId --limit=5

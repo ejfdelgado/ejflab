@@ -22,17 +22,22 @@ export class MyShell {
         } catch (err) { }
         return false;
     }
+    //MyShell.getBinDir()
+    static getBinDir() {
+        const DIR = process.env.BIN_DIR || "bin-docker";
+        return DIR;
+    }
     static async runLocal(command, payload = null) {
         const args = command.split(/\s+/g);
         const command1 = args.splice(0, 1)[0];
-        let execPath = path.join(process.cwd(), `/bin/${command1}`);
+        let execPath = path.join(process.cwd(), `/${MyShell.getBinDir()}/${command1}`);
         if (!MyShell.existsExecutable(execPath)) {
             execPath = command1;
         }
         if (payload !== null) {
             args.push(payload);
         }
-        const dirPath = path.join(process.cwd(), '/bin/libs');
+        const dirPath = path.join(process.cwd(), `/${MyShell.getBinDir()}/libs`);
         const options = { env: { LD_LIBRARY_PATH: dirPath } };
         const ls = spawn(execPath, args, options);
 

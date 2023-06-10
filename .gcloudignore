@@ -21,3 +21,7 @@ c\+\+
 
 # Node.js dependencies:
 node_modules
+
+bin
+bin-local
+bin-docker
