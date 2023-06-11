@@ -401,7 +401,7 @@ export class ProjectionComponent
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const actual = pairs[key];
-      if (!actual.v2) {
+      if (!actual.v2 || !actual.v3) {
         continue;
       }
       payload.v2.push([

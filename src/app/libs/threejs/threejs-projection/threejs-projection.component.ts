@@ -10,7 +10,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { GlobalModelData } from 'src/app/views/projection/projection.component';
+import { GlobalModelData, TheStateViewData } from 'src/app/views/projection/projection.component';
 import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
 
 export interface CalibData {
@@ -41,6 +41,7 @@ export class ThreejsProjectionComponent
   @Input() DOTS_MODEL: CalibData | null;
   @Input() seeCalibPoints: boolean;
   @Input() mymodel: GlobalModelData;
+  @Input() states: TheStateViewData;
 
   constructor() {
     const style: any = {};

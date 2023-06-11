@@ -5,7 +5,7 @@
     <div class="body_part">
         <div class="left_part">
             <app-threejs-projection #three_ref [DOTS_MODEL]="getCurrentPair()" [mymodel]="mymodel"
-                [seeCalibPoints]="states.seeCalibPoints"
+                [seeCalibPoints]="states.seeCalibPoints" [states]="states"
                 [ngStyle]="{'display': 'flex', 'position': (states.fullScreen ? 'fixed': 'absolute')}"
                 (selectedDotEvent)="states.selectedDot=$event;" (modelChangedEvent)="saveAll()">
             </app-threejs-projection>

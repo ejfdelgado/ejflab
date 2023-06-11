@@ -435,7 +435,7 @@ export class BasicScene extends THREE.Scene {
       35,
       this.bounds.width / this.bounds.height,
       0.1,
-      50000
+      500000
     );
 
     this.renderer = new THREE.WebGLRenderer({

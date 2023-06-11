@@ -11,4 +11,17 @@
     <canvas #mycanvas class="canvas_style" width="1" height="1">
         Tu navegador no admite el elemento &lt;canvas&gt;.
     </canvas>
+    <div *ngIf="(states.fullScreen && mymodel.globalState?.playingState === 'stoped')" class="fantasma with_border">
+        <div class="fantasma_child1">
+            <div class="fantasma_child2"></div>
+            <div class="fantasma_child2_line"></div>
+            <div class="fantasma_child2"></div>
+        </div>
+        <div class="fantasma_child1_line"></div>
+        <div class="fantasma_child1">
+            <div class="fantasma_child2"></div>
+            <div class="fantasma_child2_line"></div>
+            <div class="fantasma_child2"></div>
+        </div>
+    </div>
 </div>

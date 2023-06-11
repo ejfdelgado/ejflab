@@ -146,6 +146,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
       this.clearOldExecution();
       const ahora = new Date().getTime();
       const diferencia = startTime - ahora;
+      this.turnReferencePoints(false);
       this.localTimeout = setTimeout(() => {
         this.mymodel.globalState.playingState = 'preparing';
         this.autoStartPlay();
