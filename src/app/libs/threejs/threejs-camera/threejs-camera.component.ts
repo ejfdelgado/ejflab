@@ -2,6 +2,7 @@ import {
   Component,
   ElementRef,
   HostListener,
+  Input,
   OnInit,
   ViewChild,
 } from '@angular/core';
@@ -14,6 +15,7 @@ import {
 export class ThreejsCameraComponent implements OnInit {
   @ViewChild('video') videoRef: ElementRef;
   @ViewChild('threejs_parent') threejsParent: ElementRef;
+  @Input() parent: any;
   videoWidth: number | null = null;
   videoHeight: number | null = null;
   forcedWidth: number = 0;

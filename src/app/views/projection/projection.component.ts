@@ -182,6 +182,10 @@ export class ProjectionComponent
     this.resizeSceneLocalThis = this.resizeSceneLocal.bind(this);
   }
 
+  getSelf() {
+    return this;
+  }
+
   askPlayVideo(idCamera: string) {
     const cameraComponent = this.getCameraComponent();
     if (!cameraComponent) {
