@@ -590,15 +590,23 @@ export class ProjectionComponent
   }
 
   getThreeComponent() {
-    if (!this.threeRef) {
-      return null;
+    if (this.localModel.currentEnvironment == '3d') {
+      if (!this.threeRef) {
+        return null;
+      }
+      const threejsComponent = this
+        .threeRef as unknown as ThreejsProjectionComponent;
+      if (!threejsComponent) {
+        return null;
+      }
+      return threejsComponent;
+    } else {
+      const camera = this.getCameraComponent();
+      if (!camera) {
+        return null;
+      }
+      return camera.getThreeComponent();
     }
-    const threejsComponent = this
-      .threeRef as unknown as ThreejsProjectionComponent;
-    if (!threejsComponent) {
-      return null;
-    }
-    return threejsComponent;
   }
 
   updateComponentsToFullScreen() {
