@@ -22,6 +22,7 @@ import { ScrollfilesComponent } from './components/scrollfiles/scrollfiles.compo
 import { PrejsonComponent } from './components/prejson/prejson.component';
 import { ScrollfileComponent } from './components/scrollfile/scrollfile.component';
 import { SortByNamePipe } from './pipes/sort-by-name.pipe';
+import { NgInit } from './directives/NgInit';
 
 @NgModule({
   declarations: [
@@ -40,6 +41,7 @@ import { SortByNamePipe } from './pipes/sort-by-name.pipe';
     PrejsonComponent,
     ScrollfileComponent,
     SortByNamePipe,
+    NgInit,
   ],
   imports: [
     FontAwesomeModule,
@@ -66,6 +68,7 @@ import { SortByNamePipe } from './pipes/sort-by-name.pipe';
     ScrollfilesComponent,
     PrejsonComponent,
     SortByNamePipe,
+    NgInit,
   ],
 })
 export class MycommonModule {}

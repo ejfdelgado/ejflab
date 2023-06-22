@@ -1,3 +1,8 @@
+<select class="my_input full_width" [(ngModel)]="localModel.currentEnvironment"
+    (ngModelChange)="changedEnvironment($event)">
+    <option disabled hidden [value]="null">-- opción --</option>
+    <option *ngFor="let c of getEnvironmentOptions()" [ngValue]="c.val">{{c.txt}}</option>
+</select>
 <button *ngIf="states.fullScreen === false" class="my_button_with_text margin_y_5 full_width"
     (click)="turnFullscreen(true)" mat-menu-item>
     <mat-icon>fullscreen</mat-icon>
@@ -144,8 +149,20 @@
             {{ localFormatTime }}
         </div>
     </div>
-
+</div>
+<div class="tab_view" *ngIf="localModel.currentTab == 'sand'">
+    <div class="my_panel">
+        <label class="my_label">Video de entrada:</label>
+        <select class="my_input full_width" [(ngModel)]="mymodel.sand.cameraId" (ngModelChange)="changedCamera($event)">
+            <option disabled hidden [value]="null">-- cámara --</option>
+            <option *ngFor="let c of videoOptions" [ngValue]="c.label">{{c.label}}</option>
+        </select>
+        <label class="my_label">Modelo 3d de malla:</label>
+        <app-blobeditor *ngIf="mymodel.sand" [options]="blobOptions" [subFolder]="'models/sand_mesh'"
+            [url]="mymodel.sand.meshUrl" (urlChange)="mymodel.sand.meshUrl=$event; saveEvent.emit();">
+        </app-blobeditor>
+    </div>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'debug_local_model'">
-    <pre>{{ mymodel.globalState | json }}</pre>
+    <pre>{{ mymodel.sand | json }}</pre>
 </div>

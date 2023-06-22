@@ -80,7 +80,8 @@ button {
   gap: 5px;
 }
 
-.my_button_with_text.full_width {
+.my_button_with_text.full_width,
+.my_input.full_width {
   width: 100%;
 }
 

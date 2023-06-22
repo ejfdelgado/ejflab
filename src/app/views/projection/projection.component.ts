@@ -58,11 +58,16 @@ export interface GlobalModelData {
   models: {
     [key: string]: Model3DData;
   };
+  sand: {
+    cameraId: string | null;
+    meshUrl: string | null;
+  };
 }
 
 export interface LocalModelData {
   currentTab: string;
   currentViewName: string | null;
+  currentEnvironment: string | null;
   currentView: ViewModelData | null;
   useVideo: boolean;
   timeSeconds: number;
@@ -96,6 +101,7 @@ export class ProjectionComponent
 {
   @ViewChild('three_ref') threeRef: ElementRef;
   @ViewChild('menuControlRef') menuControlRef: ElementRef;
+  public resizeSceneLocalThis: Function;
   public extraOptions: Array<OptionData> = [];
   private observer?: any;
   public elem: any;
@@ -122,6 +128,10 @@ export class ProjectionComponent
     },
     calib: {},
     models: {},
+    sand: {
+      cameraId: null,
+      meshUrl: null,
+    },
   };
   public localModel: LocalModelData = {
     currentTab: 'play',
@@ -129,6 +139,7 @@ export class ProjectionComponent
     currentView: null,
     useVideo: false,
     timeSeconds: 0,
+    currentEnvironment: '3d', //3d|video
   };
 
   constructor(
@@ -165,6 +176,8 @@ export class ProjectionComponent
       icon: 'directions_run',
       label: 'Calibrate Camera',
     });
+
+    this.resizeSceneLocalThis = this.resizeSceneLocal.bind(this);
   }
 
   changedView(view: ViewModelData) {
@@ -206,16 +219,29 @@ export class ProjectionComponent
 
   override onTupleNews() {
     this.mymodel = this.tupleModel.data;
-    if (!this.mymodel.globalState) {
-      this.mymodel.globalState = {
+    this.completeDefaults(this.mymodel);
+    super.onTupleNews();
+  }
+
+  completeDefaults(mymodel: any) {
+    if (!mymodel.sand) {
+      mymodel.sand = {
+        cameraId: null,
+        meshUrl: null,
+      };
+    }
+    if (!mymodel.models) {
+      mymodel.models = {};
+    }
+    if (!mymodel.globalState) {
+      mymodel.globalState = {
         playingState: 'stoped',
         playTime: 0,
       };
     }
-    if (!this.mymodel.models) {
-      this.mymodel.models = {};
+    if (!mymodel.calib) {
+      mymodel.calib = {};
     }
-    super.onTupleNews();
   }
 
   override async onTupleReadDone() {
@@ -228,16 +254,10 @@ export class ProjectionComponent
       }
     );
     if (!this.tupleModel.data) {
-      this.tupleModel.data = {
-        calib: {},
-        models: {},
-        globalState: {
-          playingState: 'stoped',
-          playTime: 0,
-        },
-      };
+      this.tupleModel.data = {};
     }
     this.mymodel = this.tupleModel.data;
+    this.completeDefaults(this.mymodel);
     super.onTupleReadDone();
     // Itero los modelos y los cargo...
     const models = this.mymodel.models;
@@ -362,12 +382,23 @@ export class ProjectionComponent
     threeComponent.scene?.setOrbitControls(true);
   }
 
+  resizeSceneLocal() {
+    const resizeSceneThis = this.resizeScene.bind(this);
+    const reference = setInterval(() => {
+      const respuesta = resizeSceneThis();
+      if (respuesta) {
+        clearInterval(reference);
+      }
+    }, 300);
+  }
+
   resizeScene() {
     const threeComponent = this.getThreeComponent();
     if (!threeComponent) {
-      return;
+      return false;
     }
     threeComponent.onResize({});
+    return true;
   }
 
   async calibCamera() {

@@ -72,6 +72,8 @@ export class MenuControlComponent implements OnInit, OnChanges {
   localInterval: any = null;
   localFormatTime: string = '';
 
+  videoOptions: Array<TabElementData> = [];
+
   tabOptions: Array<TabElementData> = [
     {
       label: 'Objetos 3D',
@@ -84,6 +86,10 @@ export class MenuControlComponent implements OnInit, OnChanges {
     {
       label: 'Play',
       id: 'play',
+    },
+    {
+      label: 'Sand',
+      id: 'sand',
     },
     {
       label: 'Debug',
@@ -107,7 +113,9 @@ export class MenuControlComponent implements OnInit, OnChanges {
     public modalService: ModalService
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.computeCameraOptions();
+  }
 
   openTab(tab: string) {
     this.localModel.currentTab = tab;
@@ -118,6 +126,39 @@ export class MenuControlComponent implements OnInit, OnChanges {
     videos.forEach(async (item) => {
       await item.play();
     });
+  }
+
+  getEnvironmentOptions() {
+    return [
+      { txt: '3d', val: '3d' },
+      { txt: 'video', val: 'video' },
+    ];
+  }
+
+  changedEnvironment(environmentId: string) {
+    console.log(`environmentId = ${environmentId}`);
+  }
+
+  async computeCameraOptions() {
+    if (
+      'mediaDevices' in navigator &&
+      'getUserMedia' in navigator.mediaDevices
+    ) {
+      navigator.mediaDevices.getUserMedia({ video: true });
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const videoDevices = devices.filter(
+        (device) => device.kind === 'videoinput'
+      );
+      this.videoOptions = [];
+      for (let i = 0; i < videoDevices.length; i++) {
+        const actual = videoDevices[i];
+        this.videoOptions.push({ id: actual.groupId, label: actual.label });
+      }
+    }
+  }
+
+  changedCamera(cameraId: string) {
+    this.saveEvent.emit();
   }
 
   clearOldExecution() {
