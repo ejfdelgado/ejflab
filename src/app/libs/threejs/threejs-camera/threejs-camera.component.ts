@@ -1,4 +1,5 @@
 import {
+  ChangeDetectorRef,
   Component,
   ElementRef,
   HostListener,
@@ -23,7 +24,10 @@ export class ThreejsCameraComponent implements OnInit {
   videoHeight: number | null = null;
   forcedWidth: number = 0;
   forcedLeft: number = 0;
-  constructor(private readonly httpSrv: HttpService) {}
+  constructor(
+    private readonly httpSrv: HttpService,
+    public cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {}
 
@@ -39,7 +43,11 @@ export class ThreejsCameraComponent implements OnInit {
     await playResponse;
     this.videoWidth = videoEl.videoWidth;
     this.videoHeight = videoEl.videoHeight;
-    this.resizeComponents();
+    await this.refresh3dModels();
+    setTimeout(() => {
+      this.resizeComponents();
+      this.cdr.detectChanges();
+    }, 0);
   }
 
   getThreeComponent() {
@@ -89,7 +97,10 @@ export class ThreejsCameraComponent implements OnInit {
     // Itero los modelos y los cargo...
     this.removeAllMyObjects();
     const promesas: Array<any> = [];
-    //promesas.push(this.add3DObject("unique_mesh", modelo.objUrl, false));
+    const sand = this.parent?.mymodel?.sand;
+    if (sand && sand.meshUrl) {
+      promesas.push(this.add3DObject('unique_mesh', sand.meshUrl, false));
+    }
     await Promise.all(promesas);
     this.recomputeVertex();
   }
@@ -99,7 +110,7 @@ export class ThreejsCameraComponent implements OnInit {
     if (!threeComponent) {
       return false;
     }
-    threeComponent.onResize({});
+    threeComponent.onResize({ width: this.forcedWidth });
     return true;
   }
 

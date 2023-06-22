@@ -460,7 +460,7 @@ export class BasicScene extends THREE.Scene {
     }
     */
 
-    this.background = new THREE.Color(0x000000);
+    //this.background = new THREE.Color(0x000000);
 
     /*
     for (let i = 0; i < this.lightCount; i++) {

@@ -10,7 +10,10 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { GlobalModelData, TheStateViewData } from 'src/app/views/projection/projection.component';
+import {
+  GlobalModelData,
+  TheStateViewData,
+} from 'src/app/views/projection/projection.component';
 import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
 
 export interface CalibData {
@@ -98,6 +101,9 @@ export class ThreejsProjectionComponent
   public onResize(event: any) {
     this.computeDimensions();
     if (this.scene != null && this.bounds != null) {
+      if (typeof event.width == 'number') {
+        this.bounds.width = event.width;
+      }
       this.scene.setBounds(this.bounds);
     }
   }
