@@ -21,8 +21,15 @@
   height: 100%;
 }
 
-.threejs_container {
+.parent_video .container_video .threejs_container {
   position: absolute;
   top: 0;
   bottom: 0;
+}
+
+.parent_video .container_video .threejs_container app-threejs-projection {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
 }
