@@ -65,6 +65,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() changedFovEvent = new EventEmitter<number>();
   @Output() changedViewEvent = new EventEmitter<ViewModelData>();
   @Output() askEraseAllPointsEvent = new EventEmitter<void>();
+  @Output() askPlayVideo = new EventEmitter<string>();
 
   @ViewChildren(VideoCanvasComponent)
   videoListRef: QueryList<VideoCanvasComponent>;
@@ -119,6 +120,25 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   openTab(tab: string) {
     this.localModel.currentTab = tab;
+  }
+
+  askPlayVideoLocal(labelCamera: string) {
+    // Busco el label en la lista
+    let cameraId = null;
+    const videoOptions = this.videoOptions;
+    for (let i = 0; i < videoOptions.length; i++) {
+      const actual = videoOptions[i];
+      if (actual.label == labelCamera) {
+        cameraId = actual.id;
+      }
+    }
+    if (cameraId) {
+      this.askPlayVideo.emit(cameraId);
+    } else {
+      this.modalService.error(
+        new Error('Por favor selecciona otra vez la cámara')
+      );
+    }
   }
 
   autoStartPlay() {

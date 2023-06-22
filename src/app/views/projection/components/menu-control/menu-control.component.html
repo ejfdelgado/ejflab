@@ -157,6 +157,11 @@
             <option disabled hidden [value]="null">-- cámara --</option>
             <option *ngFor="let c of videoOptions" [ngValue]="c.label">{{c.label}}</option>
         </select>
+        <button *ngIf="mymodel.sand.cameraId != null" class="my_button_with_text full_width margin_y_5"
+            (click)="askPlayVideoLocal(mymodel.sand.cameraId)" mat-menu-item>
+            <mat-icon>play_arrow</mat-icon>
+            <span>Ver cámara</span>
+        </button>
         <label class="my_label">Modelo 3d de malla:</label>
         <app-blobeditor *ngIf="mymodel.sand" [options]="blobOptions" [subFolder]="'models/sand_mesh'"
             [url]="mymodel.sand.meshUrl" (urlChange)="mymodel.sand.meshUrl=$event; saveEvent.emit();">

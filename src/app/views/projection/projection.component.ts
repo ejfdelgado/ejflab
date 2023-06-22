@@ -134,12 +134,12 @@ export class ProjectionComponent
     },
   };
   public localModel: LocalModelData = {
-    currentTab: 'play',
+    currentTab: 'sand', //play|sand
     currentViewName: null,
     currentView: null,
     useVideo: false,
     timeSeconds: 0,
-    currentEnvironment: '3d', //3d|video
+    currentEnvironment: 'video', //3d|video
   };
 
   constructor(
@@ -178,6 +178,10 @@ export class ProjectionComponent
     });
 
     this.resizeSceneLocalThis = this.resizeSceneLocal.bind(this);
+  }
+
+  askPlayVideo(idCamera: string) {
+    console.log(`askPlayVideo ${idCamera}`);
   }
 
   changedView(view: ViewModelData) {
