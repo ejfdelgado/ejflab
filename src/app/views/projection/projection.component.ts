@@ -259,7 +259,13 @@ export class ProjectionComponent
     this.mymodel = this.tupleModel.data;
     this.completeDefaults(this.mymodel);
     super.onTupleReadDone();
+    await this.refresh3dModels();
+    console.log('Read OK!');
+  }
+
+  async refresh3dModels() {
     // Itero los modelos y los cargo...
+    this.removeAllMyObjects();
     const models = this.mymodel.models;
     const promesas = [];
     if (models != null && models != undefined) {
@@ -274,7 +280,6 @@ export class ProjectionComponent
     }
     await Promise.all(promesas);
     this.recomputeVertex();
-    console.log('Read OK!');
   }
 
   async recomputeVertex() {
@@ -308,6 +313,14 @@ export class ProjectionComponent
 
   switchCalibPoints() {
     this.states.seeCalibPoints = !this.states.seeCalibPoints;
+  }
+
+  removeAllMyObjects() {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.removeAllMyObjects();
   }
 
   async add3DObject(uid: string, url: string | null, recomputeVertex: boolean) {
@@ -384,9 +397,11 @@ export class ProjectionComponent
 
   resizeSceneLocal() {
     const resizeSceneThis = this.resizeScene.bind(this);
+    const refresh3dModelsThis = this.refresh3dModels.bind(this);
     const reference = setInterval(() => {
       const respuesta = resizeSceneThis();
       if (respuesta) {
+        refresh3dModelsThis();
         clearInterval(reference);
       }
     }, 300);

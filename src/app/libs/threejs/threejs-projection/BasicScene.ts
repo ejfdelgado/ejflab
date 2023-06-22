@@ -226,6 +226,14 @@ export class BasicScene extends THREE.Scene {
     );
   }
 
+  removeAllMyObjects() {
+    for (let i = this.children.length - 1; i >= 0; i--) {
+      const obj = this.children[i];
+      this.remove(obj);
+    }
+    this.registry = [];
+  }
+
   removeObjectByName(uid: string) {
     const found: any = this.getObjectByName(uid);
     if (found) {
