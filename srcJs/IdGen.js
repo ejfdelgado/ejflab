@@ -173,7 +173,7 @@ class IdGen {
 
   static num2ord(num, esInicio) {
     if (typeof num == "number") {
-      var nuevo;
+      let nuevo;
       if (typeof esInicio == "boolean") {
         if (esInicio === true) {
           nuevo = num * IdGen.RANDOM_SPACE_MULT;
@@ -186,8 +186,8 @@ class IdGen {
           Math.floor(Math.random() * IdGen.RANDOM_SPACE_MULT);
       }
       //console.log(num, nuevo);
-      var temp = nuevo.toString(36);
-      var diff = IdGen.MAX_LENGTH_ORD_TEXT - temp.length;
+      let temp = nuevo.toString(36);
+      const diff = IdGen.MAX_LENGTH_ORD_TEXT - temp.length;
       if (diff > 0) {
         temp = new Array(diff).join("0") + temp;
       }
