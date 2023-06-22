@@ -170,6 +170,8 @@ export class ThreejsProjectionComponent
       if (!(data.key in this.DOTS_MODEL)) {
         this.DOTS_MODEL[data.key] = data.value;
         this.modelChangedEvent.emit();
+      } else {
+        this.DOTS_MODEL[data.key].v3 = data.value.v3;
       }
     }
   }
