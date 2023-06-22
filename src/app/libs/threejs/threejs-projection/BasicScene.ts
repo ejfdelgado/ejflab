@@ -22,7 +22,7 @@ export interface KeyValueDotModelData {
  * main execution file.
  */
 export class BasicScene extends THREE.Scene {
-  PRECISION = 2;
+  PRECISION = 5;
   MARKER_SIZE = 0.1;
   camera: THREE.PerspectiveCamera | null = null;
   renderer: THREE.Renderer | null = null;
@@ -199,6 +199,7 @@ export class BasicScene extends THREE.Scene {
       // Se debe seleccionar el vertice actual si lo hay...
       if (this.intersectedObject) {
         this.selectedObjectName = this.intersectedObject.name;
+        //console.log(`this.selectedObjectName = ${this.selectedObjectName}`);
         this.dot3DSelected.emit({
           key: this.selectedObjectName,
           value: {

@@ -238,6 +238,7 @@ export class ProjectionComponent
   }
 
   completeDefaults(mymodel: any) {
+    //console.log(JSON.stringify(mymodel, null, 4));
     if (!mymodel.sand) {
       mymodel.sand = {
         cameraId: null,
