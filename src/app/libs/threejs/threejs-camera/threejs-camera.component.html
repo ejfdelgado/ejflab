@@ -1,2 +1,9 @@
-<video width="192" height="108" #video controls>
-</video>
+<div class="parent_video">
+    <div #threejs_parent class="container_video">
+        <video #video>
+        </video>
+        <div [ngStyle]="{'width': forcedWidth+'px', 'left': forcedLeft+'px'}" class="threejs_container">
+
+        </div>
+    </div>
+</div>
