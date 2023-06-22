@@ -31,6 +31,7 @@ import {
   VideoCanvasOptions,
 } from './components/video-canvas/video-canvas.component';
 import { MenuControlComponent } from './components/menu-control/menu-control.component';
+import { ThreejsCameraComponent } from 'src/app/libs/threejs/threejs-camera/threejs-camera.component';
 
 export interface Model3DData {
   name: string;
@@ -100,6 +101,7 @@ export class ProjectionComponent
   implements OnInit, OnChanges
 {
   @ViewChild('three_ref') threeRef: ElementRef;
+  @ViewChild('camera_ref') cameraRef: ElementRef;
   @ViewChild('menuControlRef') menuControlRef: ElementRef;
   public resizeSceneLocalThis: Function;
   public extraOptions: Array<OptionData> = [];
@@ -181,7 +183,11 @@ export class ProjectionComponent
   }
 
   askPlayVideo(idCamera: string) {
-    console.log(`askPlayVideo ${idCamera}`);
+    const cameraComponent = this.getCameraComponent();
+    if (!cameraComponent) {
+      return;
+    }
+    cameraComponent.useCamera(idCamera);
   }
 
   changedView(view: ViewModelData) {
@@ -560,12 +566,23 @@ export class ProjectionComponent
     if (!this.menuControlRef) {
       throw new Error('No hay menu control');
     }
-    const threejsComponent = this
+    const componentReal = this
       .menuControlRef as unknown as MenuControlComponent;
-    if (!threejsComponent) {
+    if (!componentReal) {
       throw new Error('No hay three component');
     }
-    return threejsComponent;
+    return componentReal;
+  }
+
+  getCameraComponent() {
+    if (!this.cameraRef) {
+      return null;
+    }
+    const componentReal = this.cameraRef as unknown as ThreejsCameraComponent;
+    if (!componentReal) {
+      return null;
+    }
+    return componentReal;
   }
 
   getThreeComponent() {

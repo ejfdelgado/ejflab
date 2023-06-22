@@ -11,7 +11,7 @@
             </app-threejs-projection>
         </div>
         <div class="left_part" *ngIf="localModel.currentEnvironment == 'video'">
-            <app-threejs-camera></app-threejs-camera>
+            <app-threejs-camera #camera_ref></app-threejs-camera>
         </div>
         <div class="right_part" [ngStyle]="{'bottom': states.menuTop.bottom+'px', 'right': states.menuTop.right+'px'}"
             [ngClass]="{'floating': states.fullScreen && states.openedFloatingMenu, 'invisible': !(!states.fullScreen || states.openedFloatingMenu)}">
