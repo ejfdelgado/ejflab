@@ -432,7 +432,7 @@ export class ProjectionComponent
 
   async calibCamera() {
     const threeComponent = this.getThreeComponent();
-    if (!this.localModel.currentView || !this.threeRef || !threeComponent) {
+    if (!this.localModel.currentView || !threeComponent) {
       return;
     }
     const bounds = threeComponent.bounds;
