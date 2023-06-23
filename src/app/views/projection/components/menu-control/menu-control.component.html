@@ -162,10 +162,22 @@
             <mat-icon>play_arrow</mat-icon>
             <span>Ver cámara</span>
         </button>
-        <label class="my_label">Modelo 3d de malla:</label>
+        <label class="my_label">Modelo 3d de simple:</label>
         <app-blobeditor *ngIf="mymodel.sand" [options]="blobOptions" [subFolder]="'models/sand_mesh'"
             [url]="mymodel.sand.meshUrl" (urlChange)="mymodel.sand.meshUrl=$event; saveEvent.emit();">
         </app-blobeditor>
+        <label class="my_label">Modelo 3d de detallado:</label>
+        <app-blobeditor *ngIf="mymodel.sand" [options]="blobOptions" [subFolder]="'models/sand_mesh2'"
+            [url]="mymodel.sand.meshUrl2" (urlChange)="mymodel.sand.meshUrl2=$event; saveEvent.emit();">
+        </app-blobeditor>
+        <button *ngIf="mymodel.sand.cameraId != null" class="my_button_with_text full_width margin_y_5"
+            (click)="compute3d2DMask()" mat-menu-item>
+            <mat-icon>play_arrow</mat-icon>
+            <span>Calcular relación de vértices 3d - 2d</span>
+        </button>
+        <app-txtfileeditor #map3d2d_ref *ngIf="mymodel.sand.cameraId != null" [options]="textOptions" [fileName]="'map3d2d.txt'"
+            [url]="mymodel.sand.map3d2dUrl" (urlChange)="saveMap3d2d($event); saveEvent.emit();">
+        </app-txtfileeditor>
     </div>
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'debug_local_model'">

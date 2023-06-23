@@ -138,6 +138,25 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  getValue() {
+    return this.control.value;
+  }
+
+  async setValueAndSave(texto: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      this.control.setValue(texto);
+      const guardarThis = this.guardar.bind(this);
+      setTimeout(async () => {
+        try {
+          await guardarThis();
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      }, 0);
+    });
+  }
+
   processFile(textInput: any) {
     const file: File = textInput.files[0];
     const reader = new FileReader();

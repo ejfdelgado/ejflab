@@ -4,16 +4,17 @@
   "description": "",
   "main": "app.mjs",
   "scripts": {
+    "bip": "play /sound/finish.mp3",
     "ng": "ng",
     "angular": "ng serve",
     "build": "",
     "watch": "",
-    "build_local": "ng build --output-hashing=bundles",
+    "build_local": "ng build --output-hashing=bundles && npm run bip",
     "watch_local": "ng build --watch --configuration development",
     "test": "ng test",
     "start": "node app.mjs",
-    "deployflex": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml",
-    "deploy": "gcloud app deploy --verbosity=debug --quiet appstd.yaml"
+    "deployflex": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml && npm run bip",
+    "deploy": "gcloud app deploy --verbosity=debug --quiet appstd.yaml && npm run bip"
   },
   "engines": {
     "node": ">=14.0.0"

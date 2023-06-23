@@ -62,6 +62,8 @@ export interface GlobalModelData {
   sand: {
     cameraId: string | null;
     meshUrl: string | null;
+    meshUrl2: string | null;
+    map3d2dUrl: string;
   };
 }
 
@@ -133,6 +135,8 @@ export class ProjectionComponent
     sand: {
       cameraId: null,
       meshUrl: null,
+      meshUrl2: null,
+      map3d2dUrl: '',
     },
   };
   public localModel: LocalModelData = {

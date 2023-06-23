@@ -11,6 +11,10 @@ import {
   ViewChildren,
 } from '@angular/core';
 import { BlobOptionsData } from 'src/app/mycommon/components/blobeditor/blobeditor.component';
+import {
+  TxtfileeditorComponent,
+  TxtOptionsData,
+} from 'src/app/mycommon/components/txtfileeditor/txtfileeditor.component';
 import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { IdGen } from 'srcJs/IdGen';
@@ -47,6 +51,7 @@ const OFFSET_MILLIS_START_TIME = 6000;
   styleUrls: ['./menu-control.component.css'],
 })
 export class MenuControlComponent implements OnInit, OnChanges {
+  @ViewChild('map3d2d_ref') map3d2dRef: ElementRef;
   @Input() mymodel: GlobalModelData;
   @Input() localModel: LocalModelData;
   @Input() states: TheStateViewData;
@@ -109,6 +114,12 @@ export class MenuControlComponent implements OnInit, OnChanges {
     isPublic: true,
   };
 
+  textOptions: TxtOptionsData = {
+    height: '200px',
+    maxHeight: '200px',
+    useRoot: MyConstants.SRV_ROOT,
+  };
+
   constructor(
     public fileService: FileService,
     public modalService: ModalService
@@ -116,6 +127,25 @@ export class MenuControlComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.computeCameraOptions();
+  }
+
+  async compute3d2DMask() {
+    // Iterar todos los puntos 3d del modelo detallado
+    // Preparar la invocación al backend
+    // Invocar
+    // Recibir los puntos 2d
+    // Guardar el mapeo
+    const mapping = this.getMap3d2dRefComponent();
+    if (mapping == null) {
+      return;
+    }
+    await mapping.setValueAndSave(new Date() + '');
+  }
+
+  saveMap3d2d(dato: string | null) {
+    if (dato !== null) {
+      this.mymodel.sand.map3d2dUrl = dato;
+    }
   }
 
   openTab(tab: string) {
@@ -392,5 +422,16 @@ export class MenuControlComponent implements OnInit, OnChanges {
       response.push(actual);
     }
     return response;
+  }
+
+  getMap3d2dRefComponent() {
+    if (!this.map3d2dRef) {
+      return null;
+    }
+    const componentReal = this.map3d2dRef as unknown as TxtfileeditorComponent;
+    if (!componentReal) {
+      return null;
+    }
+    return componentReal;
   }
 }
