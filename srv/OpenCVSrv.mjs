@@ -1,5 +1,4 @@
 import { General } from "./common/General.mjs";
-import { InesperadoException } from "./MyError.mjs";
 import { MyShell } from "./MyShell.mjs";
 
 export class OpenCVSrv {
@@ -13,10 +12,6 @@ export class OpenCVSrv {
         const payload = General.readParam(req, "payload");
         const dato = await OpenCVSrv.solvePnPLocal(payload);
         res.setHeader('content-type', 'text/json');
-        const parsed = JSON.parse(dato);
-        if (typeof parsed.error == "string") {
-            throw new InesperadoException(parsed.error);
-        }
         res.end(dato);
     }
 }

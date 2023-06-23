@@ -2,6 +2,7 @@ import path from "path";
 import fs from "fs";
 import { spawn } from "child_process";
 import { General } from "./common/General.mjs";
+import { InesperadoException } from "./MyError.mjs";
 
 export class MyShell {
 
@@ -65,6 +66,13 @@ export class MyShell {
                 if (isError) {
                     reject(total);
                 } else {
+                    let parsed = {};
+                    try {
+                        parsed = JSON.parse(total);
+                    } catch (err) { }
+                    if (typeof parsed.error == "string") {
+                        reject(new InesperadoException(parsed.error));
+                    }
                     resolve(total);
                 }
             });
