@@ -15,7 +15,7 @@ rm -R build && mkdir build && cd build
 cmake ../
 make -j 8
 node ../../utils/shared-libs.js ./solvePnP
-5. Copiar el bin a ejflab/bin
+5. Copiar el bin a ejflab/bin-docker
 6. Detener la instancia
 sudo docker ps
 sudo docker stop 37011c753187
