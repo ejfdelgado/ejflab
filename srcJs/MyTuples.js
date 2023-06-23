@@ -1,7 +1,16 @@
 const { SimpleObj } = require("./SimpleObj");
 
 const TAMANIO_ALEATORIO = 10;
-const MAX_BUFFER_CHANGES = 3;
+const MAX_BUFFER_CHANGES = 50;
+
+const fakeProcessor = ({ min = 500, max = 1000 }) => {
+    return new Promise((resolve) => {
+        const tiempo = min + Math.random() * (max - min);
+        setTimeout(() => {
+            resolve();
+        }, tiempo);
+    });
+};
 
 class MyTuples {
     static TIPOS_BASICOS = ["string", "number", "boolean"];
@@ -206,6 +215,7 @@ class MyTuples {
                                             setTimeout(async () => {
                                                 try {
                                                     const theResponse = await procesor(unBatch);
+                                                    //const theResponse = await fakeProcessor();
                                                     resolve(theResponse);
                                                 } catch (error) {
                                                     if ([403].indexOf(error.status) < 0) {
@@ -225,17 +235,22 @@ class MyTuples {
                                 }
                             } while (unBatch.total > 0);
                         }
-                    };
+                        return pending.length;
+                    };//processAll
                     try {
-                        await processAll();
+                        let procesados = 0;
+                        do {
+                            // Se evacúa todo lo que está pendiente!
+                            procesados = await processAll();
+                        } while (procesados > 0);
                     } catch (err) {
                         // do nothing
                     }
                     isProcessing = false;
                     setActivityStatus(isProcessing);
                 }
-            }, LOW_PRESSURE_MS);
-        };
+            }, LOW_PRESSURE_MS);//setTimeout
+        };//startProcess
 
         const isOwnChange = (cambio) => {
             const randomId = cambio["r"];
@@ -365,9 +380,12 @@ class MyTuples {
                     }
                 }
 
-                myFreeze = JSON.stringify(nuevo);
-                pending.push(batch);
-                startProcess();
+                const totalChanges = batch['*'].length + batch['-'].length + batch['+'].length;
+                if (totalChanges > 0) {
+                    myFreeze = JSON.stringify(nuevo);
+                    pending.push(batch);
+                    startProcess();
+                }
                 return batch;
             }
         };

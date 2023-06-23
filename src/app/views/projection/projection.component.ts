@@ -275,7 +275,6 @@ export class ProjectionComponent
     this.completeDefaults(this.mymodel);
     super.onTupleReadDone();
     await this.refresh3dModels();
-    console.log('Read OK!');
   }
 
   async refresh3dModels() {
@@ -538,7 +537,6 @@ export class ProjectionComponent
       this.cdr.detectChanges();
       this.states.fullScreen = this.isInFullscreenMode();
       setTimeout(() => {
-        console.log(`ResizeObserver ${this.states.fullScreen}`);
         this.updateComponentsToFullScreen();
       }, 0);
     });
