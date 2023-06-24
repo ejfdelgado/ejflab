@@ -23,6 +23,14 @@ int main(int argc, char *argv[])
         {
             points3d = json2Data3DVector(&(data["points3d"]));
         }
+        // Read from file if points3dPath
+        if (data.contains("points3dPath"))
+        {
+            std::string path = data["points3dPath"];
+            std::ifstream ifs(path);
+            json jf = json::parse(ifs);
+            points3d = json2Data3DVector(&jf);
+        }
 
         computeCamera(&data, ref2D, ref3D, size, focal, points3d);
     }
@@ -30,6 +38,10 @@ int main(int argc, char *argv[])
     {
         const char *err_msg = e.what();
         data["error"] = err_msg;
+    }
+    catch (const std::exception &e)
+    {
+        data["error"] = e.what();
     }
     std::string s = data.dump();
     std::cout << s << std::endl;

@@ -21,7 +21,7 @@ export class ExecFolder {
             try {
                 const path = `${folderPath}${fileName}`;
                 fs.writeFileSync(path, content);
-                resolve();
+                resolve(path);
             } catch (err) {
                 reject(err);
             }

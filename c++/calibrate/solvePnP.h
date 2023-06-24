@@ -160,15 +160,15 @@ void computeCamera(
     {
         std::vector<cv::Point3f> question = Generate3DPoints(questionIn);
         std::vector<cv::Point2f> projectedPoints;
+        std::vector<cv::Point2f> normalizedPoints;
         cv::projectPoints(question, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
         // Se normalizan los puntos 2d
         for (int i = 0; i < projectedPoints.size(); i++)
         {
             cv::Point2f temp = projectedPoints[i];
-            temp.x = temp.x / width;
-            temp.y = temp.y / height;
+            normalizedPoints.push_back(cv::Point2f(temp.x / width, temp.y / height));
         }
-        (*data)["points2d"] = vectorPoint2f2json(projectedPoints);
+        (*data)["points2d"] = vectorPoint2f2json(normalizedPoints);
     }
 }
 

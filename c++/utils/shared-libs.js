@@ -5,19 +5,31 @@ const fs = require('fs');
 
 // Get executable argument
 let executable = null;
+let outputDir = null;
 process.argv.forEach(function (val, index, array) {
-    if (index == 2) {
-        executable = val;
+    switch (index) {
+        case 2:
+            executable = val;
+            break;
+        case 3:
+            outputDir = val;
+            break;
+        default:
+            break;
     }
 });
 if (executable == null) {
-    console.log('define the executable name')
+    console.error('define the executable')
+    return;
+}
+if (outputDir == null) {
+    console.error('define the outputDir')
     return;
 }
 
-async function runExecutable(path, arguments) {
+async function runExecutable(path, argumentos) {
     const spawnSync = require('child_process').spawnSync;
-    const child = spawnSync(path, arguments, { encoding: 'utf8' });
+    const child = spawnSync(path, argumentos, { encoding: 'utf8' });
     return child.stdout;
 }
 
@@ -48,7 +60,7 @@ async function analize() {
             pathFiles.push(path.trim());
         }
     }
-    const DEST_ROOT = "./bin"
+    const DEST_ROOT = outputDir;
     if (!fs.existsSync(DEST_ROOT)) {
         fs.mkdirSync(DEST_ROOT);
     }
