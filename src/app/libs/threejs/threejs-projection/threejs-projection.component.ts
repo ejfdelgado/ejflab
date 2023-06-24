@@ -18,6 +18,7 @@ import {
 import { HttpService } from 'src/services/http.service';
 import { IdGen } from 'srcJs/IdGen';
 import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
+import { MyColor } from 'srcJs/MyColor';
 
 export interface CalibData {
   [key: string]: DotModelData;
@@ -38,6 +39,7 @@ export class ThreejsProjectionComponent
   implements OnInit, AfterViewInit, OnChanges
 {
   @ViewChild('video') videoRef: ElementRef;
+  @ViewChild('canvas_heat_map') canvasHeatMapRef: ElementRef;
   @ViewChild('videocanvas') videoCanvasRef: ElementRef;
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
@@ -94,6 +96,55 @@ export class ThreejsProjectionComponent
     }
   }
 
+  createShaderMaterial() {
+    const m = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide,
+    });
+    const c = this.canvasHeatMapRef.nativeElement;
+    const ctx = c.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, c.height, 0, 0);
+    gradient.addColorStop(0, 'blue');
+    //gradient.addColorStop(0.5, '#fcd046');
+    gradient.addColorStop(1, 'green');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, c.width, c.height);
+    const colorTexture = new THREE.CanvasTexture(c);
+    const uniforms = {
+      colorTexture: { value: colorTexture },
+      limits: { value: VOLUME },
+    };
+
+    //float h = (vPos.y - (-limits))/(limits * 2.);
+    m.onBeforeCompile = (shader) => {
+      shader.uniforms['colorTexture'] = uniforms.colorTexture;
+      shader.uniforms['limits'] = uniforms.limits;
+      shader.vertexShader = `
+        varying vec3 vPos;
+        ${shader.vertexShader}
+      `.replace(
+        `#include <fog_vertex>`,
+        `#include <fog_vertex>
+        vPos = vec3(position);
+        `
+      );
+      shader.fragmentShader = `
+        uniform float limits;
+        uniform sampler2D colorTexture;
+        
+        varying vec3 vPos;
+        ${shader.fragmentShader}
+      `.replace(
+        `vec4 diffuseColor = vec4( diffuse, opacity );`,
+        `
+          float h = vPos.y/limits;
+          h = clamp(h, 0., 1.);
+          vec4 diffuseColor = texture2D(colorTexture, vec2(0, h));
+        `
+      );
+    };
+    return m;
+  }
+
   async toggleUseSand(use: boolean) {
     const scene = this.scene;
     if (!scene) {
@@ -120,6 +171,7 @@ export class ThreejsProjectionComponent
               true
             );
             const objeto = await promesa;
+            scene.setMaterial(objeto, this.createShaderMaterial());
             // Extraigo los vértices
             this.computeSand3dReferencePoints(objeto);
           }
@@ -233,14 +285,17 @@ export class ThreejsProjectionComponent
 
           const pixel = ctx.getImageData(ux, uy, 1, 1);
           const data = pixel.data;
-          const r = data[0] / 255;
+          const r = data[0];
           const g = data[1];
           const b = data[2];
+
+          let { h } = MyColor.rgb2hsv(r, g, b);
+          h = h / 360;
 
           //const x = verticeReferencia[0];
           const y = verticeReferencia[1];
           //const z = verticeReferencia[2];
-          const offset = r * VOLUME;
+          const offset = h * VOLUME;
           // Get pixel point
           positionAttribute.setY(j, y + offset);
           k++;
