@@ -26,6 +26,8 @@ export interface CalibData {
 const SUMSAMPLIG = 0.5;
 const VOLUME = 1;
 const REFRESH_INTERVAL = 500;
+// 1. Remapeo de valores del video hacia un valor min y max...
+// 2. Coloreado de cada vértice.
 
 @Component({
   selector: 'app-threejs-projection',
