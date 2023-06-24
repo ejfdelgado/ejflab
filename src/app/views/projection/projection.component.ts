@@ -79,6 +79,7 @@ export interface LocalModelData {
   currentEnvironment: string | null;
   currentView: ViewModelData | null;
   useVideo: boolean;
+  useSand: boolean;
   timeSeconds: number;
 }
 
@@ -150,6 +151,7 @@ export class ProjectionComponent
     currentViewName: null,
     currentView: null,
     useVideo: false,
+    useSand: false,
     timeSeconds: 0,
     currentEnvironment: '3d', //3d|video
   };

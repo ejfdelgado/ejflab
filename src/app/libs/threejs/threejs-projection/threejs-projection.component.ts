@@ -14,6 +14,8 @@ import {
   GlobalModelData,
   TheStateViewData,
 } from 'src/app/views/projection/projection.component';
+import { HttpService } from 'src/services/http.service';
+import { IdGen } from 'srcJs/IdGen';
 import { BasicScene, DotModelData, KeyValueDotModelData } from './BasicScene';
 
 export interface CalibData {
@@ -28,8 +30,11 @@ export interface CalibData {
 export class ThreejsProjectionComponent
   implements OnInit, AfterViewInit, OnChanges
 {
+  @ViewChild('video') videoRef: ElementRef;
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
+  sandRemapping: Array<Array<number>> | null = null;
+  sandUid: string | null = null;
   scene: BasicScene | null = null;
   bounds: DOMRect | null = null;
   DOT_OPTIONS: any = {
@@ -45,8 +50,9 @@ export class ThreejsProjectionComponent
   @Input() seeCalibPoints: boolean;
   @Input() mymodel: GlobalModelData;
   @Input() states: TheStateViewData;
+  @Input() useSand: boolean;
 
-  constructor() {
+  constructor(private readonly httpSrv: HttpService) {
     const style: any = {};
     style['border-width'] = this.DOT_OPTIONS.border + 'px';
     style['width'] = this.DOT_OPTIONS.size + 'px';
@@ -69,6 +75,80 @@ export class ThreejsProjectionComponent
       this.scene.setCalibPointsVisibility(actual);
       this.scene.setSeeCalibPoints(actual);
     }
+    if ('useSand' in changes) {
+      this.toggleUseSand(changes.useSand.currentValue);
+    }
+  }
+
+  async toggleUseSand(use: boolean) {
+    if (use) {
+      // Se debe buscar:
+      const sandData = this.mymodel.sand;
+      // El obj
+      const meshUrl2 = sandData.meshUrl2;
+      // Load the url
+      if (this.sandUid == null) {
+        if (typeof meshUrl2 == 'string') {
+          const object: any = await this.httpSrv.get(meshUrl2, {
+            isBlob: true,
+          });
+          const nextUrl = URL.createObjectURL(object);
+          this.sandUid = IdGen.num2ord(new Date().getTime());
+          if (this.sandUid) {
+            this.scene?.loadObj(nextUrl, this.sandUid, undefined, true);
+          }
+          URL.revokeObjectURL(nextUrl);
+        }
+      } else {
+        const objeto = this.scene?.getObjectByName(this.sandUid);
+        if (objeto) {
+          objeto.visible = true;
+        }
+      }
+      // El video
+      const cameraId = sandData.cameraId;
+      if (cameraId) {
+        await this.useCamera(cameraId);
+      }
+      // El mapeo
+      if (this.sandRemapping == null) {
+        const map3d2dUrl = sandData.map3d2dUrl;
+        if (typeof map3d2dUrl == 'string' && map3d2dUrl.length > 0) {
+          this.sandRemapping = await this.httpSrv.get(map3d2dUrl, {
+            isBlob: false,
+          });
+        }
+      }
+      // Interval para leer el video y capturar los pixeles
+    } else {
+      // detener la captura
+      // esconder el objeto
+      if (this.sandUid) {
+        const objeto = this.scene?.getObjectByName(this.sandUid);
+        if (objeto) {
+          objeto.visible = false;
+        }
+      }
+      const videoEl = this.videoRef.nativeElement;
+      if (videoEl) {
+        videoEl.pause();
+      }
+    }
+  }
+
+  async useCamera(deviceId: string) {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        deviceId: deviceId,
+      },
+    });
+    const videoEl = this.videoRef.nativeElement;
+    videoEl.srcObject = stream;
+    const playResponse = videoEl.play();
+    await playResponse;
+    const videoWidth = videoEl.videoWidth;
+    const videoHeight = videoEl.videoHeight;
+    console.log(`videoWidth = ${videoWidth} videoHeight = ${videoHeight}`);
   }
 
   select2DPoint(dotData: KeyValueDotModelData) {

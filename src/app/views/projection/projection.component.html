@@ -7,7 +7,8 @@
             <app-threejs-projection #three_ref [DOTS_MODEL]="getCurrentPair()" [ngInit]="resizeSceneLocalThis"
                 [mymodel]="mymodel" [seeCalibPoints]="states.seeCalibPoints" [states]="states"
                 [ngStyle]="{'display': 'flex', 'position': (states.fullScreen ? 'fixed': 'absolute')}"
-                (selectedDotEvent)="states.selectedDot=$event;" (modelChangedEvent)="saveAll()">
+                (selectedDotEvent)="states.selectedDot=$event;" (modelChangedEvent)="saveAll()"
+                [useSand]="localModel.useSand">
             </app-threejs-projection>
         </div>
         <div class="left_part" *ngIf="localModel.currentEnvironment == 'video'">

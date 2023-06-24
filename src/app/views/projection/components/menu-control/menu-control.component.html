@@ -140,6 +140,10 @@
 <div class="tab_view" *ngIf="localModel.currentTab == 'play'">
     <div class="my_panel">
         <div class="label_checkbox">
+            <label class="my_label">Usar arenera:</label>
+            <input type="checkbox" [(ngModel)]="localModel.useSand" />
+        </div>
+        <div class="label_checkbox">
             <label class="my_label">Precargar videos:</label>
             <input type="checkbox" [(ngModel)]="localModel.useVideo" />
         </div>
