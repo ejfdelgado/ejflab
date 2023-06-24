@@ -41,6 +41,7 @@ export class ThreejsProjectionComponent
   @ViewChild('videocanvas') videoCanvasRef: ElementRef;
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
+  sandRunning: boolean = false;
   sandReference: Array<Array<number>> = [];
   sandInterval: NodeJS.Timer | null = null;
   sandRemapping: Array<Array<number>> | null = null;
@@ -94,16 +95,15 @@ export class ThreejsProjectionComponent
   }
 
   async toggleUseSand(use: boolean) {
+    const scene = this.scene;
+    if (!scene) {
+      return;
+    }
     if (use) {
       // Se debe buscar:
       const sandData = this.mymodel.sand;
       // El obj
       const meshUrl2 = sandData.meshUrl2;
-
-      const scene = this.scene;
-      if (!scene) {
-        return;
-      }
       // Load the url
       if (this.sandUid == null) {
         if (typeof meshUrl2 == 'string') {
@@ -147,10 +147,11 @@ export class ThreejsProjectionComponent
       }
       // Interval para leer el video y capturar los pixeles
       const sandRefreshThis = this.sandRefresh.bind(this);
-      this.sandInterval = setInterval(sandRefreshThis, REFRESH_INTERVAL);
+      this.sandInterval = setTimeout(sandRefreshThis, REFRESH_INTERVAL);
+      this.sandRunning = true;
     } else {
       if (this.sandInterval != null) {
-        clearInterval(this.sandInterval);
+        clearTimeout(this.sandInterval);
       }
       // detener la captura
       // esconder el objeto
@@ -164,6 +165,7 @@ export class ThreejsProjectionComponent
       if (videoEl) {
         videoEl.pause();
       }
+      this.sandRunning = false;
     }
   }
 
@@ -187,6 +189,9 @@ export class ThreejsProjectionComponent
   }
 
   async sandRefresh() {
+    if (!this.sandRunning) {
+      return;
+    }
     const scene = this.scene;
     if (!scene || !this.sandUid) {
       return;
@@ -243,6 +248,8 @@ export class ThreejsProjectionComponent
         positionAttribute.needsUpdate = true;
       }
     }
+    const sandRefreshThis = this.sandRefresh.bind(this);
+    this.sandInterval = setTimeout(sandRefreshThis, REFRESH_INTERVAL);
   }
 
   async useCamera(deviceId: string) {
