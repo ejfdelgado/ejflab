@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import {
   AfterViewInit,
   Component,
@@ -22,6 +23,10 @@ export interface CalibData {
   [key: string]: DotModelData;
 }
 
+const SUMSAMPLIG = 0.5;
+const VOLUME = 1;
+const REFRESH_INTERVAL = 500;
+
 @Component({
   selector: 'app-threejs-projection',
   templateUrl: './threejs-projection.component.html',
@@ -31,12 +36,14 @@ export class ThreejsProjectionComponent
   implements OnInit, AfterViewInit, OnChanges
 {
   @ViewChild('video') videoRef: ElementRef;
+  @ViewChild('videocanvas') videoCanvasRef: ElementRef;
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
+  sandReference: Array<Array<number>> = [];
   sandInterval: NodeJS.Timer | null = null;
   sandRemapping: Array<Array<number>> | null = null;
   sandUid: string | null = null;
-  sandClone: THREE.Group | null = null;
+  sandActual: THREE.Group | null = null;
   scene: BasicScene | null = null;
   bounds: DOMRect | null = null;
   DOT_OPTIONS: any = {
@@ -46,6 +53,8 @@ export class ThreejsProjectionComponent
   };
   selectedDot: string | null = null;
   mousePosition: { x: number; y: number } = { x: 0, y: 0 };
+  videoWidth: number = 1;
+  videoHeight: number = 1;
   @Output() selectedDotEvent = new EventEmitter<string | null>();
   @Output() modelChangedEvent = new EventEmitter<void>();
   @Input() DOTS_MODEL: CalibData | null;
@@ -109,8 +118,8 @@ export class ThreejsProjectionComponent
               true
             );
             const objeto = await promesa;
-            // Lo clono y lo guardo
-            this.sandClone = objeto.clone(true);
+            // Extraigo los vértices
+            this.computeSand3dReferencePoints(objeto);
           }
           URL.revokeObjectURL(nextUrl);
         }
@@ -136,7 +145,7 @@ export class ThreejsProjectionComponent
       }
       // Interval para leer el video y capturar los pixeles
       const sandRefreshThis = this.sandRefresh.bind(this);
-      this.sandInterval = setInterval(sandRefreshThis, 1000);
+      this.sandInterval = setInterval(sandRefreshThis, REFRESH_INTERVAL);
     } else {
       if (this.sandInterval != null) {
         clearInterval(this.sandInterval);
@@ -156,6 +165,25 @@ export class ThreejsProjectionComponent
     }
   }
 
+  computeSand3dReferencePoints(object: THREE.Group) {
+    this.sandActual = object;
+    const sandReference: Array<Array<number>> = [];
+    for (let i = 0; i < object.children.length; i++) {
+      const child = object.children[i];
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const point = new THREE.Vector3();
+        const positionAttribute: any = mesh.geometry.getAttribute('position');
+        for (let i = 0; i < positionAttribute.count; i++) {
+          point.fromBufferAttribute(positionAttribute, i);
+          mesh.localToWorld(point);
+          sandReference.push([point.x, point.y, point.z]);
+        }
+      }
+    }
+    this.sandReference = sandReference;
+  }
+
   async sandRefresh() {
     const scene = this.scene;
     if (!scene || !this.sandUid) {
@@ -163,19 +191,56 @@ export class ThreejsProjectionComponent
     }
     // Itero todos los puntos y los desplazo
     // El objeto 3d original
-    const original = this.sandClone;
+    const sandReference = this.sandReference;
     // El objeto 3d a modificar
-    const actual = scene.getObjectByName(this.sandUid);
+    const actual = this.sandActual;
     // La referencia del video
     const videoEl = this.videoRef.nativeElement;
     // La referencia del mapeo de pixeles
     const sandRemapping = this.sandRemapping;
-    if (!original || !actual || !videoEl || !sandRemapping) {
+
+    if (sandReference.length == 0 || !actual || !videoEl || !sandRemapping) {
       return;
     }
 
+    // Se pasa el video al canvas
+    const canvas = this.videoCanvasRef.nativeElement;
+    canvas.width = Math.floor(this.videoWidth * SUMSAMPLIG);
+    canvas.height = Math.floor(this.videoHeight * SUMSAMPLIG);
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(videoEl, 0, 0, canvas.width, canvas.height);
+
     // Itero todos los vértices
-    
+    let k = 0;
+    for (let i = 0; i < actual.children.length; i++) {
+      const child = actual.children[i];
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const positionAttribute: any = mesh.geometry.getAttribute('position');
+        for (let j = 0; j < positionAttribute.count; j++) {
+          const verticeReferencia = sandReference[k];
+          const mappingReference = sandRemapping[k];
+          const ux = Math.floor(mappingReference[0] * canvas.width);
+          const uy = Math.floor(mappingReference[1] * canvas.height);
+
+          const pixel = ctx.getImageData(ux, uy, 1, 1);
+          const data = pixel.data;
+          const r = data[0] / 255;
+          const g = data[1];
+          const b = data[2];
+
+          //const x = verticeReferencia[0];
+          const y = verticeReferencia[1];
+          //const z = verticeReferencia[2];
+          const offset = r * VOLUME;
+          // Get pixel point
+          positionAttribute.setY(j, y + offset);
+          k++;
+        }
+        positionAttribute.needsUpdate = true;
+      }
+    }
   }
 
   async useCamera(deviceId: string) {
@@ -188,9 +253,8 @@ export class ThreejsProjectionComponent
     videoEl.srcObject = stream;
     const playResponse = videoEl.play();
     await playResponse;
-    const videoWidth = videoEl.videoWidth;
-    const videoHeight = videoEl.videoHeight;
-    console.log(`videoWidth = ${videoWidth} videoHeight = ${videoHeight}`);
+    this.videoWidth = videoEl.videoWidth;
+    this.videoHeight = videoEl.videoHeight;
   }
 
   select2DPoint(dotData: KeyValueDotModelData) {
