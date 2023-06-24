@@ -312,11 +312,10 @@ export class ProjectionComponent
       return;
     }
     const model = event.model;
-    const objeto = component.scene?.getObjectByName(event.key);
-    if (!objeto) {
-      return;
-    }
-    objeto.visible = model.isVisible !== false;
+    const objeto = component.scene?.setObjectVisibility(
+      event.key,
+      model.isVisible !== false
+    );
   }
 
   async refresh3dModels() {

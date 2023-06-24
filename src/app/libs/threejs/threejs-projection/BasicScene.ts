@@ -6,6 +6,7 @@ import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader';
 import { BufferAttribute, Camera, Object3D } from 'three';
 import { EventEmitter } from '@angular/core';
 import { VideoCanvasEventData } from 'src/app/views/projection/components/video-canvas/video-canvas.component';
+import { Model3DDataKey } from 'src/app/views/projection/projection.component';
 
 export interface DotModelData {
   v3: { x: number; y: number; z: number };
@@ -46,6 +47,7 @@ export class BasicScene extends THREE.Scene {
   public dot3DSelected = new EventEmitter<KeyValueDotModelData | null>();
   seeCalibPoints: boolean = false;
   registry: Array<THREE.Group> = [];
+  vertexRegistry: { [key: string]: { [key: string]: any } } = {};
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -303,7 +305,7 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
-  addCubeVertex(point: THREE.Vector3) {
+  addCubeVertex(point: THREE.Vector3, name: string) {
     const key = [
       point.x.toFixed(this.PRECISION),
       point.y.toFixed(this.PRECISION),
@@ -326,17 +328,21 @@ export class BasicScene extends THREE.Scene {
       this.pickableObjects.push(cube);
       cube.visible = this.seeCalibPoints;
       this.add(cube);
+      if (!(name in this.vertexRegistry)) {
+        this.vertexRegistry[name] = {};
+      }
+      this.vertexRegistry[name][generatedName] = cube;
     }
   }
 
-  explodeMeshVertex(mesh: THREE.Mesh) {
+  explodeMeshVertex(mesh: THREE.Mesh, name: string) {
     // Iterate vertex
     const point = new THREE.Vector3();
     const positionAttribute: any = mesh.geometry.getAttribute('position');
     for (let i = 0; i < positionAttribute.count; i++) {
       point.fromBufferAttribute(positionAttribute, i);
       mesh.localToWorld(point);
-      this.addCubeVertex(point);
+      this.addCubeVertex(point, name);
     }
   }
 
@@ -372,6 +378,18 @@ export class BasicScene extends THREE.Scene {
       return;
     }
     existente.visible = value;
+    // Se buscan los vertices y se les asigna el mismo valor...
+    const vertices = this.vertexRegistry[name];
+    if (vertices) {
+      const llaves = Object.keys(vertices);
+      for (let j = 0; j < llaves.length; j++) {
+        const llave = llaves[j];
+        const vertice = this.getObjectByName(llave);
+        if (vertice) {
+          vertice.visible = value;
+        }
+      }
+    }
   }
 
   setMaterial(object: THREE.Object3D, material: THREE.MeshBasicMaterial) {
@@ -400,7 +418,7 @@ export class BasicScene extends THREE.Scene {
         const child = object.children[i];
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
-          this.explodeMeshVertex(mesh);
+          this.explodeMeshVertex(mesh, object.name);
         }
       }
     }
