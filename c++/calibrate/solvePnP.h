@@ -135,6 +135,22 @@ void computeCamera(
 
     cv::solvePnP(objectPoints, imagePoints, cameraMatrix, distCoeffs, rvec, tvec);
 
+    // Si hay puntos 3d que proyectar a 2d se hace
+    if (questionIn.size() > 0)
+    {
+        std::vector<cv::Point3f> question = Generate3DPoints(questionIn);
+        std::vector<cv::Point2f> projectedPoints;
+        std::vector<cv::Point2f> normalizedPoints;
+        cv::projectPoints(question, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
+        // Se normalizan los puntos 2d
+        for (int i = 0; i < projectedPoints.size(); i++)
+        {
+            cv::Point2f temp = projectedPoints[i];
+            normalizedPoints.push_back(cv::Point2f(temp.x / width, temp.y / height));
+        }
+        (*data)["points2d"] = vectorPoint2f2json(normalizedPoints);
+    }
+
     cv::Mat R = cv::Mat::eye(3, 3, CV_32F);
     // Converts a rotation matrix to a rotation vector or vice versa.
     cv::Rodrigues(rvec, R);
@@ -154,22 +170,6 @@ void computeCamera(
     (*data)["tvec"] = cvMat2json(tvec);
     (*data)["aux"] = cvMat2json(R);
     (*data)["t"] = cvMat2json(T);
-
-    // Si hay puntos 3d que proyectar a 2d se hace
-    if (questionIn.size() > 0)
-    {
-        std::vector<cv::Point3f> question = Generate3DPoints(questionIn);
-        std::vector<cv::Point2f> projectedPoints;
-        std::vector<cv::Point2f> normalizedPoints;
-        cv::projectPoints(question, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
-        // Se normalizan los puntos 2d
-        for (int i = 0; i < projectedPoints.size(); i++)
-        {
-            cv::Point2f temp = projectedPoints[i];
-            normalizedPoints.push_back(cv::Point2f(temp.x / width, temp.y / height));
-        }
-        (*data)["points2d"] = vectorPoint2f2json(normalizedPoints);
-    }
 }
 
 std::vector<cv::Point2f> guessPoints(std::vector<Data3D> questionIn, std::vector<Data2D> ref2D, std::vector<Data3D> ref3D)

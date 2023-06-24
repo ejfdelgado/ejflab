@@ -518,10 +518,11 @@ export class ProjectionComponent
       if (!actual.v2 || !actual.v3) {
         continue;
       }
-      payload.v2.push([
+      const temporal = [
         actual.v2.x * boundsCamera.width,
         actual.v2.y * boundsCamera.height,
-      ]);
+      ];
+      payload.v2.push(temporal);
       payload.v3.push([actual.v3.x, actual.v3.y, actual.v3.z]);
     }
 

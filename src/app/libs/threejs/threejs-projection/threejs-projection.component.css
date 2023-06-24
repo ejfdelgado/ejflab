@@ -79,3 +79,15 @@
   height: 100%;
   background-color: green;
 }
+
+.videocanvas {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.canvas_heat_map {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
