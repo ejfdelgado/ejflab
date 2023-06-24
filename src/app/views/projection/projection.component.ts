@@ -332,7 +332,9 @@ export class ProjectionComponent
         const uid = llaves[i];
         const modelo = models[uid];
         if (modelo.objUrl) {
-          promesas.push(this.add3DObject(uid, modelo.objUrl, false));
+          promesas.push(
+            this.add3DObject(uid, modelo.objUrl, false, modelo.isVisible)
+          );
         }
       }
     }
@@ -381,7 +383,12 @@ export class ProjectionComponent
     threeComponent.scene?.removeAllMyObjects();
   }
 
-  async add3DObject(uid: string, url: string | null, recomputeVertex: boolean) {
+  async add3DObject(
+    uid: string,
+    url: string | null,
+    recomputeVertex: boolean,
+    isVisible: boolean = true
+  ) {
     const threeComponent = this.getThreeComponent();
     if (!threeComponent || url == null) {
       return;
@@ -389,7 +396,7 @@ export class ProjectionComponent
     // Load the url
     const object: any = await this.httpSrv.get(url, { isBlob: true });
     const nextUrl = URL.createObjectURL(object);
-    await threeComponent.scene?.loadObj(nextUrl, uid);
+    await threeComponent.scene?.loadObj(nextUrl, uid, undefined, isVisible);
     URL.revokeObjectURL(nextUrl);
     if (recomputeVertex) {
       this.recomputeVertex();

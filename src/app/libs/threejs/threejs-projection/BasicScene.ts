@@ -256,7 +256,8 @@ export class BasicScene extends THREE.Scene {
   async loadObj(
     path: string,
     uid: string,
-    materials?: MTLLoader.MaterialCreator
+    materials?: MTLLoader.MaterialCreator,
+    isVisible = true
   ) {
     return new Promise((resolve, reject) => {
       const loader = new OBJLoader();
@@ -267,6 +268,7 @@ export class BasicScene extends THREE.Scene {
         path,
         (object) => {
           object.name = uid;
+          object.visible = isVisible;
           this.addObjectLocal(object);
           resolve(object);
         },
@@ -305,7 +307,7 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
-  addCubeVertex(point: THREE.Vector3, name: string) {
+  addCubeVertex(point: THREE.Vector3, name: string, visible: boolean = true) {
     const key = [
       point.x.toFixed(this.PRECISION),
       point.y.toFixed(this.PRECISION),
@@ -326,7 +328,7 @@ export class BasicScene extends THREE.Scene {
       cube.name = generatedName;
       cube.position.set(point.x, point.y, point.z);
       this.pickableObjects.push(cube);
-      cube.visible = this.seeCalibPoints;
+      cube.visible = this.seeCalibPoints && visible !== false;
       this.add(cube);
       if (!(name in this.vertexRegistry)) {
         this.vertexRegistry[name] = {};
@@ -335,14 +337,14 @@ export class BasicScene extends THREE.Scene {
     }
   }
 
-  explodeMeshVertex(mesh: THREE.Mesh, name: string) {
+  explodeMeshVertex(mesh: THREE.Mesh, name: string, visible: boolean = true) {
     // Iterate vertex
     const point = new THREE.Vector3();
     const positionAttribute: any = mesh.geometry.getAttribute('position');
     for (let i = 0; i < positionAttribute.count; i++) {
       point.fromBufferAttribute(positionAttribute, i);
       mesh.localToWorld(point);
-      this.addCubeVertex(point, name);
+      this.addCubeVertex(point, name, visible);
     }
   }
 
@@ -386,7 +388,7 @@ export class BasicScene extends THREE.Scene {
         const llave = llaves[j];
         const vertice = this.getObjectByName(llave);
         if (vertice) {
-          vertice.visible = value;
+          vertice.visible = this.seeCalibPoints && value;
         }
       }
     }
@@ -418,7 +420,7 @@ export class BasicScene extends THREE.Scene {
         const child = object.children[i];
         if ((child as THREE.Mesh).isMesh) {
           const mesh = child as THREE.Mesh;
-          this.explodeMeshVertex(mesh, object.name);
+          this.explodeMeshVertex(mesh, object.name, object.visible);
         }
       }
     }
