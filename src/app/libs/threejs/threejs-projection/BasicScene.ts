@@ -258,7 +258,7 @@ export class BasicScene extends THREE.Scene {
     uid: string,
     materials?: MTLLoader.MaterialCreator,
     isVisible = true
-  ) {
+  ): Promise<THREE.Group> {
     return new Promise((resolve, reject) => {
       const loader = new OBJLoader();
       if (materials) {

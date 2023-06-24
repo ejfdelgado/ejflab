@@ -33,8 +33,10 @@ export class ThreejsProjectionComponent
   @ViewChild('video') videoRef: ElementRef;
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
+  sandInterval: NodeJS.Timer | null = null;
   sandRemapping: Array<Array<number>> | null = null;
   sandUid: string | null = null;
+  sandClone: THREE.Group | null = null;
   scene: BasicScene | null = null;
   bounds: DOMRect | null = null;
   DOT_OPTIONS: any = {
@@ -86,6 +88,11 @@ export class ThreejsProjectionComponent
       const sandData = this.mymodel.sand;
       // El obj
       const meshUrl2 = sandData.meshUrl2;
+
+      const scene = this.scene;
+      if (!scene) {
+        return;
+      }
       // Load the url
       if (this.sandUid == null) {
         if (typeof meshUrl2 == 'string') {
@@ -95,12 +102,20 @@ export class ThreejsProjectionComponent
           const nextUrl = URL.createObjectURL(object);
           this.sandUid = IdGen.num2ord(new Date().getTime());
           if (this.sandUid) {
-            this.scene?.loadObj(nextUrl, this.sandUid, undefined, true);
+            const promesa = scene.loadObj(
+              nextUrl,
+              this.sandUid,
+              undefined,
+              true
+            );
+            const objeto = await promesa;
+            // Lo clono y lo guardo
+            this.sandClone = objeto.clone(true);
           }
           URL.revokeObjectURL(nextUrl);
         }
       } else {
-        const objeto = this.scene?.getObjectByName(this.sandUid);
+        const objeto = scene.getObjectByName(this.sandUid);
         if (objeto) {
           objeto.visible = true;
         }
@@ -120,7 +135,12 @@ export class ThreejsProjectionComponent
         }
       }
       // Interval para leer el video y capturar los pixeles
+      const sandRefreshThis = this.sandRefresh.bind(this);
+      this.sandInterval = setInterval(sandRefreshThis, 1000);
     } else {
+      if (this.sandInterval != null) {
+        clearInterval(this.sandInterval);
+      }
       // detener la captura
       // esconder el objeto
       if (this.sandUid) {
@@ -134,6 +154,28 @@ export class ThreejsProjectionComponent
         videoEl.pause();
       }
     }
+  }
+
+  async sandRefresh() {
+    const scene = this.scene;
+    if (!scene || !this.sandUid) {
+      return;
+    }
+    // Itero todos los puntos y los desplazo
+    // El objeto 3d original
+    const original = this.sandClone;
+    // El objeto 3d a modificar
+    const actual = scene.getObjectByName(this.sandUid);
+    // La referencia del video
+    const videoEl = this.videoRef.nativeElement;
+    // La referencia del mapeo de pixeles
+    const sandRemapping = this.sandRemapping;
+    if (!original || !actual || !videoEl || !sandRemapping) {
+      return;
+    }
+
+    // Itero todos los vértices
+    
   }
 
   async useCamera(deviceId: string) {
