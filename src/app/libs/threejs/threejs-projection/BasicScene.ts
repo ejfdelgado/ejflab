@@ -366,6 +366,14 @@ export class BasicScene extends THREE.Scene {
     }
   }
 
+  setObjectVisibility(name: string, value: boolean) {
+    const existente = this.getObjectByName(name);
+    if (!existente) {
+      return;
+    }
+    existente.visible = value;
+  }
+
   setMaterial(object: THREE.Object3D, material: THREE.MeshBasicMaterial) {
     for (let i = 0; i < object.children.length; i++) {
       const child = object.children[i];
@@ -375,7 +383,7 @@ export class BasicScene extends THREE.Scene {
       }
     }
   }
-  recomputeVertex() {
+  recomputeVertex(blackList: Array<string> = []) {
     // Quitar todos los pickableObjects
     for (let i = 0; i < this.pickableObjects.length; i++) {
       const actual = this.pickableObjects[i];
@@ -384,6 +392,10 @@ export class BasicScene extends THREE.Scene {
 
     for (let j = 0; j < this.registry.length; j++) {
       const object = this.registry[j];
+      const isInBlackList = blackList.indexOf(object.name) >= 0;
+      if (isInBlackList) {
+        continue;
+      }
       for (let i = 0; i < object.children.length; i++) {
         const child = object.children[i];
         if ((child as THREE.Mesh).isMesh) {

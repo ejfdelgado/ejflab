@@ -75,7 +75,7 @@ export class ThreejsCameraComponent implements OnInit {
     if (!threeComponent) {
       return;
     }
-    threeComponent.scene?.recomputeVertex();
+    threeComponent.scene?.recomputeVertex(['sand2']);
   }
 
   async add3DObject(uid: string, url: string | null, recomputeVertex: boolean) {
@@ -101,18 +101,33 @@ export class ThreejsCameraComponent implements OnInit {
     }
   }
 
-  async refresh3dModels(refresh = true) {
+  async refresh3dModels(refresh = false) {
     // Itero los modelos y los cargo...
     if (refresh) {
       this.removeAllMyObjects();
     }
     const promesas: Array<any> = [];
     const sand = this.parent?.mymodel?.sand;
-    if (sand && sand.meshUrl) {
-      promesas.push(this.add3DObject('unique_mesh', sand.meshUrl, false));
+    if (sand) {
+      if (sand.meshUrl) {
+        promesas.push(this.add3DObject('sand', sand.meshUrl, false));
+      }
+      if (sand.meshUrl2) {
+        promesas.push(this.add3DObject('sand2', sand.meshUrl2, false));
+      }
     }
     await Promise.all(promesas);
+    this.setObjectVisibility('sand', true);
+    this.setObjectVisibility('sand2', false);
     this.recomputeVertex();
+  }
+
+  setObjectVisibility(name: string, value: boolean) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.setObjectVisibility(name, value);
   }
 
   resizeScene() {

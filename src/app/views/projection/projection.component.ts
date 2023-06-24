@@ -282,6 +282,9 @@ export class ProjectionComponent
   }
 
   async refresh3dModels() {
+    if (this.localModel.currentEnvironment !== '3d') {
+      return;
+    }
     // Itero los modelos y los cargo...
     this.removeAllMyObjects();
     const models = this.mymodel.models;
