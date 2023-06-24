@@ -186,6 +186,15 @@ export class ProjectionComponent
     this.resizeSceneLocalThis = this.resizeSceneLocal.bind(this);
   }
 
+  async askcompute3d2DMaskEvent() {
+    // Ask the threejs camera...
+    const camera = this.getCameraComponent();
+    if (!camera) {
+      return;
+    }
+    await camera.compute3d2DMask();
+  }
+
   getSelf() {
     return this;
   }

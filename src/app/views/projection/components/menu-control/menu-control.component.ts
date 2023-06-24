@@ -71,6 +71,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() changedViewEvent = new EventEmitter<ViewModelData>();
   @Output() askEraseAllPointsEvent = new EventEmitter<void>();
   @Output() askPlayVideo = new EventEmitter<string>();
+  @Output() askcompute3d2DMaskEvent = new EventEmitter<void>();
 
   @ViewChildren(VideoCanvasComponent)
   videoListRef: QueryList<VideoCanvasComponent>;
@@ -129,17 +130,18 @@ export class MenuControlComponent implements OnInit, OnChanges {
     this.computeCameraOptions();
   }
 
-  async compute3d2DMask() {
-    // Iterar todos los puntos 3d del modelo detallado
-    // Preparar la invocación al backend
-    // Invocar
-    // Recibir los puntos 2d
-    // Guardar el mapeo
+  async save3d2DMask() {
     const mapping = this.getMap3d2dRefComponent();
     if (mapping == null) {
       return;
     }
+    // Guardar el mapeo
     await mapping.setValueAndSave(new Date() + '');
+  }
+
+  async compute3d2DMask() {
+    // ask the parent
+    this.askcompute3d2DMaskEvent.emit();
   }
 
   saveMap3d2d(dato: string | null) {

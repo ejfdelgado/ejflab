@@ -122,12 +122,24 @@ export class ThreejsCameraComponent implements OnInit {
     this.recomputeVertex();
   }
 
+  async compute3d2DMask() {
+    console.log(`compute3d2DMask!`);
+  }
+
   setObjectVisibility(name: string, value: boolean) {
     const threeComponent = this.getThreeComponent();
     if (!threeComponent) {
       return;
     }
     threeComponent.scene?.setObjectVisibility(name, value);
+  }
+
+  getObjectByName(name: string, value: boolean) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent) {
+      return;
+    }
+    threeComponent.scene?.getObjectByName(name);
   }
 
   resizeScene() {
