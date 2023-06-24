@@ -443,10 +443,22 @@ export class BasicScene extends THREE.Scene {
   }
 
   setCalibPointsVisibility(visible: boolean) {
-    this.pickableObjects.forEach((o: THREE.Mesh, i) => {
-      const current = this.pickableObjects[i];
-      current.visible = visible;
-    });
+    // Debo iterar es:
+    const llavesObjetos = Object.keys(this.vertexRegistry);
+    for (let i = 0; i < llavesObjetos.length; i++) {
+      const llaveObjeto = llavesObjetos[i];
+      const objeto = this.getObjectByName(llaveObjeto);
+      const resultado = visible && objeto?.visible !== false;
+      const vertexMap = this.vertexRegistry[llaveObjeto];
+      const vertexKeys = Object.keys(vertexMap);
+      for (let j = 0; j < vertexKeys.length; j++) {
+        const vertexKey = vertexKeys[j];
+        const vertex = this.getObjectByName(vertexKey);
+        if (vertex) {
+          vertex.visible = resultado;
+        }
+      }
+    }
   }
 
   setOrbitControls(enable: boolean) {
