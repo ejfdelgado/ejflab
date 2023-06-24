@@ -107,6 +107,11 @@
                 <label class="my_label">Nombre:</label>
                 <input class="my_input" type="text" [(ngModel)]="model.value.name"
                     (ngModelChange)="saveEvent.emit();" />
+                <div class="label_checkbox">
+                    <label class="my_label">Visible:</label>
+                    <input type="checkbox" [(ngModel)]="model.value.isVisible"
+                        (ngModelChange)="adjustVisibility(model.key, model.value); saveEvent.emit();" />
+                </div>
                 <label class="my_label">Inicia en (segundos):</label>
                 <input class="my_input" type="number" min="0" [(ngModel)]="model.value.startTime"
                     (ngModelChange)="changedFovEvent.emit($event); saveEvent.emit();" />
@@ -119,8 +124,10 @@
                 <app-blobeditor [options]="blobOptionsPublic" [subFolder]="'models/'+model.key+'/video'"
                     [url]="model.value.videoUrl" (urlChange)="model.value.videoUrl=$event; saveEvent.emit();">
                 </app-blobeditor>
-                <label class="my_label">Bucle infinito:</label>
-                <input type="checkbox" [(ngModel)]="model.value.useLoop" (ngModelChange)="saveEvent.emit();" />
+                <div class="label_checkbox">
+                    <label class="my_label">Bucle infinito:</label>
+                    <input type="checkbox" [(ngModel)]="model.value.useLoop" (ngModelChange)="saveEvent.emit();" />
+                </div>
                 <button class="my_button_with_text full_width margin_y_5" (click)="delete3DModel(model.key)"
                     mat-menu-item>
                     <mat-icon>delete</mat-icon>
@@ -132,8 +139,10 @@
 </div>
 <div class="tab_view" *ngIf="localModel.currentTab == 'play'">
     <div class="my_panel">
-        <label class="my_label">Precargar videos:</label>
-        <input type="checkbox" [(ngModel)]="localModel.useVideo" />
+        <div class="label_checkbox">
+            <label class="my_label">Precargar videos:</label>
+            <input type="checkbox" [(ngModel)]="localModel.useVideo" />
+        </div>
         <button *ngIf="mymodel.globalState?.playingState === 'stoped'" class="my_button_with_text full_width margin_y_5"
             (click)="prepareToPlay()" mat-menu-item>
             <mat-icon>play_arrow</mat-icon>
@@ -175,8 +184,9 @@
             <mat-icon>play_arrow</mat-icon>
             <span>Calcular relación de vértices 3d - 2d</span>
         </button>
-        <app-txtfileeditor #map3d2d_ref *ngIf="mymodel.sand.cameraId != null" [options]="textOptions" [fileName]="'map3d2d.txt'"
-            [url]="mymodel.sand.map3d2dUrl" (urlChange)="saveMap3d2d($event); saveEvent.emit();">
+        <app-txtfileeditor #map3d2d_ref *ngIf="mymodel.sand.cameraId != null" [options]="textOptions"
+            [fileName]="'map3d2d.txt'" [url]="mymodel.sand.map3d2dUrl"
+            (urlChange)="saveMap3d2d($event); saveEvent.emit();">
         </app-txtfileeditor>
     </div>
 </div>

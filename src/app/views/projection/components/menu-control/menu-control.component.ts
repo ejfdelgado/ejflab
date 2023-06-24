@@ -25,6 +25,7 @@ import {
   GlobalModelData,
   LocalModelData,
   Model3DData,
+  Model3DDataKey,
   TheStateViewData,
   ViewModelData,
 } from '../../projection.component';
@@ -61,6 +62,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     url: string | null;
   }>();
   @Output() remove3DModel = new EventEmitter<string>();
+  @Output() adjustVisibilityEvent = new EventEmitter<Model3DDataKey>();
   @Output() imageOut = new EventEmitter<VideoCanvasEventData>();
   @Output() fullScreenEvent = new EventEmitter<boolean>();
   @Output() calibrateEvent = new EventEmitter<void>();
@@ -316,6 +318,15 @@ export class MenuControlComponent implements OnInit, OnChanges {
     }
   }
 
+  adjustVisibility(key: string, model: Model3DData) {
+    const name = model.name;
+    console.log(model.isVisible);
+    this.adjustVisibilityEvent.emit({
+      model,
+      key,
+    });
+  }
+
   async add3DModel() {
     const id = await IdGen.nuevo();
     if (id == null) {
@@ -327,6 +338,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     this.mymodel.models[id] = {
       name: `Model ${id}`,
       startTime: 0,
+      isVisible: true,
       texture: {
         width: 192,
         height: 108,

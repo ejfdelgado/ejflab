@@ -38,8 +38,14 @@ export interface Model3DData {
   objUrl?: string;
   videoUrl?: string;
   useLoop?: boolean;
+  isVisible?: boolean;
   startTime: number;
   texture: VideoCanvasOptions;
+}
+
+export interface Model3DDataKey {
+  model: Model3DData;
+  key: string;
 }
 
 export interface ViewModelData {
@@ -140,12 +146,12 @@ export class ProjectionComponent
     },
   };
   public localModel: LocalModelData = {
-    currentTab: 'sand', //play|sand
+    currentTab: 'play', //play|sand
     currentViewName: null,
     currentView: null,
     useVideo: false,
     timeSeconds: 0,
-    currentEnvironment: 'video', //3d|video
+    currentEnvironment: '3d', //3d|video
   };
 
   constructor(
@@ -298,6 +304,19 @@ export class ProjectionComponent
     this.completeDefaults(this.mymodel);
     super.onTupleReadDone();
     await this.refresh3dModels();
+  }
+
+  adjustVisibilityEvent(event: Model3DDataKey) {
+    const component = this.getThreeComponent();
+    if (!component) {
+      return;
+    }
+    const model = event.model;
+    const objeto = component.scene?.getObjectByName(event.key);
+    if (!objeto) {
+      return;
+    }
+    objeto.visible = model.isVisible !== false;
   }
 
   async refresh3dModels() {

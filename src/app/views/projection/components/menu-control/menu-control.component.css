@@ -182,3 +182,16 @@ button {
   text-align: center;
   margin: 10px;
 }
+
+.label_checkbox {
+  display: flex;
+  flex-direction: row;
+}
+
+.label_checkbox input {
+  width: 50px;
+}
+
+.label_checkbox label {
+  flex: 1;
+}
