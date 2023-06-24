@@ -29,11 +29,28 @@ std::vector<Data2D> json2Data2DVector(json *data);
 std::vector<Data3D> json2Data3DVector(json *data);
 
 json cvMat2json(cv::Mat mat);
+json vectorPoint2f2json(std::vector<cv::Point2f> dato);
 
 std::vector<cv::Point2f> Generate2DPoints(std::vector<Data2D>);
 std::vector<cv::Point3f> Generate3DPoints(std::vector<Data3D>);
-void computeCamera(json *data, std::vector<Data2D>, std::vector<Data3D>);
+void computeCamera(
+    json *data,
+    std::vector<Data2D>,
+    std::vector<Data3D>,
+    std::vector<Data3D>);
 std::vector<cv::Point2f> guessPoints(std::vector<Data3D>, std::vector<Data2D>, std::vector<Data3D>);
+
+json vectorPoint2f2json(std::vector<cv::Point2f> dato)
+{
+    json respuesta;
+    for (int i = 0; i < dato.size(); i++)
+    {
+        cv::Point2f temp = dato[i];
+        respuesta.push_back(temp.x);
+        respuesta.push_back(temp.y);
+    }
+    return respuesta;
+}
 
 json cvMat2json(cv::Mat mat)
 {
@@ -78,7 +95,12 @@ std::vector<Data3D> json2Data3DVector(json *v2)
     return ref2D;
 }
 
-void computeCamera(json *data, std::vector<Data2D> ref2D, std::vector<Data3D> ref3D, std::vector<Data2D> size, std::vector<Data2D> focal)
+void computeCamera(
+    json *data, std::vector<Data2D> ref2D,
+    std::vector<Data3D> ref3D,
+    std::vector<Data2D> size,
+    std::vector<Data2D> focal,
+    std::vector<Data3D> questionIn)
 {
     double width = size[0].x;
     double height = size[0].y;
@@ -130,6 +152,22 @@ void computeCamera(json *data, std::vector<Data2D> ref2D, std::vector<Data3D> re
     (*data)["tvec"] = cvMat2json(tvec);
     (*data)["aux"] = cvMat2json(R);
     (*data)["t"] = cvMat2json(T);
+
+    // Si hay puntos 3d que proyectar a 2d se hace
+    if (questionIn.size() > 0)
+    {
+        std::vector<cv::Point3f> question = Generate3DPoints(questionIn);
+        std::vector<cv::Point2f> projectedPoints;
+        cv::projectPoints(question, rvec, tvec, cameraMatrix, distCoeffs, projectedPoints);
+        // Se normalizan los puntos 2d
+        for (int i = 0; i < projectedPoints.size(); i++)
+        {
+            cv::Point2f temp = projectedPoints[i];
+            temp.x = temp.x / width;
+            temp.y = temp.y / height;
+        }
+        (*data)["computed"] = vectorPoint2f2json(projectedPoints);
+    }
 }
 
 std::vector<cv::Point2f> guessPoints(std::vector<Data3D> questionIn, std::vector<Data2D> ref2D, std::vector<Data3D> ref3D)
