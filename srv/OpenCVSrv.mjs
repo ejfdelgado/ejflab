@@ -5,12 +5,17 @@ export class OpenCVSrv {
     static async solvePnPLocal(payload) {
         const cmd = "solvePnP";
         const points3d = payload.points3d;
-        const folder = new ExecFolder();
-        payload.points3dPath = await folder.writeTextFile("points3d.json", JSON.stringify(points3d));
-        delete payload.points3d;
+        let folder = null;
+        if (points3d) {
+            folder = new ExecFolder();
+            payload.points3dPath = await folder.writeTextFile("points3d.json", JSON.stringify(points3d));
+            delete payload.points3d;
+        }
         const payloadTxt = JSON.stringify(payload);
         const dato = await MyShell.runLocal(cmd, payloadTxt);
-        folder.destroyFolder();
+        if (folder) {
+            folder.destroyFolder();
+        }
         return dato;
     }
     static async solvePnP(req, res, next) {

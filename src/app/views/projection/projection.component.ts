@@ -194,7 +194,14 @@ export class ProjectionComponent
     }
     const points3d = camera.get3dPointsSand2();
     if (points3d.length > 0) {
-      this.calibCamera(points3d);
+      const response = await this.calibCamera(points3d);
+      if (response != null) {
+        const points2d = response.points2d;
+        const component = this.getMenuControlComponent();
+        if (component) {
+          component.save3d2DMask(JSON.stringify(points2d));
+        }
+      }
     }
   }
 
@@ -449,16 +456,18 @@ export class ProjectionComponent
     return true;
   }
 
-  async calibCamera(points3d: Array<Array<number>> = []) {
+  async calibCamera(
+    points3d: Array<Array<number>> = []
+  ): Promise<null | SolvePnPData> {
     const threeComponent = this.getThreeComponent();
     if (!this.localModel.currentView || !threeComponent) {
-      return;
+      return null;
     }
     const bounds = threeComponent.bounds;
     const scene = threeComponent.scene;
     const camera = scene?.camera;
     if (!bounds || !scene || !camera) {
-      return;
+      return null;
     }
     const pairs = this.localModel.currentView.pairs;
     const keys = Object.keys(pairs);
@@ -500,6 +509,7 @@ export class ProjectionComponent
         threeComponent.scene.calibCamera(response.t);
       }
     }
+    return response;
   }
 
   override ngOnDestroy() {

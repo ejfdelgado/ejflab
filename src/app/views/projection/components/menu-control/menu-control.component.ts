@@ -130,13 +130,13 @@ export class MenuControlComponent implements OnInit, OnChanges {
     this.computeCameraOptions();
   }
 
-  async save3d2DMask() {
+  async save3d2DMask(myText: string) {
     const mapping = this.getMap3d2dRefComponent();
     if (mapping == null) {
       return;
     }
     // Guardar el mapeo
-    await mapping.setValueAndSave(new Date() + '');
+    await mapping.setValueAndSave(myText);
   }
 
   async compute3d2DMask() {
