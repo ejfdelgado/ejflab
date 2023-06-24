@@ -45,9 +45,11 @@ json vectorPoint2f2json(std::vector<cv::Point2f> dato)
     json respuesta;
     for (int i = 0; i < dato.size(); i++)
     {
+        json fila;
         cv::Point2f temp = dato[i];
-        respuesta.push_back(temp.x);
-        respuesta.push_back(temp.y);
+        fila.push_back(temp.x);
+        fila.push_back(temp.y);
+        respuesta.push_back(fila);
     }
     return respuesta;
 }
@@ -166,7 +168,7 @@ void computeCamera(
             temp.x = temp.x / width;
             temp.y = temp.y / height;
         }
-        (*data)["computed"] = vectorPoint2f2json(projectedPoints);
+        (*data)["points2d"] = vectorPoint2f2json(projectedPoints);
     }
 }
 

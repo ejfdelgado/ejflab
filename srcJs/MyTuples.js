@@ -169,7 +169,7 @@ class MyTuples {
                     // Then try process
                     const processAll = async () => {
                         if (pending.length > 0) {
-                            const ultimo = JSON.parse(JSON.stringify(pending.splice(pending.length - 1, 1)[0]));
+                            const ultimo = JSON.parse(JSON.stringify(pending.splice(0, 1)[0]));
                             //Se deben partir los cambios en grupos de MAX_SEND_SIZE
                             const crearBatch = () => {
                                 const batch = {

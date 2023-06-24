@@ -83,19 +83,29 @@ export class ThreejsCameraComponent implements OnInit {
     if (!threeComponent || url == null) {
       return;
     }
-    // Load the url
-    const object: any = await this.httpSrv.get(url, { isBlob: true });
-    const nextUrl = URL.createObjectURL(object);
-    await threeComponent.scene?.loadObj(nextUrl, uid);
-    URL.revokeObjectURL(nextUrl);
-    if (recomputeVertex) {
-      this.recomputeVertex();
+    const scene = threeComponent.scene;
+    if (!scene) {
+      return;
+    }
+    //check if it is already added
+    const existente = scene.getObjectByName(uid);
+    if (!existente) {
+      // Load the url
+      const object: any = await this.httpSrv.get(url, { isBlob: true });
+      const nextUrl = URL.createObjectURL(object);
+      await scene.loadObj(nextUrl, uid);
+      URL.revokeObjectURL(nextUrl);
+      if (recomputeVertex) {
+        this.recomputeVertex();
+      }
     }
   }
 
-  async refresh3dModels() {
+  async refresh3dModels(refresh = true) {
     // Itero los modelos y los cargo...
-    this.removeAllMyObjects();
+    if (refresh) {
+      this.removeAllMyObjects();
+    }
     const promesas: Array<any> = [];
     const sand = this.parent?.mymodel?.sand;
     if (sand && sand.meshUrl) {

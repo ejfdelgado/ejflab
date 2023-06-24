@@ -11,6 +11,8 @@ export interface SolvePnPData {
   rvec?: Array<Array<number>>;
   tvec?: Array<Array<number>>;
   t?: Array<Array<number>>;
+  points3d?: Array<Array<number>>;
+  points2d?: Array<Array<number>>;
 }
 
 @Injectable({

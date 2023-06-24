@@ -18,7 +18,11 @@ int main(int argc, char *argv[])
         std::vector<Data2D> focal = json2Data2DVector(&(data["focal"]));
         std::vector<Data2D> ref2D = json2Data2DVector(&(data["v2"]));
         std::vector<Data3D> ref3D = json2Data3DVector(&(data["v3"]));
-        std::vector<Data3D> points3d = json2Data3DVector(&(data["points3d"]));
+        std::vector<Data3D> points3d;
+        if (data.contains("points3d"))
+        {
+            points3d = json2Data3DVector(&(data["points3d"]));
+        }
 
         computeCamera(&data, ref2D, ref3D, size, focal, points3d);
     }

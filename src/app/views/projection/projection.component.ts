@@ -455,7 +455,6 @@ export class ProjectionComponent
       width: camera.getFilmWidth(),
       height: camera.getFilmHeight(),
     };
-    //camera.setFocalLength(23);
     const payload: SolvePnPData = {
       v2: [],
       v3: [],
@@ -474,7 +473,9 @@ export class ProjectionComponent
       ]);
       payload.v3.push([actual.v3.x, actual.v3.y, actual.v3.z]);
     }
-    //console.log(JSON.stringify(payload, null, 4));
+
+    //Se agregan los puntos en 3d que se desean proyectar
+
     const response = await this.opencvSrv.solvePnP(payload);
     if (response && response.aux && response.tvec && response.t) {
       if (threeComponent.scene) {
