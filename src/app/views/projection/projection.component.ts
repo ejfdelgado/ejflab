@@ -192,7 +192,10 @@ export class ProjectionComponent
     if (!camera) {
       return;
     }
-    await camera.compute3d2DMask();
+    const points3d = camera.get3dPointsSand2();
+    if (points3d.length > 0) {
+      this.calibCamera(points3d);
+    }
   }
 
   getSelf() {
@@ -446,7 +449,7 @@ export class ProjectionComponent
     return true;
   }
 
-  async calibCamera() {
+  async calibCamera(points3d: Array<Array<number>> = []) {
     const threeComponent = this.getThreeComponent();
     if (!this.localModel.currentView || !threeComponent) {
       return;
@@ -487,6 +490,9 @@ export class ProjectionComponent
     }
 
     //Se agregan los puntos en 3d que se desean proyectar
+    if (points3d.length > 0) {
+      payload.points3d = points3d;
+    }
 
     const response = await this.opencvSrv.solvePnP(payload);
     if (response && response.aux && response.tvec && response.t) {

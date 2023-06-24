@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import {
   ChangeDetectorRef,
   Component,
@@ -122,8 +123,29 @@ export class ThreejsCameraComponent implements OnInit {
     this.recomputeVertex();
   }
 
-  async compute3d2DMask() {
-    console.log(`compute3d2DMask!`);
+  get3dPointsSand2(): Array<Array<number>> {
+    // Obtener el objeto
+    const objeto = this.getObjectByName('sand2');
+    if (!objeto) {
+      return [];
+    }
+    // Iterar los vertices
+    const points3d = [];
+    for (let i = 0; i < objeto.children.length; i++) {
+      const child = objeto.children[i];
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        const point = new THREE.Vector3();
+        const positionAttribute: any = mesh.geometry.getAttribute('position');
+        for (let i = 0; i < positionAttribute.count; i++) {
+          point.fromBufferAttribute(positionAttribute, i);
+          mesh.localToWorld(point);
+          // Empacarlos en un arreglo de arreglos
+          points3d.push([point.x, point.y, point.z]);
+        }
+      }
+    }
+    return points3d;
   }
 
   setObjectVisibility(name: string, value: boolean) {
@@ -134,12 +156,12 @@ export class ThreejsCameraComponent implements OnInit {
     threeComponent.scene?.setObjectVisibility(name, value);
   }
 
-  getObjectByName(name: string, value: boolean) {
+  getObjectByName(name: string) {
     const threeComponent = this.getThreeComponent();
     if (!threeComponent) {
       return;
     }
-    threeComponent.scene?.getObjectByName(name);
+    return threeComponent.scene?.getObjectByName(name);
   }
 
   resizeScene() {

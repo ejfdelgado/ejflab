@@ -3,6 +3,43 @@ import fs from "fs";
 import { spawn } from "child_process";
 import { General } from "./common/General.mjs";
 import { InesperadoException } from "./MyError.mjs";
+import { IdGen } from "../srcJs/IdGen.js";
+
+export class ExecFolder {
+    constructor() {
+        // Debe crear una carpeta aleatoria
+        this.folderName = IdGen.num2ord(new Date().getTime());
+        this.folderPath = `/tmp/ejflabs/${this.folderName}/`;
+        fs.mkdirSync(this.folderPath, { recursive: true });
+    }
+    destroyFolder() {
+        fs.rmSync(this.folderPath, { recursive: true, force: true });
+    }
+    writeTextFile(fileName, content) {
+        const folderPath = this.folderPath;
+        return new Promise((resolve, reject) => {
+            try {
+                const path = `${folderPath}${fileName}`;
+                fs.writeFileSync(path, content);
+                resolve();
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+    readTextFile(fileName) {
+        const folderPath = this.folderPath;
+        return new Promise((resolve, reject) => {
+            try {
+                const ruta = `${folderPath}${fileName}`;
+                const data = fs.readFileSync(ruta, 'utf8');
+                resolve(data);
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
+}
 
 export class MyShell {
 

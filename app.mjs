@@ -35,7 +35,7 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
-app.post('/srv/opencv/solvepnp', [commonHeaders, express.json(), handleErrorsDecorator(OpenCVSrv.solvePnP)]);
+app.post('/srv/opencv/solvepnp', [commonHeaders, express.json({limit: '50mb'}), handleErrorsDecorator(OpenCVSrv.solvePnP)]);
 app.get('/srv/pdf/render', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyPdf.render)]);
 app.get('/srv/shell', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyShell.run)]);
 
