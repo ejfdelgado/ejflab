@@ -25,7 +25,7 @@ export interface CalibData {
 }
 
 const SUMSAMPLIG = 0.5;
-const VOLUME = 1;
+const VOLUME = 2;
 const REFRESH_INTERVAL = 500;
 // 1. Remapeo de valores del video hacia un valor min y max...
 // 2. Coloreado de cada vértice.
@@ -103,9 +103,9 @@ export class ThreejsProjectionComponent
     const c = this.canvasHeatMapRef.nativeElement;
     const ctx = c.getContext('2d');
     const gradient = ctx.createLinearGradient(0, c.height, 0, 0);
-    gradient.addColorStop(0, 'blue');
+    gradient.addColorStop(0, '#0000FF');
     //gradient.addColorStop(0.5, '#fcd046');
-    gradient.addColorStop(1, 'green');
+    gradient.addColorStop(1, '#00FF00');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, c.width, c.height);
     const colorTexture = new THREE.CanvasTexture(c);
@@ -289,15 +289,20 @@ export class ThreejsProjectionComponent
           const g = data[1];
           const b = data[2];
 
-          let { h } = MyColor.rgb2hsv(r, g, b);
-          h = h / 360;
+          const isUndefined = r > 250;
 
-          //const x = verticeReferencia[0];
-          const y = verticeReferencia[1];
-          //const z = verticeReferencia[2];
-          const offset = h * VOLUME;
-          // Get pixel point
-          positionAttribute.setY(j, y + offset);
+          if (isUndefined) {
+          } else {
+            let { h } = MyColor.rgb2hsv(r, g, b);
+            h = h / 360;
+
+            //const x = verticeReferencia[0];
+            const y = verticeReferencia[1];
+            //const z = verticeReferencia[2];
+            const offset = h * VOLUME;
+            // Get pixel point
+            positionAttribute.setY(j, y + offset);
+          }
           k++;
         }
         positionAttribute.needsUpdate = true;
