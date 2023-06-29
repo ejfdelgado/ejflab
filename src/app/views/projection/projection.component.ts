@@ -52,6 +52,7 @@ export interface ViewModelData {
   name: string;
   fov: number;
   pairs: CalibData;
+  viewOffset: number;
 }
 
 export interface GlobalModelData {
@@ -239,6 +240,14 @@ export class ProjectionComponent
       return;
     }
     threeComponent.scene.setFov(dato);
+  }
+
+  changedViewOffset(dato: number) {
+    const threeComponent = this.getThreeComponent();
+    if (!threeComponent || !threeComponent.scene) {
+      return;
+    }
+    threeComponent.scene.setViewOffset(dato);
   }
 
   async saveAll() {
@@ -514,18 +523,6 @@ export class ProjectionComponent
       (180 / Math.PI) * Math.atan2(boundsCamera.width, 2 * focalLengthCamera);
 
     console.log(`fovComputed = ${fovComputed} actualFov=${actualFov}`);
-
-    //https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.setViewOffset
-    const halfHeight = camera.getFilmHeight();
-    const offsetY = halfHeight * 1.1;
-    console.log(`halfHeight = ${halfHeight} offsetY = ${offsetY}`);
-    const fullHeight = 2 * (halfHeight + offsetY);
-    const fullWidth = camera.getFilmWidth();
-    const subcamera = {
-      offsetX: 0,
-      offsetY: 0,
-    };
-
 
     const payload: SolvePnPData = {
       v2: [],

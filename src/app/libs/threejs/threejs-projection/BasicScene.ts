@@ -32,6 +32,7 @@ export class BasicScene extends THREE.Scene {
   lightCount: number = 6;
   lightDistance: number = 3;
   bounds: DOMRect;
+  viewOffset: number = 0;
   mouse = new THREE.Vector2();
   raycaster = new THREE.Raycaster();
   pickableObjects: THREE.Mesh[] = [];
@@ -117,6 +118,41 @@ export class BasicScene extends THREE.Scene {
       return;
     }
     this.camera.fov = fov;
+    this.camera.updateProjectionMatrix();
+  }
+
+  // https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.setViewOffset
+  setViewOffset(offset: number | null) {
+    if (!this.camera || !this.renderer) {
+      return;
+    }
+    if (offset == null) {
+      offset = this.viewOffset;
+    } else {
+      if (isNaN(offset)) {
+        offset = 0;
+      }
+      this.viewOffset = offset;
+    }
+    this.camera.clearViewOffset();
+    this.setBounds(this.bounds);
+    if (offset > 0) {
+      const physicalWidth = this.camera.getFilmWidth();
+      const physicalHeight = this.camera.getFilmHeight();
+      const physicalOffset = offset * physicalHeight;
+      const zoom = this.camera.zoom;
+      console.log(
+        `physicalWidth (*) = ${physicalWidth} physicalHeight (*) ${physicalHeight} zoom = ${zoom} physicalOffset = ${physicalOffset}`
+      );
+      this.camera.setViewOffset(
+        physicalWidth,
+        physicalHeight + physicalOffset,
+        0,
+        0,
+        physicalWidth,
+        physicalHeight
+      );
+    }
     this.camera.updateProjectionMatrix();
   }
 

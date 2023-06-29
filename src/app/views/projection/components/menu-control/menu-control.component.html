@@ -58,6 +58,10 @@
         <label class="my_label">Field of View (grados °):</label>
         <input class="my_input" type="number" min="5" max="100" [(ngModel)]="localModel.currentView.fov"
             (ngModelChange)="changedFovEvent.emit($event); saveEvent.emit();" />
+        <label class="my_label">View Offset (%):</label>
+        <input class="my_input" type="number" min="0" max="1.5" step="0.01"
+            [(ngModel)]="localModel.currentView.viewOffset"
+            (ngModelChange)="changedViewOffsetEvent.emit($event); saveEvent.emit();" />
         <button class="my_button_with_text margin_y_5" (click)="calibrateView()" mat-menu-item>
             <mat-icon>view_in_ar</mat-icon>
             <span>Calibrar</span>
@@ -114,7 +118,7 @@
                 </div>
                 <label class="my_label">Inicia en (segundos):</label>
                 <input class="my_input" type="number" min="0" [(ngModel)]="model.value.startTime"
-                    (ngModelChange)="changedFovEvent.emit($event); saveEvent.emit();" />
+                    (ngModelChange)="saveEvent.emit();" />
                 <label class="my_label">Archivo *.obj:</label>
                 <app-blobeditor [options]="blobOptions" [subFolder]="'models/'+model.key+'/mesh'"
                     [url]="model.value.objUrl"

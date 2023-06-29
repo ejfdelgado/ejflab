@@ -70,6 +70,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
   @Output() askErasePointEvent = new EventEmitter<string>();
   @Output() askLocatePointEvent = new EventEmitter<string>();
   @Output() changedFovEvent = new EventEmitter<number>();
+  @Output() changedViewOffsetEvent = new EventEmitter<number>();
   @Output() changedViewEvent = new EventEmitter<ViewModelData>();
   @Output() askEraseAllPointsEvent = new EventEmitter<void>();
   @Output() askPlayVideo = new EventEmitter<string>();
@@ -376,6 +377,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     this.localModel.currentView = this.mymodel.calib[viewId];
     this.changedFovEvent.emit(this.localModel.currentView.fov);
     this.changedViewEvent.emit(this.localModel.currentView);
+    this.changedViewOffsetEvent.emit(this.localModel.currentView.viewOffset);
   }
 
   async removeView(viewId: string) {
@@ -403,6 +405,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
       name: `Vista ${count}`,
       pairs: {},
       fov: 35,
+      viewOffset: 0,
     };
     if (this.localModel.currentViewName == null) {
       this.localModel.currentViewName = id;

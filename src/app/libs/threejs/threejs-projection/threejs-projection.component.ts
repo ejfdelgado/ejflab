@@ -360,6 +360,9 @@ export class ThreejsProjectionComponent
         this.bounds.width = event.width;
       }
       this.scene.setBounds(this.bounds);
+      if (this.scene.camera) {
+        this.scene.setViewOffset(null);
+      }
     }
   }
 
