@@ -502,10 +502,31 @@ export class ProjectionComponent
     //Returns the focal length of the current .fov in respect to .filmGauge.
     const focalLengthCamera = camera.getFocalLength();
 
+    // 1. Mirar qué relación hay entre esto y el ancho alto en pixeles...
+    // 2. Mirar si se puede reemplazar
     const boundsCamera = {
       width: camera.getFilmWidth(),
       height: camera.getFilmHeight(),
     };
+
+    const actualFov = camera.fov;
+    const fovComputed =
+      (180 / Math.PI) * Math.atan2(boundsCamera.width, 2 * focalLengthCamera);
+
+    console.log(`fovComputed = ${fovComputed} actualFov=${actualFov}`);
+
+    //https://threejs.org/docs/#api/en/cameras/PerspectiveCamera.setViewOffset
+    const halfHeight = camera.getFilmHeight();
+    const offsetY = halfHeight * 1.1;
+    console.log(`halfHeight = ${halfHeight} offsetY = ${offsetY}`);
+    const fullHeight = 2 * (halfHeight + offsetY);
+    const fullWidth = camera.getFilmWidth();
+    const subcamera = {
+      offsetX: 0,
+      offsetY: 0,
+    };
+
+
     const payload: SolvePnPData = {
       v2: [],
       v3: [],
