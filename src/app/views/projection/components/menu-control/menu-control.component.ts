@@ -81,6 +81,8 @@ export class MenuControlComponent implements OnInit, OnChanges {
   localTimeout: any = null;
   localInterval: any = null;
   localFormatTime: string = '';
+  helpFOVVisible: boolean = false;
+  helpViewOffsetVisible: boolean = false;
 
   videoOptions: Array<TabElementData> = [];
 
@@ -371,6 +373,42 @@ export class MenuControlComponent implements OnInit, OnChanges {
     delete this.mymodel.models[key];
     this.saveEvent.emit();
     this.remove3DModel.emit(key);
+  }
+
+  calcularFieldOfView() {
+    const currentView = this.localModel.currentView;
+    if (!currentView) {
+      return;
+    }
+    if (!currentView.W || !currentView.D) {
+      return;
+    }
+    const fieldOfView =
+      (180 / Math.PI) * Math.atan2(currentView.W, 2 * currentView.D);
+    currentView.fov = fieldOfView;
+    this.changedFovEvent.emit(currentView.fov);
+    this.saveEvent.emit();
+  }
+
+  calcularViewOffset() {
+    const currentView = this.localModel.currentView;
+    if (!currentView) {
+      return;
+    }
+    if (!currentView.B || !currentView.H) {
+      return;
+    }
+    currentView.viewOffset = currentView.B / currentView.H;
+    this.changedViewOffsetEvent.emit(currentView.viewOffset);
+    this.saveEvent.emit();
+  }
+
+  toggleFOVHelp() {
+    this.helpFOVVisible = !this.helpFOVVisible;
+  }
+
+  toggleViewOffsetHelp() {
+    this.helpViewOffsetVisible = !this.helpViewOffsetVisible;
   }
 
   changedView(viewId: string) {

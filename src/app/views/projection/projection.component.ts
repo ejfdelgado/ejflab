@@ -53,6 +53,10 @@ export interface ViewModelData {
   fov: number;
   pairs: CalibData;
   viewOffset: number;
+  W?: number;
+  D?: number;
+  H?: number;
+  B?: number;
 }
 
 export interface GlobalModelData {

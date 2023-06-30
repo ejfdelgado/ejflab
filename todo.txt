@@ -1,5 +1,5 @@
 src/app/app.component.ts
-https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>edit</mat-icon>
+https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
 - set field of view

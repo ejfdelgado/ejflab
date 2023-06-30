@@ -55,10 +55,38 @@
         <label class="my_label">Nombre:</label>
         <input class="my_input" type="text" [(ngModel)]="localModel.currentView.name"
             (ngModelChange)="saveEvent.emit();" />
-        <label class="my_label">Field of View (grados °):</label>
+        <label class="my_label">Field of View (grados °) <mat-icon (click)="toggleFOVHelp()" class="manito">help_outline
+            </mat-icon>:</label>
+        <div class="vertical_panel" *ngIf="helpFOVVisible">
+            <img class="ayuda_visual" src="/assets/img/projection/pro_field_of_view.jpg" alt="Ayuda para Field of View">
+            <label class="my_label">W:</label>
+            <input class="my_input" type="number" [(ngModel)]="localModel.currentView.W"
+                (ngModelChange)="saveEvent.emit();" />
+            <label class="my_label">D:</label>
+            <input class="my_input" type="number" [(ngModel)]="localModel.currentView.D"
+                (ngModelChange)="saveEvent.emit();" />
+            <button class="my_button_with_text margin_y_5" (click)="calcularFieldOfView()" mat-menu-item>
+                <mat-icon>refresh</mat-icon>
+                <span>Calcular</span>
+            </button>
+        </div>
         <input class="my_input" type="number" min="5" max="100" [(ngModel)]="localModel.currentView.fov"
             (ngModelChange)="changedFovEvent.emit($event); saveEvent.emit();" />
-        <label class="my_label">View Offset (%):</label>
+        <label class="my_label">View Offset (%) <mat-icon (click)="toggleViewOffsetHelp()" class="manito">help_outline
+            </mat-icon>:</label>
+        <div class="vertical_panel" *ngIf="helpViewOffsetVisible">
+            <img class="ayuda_visual" src="/assets/img/projection/pro_view_offset.jpg" alt="Ayuda para View Offset">
+            <label class="my_label">B:</label>
+            <input class="my_input" type="number" [(ngModel)]="localModel.currentView.B"
+                (ngModelChange)="saveEvent.emit();" />
+            <label class="my_label">H:</label>
+            <input class="my_input" type="number" [(ngModel)]="localModel.currentView.H"
+                (ngModelChange)="saveEvent.emit();" />
+            <button class="my_button_with_text margin_y_5" (click)="calcularViewOffset()" mat-menu-item>
+                <mat-icon>refresh</mat-icon>
+                <span>Calcular</span>
+            </button>
+        </div>
         <input class="my_input" type="number" min="0" max="1.5" step="0.01"
             [(ngModel)]="localModel.currentView.viewOffset"
             (ngModelChange)="changedViewOffsetEvent.emit($event); saveEvent.emit();" />
