@@ -513,16 +513,24 @@ export class ProjectionComponent
 
     // 1. Mirar qué relación hay entre esto y el ancho alto en pixeles...
     // 2. Mirar si se puede reemplazar
+
+    const realHeight = camera.getFilmHeight(); // Ya es el grande
+    const realWidth = camera.getFilmWidth();
+    const smallHeight = realHeight / (2 * (0.5 + scene.viewOffset));
+
     const boundsCamera = {
-      width: camera.getFilmWidth(),
-      height: camera.getFilmHeight(),
+      width: realWidth,
+      height: realHeight,
     };
 
     const actualFov = camera.fov;
     const fovComputed =
       (180 / Math.PI) * Math.atan2(boundsCamera.width, 2 * focalLengthCamera);
 
-    console.log(`fovComputed = ${fovComputed} actualFov=${actualFov}`);
+    const focalLengthCameraX =
+      boundsCamera.width / (2 * Math.tan(camera.fov / (180 / Math.PI)));
+    const focalLengthCameraY =
+      boundsCamera.height / (2 * Math.tan(camera.fov / (180 / Math.PI)));
 
     const payload: SolvePnPData = {
       v2: [],
@@ -538,7 +546,7 @@ export class ProjectionComponent
       }
       const temporal = [
         actual.v2.x * boundsCamera.width,
-        actual.v2.y * boundsCamera.height,
+        actual.v2.y * smallHeight,
       ];
       payload.v2.push(temporal);
       payload.v3.push([actual.v3.x, actual.v3.y, actual.v3.z]);

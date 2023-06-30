@@ -139,14 +139,10 @@ export class BasicScene extends THREE.Scene {
     if (offset > 0) {
       const physicalWidth = this.camera.getFilmWidth();
       const physicalHeight = this.camera.getFilmHeight();
-      const physicalOffset = offset * physicalHeight;
-      const zoom = this.camera.zoom;
-      console.log(
-        `physicalWidth (*) = ${physicalWidth} physicalHeight (*) ${physicalHeight} zoom = ${zoom} physicalOffset = ${physicalOffset}`
-      );
+      const realHeight = (offset + 0.5) * physicalHeight * 2;
       this.camera.setViewOffset(
         physicalWidth,
-        physicalHeight + physicalOffset,
+        realHeight,
         0,
         0,
         physicalWidth,
@@ -204,6 +200,9 @@ export class BasicScene extends THREE.Scene {
     this.resetCameraTecnic2(false);
     this.camera.applyMatrix4(projectionMatrix);
     this.camera.updateProjectionMatrix();
+    setTimeout(() => {
+      this.setViewOffset(null);
+    }, 0);
   }
 
   getSelectedVertex(): KeyValueDotModelData | null {
