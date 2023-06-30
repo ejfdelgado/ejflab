@@ -16,4 +16,22 @@ function test1() {
     }
 }
 
-test1();
+function test2() {
+    const pruebas = [
+        { val: 0, inMin: 0, inMax: 1, outMin: 10, outMax: 20, expected: 10 },
+        { val: -15, inMin: 0, inMax: 1, outMin: 10, outMax: 20, expected: 10 },
+        { val: 0, inMin: -1, inMax: 1, outMin: 10, outMax: 20, expected: 15 },
+        { val: -10, inMin: -1, inMax: 1, outMin: 10, outMax: 20, expected: 10 },
+        { val: 100, inMin: 0, inMax: 1, outMin: 10, outMax: 50, expected: 50 },
+        { val: 250, inMin: 0, inMax: 500, outMin: 0, outMax: 1, expected: 0.5 },
+    ];
+    for (let i = 0; i < pruebas.length; i++) {
+        const argumentos = pruebas[i];
+        const ans = MyColor.interpolateClamp(argumentos);
+        if (ans != argumentos.expected) {
+            throw new Error(`Se esperaba ${argumentos.expected} pero se obtuvo ${ans} con ${JSON.stringify(argumentos)}`);
+        }
+    }
+}
+
+test2();

@@ -96,6 +96,17 @@ class MyColor {
             v: percentRoundFn(v * 100)
         };
     }
+    static interpolateClamp({ val, inMin, inMax, outMin, outMax }) {
+        if (val < inMin) {
+            val = inMin;
+        } else if (val > inMax) {
+            val = inMax;
+        }
+        return ((val - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
+    }
+    static interpolate({ val, inMin, inMax, outMin, outMax }) {
+        return ((val - inMin) / (inMax - inMin)) * (outMax - outMin) + outMin;
+    }
 }
 
 module.exports = {
