@@ -33,7 +33,12 @@ export class LoginService {
   async logout() {
     const usuario = await this.authService.getCurrentUser();
     if (usuario) {
-      this.authService.logout().catch(this.modalService.error);
+      this.authService
+        .logout()
+        .then(() => {
+          location.reload();
+        })
+        .catch(this.modalService.error);
     } else {
       this.modalService.alert({ txt: 'No hay usuario autenticado' });
     }

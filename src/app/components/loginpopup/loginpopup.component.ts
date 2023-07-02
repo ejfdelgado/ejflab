@@ -48,6 +48,8 @@ export class LoginpopupComponent implements OnInit {
       .loginWithGoogle()
       .then(() => {
         this.dialogRef.close();
+        // Force reload...
+        location.reload();
       })
       .catch((e) => {
         const errorCode = e.code;

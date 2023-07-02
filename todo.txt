@@ -36,6 +36,7 @@ ng generate pipe mycommon/pipes/fechaCard
 ng generate pipe mycommon/pipes/sortByName
 ng generate component views/projection/components/menu-control
 ng generate component views/projection/components/video-canvas
+ng generate component views/projection/components/license
 
 ng generate component libs/threejs/threejs-projection
 

@@ -9,12 +9,14 @@ import { MenuControlComponent } from './components/menu-control/menu-control.com
 import { FormsModule } from '@angular/forms';
 import { VideoCanvasComponent } from './components/video-canvas/video-canvas.component';
 import { ThreejsModule } from 'src/app/libs/threejs/threejs.module';
+import { LicenseComponent } from './components/license/license.component';
 
 @NgModule({
   declarations: [
     ProjectionComponent,
     MenuControlComponent,
     VideoCanvasComponent,
+    LicenseComponent,
   ],
   imports: [
     MatIconModule,
