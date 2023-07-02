@@ -130,6 +130,9 @@ export class BaseComponent implements OnInit, OnDestroy {
 
   public saveTuple() {
     if (this.tupleServiceInstance) {
+      this.tupleServiceInstance.setBlackKeyPatterns([
+        /models\.[^.]+\.videoUrl$/,
+      ]);
       this.tupleServiceInstance.save(this.tupleModel);
     }
   }

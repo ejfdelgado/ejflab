@@ -188,6 +188,7 @@ export class ProjectionComponent
       modalService,
       webcamService
     );
+    /*
     this.extraOptions.push({
       action: () => {
         this.calibCamera();
@@ -195,6 +196,7 @@ export class ProjectionComponent
       icon: 'directions_run',
       label: 'Calibrate Camera',
     });
+    */
 
     this.resizeSceneLocalThis = this.resizeSceneLocal.bind(this);
   }

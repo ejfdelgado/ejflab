@@ -130,6 +130,10 @@ export class TupleServiceInstance {
     }, 0);
   }
 
+  setBlackKeyPatterns(lista: Array<any>) {
+    this.builder.setBlackKeyPatterns(lista);
+  }
+
   fastMapListenerKeys: Array<string> = [];
   mapListener: { [key: string]: Array<Function> } = {};
   addListener(key: string, callback: Function) {

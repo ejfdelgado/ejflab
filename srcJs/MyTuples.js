@@ -66,9 +66,18 @@ class MyTuples {
         });
         return response;
     }
-    static getTuples(o) {
+    static getTuples(o, blackKeyPatterns = []) {
         const response = {};
         let cache = [];
+        function isInBlackList(ruta) {
+            for (let i = 0; i < blackKeyPatterns.length; i++) {
+                const pattern = blackKeyPatterns[i];
+                if (pattern.test(ruta)) {
+                    return true;
+                }
+            }
+            return false;
+        }
         function visitor(mo, path = []) {
             if (typeof mo == "object") {
                 if (mo != null) {
@@ -78,6 +87,9 @@ class MyTuples {
                 for (const [key, value] of Object.entries(mo)) {
                     const rutaLocal = path.concat([key]);
                     const ruta = rutaLocal.join(".");
+                    if (isInBlackList(ruta)) {
+                        continue;
+                    }
                     if (MyTuples.TIPOS_BASICOS.indexOf(typeof value) >= 0 || value === null) {
                         response[ruta] = value;
                     } else {
@@ -122,6 +134,7 @@ class MyTuples {
         const MAX_SEND_SIZE = 20;// Cuántas tuplas se pueden afectar en un llamado
         const LOW_PRESSURE_MS = 1000;
 
+        let blackKeyPatterns = [];
         let resultado = {};
         let myFreeze = null;
         let pending = [];
@@ -130,6 +143,10 @@ class MyTuples {
         let ultimaFechaInicio = null;
         let isProcessing = false;
         const ownTrackedChanges = [];
+
+        const setBlackKeyPatterns = (myBlack) => {
+            blackKeyPatterns = myBlack;
+        }
 
         const addActivityListener = (a) => {
             if (!(a in listeners)) {
@@ -274,6 +291,7 @@ class MyTuples {
         };
 
         return {
+            setBlackKeyPatterns,
             isOwnChange,
             addActivityListener,
             build: (buffer) => {
@@ -318,8 +336,8 @@ class MyTuples {
                 procesor = p;
             },
             trackDifferences: (nuevo, listenerKeys = [], callback = null) => {
-                const tuplas2 = MyTuples.getTuples(nuevo);
-                const tuplas1 = MyTuples.getTuples(JSON.parse(myFreeze));
+                const tuplas2 = MyTuples.getTuples(nuevo, blackKeyPatterns);
+                const tuplas1 = MyTuples.getTuples(JSON.parse(myFreeze), blackKeyPatterns);
 
                 const tuplas2Keys = Object.keys(tuplas2);
                 const tuplas1Keys = Object.keys(tuplas1);
