@@ -14,7 +14,7 @@
     "test": "ng test",
     "start": "node app.mjs",
     "deployflex": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml && npm run bip",
-    "deploy": "gcloud app deploy --verbosity=debug --quiet appstd.yaml && npm run bip"
+    "deploy": "npm run build_local && gcloud app deploy --verbosity=debug --quiet appstd.yaml && npm run bip"
   },
   "engines": {
     "node": ">=14.0.0"
