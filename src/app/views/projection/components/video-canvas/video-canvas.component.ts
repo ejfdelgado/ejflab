@@ -123,29 +123,39 @@ export class VideoCanvasComponent implements OnInit, OnChanges {
     }
     // TODO borrar esiguiente línea
     //theUrl = 'assets/video/somevideo.mp4';
+    const isFakeUrl = theUrl.startsWith('blob:');
     this.currentUrl = theUrl;
-    const publicUrl = MyConstants.getPublicUrl(theUrl, false);
-    const object: any = await this.httpSrv.get(publicUrl, {
-      isBlob: true,
-      useCache: true,
-    });
-    if (this.oldObjectUrl != null) {
-      URL.revokeObjectURL(this.oldObjectUrl);
-      this.oldObjectUrl = null;
-    }
 
-    this.oldObjectUrl = URL.createObjectURL(object);
+    if (isFakeUrl) {
+      this.oldObjectUrl = this.currentUrl;
+    } else {
+      const publicUrl = MyConstants.getPublicUrl(theUrl, false);
+      const object: any = await this.httpSrv.get(publicUrl, {
+        isBlob: true,
+        useCache: true,
+      });
+      if (this.oldObjectUrl != null) {
+        URL.revokeObjectURL(this.oldObjectUrl);
+        this.oldObjectUrl = null;
+      }
+
+      this.oldObjectUrl = URL.createObjectURL(object);
+    }
 
     this.previousUrl = this.sanitizer.bypassSecurityTrustUrl(this.oldObjectUrl);
 
-    this.video = this.videoRef.nativeElement;
-    if (this.video instanceof HTMLVideoElement) {
-      this.video.addEventListener('seeked', this.gotFrame.bind(this));
-      this.imageOut.emit({
-        uid: this.uid,
-        video: this.video,
-      });
-      this.goToFrame(this.timeSeconds);
+    if (this.videoRef) {
+      this.video = this.videoRef.nativeElement;
+      if (this.video instanceof HTMLVideoElement) {
+        this.video.addEventListener('seeked', this.gotFrame.bind(this));
+        this.imageOut.emit({
+          uid: this.uid,
+          video: this.video,
+        });
+        this.goToFrame(this.timeSeconds);
+      } else {
+        console.error(`Is not HTMLVideoElement`);
+      }
     } else {
       console.error(`Is not HTMLVideoElement`);
     }

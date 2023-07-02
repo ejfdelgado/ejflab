@@ -118,6 +118,7 @@ export class MenuControlComponent implements OnInit, OnChanges {
     useRoot: MyConstants.SRV_ROOT,
     autosave: true,
     isPublic: true,
+    isFake: true,
   };
 
   textOptions: TxtOptionsData = {

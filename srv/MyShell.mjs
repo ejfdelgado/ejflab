@@ -15,6 +15,28 @@ export class ExecFolder {
     destroyFolder() {
         fs.rmSync(this.folderPath, { recursive: true, force: true });
     }
+    static async removeDir(path) {
+        return new Promise((resolve, reject) => {
+            try {
+                if (fs.existsSync(path)) {
+                    const files = fs.readdirSync(path)
+                    if (files.length > 0) {
+                        files.forEach(function (filename) {
+                            if (fs.statSync(path + "/" + filename).isDirectory()) {
+                                removeDir(path + "/" + filename)
+                            } else {
+                                fs.unlinkSync(path + "/" + filename)
+                            }
+                        })
+                    }
+                    fs.rmdirSync(path);
+                }
+                resolve();
+            } catch (err) {
+                reject(err);
+            }
+        });
+    }
     writeTextFile(fileName, content) {
         const folderPath = this.folderPath;
         return new Promise((resolve, reject) => {
@@ -39,6 +61,55 @@ export class ExecFolder {
             }
         });
     }
+    static async copyDir(src, dest) {
+        return new Promise(async (resolve, reject) => {
+            const copy = async (copySrc, copyDest) => {
+                return new Promise(async (resolve2, reject2) => {
+                    try {
+                        const list = fs.readdirSync(copySrc);
+                        const promesas = [];
+                        list.forEach(async (item) => {
+                            const ss = path.resolve(copySrc, item);
+                            try {
+                                const stat = fs.statSync(ss);
+                                const curSrc = path.resolve(copySrc, item);
+                                const curDest = path.resolve(copyDest, item);
+                                if (stat.isFile()) {
+                                    promesas.push(new Promise((resolve3, reject3) => {
+                                        const stream = fs.createReadStream(curSrc)
+                                            .pipe(fs.createWriteStream(curDest));
+                                        stream.on('error', reject3);
+                                        stream.on('finish', resolve3);
+                                    }));
+                                } else if (stat.isDirectory()) {
+                                    fs.mkdirSync(curDest, { recursive: true });
+                                    await copy(curSrc, curDest);
+                                }
+                            } catch (err2) {
+                                reject2(err2);
+                            }
+                        });
+                        try {
+                            await Promise.all(promesas);
+                            resolve2();
+                        } catch (err3) {
+                            reject2(err3);
+                        }
+                    } catch (err1) {
+                        reject2(err1);
+                    }
+                });
+            };
+
+            try {
+                await createFolderIfNotExists(dest);
+                await copy(src, dest);
+                resolve();
+            } catch (err0) {
+                reject(err0);
+            }
+        });
+    }
 }
 
 export class MyShell {
@@ -51,6 +122,21 @@ export class MyShell {
         const dato = await MyShell.runLocal(cmd, payload);
         res.setHeader('content-type', 'text/plain');
         res.end(dato);
+    }
+    static async runCommand(command, workingDirectory = "./") {
+        return new Promise((resolve, reject) => {
+            console.log(`Running ${command} at ${workingDirectory}`);
+            exec(command, {
+                cwd: workingDirectory
+            }, function (err, stdout, stderr) {
+                console.log(stdout);
+                if (err !== null) {
+                    reject(err);
+                } else {
+                    resolve();
+                }
+            });
+        });
     }
     static existsExecutable(execPath) {
         try {

@@ -1,4 +1,5 @@
 import { HttpClient } from '@angular/common/http';
+import { Buffer } from 'buffer';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ModalService } from 'src/services/modal.service';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
@@ -15,6 +16,7 @@ export interface BlobOptionsData {
   isEditable?: boolean;
   autosave?: boolean;
   isPublic?: boolean;
+  isFake?: boolean;
 }
 
 @Component({
@@ -100,21 +102,37 @@ export class BlobeditorComponent implements OnInit {
     }
   }
   async processFile(responseData: FileResponseData) {
-    if (this.options.autosave === true) {
-      const response = await this.saveFile({
-        base64: responseData.base64,
-        fileName: this.getSubFolder() + responseData.fileName,
-        erasefile: this.url, // send old file
-        isPublic: this.options.isPublic,
-      });
-      this.url = response.key;
+    if (this.options.isFake) {
+      // Convert base64 to blob Url
+      const indice = responseData.base64.indexOf(';base64,');
+      let mimeType = responseData.base64.substring(0, indice);
+      mimeType = mimeType.replace(/^data:/, '');
+      const base64 = responseData.base64.substring(indice + 8);
+      const buff = Buffer.from(base64, 'base64');
+      const blob = new Blob([buff], { type: mimeType });
+      const nextUrl = URL.createObjectURL(blob);
+      if (typeof this.url == 'string' && this.url.startsWith('blob:')) {
+        URL.revokeObjectURL(this.url);
+      }
+      this.url = nextUrl;
       this.urlChange.emit(this.url);
     } else {
-      this.eventSave.emit({
-        base64: responseData.base64,
-        name: responseData.fileName,
-        type: 'blob',
-      });
+      if (this.options.autosave === true) {
+        const response = await this.saveFile({
+          base64: responseData.base64,
+          fileName: this.getSubFolder() + responseData.fileName,
+          erasefile: this.url, // send old file
+          isPublic: this.options.isPublic,
+        });
+        this.url = response.key;
+        this.urlChange.emit(this.url);
+      } else {
+        this.eventSave.emit({
+          base64: responseData.base64,
+          name: responseData.fileName,
+          type: 'blob',
+        });
+      }
     }
   }
 }

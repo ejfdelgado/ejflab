@@ -4,6 +4,11 @@
     </app-audioeditor>
 </div>
 <p>ffmpeg -stream_loop -1 -i mygift.gif -i liebretortuga.mp3 -map 0 -map 1:a -c:v libx265 -crf 26 -preset ultrafast -s 500x500 -pix_fmt yuv420p -c:a aac -movflags +faststart -shortest output.mp4</p>
+<p>ffmpeg -i video.mp4 -c copy -an muted.mp4</p>
+<p>ffmpeg -i muted.mp4 -i cutted3.mp3 -c copy -map 0:v:0 -map 1:a:0 output3.mp4</p>
+<p>ffmpeg -i output3.mp4</p>
+<p>ffmpeg -i output3.mp4 -filter:v scale=1024:-1 -c:a copy scaled.mp4</p>
+<p>ffmpeg -i joyce_2023_06.mp4 -vcodec libx265 -crf 28 reduced.mp4</p>
 <button (click)="loginSrv.login()">Login</button>
 <button (click)="buildAudio()">Build Audio</button>
 <button (click)="buildGif()">Build Gif</button>

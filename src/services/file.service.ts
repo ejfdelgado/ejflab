@@ -122,7 +122,10 @@ export class FileService {
     const options: HttpOptionsData = {
       showIndicator: true,
     };
-    await this.httpSrv.delete(url, {}, options);
+    const isFakeUrl = url.startsWith('blob:');
+    if (!isFakeUrl) {
+      await this.httpSrv.delete(url, {}, options);
+    }
   }
 
   async makePublic(key: string) {
