@@ -27,6 +27,8 @@
 ## sudo rm -R build && mkdir build && cd build
 ## cmake ../ && make -j 8 && node ../../utils/shared-libs.js ./solvePnP ../../../bin-local
 
+## npm install -g npm@9.7.2
+
 ## Para mandar a Cloud Run de Google
 ## 1. npm run build_local
 ## 2. sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.8 .

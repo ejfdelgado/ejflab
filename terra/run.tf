@@ -31,5 +31,6 @@ resource "google_cloud_run_service_iam_member" "run_all_users" {
 }
 
 output "service_url" {
-  value = google_cloud_run_v2_service.mainapp.traffic_statuses[0].uri
+  description = "Open in browser"
+  value       = "${google_cloud_run_v2_service.mainapp.traffic_statuses[0].uri}/projection"
 }
