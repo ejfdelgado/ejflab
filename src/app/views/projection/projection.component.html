@@ -1,5 +1,5 @@
 <div class="level_0">
-    <div class="head_part">
+    <div class="head_part" *ngIf="states.fullScreen !== true">
         <app-statusbar [title]="'Título'" [extraOptions]="extraOptions" [saveState]="saveState"></app-statusbar>
     </div>
     <div class="body_part" *ngIf="currentUser == null">
