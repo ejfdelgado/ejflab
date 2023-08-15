@@ -141,6 +141,38 @@ export class DecisiontreeComponent
     ev.stopPropagation();
   }
 
+  async deleteNode(node: WhenThenData) {
+    //Pedir confirmar
+    const response = await this.modalService.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    //Borra las flechas asociadas del nodo
+    const idErase = node.id;
+    const arrows = this.whenthenArrows;
+    let i = 0;
+    while (i < arrows.length) {
+      const arrow = arrows[i];
+      if (arrow.from == idErase || arrow.to == idErase) {
+        arrows.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+
+    // Borro el nodo com tal
+    const indice = this.whenthenNodes.indexOf(node);
+    if (indice >= 0) {
+      this.whenthenNodes.splice(indice, 1);
+    }
+
+    this.recomputeMaps();
+    this.recomputeArrows();
+  }
+
   async loadDiagramData() {
     const promesas = [];
     promesas.push(this.httpSrv.get<Array<any>>('assets/diagrams/diagram.json'));
@@ -155,6 +187,7 @@ export class DecisiontreeComponent
   }
 
   recomputeMaps() {
+    this.whenthenExtraArrowMap = {};
     this.whenthenNodeMap = {};
     const nodos = this.whenthenNodes;
     for (let i = 0; i < nodos.length; i++) {

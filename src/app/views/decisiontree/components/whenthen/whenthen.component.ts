@@ -33,6 +33,7 @@ export class WhenthenComponent implements OnInit {
   @Input() model: WhenThenData;
   @Output() holderMouseDown = new EventEmitter<WhenThenHolderEventData>();
   @Output() holderMouseUp = new EventEmitter<MouseEvent>();
+  @Output() deleteNode = new EventEmitter<WhenThenData>();
   constructor() {}
 
   holderMouseDownLocal(event: MouseEvent) {
@@ -45,6 +46,10 @@ export class WhenthenComponent implements OnInit {
 
   holderMouseUpLocal(event: MouseEvent) {
     this.holderMouseUp.emit(event);
+  }
+
+  deleteNodeLocal() {
+    this.deleteNode.emit(this.model);
   }
 
   ngOnInit(): void {}

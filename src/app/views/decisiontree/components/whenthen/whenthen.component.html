@@ -15,7 +15,9 @@
         <div class="hidden_helper no_mouse"></div>
         <div class="circle_conector"></div>
     </div>
-    <div class="top_holder" (mousedown)="holderMouseDownLocal($event)" (mouseup)="holderMouseUpLocal($event)"></div>
+    <div class="top_holder" (mousedown)="holderMouseDownLocal($event)" (mouseup)="holderMouseUpLocal($event)">
+        <mat-icon (click)="deleteNodeLocal()">close</mat-icon>
+    </div>
     <div class="body_detail">
         <div class="body_content">
             {{ model.text }}

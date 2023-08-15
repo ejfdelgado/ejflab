@@ -14,7 +14,8 @@
                 </div>
             </div>
             <app-whenthen *ngFor="let whenthenNode of whenthenNodes" [model]="whenthenNode"
-                (holderMouseDown)="holderMouseDown($event)" (holderMouseUp)="holderMouseUp($event)"
+                (deleteNode)="deleteNode($event)" (holderMouseDown)="holderMouseDown($event)"
+                (holderMouseUp)="holderMouseUp($event)"
                 [ngStyle]="{'top': whenthenNode.top+'px', 'left': whenthenNode.left+'px'}"></app-whenthen>
         </div>
     </div>

@@ -21,6 +21,12 @@
   cursor: pointer;
   border: 1px solid;
   border-color: black;
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.card_parent .top_holder mat-icon {
+  color: white;
 }
 
 .card_parent .body_detail {
