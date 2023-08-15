@@ -13,10 +13,11 @@
                     <div class="arrow_content">
                         <div class="arrow_header">
                             <mat-icon class="manito" (click)="deleteArrow(arrow.value)">close</mat-icon>
+                            <div class="arrow_body">
+                                {{ arrow.value.arrow.label }}
+                            </div>
                         </div>
-                        <div class="arrow_body">
-                            {{ arrow.value.arrow.label }}
-                        </div>
+
                     </div>
                 </div>
             </div>

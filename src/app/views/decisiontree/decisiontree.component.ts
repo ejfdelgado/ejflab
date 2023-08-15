@@ -7,6 +7,7 @@ import {
   HostListener,
   ElementRef,
 } from '@angular/core';
+import { IdGen } from 'srcJs/IdGen';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
@@ -115,6 +116,14 @@ export class DecisiontreeComponent
       modalService,
       webcamService
     );
+
+    this.extraOptions.push({
+      action: () => {
+        this.addNode();
+      },
+      icon: 'add',
+      label: 'Agregar Nodo',
+    });
   }
 
   override async ngOnInit() {
@@ -132,7 +141,24 @@ export class DecisiontreeComponent
     };
   }
 
-  buildNode() {}
+  async addNode() {
+    // Se calcula la posición más adecuada para crearlo del scroll panel
+    const left = 100;
+    const top = 100;
+    const node = await this.buildNode(left, top);
+    this.whenthenNodes.push(node);
+  }
+
+  async buildNode(left: number, top: number): Promise<WhenThenData> {
+    return {
+      id: await this.generateId(),
+      height: 0,
+      width: 0,
+      left,
+      top,
+      text: 'Contenido',
+    };
+  }
 
   holderMouseDown(event: WhenThenHolderEventData) {
     const ev = event.event;
