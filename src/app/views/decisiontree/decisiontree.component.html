@@ -1,0 +1,12 @@
+<div class="level_0">
+    <div class="head_part">
+        <app-statusbar [title]="'Título'" [extraOptions]="extraOptions" [saveState]="saveState"></app-statusbar>
+    </div>
+    <div class="body_part">
+        <div class="scroll_body">
+            <app-whenthen *ngFor="let whenthenNode of whenthenNodes" [model]="whenthenNode"
+                (holderMouseDown)="holderMouseDown($event)" (holderMouseUp)="holderMouseUp($event)"
+                [ngStyle]="{'top': whenthenNode.top+'px', 'left': whenthenNode.left+'px'}"></app-whenthen>
+        </div>
+    </div>
+</div>

@@ -5,7 +5,6 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 - set field of view
 - guardar, progress
 - download allow security
-- custom cursor {cursor: none}
 
 - Lanzar el entrenamiento de tensorflow
   - Leer los csv selecionados, validar los inputs name y output name.
@@ -15,7 +14,7 @@ https://fontawesome.com/icons?d=gallery FontAwesome
   - Guardar el modelo generado como archivo de texto plano
   
 - en la barra inferior de scroll colocar el número del frame donde está, debe ser de input también
-- poner el logo de la persona y quitarlo automaticamente cuando se desloegea
+- poner el logo de la persona y quitarlo automaticamente cuando se deslogea
 - evitar que después de guardar se quede leyendo indefinidamente
 
 https://firestore.googleapis.com/google.firestore.v1.Firestore/Listen/channel?VER=8&database=projects%2Fejfexperiments%2Fdatabases%2F(default)&gsessionid=xD7TtVhPZW9y1-kMkuVL0ZWVxf887eNYXZSWUxDj_ec&SID=CGzNDjRtq9M9pyCN5ktbMA&RID=36157&AID=272&zx=31lts6whg5wn&t=1
@@ -29,14 +28,13 @@ Generar el formulario para entrenamiento:
 
 ng new proyecto001
 ng generate module libs/tensorflow --module app.module
-ng generate module views/projection --route projection --module app.module
+ng generate module views/decisiontree --route decisiontree --module app.module
 ng generate component components/payupopup
-ng generate component mycommon/components/threejs-projection
 ng generate pipe mycommon/pipes/fechaCard
 ng generate pipe mycommon/pipes/sortByName
-ng generate component views/projection/components/menu-control
-ng generate component views/projection/components/video-canvas
+ng generate component mycommon/components/threejs-projection
 ng generate component views/projection/components/license
+ng generate component views/decisiontree/components/whenthen
 
 ng generate component libs/threejs/threejs-projection
 

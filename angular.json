@@ -45,7 +45,7 @@
               "srcJs/ModuloDatoSeguro",
               "srcJs/ModuloDatoSeguroFront",
               "srcJs/MyDatesFront",
-              "srcJs/MyColor.js",
+              "srcJs/MyColor",
               "srcJs/CsvFormatter",
               "srcJs/CsvParser",
               "srcJs/ModuloSonido",

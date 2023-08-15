@@ -13,6 +13,7 @@
     "src/app/views/callgame/*.ts",
     "src/app/views/tale/*.ts",
     "src/app/views/humanpose/*.ts",
-    "src/app/views/projection/*.ts"
+    "src/app/views/projection/*.ts",
+    "src/app/views/decisiontree/*.ts"
   ]
 }
