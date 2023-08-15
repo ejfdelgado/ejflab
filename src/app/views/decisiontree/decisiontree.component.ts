@@ -226,8 +226,8 @@ export class DecisiontreeComponent
         return 22;
       }
     }
-    xdiff = to.p1_30.x - from.p7_30.x;
-    ydiff = to.p1_30.y - from.p7_30.y;
+    xdiff = to.p4_30.x - from.p10_30.x;
+    ydiff = to.p4_30.y - from.p10_30.y;
     if (xdiff <= 0 && ydiff <= 0) {
       if (-1 * ydiff > -1 * xdiff) {
         return 31;
@@ -235,8 +235,8 @@ export class DecisiontreeComponent
         return 32;
       }
     }
-    xdiff = to.p4_30.x - from.p10_30.x;
-    ydiff = to.p4_30.y - from.p10_30.y;
+    xdiff = to.p1_30.x - from.p7_30.x;
+    ydiff = to.p1_30.y - from.p7_30.y;
     if (xdiff <= 0 && ydiff >= 0) {
       if (-1 * xdiff > ydiff) {
         return 41;
@@ -254,8 +254,8 @@ export class DecisiontreeComponent
         return 42;
       }
     }
-    xdiff = to.p3.x - from.p9.x;
-    ydiff = to.p3.y - from.p9.y;
+    xdiff = to.p9.x - from.p3.x;
+    ydiff = to.p9.y - from.p3.y;
     if (xdiff >= 0) {
       if (ydiff <= 0) {
         return 21;
@@ -263,7 +263,24 @@ export class DecisiontreeComponent
         return 12;
       }
     }
-
+    xdiff = to.p6.x - from.p12.x;
+    ydiff = to.p6.y - from.p12.y;
+    if (ydiff <= 0) {
+      if (xdiff >= 0) {
+        return 22;
+      } else {
+        return 31;
+      }
+    }
+    xdiff = to.p3.x - from.p9.x;
+    ydiff = to.p3.y - from.p9.y;
+    if (xdiff <= 0) {
+      if (ydiff <= 0) {
+        return 32;
+      } else {
+        return 41;
+      }
+    }
     // Never reach here
     return 0;
   }
