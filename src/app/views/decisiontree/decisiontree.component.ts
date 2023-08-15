@@ -5,6 +5,7 @@ import {
   OnInit,
   Inject,
   HostListener,
+  ElementRef,
 } from '@angular/core';
 import { DOCUMENT } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
@@ -23,6 +24,15 @@ import {
   WhenThenHolderEventData,
 } from './components/whenthen/whenthen.component';
 
+export interface DraggingNodeData {
+  startx: number;
+  starty: number;
+  oldLeft: number;
+  oldTop: number;
+  draggingNode: WhenThenData;
+  element: ElementRef;
+}
+
 @Component({
   selector: 'app-decisiontree',
   templateUrl: './decisiontree.component.html',
@@ -33,16 +43,16 @@ export class DecisiontreeComponent
   implements OnInit, OnChanges
 {
   public extraOptions: Array<OptionData> = [];
-  public draggingNode: WhenThenData | null = null;
-  public draggData = {
-    startx: 0,
-    starty: 0,
-    oldLeft: 0,
-    oldTop: 0,
-  };
+  public draggData: DraggingNodeData | null = null;
   public whenthenNodes: Array<WhenThenData> = [
-    { left: 100, top: 100, text: 'Hey 1' },
-    { left: 300, top: 500, text: 'Hey 2' },
+    {
+      left: 100,
+      top: 100,
+      width: 0,
+      height: 0,
+      text: 'The problem is that both of them are undefined at the beginning. I can only update the values which will also update the HTML element but I cannot read it? Is that suppose to be that way? And if yes what alternative do I have to retrieve the current position of the HTML element.',
+    },
+    { left: 300, top: 500, width: 0, height: 0, text: 'Hey 2' },
   ];
   constructor(
     public override route: ActivatedRoute,
@@ -77,24 +87,31 @@ export class DecisiontreeComponent
 
   holderMouseDown(event: WhenThenHolderEventData) {
     const ev = event.event;
-    this.draggData.startx = ev.screenX;
-    this.draggData.starty = ev.screenY;
-    this.draggData.oldLeft = event.model.left;
-    this.draggData.oldTop = event.model.top;
-    this.draggingNode = event.model;
+    this.draggData = {
+      startx: ev.screenX,
+      starty: ev.screenY,
+      oldLeft: event.model.left,
+      oldTop: event.model.top,
+      draggingNode: event.model,
+      element: event.element,
+    };
+    ev.stopPropagation();
   }
 
-  holderMouseUp(event: WhenThenHolderEventData) {
-    this.draggingNode = null;
+  holderMouseUp(ev: any) {
+    this.draggData = null;
+    ev.stopPropagation();
   }
 
   @HostListener('mousemove', ['$event'])
   onMouseMove(ev: any) {
-    if (this.draggingNode) {
-      const menuTop = this.draggingNode;
-      menuTop.top =
-        this.draggData.oldTop - (this.draggData.starty - ev.screenY);
-      menuTop.left =
+    if (this.draggData) {
+      const model = this.draggData.draggingNode;
+      const element = this.draggData.element;
+      model.width = element.nativeElement.clientWidth;
+      model.height = element.nativeElement.clientHeight;
+      model.top = this.draggData.oldTop - (this.draggData.starty - ev.screenY);
+      model.left =
         this.draggData.oldLeft - (this.draggData.startx - ev.screenX);
     }
   }
