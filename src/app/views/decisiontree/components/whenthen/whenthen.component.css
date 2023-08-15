@@ -72,6 +72,14 @@
   top: -4px;
 }
 
+.pixel_connector .hidden_helper {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  left: -150px;
+  top: -150px;
+}
+
 .body_content {
   padding: 10px;
 }
