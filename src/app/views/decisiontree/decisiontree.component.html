@@ -7,6 +7,11 @@
             <div class="arrow_box" [ngClass]="[arrow.value.class]"
                 *ngFor="let arrow of whenthenExtraArrowMap | keyvalue"
                 [ngStyle]="{'top': arrow.value.top+'px', 'left': arrow.value.left+'px', 'width': arrow.value.width+'px', 'height': arrow.value.height+'px'}">
+                <div class="curve"></div>
+                <div class="curve"></div>
+                <div class="pixel_center">
+                    <div class="arrow_content">{{ arrow.value.arrow.label }}</div>
+                </div>
             </div>
             <app-whenthen *ngFor="let whenthenNode of whenthenNodes" [model]="whenthenNode"
                 (holderMouseDown)="holderMouseDown($event)" (holderMouseUp)="holderMouseUp($event)"

@@ -299,7 +299,7 @@ export class DecisiontreeComponent
       );
       let corner1: CoordinateData = { x: 0, y: 0 };
       let corner2: CoordinateData = { x: 0, y: 0 };
-      console.log(`quadrantCase = ${quadrantCase}`);
+
       switch (quadrantCase) {
         case 11:
           corner1 = fromNode.connectors.p6;

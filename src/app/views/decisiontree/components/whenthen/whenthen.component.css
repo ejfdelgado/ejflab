@@ -20,14 +20,14 @@
   border-top-right-radius: 7px;
   cursor: pointer;
   border: 1px solid;
-  border-color: white;
+  border-color: black;
 }
 
 .card_parent .body_detail {
   width: 100%;
   height: 100%;
   border: 1px solid;
-  border-color: white;
+  border-color: black;
   border-bottom-left-radius: 7px;
   border-bottom-right-radius: 7px;
   display: flex;
@@ -63,13 +63,13 @@
 .pixel_connector .circle_conector {
   width: 8px;
   height: 8px;
-  border: 4px solid;
-  border-color: rgb(86, 0, 0);
+  border: 1px solid;
+  border-color: rgb(0 0 0);
   background-color: white;
   border-radius: 50%;
   position: absolute;
-  left: -6px;
-  top: -6px;
+  left: -4px;
+  top: -4px;
 }
 
 .body_content {

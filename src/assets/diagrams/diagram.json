@@ -21,7 +21,7 @@
         {
             "from": "1",
             "to": "2",
-            "label": "",
+            "label": "Esto es un label",
             "left": 0,
             "top": 0,
             "width": 0,
