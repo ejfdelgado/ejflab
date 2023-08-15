@@ -1,4 +1,20 @@
 <div class="card_parent">
+    <div class="pixel_connector hour_12">
+        <div class="circle_conector"></div>
+    </div>
+    <div class="pixel_connector hour_6">
+        <div class="circle_conector"></div>
+    </div>
+    <div class="pixel_connector hour_3">
+        <div class="circle_conector"></div>
+    </div>
+    <div class="pixel_connector hour_9">
+        <div class="circle_conector"></div>
+    </div>
     <div class="top_holder" (mousedown)="holderMouseDownLocal($event)" (mouseup)="holderMouseUpLocal($event)"></div>
-    <div class="body_detail">{{ model.text }}</div>
+    <div class="body_detail">
+        <div class="body_content">
+            {{ model.text }}
+        </div>
+    </div>
 </div>

@@ -9,6 +9,7 @@
   background-color: white;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .card_parent .top_holder {
@@ -29,4 +30,48 @@
   border-color: white;
   border-bottom-left-radius: 7px;
   border-bottom-right-radius: 7px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pixel_connector {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+}
+
+.pixel_connector.hour_12 {
+  top: 0px;
+  left: 50%;
+}
+
+.pixel_connector.hour_6 {
+  bottom: 0px;
+  left: 50%;
+}
+
+.pixel_connector.hour_3 {
+  right: 0px;
+  top: 50%;
+}
+
+.pixel_connector.hour_9 {
+  left: 0px;
+  top: 50%;
+}
+
+.pixel_connector .circle_conector {
+  width: 8px;
+  height: 8px;
+  border: 4px solid;
+  border-color: rgb(86, 0, 0);
+  background-color: white;
+  border-radius: 50%;
+  position: absolute;
+  left: -6px;
+  top: -6px;
+}
+
+.body_content {
+  padding: 10px;
 }
