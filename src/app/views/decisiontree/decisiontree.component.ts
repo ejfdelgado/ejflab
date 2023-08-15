@@ -205,9 +205,11 @@ export class DecisiontreeComponent
   }
 
   deduceQuadrant(from: ConnectorPointsData, to: ConnectorPointsData) {
-    const fromCenter = from.center;
-    const xdiff = to.center.x - fromCenter.x;
-    const ydiff = to.center.y - fromCenter.y;
+    let xdiff = 0;
+    let ydiff = 0;
+
+    xdiff = to.p10_30.x - from.p4_30.x;
+    ydiff = to.p10_30.y - from.p4_30.y;
     if (xdiff >= 0 && ydiff >= 0) {
       if (ydiff > xdiff) {
         return 11;
@@ -215,6 +217,8 @@ export class DecisiontreeComponent
         return 12;
       }
     }
+    xdiff = to.p7_30.x - from.p1_30.x;
+    ydiff = to.p7_30.y - from.p1_30.y;
     if (xdiff >= 0 && ydiff <= 0) {
       if (xdiff > -1 * ydiff) {
         return 21;
@@ -222,6 +226,8 @@ export class DecisiontreeComponent
         return 22;
       }
     }
+    xdiff = to.p1_30.x - from.p7_30.x;
+    ydiff = to.p1_30.y - from.p7_30.y;
     if (xdiff <= 0 && ydiff <= 0) {
       if (-1 * ydiff > -1 * xdiff) {
         return 31;
@@ -229,6 +235,8 @@ export class DecisiontreeComponent
         return 32;
       }
     }
+    xdiff = to.p4_30.x - from.p10_30.x;
+    ydiff = to.p4_30.y - from.p10_30.y;
     if (xdiff <= 0 && ydiff >= 0) {
       if (-1 * xdiff > ydiff) {
         return 41;
@@ -236,6 +244,26 @@ export class DecisiontreeComponent
         return 42;
       }
     }
+    // Se revisan los extremos en cruz
+    xdiff = to.p12.x - from.p6.x;
+    ydiff = to.p12.y - from.p6.y;
+    if (ydiff >= 0) {
+      if (xdiff >= 0) {
+        return 11;
+      } else {
+        return 42;
+      }
+    }
+    xdiff = to.p3.x - from.p9.x;
+    ydiff = to.p3.y - from.p9.y;
+    if (xdiff >= 0) {
+      if (ydiff <= 0) {
+        return 21;
+      } else {
+        return 12;
+      }
+    }
+
     // Never reach here
     return 0;
   }
@@ -254,6 +282,7 @@ export class DecisiontreeComponent
       );
       let corner1: CoordinateData = { x: 0, y: 0 };
       let corner2: CoordinateData = { x: 0, y: 0 };
+      console.log(`quadrantCase = ${quadrantCase}`);
       switch (quadrantCase) {
         case 11:
           corner1 = fromNode.connectors.p6;

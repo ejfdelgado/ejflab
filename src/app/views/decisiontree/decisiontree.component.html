@@ -2,7 +2,7 @@
     <div class="head_part">
         <app-statusbar [title]="'Título'" [extraOptions]="extraOptions" [saveState]="saveState"></app-statusbar>
     </div>
-    <div class="body_part">
+    <div class="body_part noselect">
         <div class="scroll_body" (mouseup)="holderMouseUp($event)" (mousedown)="holderMouseUp($event)">
             <div class="arrow_box" [ngClass]="[arrow.value.class]"
                 *ngFor="let arrow of whenthenExtraArrowMap | keyvalue"
