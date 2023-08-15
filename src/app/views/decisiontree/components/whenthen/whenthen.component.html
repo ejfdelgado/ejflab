@@ -1,19 +1,19 @@
 <div class="card_parent" #boundingbox>
     <div class="pixel_connector hour_12">
         <div class="hidden_helper no_mouse"></div>
-        <div class="circle_conector"></div>
+        <div class="circle_conector" (mousedown)="preventPropagate($event)" (mouseup)="createArrowEvent($event)"></div>
     </div>
     <div class="pixel_connector hour_6">
         <div class="hidden_helper no_mouse"></div>
-        <div class="circle_conector"></div>
+        <div class="circle_conector" (mousedown)="preventPropagate($event)" (mouseup)="createArrowEvent($event)"></div>
     </div>
     <div class="pixel_connector hour_3">
         <div class="hidden_helper no_mouse"></div>
-        <div class="circle_conector"></div>
+        <div class="circle_conector" (mousedown)="preventPropagate($event)" (mouseup)="createArrowEvent($event)"></div>
     </div>
     <div class="pixel_connector hour_9">
         <div class="hidden_helper no_mouse"></div>
-        <div class="circle_conector"></div>
+        <div class="circle_conector" (mousedown)="preventPropagate($event)" (mouseup)="createArrowEvent($event)"></div>
     </div>
     <div class="top_holder" (mousedown)="holderMouseDownLocal($event)" (mouseup)="holderMouseUpLocal($event)">
         <mat-icon (click)="deleteNodeLocal()">close</mat-icon>

@@ -61,8 +61,19 @@
   position: relative;
   width: 150px;
   left: -75px;
-  height: 50px;
-  top: -25px;
+  height: 100px;
+  top: -50px;
+  display: flex;
+  flex-direction: column;
+}
+
+.arrow_box .pixel_center .arrow_content .arrow_header {
+  display: flex;
+  flex-direction: row-reverse;
+  height: 25px;
+}
+
+.arrow_box .pixel_center .arrow_content .arrow_body {
   display: flex;
   flex-direction: column;
   align-items: center;

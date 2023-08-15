@@ -67,15 +67,20 @@
 }
 
 .pixel_connector .circle_conector {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border: 1px solid;
   border-color: rgb(0 0 0);
   background-color: white;
   border-radius: 50%;
   position: absolute;
-  left: -4px;
-  top: -4px;
+  left: -5px;
+  top: -5px;
+  cursor: pointer;
+}
+
+.pixel_connector .circle_conector:hover {
+  background-color: red;
 }
 
 .pixel_connector .hidden_helper {

@@ -88,6 +88,7 @@ export class DecisiontreeComponent
   public whenthenNodes: Array<WhenThenData> = [];
   public whenthenArrows: Array<WhenThenArrowData> = [];
   public whenthenExtraArrowMap: { [key: string]: WhenThenExtraArrowData } = {};
+  public createArrowFrom: WhenThenData | null;
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
@@ -123,22 +124,96 @@ export class DecisiontreeComponent
 
   ngOnChanges(changes: any) {}
 
+  buildArrow(from: string, to: string): WhenThenArrowData {
+    return {
+      from,
+      to,
+      label: 'Etiqueta',
+    };
+  }
+
+  buildNode() {}
+
   holderMouseDown(event: WhenThenHolderEventData) {
     const ev = event.event;
-    this.draggData = {
-      startx: ev.screenX,
-      starty: ev.screenY,
-      oldLeft: event.model.left,
-      oldTop: event.model.top,
-      draggingNode: event.model,
-      element: event.element,
-    };
-    ev.stopPropagation();
+    if (ev.button == 0) {
+      this.draggData = {
+        startx: ev.screenX,
+        starty: ev.screenY,
+        oldLeft: event.model.left,
+        oldTop: event.model.top,
+        draggingNode: event.model,
+        element: event.element,
+      };
+      ev.stopPropagation();
+    }
   }
 
   holderMouseUp(ev: MouseEvent) {
     this.draggData = null;
+    this.createArrowFrom = null;
     ev.stopPropagation();
+  }
+
+  async deleteArrow(arrow: WhenThenExtraArrowData) {
+    //Pedir confirmar
+    const response = await this.modalService.confirm({
+      title: '¿Está seguro?',
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+    // La borro de la lista
+    const indice = this.whenthenArrows.indexOf(arrow.arrow);
+    if (indice >= 0) {
+      this.whenthenArrows.splice(indice, 1);
+    }
+
+    this.recomputeMaps();
+    this.recomputeArrows();
+  }
+
+  createArrow(createArrowTo: WhenThenData) {
+    if (this.createArrowFrom != null) {
+      // Se crea la flecha
+      // Se revisa que no exista previamente
+      const arrows = this.whenthenArrows;
+      for (let i = 0; i < arrows.length; i++) {
+        const arrow = arrows[i];
+        if (
+          arrow.from == this.createArrowFrom.id &&
+          arrow.to == createArrowTo.id
+        ) {
+          // Ya existe en la misma dirección
+          this.modalService.alert({
+            title: 'Ups!',
+            txt: 'Ya existe la relación en esa dirección',
+          });
+          this.createArrowFrom = null;
+          return;
+        }
+        if (
+          arrow.to == this.createArrowFrom.id &&
+          arrow.from == createArrowTo.id
+        ) {
+          // Ya existe en la misma dirección
+          this.modalService.alert({
+            title: 'Ups!',
+            txt: 'Ya existe la relación en la dirección inversa',
+          });
+          this.createArrowFrom = null;
+          return;
+        }
+      }
+      // Se crea
+      arrows.push(this.buildArrow(this.createArrowFrom.id, createArrowTo.id));
+      this.recomputeMaps();
+      this.recomputeArrows();
+      this.createArrowFrom = null;
+    } else {
+      this.createArrowFrom = createArrowTo;
+    }
   }
 
   async deleteNode(node: WhenThenData) {

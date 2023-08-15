@@ -10,12 +10,19 @@
                 <div class="curve"></div>
                 <div class="curve"></div>
                 <div class="pixel_center">
-                    <div class="arrow_content">{{ arrow.value.arrow.label }}</div>
+                    <div class="arrow_content">
+                        <div class="arrow_header">
+                            <mat-icon class="manito" (click)="deleteArrow(arrow.value)">close</mat-icon>
+                        </div>
+                        <div class="arrow_body">
+                            {{ arrow.value.arrow.label }}
+                        </div>
+                    </div>
                 </div>
             </div>
             <app-whenthen *ngFor="let whenthenNode of whenthenNodes" [model]="whenthenNode"
-                (deleteNode)="deleteNode($event)" (holderMouseDown)="holderMouseDown($event)"
-                (holderMouseUp)="holderMouseUp($event)"
+                (deleteNode)="deleteNode($event)" (createArrow)="createArrow($event)"
+                (holderMouseDown)="holderMouseDown($event)" (holderMouseUp)="holderMouseUp($event)"
                 [ngStyle]="{'top': whenthenNode.top+'px', 'left': whenthenNode.left+'px'}"></app-whenthen>
         </div>
     </div>

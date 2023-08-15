@@ -1,4 +1,5 @@
 import {
+  AfterViewInit,
   Component,
   ElementRef,
   EventEmitter,
@@ -28,13 +29,23 @@ export interface WhenThenHolderEventData {
   templateUrl: './whenthen.component.html',
   styleUrls: ['./whenthen.component.css'],
 })
-export class WhenthenComponent implements OnInit {
+export class WhenthenComponent implements OnInit, AfterViewInit {
   @ViewChild('boundingbox') boundingbox: ElementRef;
   @Input() model: WhenThenData;
   @Output() holderMouseDown = new EventEmitter<WhenThenHolderEventData>();
   @Output() holderMouseUp = new EventEmitter<MouseEvent>();
   @Output() deleteNode = new EventEmitter<WhenThenData>();
+  @Output() createArrow = new EventEmitter<WhenThenData>();
   constructor() {}
+
+  preventPropagate(event: MouseEvent) {
+    event.stopPropagation();
+  }
+
+  createArrowEvent(event: MouseEvent) {
+    event.stopPropagation();
+    this.createArrow.emit(this.model);
+  }
 
   holderMouseDownLocal(event: MouseEvent) {
     this.holderMouseDown.emit({
@@ -53,4 +64,9 @@ export class WhenthenComponent implements OnInit {
   }
 
   ngOnInit(): void {}
+
+  ngAfterViewInit(): void {
+    this.model.width = this.boundingbox.nativeElement.clientWidth;
+    this.model.height = this.boundingbox.nativeElement.clientHeight;
+  }
 }
