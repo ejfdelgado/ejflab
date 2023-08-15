@@ -10,6 +10,14 @@
   max-height: 100vh;
 }
 
+.z0 {
+  z-index: 0;
+}
+
+.z1 {
+  z-index: 1;
+}
+
 .head_part {
   width: 100%;
   background-color: darksalmon;
@@ -46,7 +54,7 @@
 }
 
 .arrow_box .pixel_center {
-  top: 50%;
+  top: 30%;
   left: 50%;
   width: 0px;
   height: 0px;
@@ -59,8 +67,8 @@
   border-radius: 5px;
   border: 1px solid;
   position: relative;
-  width: 200px;
-  left: -100px;
+  width: 300px;
+  left: -150px;
   display: flex;
   flex-direction: column;
 }

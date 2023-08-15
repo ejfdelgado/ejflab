@@ -4,13 +4,13 @@
     </div>
     <div class="body_part noselect">
         <div class="scroll_body" (mouseup)="holderMouseUp($event)" (mousedown)="holderMouseUp($event)">
-            <div class="arrow_box" [ngClass]="[arrow.value.class]"
+            <div class="arrow_box z0 no_mouse" [ngClass]="[arrow.value.class]"
                 *ngFor="let arrow of whenthenExtraArrowMap | keyvalue"
                 [ngStyle]="{'top': arrow.value.top+'px', 'left': arrow.value.left+'px', 'width': arrow.value.width+'px', 'height': arrow.value.height+'px'}">
-                <div class="curve"></div>
-                <div class="curve"></div>
+                <div class="curve no_mouse z0"></div>
+                <div class="curve no_mouse z0"></div>
                 <div class="pixel_center">
-                    <div class="arrow_content">
+                    <div class="arrow_content z1 si_mouse">
                         <div class="arrow_header">
                             <mat-icon class="manito" (click)="deleteArrow(arrow.value)">close</mat-icon>
                             <div class="arrow_body">

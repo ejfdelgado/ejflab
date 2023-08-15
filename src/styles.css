@@ -61,6 +61,10 @@ body {
   pointer-events: none;
 }
 
+.si_mouse {
+  pointer-events: all;
+}
+
 .manito {
   cursor: pointer;
 }
