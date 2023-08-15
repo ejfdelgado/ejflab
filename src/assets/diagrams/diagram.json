@@ -1,0 +1,31 @@
+{
+    "nodes": [
+        {
+            "id": "1",
+            "left": 100,
+            "top": 100,
+            "width": 0,
+            "height": 0,
+            "text": "The problem is that both of them are undefined at the beginning. I can only update the values which will also update the HTML element but I cannot read it? Is that suppose to be that way? And if yes what alternative do I have to retrieve the current position of the HTML element."
+        },
+        {
+            "id": "2",
+            "left": 300,
+            "top": 500,
+            "width": 0,
+            "height": 0,
+            "text": "Esto es solo un nodo"
+        }
+    ],
+    "arrows": [
+        {
+            "from": "1",
+            "to": "2",
+            "label": "",
+            "left": 0,
+            "top": 0,
+            "width": 0,
+            "height": 0
+        }
+    ]
+}

@@ -9,6 +9,7 @@ import {
 } from '@angular/core';
 
 export interface WhenThenData {
+  id: string;
   left: number;
   top: number;
   width: number;
@@ -31,7 +32,7 @@ export class WhenthenComponent implements OnInit {
   @ViewChild('boundingbox') boundingbox: ElementRef;
   @Input() model: WhenThenData;
   @Output() holderMouseDown = new EventEmitter<WhenThenHolderEventData>();
-  @Output() holderMouseUp = new EventEmitter<WhenThenHolderEventData>();
+  @Output() holderMouseUp = new EventEmitter<MouseEvent>();
   constructor() {}
 
   holderMouseDownLocal(event: MouseEvent) {
@@ -43,11 +44,7 @@ export class WhenthenComponent implements OnInit {
   }
 
   holderMouseUpLocal(event: MouseEvent) {
-    this.holderMouseUp.emit({
-      model: this.model,
-      event,
-      element: this.boundingbox,
-    });
+    this.holderMouseUp.emit(event);
   }
 
   ngOnInit(): void {}

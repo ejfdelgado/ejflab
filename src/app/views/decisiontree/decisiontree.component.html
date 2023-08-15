@@ -4,6 +4,10 @@
     </div>
     <div class="body_part">
         <div class="scroll_body" (mouseup)="holderMouseUp($event)" (mousedown)="holderMouseUp($event)">
+            <div class="arrow_box" [ngClass]="[arrow.value.class]"
+                *ngFor="let arrow of whenthenExtraArrowMap | keyvalue"
+                [ngStyle]="{'top': arrow.value.top+'px', 'left': arrow.value.left+'px', 'width': arrow.value.width+'px', 'height': arrow.value.height+'px'}">
+            </div>
             <app-whenthen *ngFor="let whenthenNode of whenthenNodes" [model]="whenthenNode"
                 (holderMouseDown)="holderMouseDown($event)" (holderMouseUp)="holderMouseUp($event)"
                 [ngStyle]="{'top': whenthenNode.top+'px', 'left': whenthenNode.left+'px'}"></app-whenthen>

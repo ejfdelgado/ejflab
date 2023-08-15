@@ -34,3 +34,46 @@
   top: 0;
   bottom: 0;
 }
+
+.arrow_box {
+  position: absolute;
+  background-color: aquamarine;
+  opacity: 0.5;
+  border: 1px solid;
+  border-color: blue;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  background-position: center;
+}
+
+.arrow_box.arr_11 {
+  background-image: url("/assets/diagrams/arrows/arr_11.svg");
+}
+
+.arrow_box.arr_12 {
+  background-image: url("/assets/diagrams/arrows/arr_12.svg");
+}
+
+.arrow_box.arr_21 {
+  background-image: url("/assets/diagrams/arrows/arr_21.svg");
+}
+
+.arrow_box.arr_22 {
+  background-image: url("/assets/diagrams/arrows/arr_22.svg");
+}
+
+.arrow_box.arr_31 {
+  background-image: url("/assets/diagrams/arrows/arr_31.svg");
+}
+
+.arrow_box.arr_32 {
+  background-image: url("/assets/diagrams/arrows/arr_32.svg");
+}
+
+.arrow_box.arr_41 {
+  background-image: url("/assets/diagrams/arrows/arr_41.svg");
+}
+
+.arrow_box.arr_42 {
+  background-image: url("/assets/diagrams/arrows/arr_42.svg");
+}

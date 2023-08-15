@@ -23,6 +23,7 @@ import {
   WhenThenData,
   WhenThenHolderEventData,
 } from './components/whenthen/whenthen.component';
+import { HttpService } from 'src/services/http.service';
 
 export interface DraggingNodeData {
   startx: number;
@@ -31,6 +32,45 @@ export interface DraggingNodeData {
   oldTop: number;
   draggingNode: WhenThenData;
   element: ElementRef;
+}
+
+export interface WhenThenArrowData {
+  from: string;
+  to: string;
+  label: string;
+}
+
+export interface WhenThenExtraArrowData {
+  corner1: CoordinateData;
+  corner2: CoordinateData;
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+  arrow: WhenThenArrowData;
+  class: string;
+}
+
+export interface CoordinateData {
+  x: number;
+  y: number;
+}
+
+export interface ConnectorPointsData {
+  p12: CoordinateData;
+  p1_30: CoordinateData;
+  p3: CoordinateData;
+  p4_30: CoordinateData;
+  p6: CoordinateData;
+  p7_30: CoordinateData;
+  p9: CoordinateData;
+  p10_30: CoordinateData;
+  center: CoordinateData;
+}
+
+export interface WhenThenMoreData {
+  model: WhenThenData;
+  connectors: ConnectorPointsData;
 }
 
 @Component({
@@ -44,16 +84,10 @@ export class DecisiontreeComponent
 {
   public extraOptions: Array<OptionData> = [];
   public draggData: DraggingNodeData | null = null;
-  public whenthenNodes: Array<WhenThenData> = [
-    {
-      left: 100,
-      top: 100,
-      width: 0,
-      height: 0,
-      text: 'The problem is that both of them are undefined at the beginning. I can only update the values which will also update the HTML element but I cannot read it? Is that suppose to be that way? And if yes what alternative do I have to retrieve the current position of the HTML element.',
-    },
-    { left: 300, top: 500, width: 0, height: 0, text: 'Hey 2' },
-  ];
+  public whenthenNodeMap: { [key: string]: WhenThenMoreData } = {};
+  public whenthenNodes: Array<WhenThenData> = [];
+  public whenthenArrows: Array<WhenThenArrowData> = [];
+  public whenthenExtraArrowMap: { [key: string]: WhenThenExtraArrowData } = {};
   constructor(
     public override route: ActivatedRoute,
     public override pageService: BackendPageService,
@@ -66,7 +100,8 @@ export class DecisiontreeComponent
     public override webcamService: WebcamService,
     public loginSrv: LoginService,
     //
-    @Inject(DOCUMENT) private document: any
+    @Inject(DOCUMENT) private document: any,
+    private readonly httpSrv: HttpService
   ) {
     super(
       route,
@@ -83,7 +118,10 @@ export class DecisiontreeComponent
 
   override async ngOnInit() {
     await super.ngOnInit();
+    this.loadDiagramData();
   }
+
+  ngOnChanges(changes: any) {}
 
   holderMouseDown(event: WhenThenHolderEventData) {
     const ev = event.event;
@@ -98,9 +136,183 @@ export class DecisiontreeComponent
     ev.stopPropagation();
   }
 
-  holderMouseUp(ev: any) {
+  holderMouseUp(ev: MouseEvent) {
     this.draggData = null;
     ev.stopPropagation();
+  }
+
+  async loadDiagramData() {
+    const promesas = [];
+    promesas.push(this.httpSrv.get<Array<any>>('assets/diagrams/diagram.json'));
+    const responses = await Promise.all(promesas);
+    const model = responses[0] as any;
+    this.whenthenNodes = model['nodes'] as Array<WhenThenData>;
+    this.whenthenArrows = model['arrows'] as Array<WhenThenArrowData>;
+    setTimeout(() => {
+      this.recomputeMaps();
+      this.recomputeArrows();
+    }, 0);
+  }
+
+  recomputeMaps() {
+    this.whenthenNodeMap = {};
+    const nodos = this.whenthenNodes;
+    for (let i = 0; i < nodos.length; i++) {
+      const nodo = nodos[i];
+      const connectors: ConnectorPointsData = {
+        p12: {
+          x: nodo.left + nodo.width * 0.5,
+          y: nodo.top,
+        },
+        p1_30: {
+          x: nodo.left + nodo.width,
+          y: nodo.top,
+        },
+        p3: {
+          x: nodo.left + nodo.width,
+          y: nodo.top + nodo.height * 0.5,
+        },
+        p4_30: {
+          x: nodo.left + nodo.width,
+          y: nodo.top + nodo.height,
+        },
+        p6: {
+          x: nodo.left + nodo.width * 0.5,
+          y: nodo.top + nodo.height,
+        },
+        p7_30: {
+          x: nodo.left,
+          y: nodo.top + nodo.height,
+        },
+        p9: {
+          x: nodo.left,
+          y: nodo.top + nodo.height * 0.5,
+        },
+        p10_30: {
+          x: nodo.left,
+          y: nodo.top,
+        },
+        center: {
+          x: nodo.left + nodo.width * 0.5,
+          y: nodo.top + nodo.height * 0.5,
+        },
+      };
+      this.whenthenNodeMap[nodo.id] = {
+        model: nodo,
+        connectors,
+      };
+    }
+  }
+
+  deduceQuadrant(from: ConnectorPointsData, to: ConnectorPointsData) {
+    const fromCenter = from.center;
+    const xdiff = to.center.x - fromCenter.x;
+    const ydiff = to.center.y - fromCenter.y;
+    if (xdiff >= 0 && ydiff >= 0) {
+      if (ydiff > xdiff) {
+        return 11;
+      } else {
+        return 12;
+      }
+    }
+    if (xdiff >= 0 && ydiff <= 0) {
+      if (xdiff > -1 * ydiff) {
+        return 21;
+      } else {
+        return 22;
+      }
+    }
+    if (xdiff <= 0 && ydiff <= 0) {
+      if (-1 * ydiff > -1 * xdiff) {
+        return 31;
+      } else {
+        return 32;
+      }
+    }
+    if (xdiff <= 0 && ydiff >= 0) {
+      if (-1 * xdiff > ydiff) {
+        return 41;
+      } else {
+        return 42;
+      }
+    }
+    // Never reach here
+    return 0;
+  }
+
+  recomputeArrows() {
+    // Se deben recorrer las flechas y asignar las posiciones
+    const flechas = this.whenthenArrows;
+    const nodeMap = this.whenthenNodeMap;
+    for (let i = 0; i < flechas.length; i++) {
+      const flecha = flechas[i];
+      const fromNode = nodeMap[flecha.from];
+      const toNode = nodeMap[flecha.to];
+      const quadrantCase = this.deduceQuadrant(
+        fromNode.connectors,
+        toNode.connectors
+      );
+      let corner1: CoordinateData = { x: 0, y: 0 };
+      let corner2: CoordinateData = { x: 0, y: 0 };
+      switch (quadrantCase) {
+        case 11:
+          corner1 = fromNode.connectors.p6;
+          corner2 = toNode.connectors.p12;
+          break;
+        case 12:
+          corner1 = fromNode.connectors.p3;
+          corner2 = toNode.connectors.p9;
+          break;
+        case 21:
+          corner1 = fromNode.connectors.p3;
+          corner2 = toNode.connectors.p9;
+          break;
+        case 22:
+          corner1 = fromNode.connectors.p12;
+          corner2 = toNode.connectors.p6;
+          break;
+        case 31:
+          corner1 = fromNode.connectors.p12;
+          corner2 = toNode.connectors.p6;
+          break;
+        case 32:
+          corner1 = fromNode.connectors.p9;
+          corner2 = toNode.connectors.p3;
+          break;
+        case 41:
+          corner1 = fromNode.connectors.p9;
+          corner2 = toNode.connectors.p3;
+          break;
+        case 42:
+          corner1 = fromNode.connectors.p6;
+          corner2 = toNode.connectors.p12;
+          break;
+      }
+      const corner1Copy: CoordinateData = { x: corner1.x, y: corner1.y };
+      const corner2Copy: CoordinateData = { x: corner2.x, y: corner2.y };
+      if (corner1Copy.x > corner2Copy.x) {
+        const min = corner2Copy.x;
+        corner2Copy.x = corner1Copy.x;
+        corner1Copy.x = min;
+      }
+      if (corner1Copy.y > corner2Copy.y) {
+        const min = corner2Copy.y;
+        corner2Copy.y = corner1Copy.y;
+        corner1Copy.y = min;
+      }
+      const arrowExtra: WhenThenExtraArrowData = {
+        corner1: corner1Copy,
+        corner2: corner2Copy,
+        left: corner1Copy.x,
+        top: corner1Copy.y,
+        width: corner2Copy.x - corner1Copy.x,
+        height: corner2Copy.y - corner1Copy.y,
+        arrow: flecha,
+        class: 'arr_' + quadrantCase,
+      };
+      const arrowKey = `${flecha.from}-${flecha.to}`;
+      this.whenthenExtraArrowMap[arrowKey] = arrowExtra;
+    }
   }
 
   @HostListener('mousemove', ['$event'])
@@ -113,8 +325,8 @@ export class DecisiontreeComponent
       model.top = this.draggData.oldTop - (this.draggData.starty - ev.screenY);
       model.left =
         this.draggData.oldLeft - (this.draggData.startx - ev.screenX);
+      this.recomputeMaps();
+      this.recomputeArrows();
     }
   }
-
-  ngOnChanges(changes: any) {}
 }
