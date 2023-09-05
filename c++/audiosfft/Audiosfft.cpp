@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
 
     cv::Mat gray = createGrayScaleImage(256, 256, 255);
 
+    PaStreamParameters inputParameters;
+    inputParameters.device = data["device"];
+    inputParameters.channelCount = data["channelCount"];
     if (!initializeAudio())
     {
         return -1;
@@ -31,7 +34,7 @@ int main(int argc, char *argv[])
     paTestData audioData;
     PaStream *stream = NULL;
 
-    stream = sampleAudio(&audioData, stream);
+    stream = sampleAudio(&audioData, stream, &inputParameters);
 
     while (true)
     {
