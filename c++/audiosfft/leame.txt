@@ -1,0 +1,16 @@
+Linux:
+sudo apt-get install libasound-dev
+cd /home/ejfdelgado/desarrollo/c++/portaudio/
+./configure && make
+sudo make install
+
+sudo apt-get install libjack-dev
+
+
+https://portaudio.com/docs/v19-doxydocs/compile_cmake.html
+
+cmake ./portaudio -G "Unix Makefiles" -DCMAKE_INSTALL_PREFIX=./portaudio-bin
+cd ./portaudio
+cmake -G "Unix Makefiles"
+make
+sudo make install

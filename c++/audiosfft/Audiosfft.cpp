@@ -3,6 +3,7 @@
  * that best brings the 3D points to their corresponding 2D points.
  */
 #include "Audiosfft.h"
+#include "audio.h"
 #include "utils.h"
 
 #include <iostream>
@@ -19,8 +20,30 @@ int main(int argc, char *argv[])
     std::string fileContent = readTextFile(inputFilePath);
     json data = json::parse(fileContent);
 
+    cv::Mat gray = createGrayScaleImage(256, 256, 255);
+
+    if (!initializeAudio())
+    {
+        return -1;
+    }
+
+    while (true)
+    {
+        showImage(&gray);
+        int value = cv::waitKey(1);
+        // std::cout << value << std::endl;
+        if (value == 113)
+        {
+            break;
+        }
+    }
+
+    gray.release();
+    terminateAudio();
+
     std::string s = data.dump();
     writeTextFile(s, outputFilePath);
     std::cout << s << std::endl;
+    
     return 0;
 }
