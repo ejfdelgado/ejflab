@@ -20,7 +20,7 @@ int main(int argc, char *argv[])
     std::string fileContent = readTextFile(inputFilePath);
     json inputData = json::parse(fileContent);
 
-    cv::Mat gray = createGrayScaleImage(256, 256, 255);
+    cv::Mat gray = createGrayScaleImage(256, inputData["FRAMES_PER_BUFFER"], 255);
 
     PaStreamParameters inputParameters;
     inputParameters.device = inputData["device"];
@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
     }
     else if (inputData["program"] == 2)
     {
-        paTestData audioData;
+        UserAudioData audioData;
 
         stream = sampleAudio(&audioData, stream, &inputParameters, &inputData);
 
@@ -62,7 +62,7 @@ int main(int argc, char *argv[])
     }
 
     std::string s = inputData.dump();
-    //writeTextFile(s, outputFilePath);
+    // writeTextFile(s, outputFilePath);
     std::cout << s << std::endl;
 
     return 0;
