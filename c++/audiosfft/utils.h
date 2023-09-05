@@ -15,6 +15,26 @@
 using json = nlohmann::json;
 using namespace std;
 
+// file - std:string
+std::string readTextFile(std::string path);
+void writeTextFile(std::string data, std::string path);
+
+// json - std::map
+/*
+  json data = json::parse("./archivo.json");
+  std::map<std::string, double> mapa = json2Map<double>(&data);
+  std::cout << mapa["texto"] << std::endl;
+*/
+template <typename T>
+std::map<std::string, T> json2Map(json *v2);
+/*
+  std::map<std::string, std::string> example;
+  example["algo"] = "valor";
+  json data = map2Json<string>(&example);
+*/
+template <typename T>
+std::map<std::string, T> map2Json(std::map<std::string, T> *map);
+
 std::string readTextFile(std::string path)
 {
   ifstream fileStream(path.c_str());
@@ -30,10 +50,6 @@ void writeTextFile(std::string data, std::string path)
   out.close();
 }
 
-/*
-  std::map<std::string, double> mapa = json2Map<double>(&data);
-  std::cout << mapa["texto"] << std::endl;
-*/
 template <typename T>
 std::map<std::string, T> json2Map(json *v2)
 {
@@ -54,17 +70,12 @@ std::map<std::string, T> map2Json(std::map<std::string, T> *map)
 
   typename std::map<std::string, T>::iterator it = map->begin();
 
-  // Iterating over the map using Iterator till map end.
-
   while (it != map->end())
   {
-    // Accessing the key
     std::string word = it->first;
-    // Accessing the value
     output[word] = it->second;
     it++;
   }
-
   return output;
 }
 
