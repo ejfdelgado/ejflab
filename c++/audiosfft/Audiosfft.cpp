@@ -18,44 +18,51 @@ int main(int argc, char *argv[])
     std::string inputFilePath = parser.get<cv::String>("@input");
     std::string outputFilePath = parser.get<cv::String>("@output");
     std::string fileContent = readTextFile(inputFilePath);
-    json data = json::parse(fileContent);
+    json inputData = json::parse(fileContent);
 
     cv::Mat gray = createGrayScaleImage(256, 256, 255);
 
     PaStreamParameters inputParameters;
-    inputParameters.device = data["device"];
-    inputParameters.channelCount = data["channelCount"];
+    inputParameters.device = inputData["device"];
     if (!initializeAudio())
     {
         return -1;
     }
     std::cout << "initializeAudio Ok!" << std::endl;
 
-    paTestData audioData;
     PaStream *stream = NULL;
-
-    stream = sampleAudio(&audioData, stream, &inputParameters);
-
-    while (true)
+    if (inputData["program"] == 1)
     {
-        showImage(&gray);
-        int value = cv::waitKey(1);
-        // std::cout << value << std::endl;
-        // printf("Pa_StartStream ok: %p\n", stream);
-        if (value == 113)
+        displayAudioDevices();
+    }
+    else if (inputData["program"] == 2)
+    {
+        paTestData audioData;
+
+        stream = sampleAudio(&audioData, stream, &inputParameters, &inputData);
+
+        while (true)
         {
-            break;
+            showImage(&gray);
+            int value = cv::waitKey(1);
+            // std::cout << value << std::endl;
+            // printf("Pa_StartStream ok: %p\n", stream);
+            if (value == 113)
+            {
+                break;
+            }
         }
+
+        gray.release();
     }
 
-    gray.release();
     if (terminateAudio(stream))
     {
         std::cout << "terminateAudio Ok!" << std::endl;
     }
 
-    std::string s = data.dump();
-    writeTextFile(s, outputFilePath);
+    std::string s = inputData.dump();
+    //writeTextFile(s, outputFilePath);
     std::cout << s << std::endl;
 
     return 0;
