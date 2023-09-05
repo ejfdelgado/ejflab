@@ -1,5 +1,5 @@
 {
-    "texto": "valor",
-    "numero": 1,
-    "booleano": true
+    "texto": 1.5,
+    "numero": 0,
+    "booleano": -1
 }

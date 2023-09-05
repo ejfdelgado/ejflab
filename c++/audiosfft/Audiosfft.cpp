@@ -18,6 +18,11 @@ int main(int argc, char *argv[])
     std::string outputFilePath = parser.get<cv::String>("@output");
     std::string fileContent = readTextFile(inputFilePath);
     json data = json::parse(fileContent);
+
+    std::map<std::string, std::string> example;
+    example["algo"] = "valor";
+    data = map2Json<string>(&example);
+
     std::string s = data.dump();
     writeTextFile(s, outputFilePath);
     std::cout << s << std::endl;
