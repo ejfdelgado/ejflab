@@ -26,12 +26,19 @@ int main(int argc, char *argv[])
     {
         return -1;
     }
+    std::cout << "initializeAudio Ok!" << std::endl;
+
+    paTestData audioData;
+    PaStream *stream = NULL;
+
+    stream = sampleAudio(&audioData, stream);
 
     while (true)
     {
         showImage(&gray);
         int value = cv::waitKey(1);
         // std::cout << value << std::endl;
+        // printf("Pa_StartStream ok: %p\n", stream);
         if (value == 113)
         {
             break;
@@ -39,11 +46,14 @@ int main(int argc, char *argv[])
     }
 
     gray.release();
-    terminateAudio();
+    if (terminateAudio(stream))
+    {
+        std::cout << "terminateAudio Ok!" << std::endl;
+    }
 
     std::string s = data.dump();
     writeTextFile(s, outputFilePath);
     std::cout << s << std::endl;
-    
+
     return 0;
 }
