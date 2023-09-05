@@ -38,6 +38,9 @@ int main(int argc, char *argv[])
     else if (inputData["program"] == 2)
     {
         UserAudioData audioData;
+        long lineSize = (long)inputData["FRAMES_PER_BUFFER"] * sizeof(SAMPLE);
+        std::cout << "lineSize = " << lineSize << std::endl;
+        audioData.line = (SAMPLE *)malloc(lineSize);
 
         stream = sampleAudio(&audioData, stream, &inputParameters, &inputData);
 
@@ -52,6 +55,8 @@ int main(int argc, char *argv[])
                 break;
             }
         }
+
+        free(audioData.line);
 
         gray.release();
     }

@@ -1,13 +1,13 @@
 #include "portaudio.h"
 #include <stdio.h>
 
+typedef char SAMPLE;
 #define SAMPLE_RATE (44100)
 #define FRAMES_PER_BUFFER (256)
 
 typedef struct
 {
-    float left_phase;
-    float right_phase;
+    SAMPLE *line;
 } UserAudioData;
 /* This routine will be called by the PortAudio engine when audio is needed.
  * It may called at interrupt level on some machines so don't do anything
@@ -21,14 +21,22 @@ static int listeningAudioCallback(const void *inputBuffer, void *outputBuffer,
 {
     /* Cast data passed through stream to our structure. */
     UserAudioData *data = (UserAudioData *)userData;
-    float *out = (float *)outputBuffer;
-    unsigned int i;
     (void)inputBuffer; /* Prevent unused variable warning. */
+    (void)outputBuffer;
 
-    std::cout << framesPerBuffer << std::endl;
+    unsigned int i;
+
+    const SAMPLE *rptr = (const SAMPLE *)inputBuffer;
+    SAMPLE *wptr = &data->line[0];
+    // std::cout << framesPerBuffer << std::endl;
     for (i = 0; i < framesPerBuffer; i++)
     {
+        //*wptr++ = *rptr++;
+        // std::cout << *rptr++ << "|";
+        std::cout << (uint)rptr[i] << "|";
+        //  data->line[i] = rptr[i];
     }
+    std::cout << std::endl;
     return 0;
 }
 
