@@ -151,15 +151,26 @@ export class CalendarComponent implements OnInit {
           },
           9: {
             // Septiembre
+            6: { txt: 'Primer día de clases' },
+            7: { txt: 'Ajuste x festivo 20 de julio' },
+            11: { txt: 'Oftalmologia Joyce 2:30pm' },
           },
           10: {
             // Octubre
+            9: { txt: 'Receso escolar Joyce' },
+            10: { txt: 'Receso escolar Joyce' },
+            11: { txt: 'Receso escolar Joyce' },
+            12: { txt: 'Receso escolar Joyce' },
+            13: { txt: 'Receso escolar Joyce' },
           },
           11: {
             // Noviembre
+            21: { txt: 'No hay clases' },
           },
           12: {
+            1: { txt: 'No hay clases' },
             // Diciembre
+            15: { txt: 'Vacaciones Joyce' },
           },
         },
       },

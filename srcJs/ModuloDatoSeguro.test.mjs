@@ -25,8 +25,9 @@ const test2 = () => {
     console.log(decifrado);
 }
 
-//test();
+test2();
 
+/*
 const texto = "Una calurosa mañana, se encontraba Tío Conejo recolectando zanahorias para el almuerzo. De repente, escuchó un rugido aterrador: ¡era Tío Tigre! \
 —¡Ajá, Tío Conejo! —dijo el felino—. No tienes escapatoria, pronto te convertirás en un delicioso bocadillo. \
 En ese instante, Tío Conejo notó unas piedras muy grandes en lo alto de la colina e ideó un plan. \
@@ -38,4 +39,5 @@ Entonces, Tío Conejo se acercó a la piedra más grande y la empujó con todas 
 Tío Tigre estaba tan emocionado que no vio la enorme piedra que lo aplastó, dejándolo adolorido por meses. \
 Tío Conejo huyó saltando de alegría.";
 console.log(ModuloDatoSeguroBack.ofuscarTexto(texto, true, true, "/"));
-console.log(ModuloDatoSeguroBack.ofuscarTexto("Un computador no puede procesar una imagen que tenga esto", true, true, "/"))
+console.log(ModuloDatoSeguroBack.ofuscarTexto("Un computador no puede procesar una imagen que tenga esto", true, true, "/")):
+*/

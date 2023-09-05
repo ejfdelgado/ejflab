@@ -1,0 +1,25 @@
+/**
+ * This program takes a set of corresponding 2D and 3D points and finds the transformation matrix
+ * that best brings the 3D points to their corresponding 2D points.
+ */
+#include "Audiosfft.h"
+#include "utils.h"
+
+#include <iostream>
+#include <string>
+
+int main(int argc, char *argv[])
+{
+    cv::CommandLineParser parser(argc, argv,
+                                 "{@input   i|../data/example.json|input json file}"
+                                 "{@output   o|../data/output.json|output json file}");
+    parser.printMessage();
+    std::string inputFilePath = parser.get<cv::String>("@input");
+    std::string outputFilePath = parser.get<cv::String>("@output");
+    std::string fileContent = readTextFile(inputFilePath);
+    json data = json::parse(fileContent);
+    std::string s = data.dump();
+    writeTextFile(s, outputFilePath);
+    std::cout << s << std::endl;
+    return 0;
+}

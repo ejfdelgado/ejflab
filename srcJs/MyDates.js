@@ -151,7 +151,9 @@ class MyDates {
         const dia = fecha.getUTCDate();
         return dia + 100 * mes + anio * 10000;
     }
-    // Esta función es muy peligrosa porque supera MAX SAFE INTEGER constant is 9007199254740991
+    // Esta función es muy peligrosa porque supera MAX SAFE INTEGER constant is 
+    //9007199254740991
+    //20231204093015
     static getDayAsContinuosNumberHmmSSmmm(fecha) {
         const anio = fecha.getUTCFullYear();
         const mes = fecha.getUTCMonth() + 1;
@@ -161,6 +163,15 @@ class MyDates {
         const segundos = fecha.getUTCSeconds();//00
         const milisegundos = fecha.getUTCMilliseconds();//000
         return milisegundos + 1000 * segundos + minutos * 100000 + horas * 10000000 + dia * 1000000000 + 100000000000 * mes + anio * 10000000000000;
+    }
+    static getDayAsContinuosNumberHmmSS(fecha) {
+        const anio = fecha.getUTCFullYear();
+        const mes = fecha.getUTCMonth() + 1;
+        const dia = fecha.getUTCDate();
+        const horas = fecha.getUTCHours();//00
+        const minutos = fecha.getUTCMinutes();//00
+        const segundos = fecha.getUTCSeconds();//00
+        return segundos + minutos * 100 + horas * 10000 + dia * 1000000 + 100000000 * mes + anio * 10000000000;
     }
     static isToday(someDate) {
         const fecha = new Date(someDate);
