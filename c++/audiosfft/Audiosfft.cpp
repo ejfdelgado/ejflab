@@ -47,8 +47,11 @@ int main(int argc, char *argv[])
     }
 
     PaStreamParameters inputParameters;
-    // inputParameters.device = inputData["device"];
-    inputParameters.device = Pa_GetDefaultInputDevice();
+    inputParameters.device = inputData["device"];
+    if (inputParameters.device < 0)
+    {
+        inputParameters.device = Pa_GetDefaultInputDevice();
+    }
     std::cout << "inputParameters.device = " << inputParameters.device << std::endl;
 
     PaStream *stream = NULL;

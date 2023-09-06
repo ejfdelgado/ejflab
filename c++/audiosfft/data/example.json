@@ -1,6 +1,6 @@
 {
     "program": 2,
-    "device": 4,
+    "device": -1,
     "channelCount": 1,
     "SAMPLE_RATE": 44100,
     "FRAMES_PER_BUFFER": 512
