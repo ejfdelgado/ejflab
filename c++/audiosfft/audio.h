@@ -1,5 +1,10 @@
+
+#ifndef __audios_h__
+#define __audios_h__
+
 #include "portaudio.h"
 #include <stdio.h>
+#include <nlohmann/json.hpp>
 
 typedef float SAMPLE;
 #define PA_SAMPLE_TYPE paFloat32
@@ -9,6 +14,8 @@ typedef float SAMPLE;
 
 #define SAMPLE_RATE (44100)
 #define FRAMES_PER_BUFFER (256)
+
+using json = nlohmann::json;
 
 typedef struct
 {
@@ -285,3 +292,5 @@ void displayAudioDevices()
         }
     }
 }
+
+#endif

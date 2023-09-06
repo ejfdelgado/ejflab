@@ -3,5 +3,6 @@
     "device": -1,
     "channelCount": 1,
     "SAMPLE_RATE": 44100,
-    "FRAMES_PER_BUFFER": 512
+    "FRAMES_PER_BUFFER": 512,
+    "MAX_AMPLITUD": 0.6
 }

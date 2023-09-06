@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         audioData.line[i] = 0;
     }
 
-    cv::Mat gray = createGrayScaleImage(256, inputData["FRAMES_PER_BUFFER"], 255);
+    cv::Mat gray = createGrayScaleImage(sizeof(IMAGE_MAT_TYPE) * 256, inputData["FRAMES_PER_BUFFER"], 0);
 
     if (!initializeAudio())
     {
@@ -65,6 +65,7 @@ int main(int argc, char *argv[])
 
         while (true)
         {
+            printAudioOnImage(&gray, &audioData, &inputData);
             showImage(&gray);
             int value = cv::waitKey(1);
             if (value == 113)
