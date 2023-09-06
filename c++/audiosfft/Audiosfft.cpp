@@ -20,15 +20,36 @@ int main(int argc, char *argv[])
     std::string fileContent = readTextFile(inputFilePath);
     json inputData = json::parse(fileContent);
 
+    UserAudioData audioData;
+    int numSamples = (int)inputData["FRAMES_PER_BUFFER"];
+    int numBytes = numSamples * sizeof(SAMPLE);
+    std::cout << "NumBytes: " << numBytes << ", NumSamples: " << numSamples << std::endl;
+    audioData.line = (SAMPLE *)malloc(numBytes);
+    if (audioData.line == NULL)
+    {
+        std::cout << "Error reservando " << numBytes << " bytes" << std::endl;
+        return -1;
+    }
+    else
+    {
+        std::cout << "Reservados " << numBytes << " bytes" << std::endl;
+    }
+    for (unsigned int i = 0; i < numSamples; i++)
+    {
+        audioData.line[i] = 0;
+    }
+
     cv::Mat gray = createGrayScaleImage(256, inputData["FRAMES_PER_BUFFER"], 255);
 
-    PaStreamParameters inputParameters;
-    inputParameters.device = inputData["device"];
     if (!initializeAudio())
     {
         return -1;
     }
-    std::cout << "initializeAudio Ok!" << std::endl;
+
+    PaStreamParameters inputParameters;
+    // inputParameters.device = inputData["device"];
+    inputParameters.device = Pa_GetDefaultInputDevice();
+    std::cout << "inputParameters.device = " << inputParameters.device << std::endl;
 
     PaStream *stream = NULL;
     if (inputData["program"] == 1)
@@ -37,26 +58,17 @@ int main(int argc, char *argv[])
     }
     else if (inputData["program"] == 2)
     {
-        UserAudioData audioData;
-        long lineSize = (long)inputData["FRAMES_PER_BUFFER"] * sizeof(SAMPLE);
-        std::cout << "lineSize = " << lineSize << std::endl;
-        audioData.line = (SAMPLE *)malloc(lineSize);
-
         stream = sampleAudio(&audioData, stream, &inputParameters, &inputData);
 
         while (true)
         {
             showImage(&gray);
             int value = cv::waitKey(1);
-            // std::cout << value << std::endl;
-            // printf("Pa_StartStream ok: %p\n", stream);
             if (value == 113)
             {
                 break;
             }
         }
-
-        free(audioData.line);
 
         gray.release();
     }
@@ -70,5 +82,6 @@ int main(int argc, char *argv[])
     // writeTextFile(s, outputFilePath);
     std::cout << s << std::endl;
 
+    free(audioData.line);
     return 0;
 }

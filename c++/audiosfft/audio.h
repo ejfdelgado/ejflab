@@ -1,7 +1,12 @@
 #include "portaudio.h"
 #include <stdio.h>
 
-typedef char SAMPLE;
+typedef float SAMPLE;
+#define PA_SAMPLE_TYPE paFloat32
+
+// typedef char SAMPLE;
+// #define PA_SAMPLE_TYPE paUInt8
+
 #define SAMPLE_RATE (44100)
 #define FRAMES_PER_BUFFER (256)
 
@@ -19,49 +24,52 @@ static int listeningAudioCallback(const void *inputBuffer, void *outputBuffer,
                                   PaStreamCallbackFlags statusFlags,
                                   void *userData)
 {
-    /* Cast data passed through stream to our structure. */
     UserAudioData *data = (UserAudioData *)userData;
-    (void)inputBuffer; /* Prevent unused variable warning. */
+    (void)inputBuffer;
     (void)outputBuffer;
-
+    int finished;
     unsigned int i;
 
     const SAMPLE *rptr = (const SAMPLE *)inputBuffer;
-    SAMPLE *wptr = &data->line[0];
+    SAMPLE *wptr = &(data->line[0]);
     // std::cout << framesPerBuffer << std::endl;
     for (i = 0; i < framesPerBuffer; i++)
     {
-        //*wptr++ = *rptr++;
-        // std::cout << *rptr++ << "|";
-        std::cout << (uint)rptr[i] << "|";
-        //  data->line[i] = rptr[i];
+        *wptr++ = *rptr++;
     }
-    std::cout << std::endl;
-    return 0;
+    // finished = paComplete;
+    finished = paContinue;
+    //  finished = 0;
+    return finished;
 }
 
 PaStream *sampleAudio(UserAudioData *data, PaStream *stream, PaStreamParameters *inputParameters, json *inputData)
 {
     PaError err;
     inputParameters->channelCount = (*inputData)["channelCount"];
-    inputParameters->sampleFormat = paUInt8;
+    std::cout << "inputParameters->channelCount = " << inputParameters->channelCount << std::endl;
+    inputParameters->sampleFormat = PA_SAMPLE_TYPE;
     inputParameters->suggestedLatency = Pa_GetDeviceInfo(inputParameters->device)->defaultLowInputLatency;
     inputParameters->hostApiSpecificStreamInfo = NULL;
 
     err = Pa_OpenStream(
         &stream,
         inputParameters,
-        NULL,
+        NULL, /* &outputParameters, */
         (*inputData)["SAMPLE_RATE"],
         // paFramesPerBufferUnspecified,
         (*inputData)["FRAMES_PER_BUFFER"],
         paClipOff,
         listeningAudioCallback,
-        &data);
+        data);
     if (err != paNoError)
     {
         printf("Pa_OpenDefaultStream error: %s\n", Pa_GetErrorText(err));
         return NULL;
+    }
+    else
+    {
+        printf("Pa_OpenDefaultStream ok!\n");
     }
 
     err = Pa_StartStream(stream);

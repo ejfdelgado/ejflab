@@ -39,6 +39,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
 #include "portaudio.h"
 
 /* #define SAMPLE_RATE  (17932) // Test failure to open with this value. */
@@ -139,6 +140,7 @@ static int recordCallback(const void *inputBuffer, void *outputBuffer,
                 *wptr++ = *rptr++; /* right */
         }
     }
+    std::cout << framesToCalc << ", ";
     data->frameIndex += framesToCalc;
     return finished;
 }
