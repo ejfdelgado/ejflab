@@ -21,9 +21,11 @@ int main(int argc, char *argv[])
     json inputData = json::parse(fileContent);
 
     UserAudioData audioData;
-    int numSamples = (int)inputData["FRAMES_PER_BUFFER"];
+    unsigned int numSamples = floor((float)inputData["SECONDS"] * (unsigned int)inputData["SAMPLE_RATE"]);
     int numBytes = numSamples * sizeof(SAMPLE);
-    std::cout << "NumBytes: " << numBytes << ", NumSamples: " << numSamples << std::endl;
+    std::cout << "Buffer has " << numBytes << " bytes with " << numSamples << " samples" << std::endl;
+    audioData.startingPoint = 0;
+    audioData.maxSize = numSamples;
     audioData.line = (SAMPLE *)malloc(numBytes);
     if (audioData.line == NULL)
     {
@@ -39,7 +41,7 @@ int main(int argc, char *argv[])
         audioData.line[i] = 0;
     }
 
-    cv::Mat gray = createGrayScaleImage(sizeof(IMAGE_MAT_TYPE) * 256, inputData["FRAMES_PER_BUFFER"], 0);
+    cv::Mat gray = createGrayScaleImage(sizeof(IMAGE_MAT_TYPE) * 256, inputData["DISPLAY_WIDTH"], 0);
 
     if (!initializeAudio())
     {

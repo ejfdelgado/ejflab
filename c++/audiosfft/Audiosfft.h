@@ -7,6 +7,7 @@
 
 #define IMAGE_MAT_TYPE unsigned char
 
+#include <cmath>
 #include <iostream>
 #include <string>
 #include "opencv2/core/core.hpp"
@@ -32,14 +33,19 @@ void showImage(cv::Mat *mat)
 
 void printAudioOnImage(cv::Mat *mat, UserAudioData *audioData, json *inputData)
 {
+    unsigned int i;
+    unsigned int interpolated;
+    unsigned int height = mat->rows;
+    unsigned int width = mat->cols;
     IMAGE_MAT_TYPE *input = (IMAGE_MAT_TYPE *)(mat->data);
     float maxValue = (*inputData)["MAX_AMPLITUD"];
-    const unsigned int width = (*inputData)["FRAMES_PER_BUFFER"];
-    unsigned int i;
+    const unsigned int bufferSize = audioData->maxSize;
     SAMPLE *buffer = audioData->line;
+
     for (i = 0; i < width; i++)
     {
-        float val = buffer[i] / maxValue;
+        interpolated = floor(bufferSize * i / width);
+        float val = buffer[interpolated] / maxValue;
         if (val > 1)
         {
             val = 1;

@@ -13,20 +13,21 @@ typedef float SAMPLE;
 // #define PA_SAMPLE_TYPE paUInt8
 
 #define SAMPLE_RATE (44100)
-#define FRAMES_PER_BUFFER (256)
 
 using json = nlohmann::json;
 
 typedef struct
 {
     SAMPLE *line;
+    unsigned long startingPoint;
+    unsigned long maxSize;
 } UserAudioData;
 /* This routine will be called by the PortAudio engine when audio is needed.
  * It may called at interrupt level on some machines so don't do anything
  * that could mess up the system like calling malloc() or free().
  */
 static int listeningAudioCallback(const void *inputBuffer, void *outputBuffer,
-                                  unsigned long framesPerBuffer,
+                                  unsigned long thisBufferSize,
                                   const PaStreamCallbackTimeInfo *timeInfo,
                                   PaStreamCallbackFlags statusFlags,
                                   void *userData)
@@ -38,12 +39,32 @@ static int listeningAudioCallback(const void *inputBuffer, void *outputBuffer,
     unsigned int i;
 
     const SAMPLE *rptr = (const SAMPLE *)inputBuffer;
-    SAMPLE *wptr = &(data->line[0]);
-    // std::cout << framesPerBuffer << std::endl;
-    for (i = 0; i < framesPerBuffer; i++)
+    // std::cout << thisBufferSize << std::endl;
+    unsigned long startingPoint = data->startingPoint;
+    unsigned long moveCount = 0;
+    unsigned int loQueCabe = data->maxSize - startingPoint;
+    unsigned int loQueTocaDescartar = 0;
+    if (thisBufferSize > loQueCabe)
+    {
+        loQueTocaDescartar = thisBufferSize - loQueCabe;
+        moveCount = data->maxSize - loQueTocaDescartar;
+        SAMPLE *source = &(data->line[loQueTocaDescartar]);
+        SAMPLE *destination = &(data->line[0]);
+        for (i = 0; i < moveCount; i++)
+        {
+            *destination++ = *source++;
+        }
+        // Se hace el corrimiento a la izquierda
+        // startingPoint = data->maxSize - thisBufferSize;
+        startingPoint -= loQueTocaDescartar;
+    }
+
+    SAMPLE *wptr = &(data->line[startingPoint]);
+    for (i = 0; i < thisBufferSize; i++)
     {
         *wptr++ = *rptr++;
     }
+    data->startingPoint += loQueCabe;
     // finished = paComplete;
     finished = paContinue;
     //  finished = 0;
@@ -59,13 +80,18 @@ PaStream *sampleAudio(UserAudioData *data, PaStream *stream, PaStreamParameters 
     inputParameters->suggestedLatency = Pa_GetDeviceInfo(inputParameters->device)->defaultLowInputLatency;
     inputParameters->hostApiSpecificStreamInfo = NULL;
 
+    unsigned long framsePerBuffer = (*inputData)["SAMPLED_FRAMES"];
+    if (framsePerBuffer == 0)
+    {
+        framsePerBuffer = paFramesPerBufferUnspecified;
+    }
+
     err = Pa_OpenStream(
         &stream,
         inputParameters,
         NULL, /* &outputParameters, */
         (*inputData)["SAMPLE_RATE"],
-        // paFramesPerBufferUnspecified,
-        (*inputData)["FRAMES_PER_BUFFER"],
+        framsePerBuffer,
         paClipOff,
         listeningAudioCallback,
         data);
