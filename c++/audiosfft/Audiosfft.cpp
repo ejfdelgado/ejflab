@@ -9,6 +9,8 @@
 #include <iostream>
 #include <string>
 
+// Pyton https://www.tensorflow.org/tutorials/audio/simple_audio?hl=es-419
+
 int main(int argc, char *argv[])
 {
     cv::CommandLineParser parser(argc, argv,

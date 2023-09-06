@@ -1,10 +1,10 @@
 {
     "program": 2,
+    "SECONDS": 2,
+    "SAMPLE_RATE": 44100,
+    "MAX_AMPLITUD": 0.6,
     "device": -1,
     "channelCount": 1,
-    "SAMPLE_RATE": 44100,
-    "SECONDS": 0.5,
     "SAMPLED_FRAMES": 0,
-    "DISPLAY_WIDTH": 1500,
-    "MAX_AMPLITUD": 0.6
+    "DISPLAY_WIDTH": 1500
 }
