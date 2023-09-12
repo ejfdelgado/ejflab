@@ -54,6 +54,7 @@ int main(int argc, char *argv[])
     unsigned int dftWidth = (numSamples - WINDOW_DFT) / audioData.maxGap;
     std::cout << "dftWidth: " << dftWidth << std::endl;
     cv::Mat *spectrogram = new cv::Mat(inputData["DFT_HEIGHT"], dftWidth, CV_32F, cv::Scalar::all(0));
+    cv::Mat *cm_spectrogram = new cv::Mat(inputData["DFT_HEIGHT"], dftWidth, CV_8UC3, cv::Scalar(0, 0, 0));
 
     if (!initializeAudio())
     {
@@ -80,8 +81,9 @@ int main(int argc, char *argv[])
         while (true)
         {
             printAudioOnImage(&gray, &audioData, &inputData);
-            computeDft(&baseDft, &audioData, &inputData, spectrogram);
-            showImage(&gray);
+            computeDft(&baseDft, &audioData, &inputData, spectrogram, cm_spectrogram);
+            //showImage(&gray);
+            showSTFT(cm_spectrogram);
             int value = cv::waitKey(1);
             if (value == 113)
             {

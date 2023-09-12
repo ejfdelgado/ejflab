@@ -1,8 +1,8 @@
 {
     "program": 2,
-    "SECONDS": 2,
-    "WINDOW_DFT_SECONS": 0.2,
-    "GAP_DFT_SECONS": 0.1,
+    "SECONDS": 1,
+    "WINDOW_DFT_SECONS": 0.1,
+    "GAP_DFT_SECONS": 0.005,
     "DFT_HEIGHT": 256,
     "SAMPLE_RATE": 44100,
     "MAX_AMPLITUD": 0.6,

@@ -37,7 +37,12 @@ void showImage(cv::Mat *mat)
     cv::imshow("gray", *mat);
 }
 
-void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::Mat *spectrogram)
+void showSTFT(cv::Mat *mat)
+{
+    cv::imshow("stft", *mat);
+}
+
+void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::Mat *spectrogram, cv::Mat *cm_spectrogram)
 {
     if (!audioData->gapReady)
     {
@@ -88,7 +93,16 @@ void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::M
     // Normalize values to the Range : 0.0 to 1.0
     cv::normalize(line, line, 0, 1, cv::NORM_MINMAX);
     cv::flip(line, line, 0);
-    // cv::hconcat(line, spectrogram->colRange(0, spectrogram->cols - 1), *spectrogram);
+    // shift image to left
+    unsigned int shiftAmount = audio->cols;
+    (*spectrogram)(cv::Rect(shiftAmount, 0, spectrogram->cols - shiftAmount, spectrogram->rows)).copyTo((*spectrogram)(cv::Rect(0, 0, spectrogram->cols - shiftAmount, spectrogram->rows)));
+    // Paint line
+    line.copyTo((*spectrogram)(cv::Rect(spectrogram->cols - shiftAmount, 0, shiftAmount, spectrogram->rows)));
+
+    spectrogram->convertTo(*cm_spectrogram, CV_8UC3, 255.0);
+    cv::applyColorMap(*cm_spectrogram, *cm_spectrogram, cv::COLORMAP_JET);
+
+    // return cm_spectrogram;
 }
 
 void printAudioOnImage(cv::Mat *mat, UserAudioData *audioData, json *inputData)
