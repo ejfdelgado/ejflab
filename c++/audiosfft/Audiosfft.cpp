@@ -1,7 +1,4 @@
-/**
- * This program takes a set of corresponding 2D and 3D points and finds the transformation matrix
- * that best brings the 3D points to their corresponding 2D points.
- */
+
 #include "Audiosfft.h"
 #include "audio.h"
 #include "utils.h"
@@ -44,6 +41,19 @@ int main(int argc, char *argv[])
     }
 
     cv::Mat gray = createGrayScaleImage(sizeof(IMAGE_MAT_TYPE) * 256, inputData["DISPLAY_WIDTH"], 0);
+    // Create image for dft
+    unsigned int WINDOW_DFT = floor((float)inputData["WINDOW_DFT_SECONS"] * (unsigned int)inputData["SAMPLE_RATE"]);
+    // Force to be the closest even number...
+    WINDOW_DFT = round(WINDOW_DFT / 2) * 2;
+    std::cout << "WINDOW_DFT: " << WINDOW_DFT << std::endl;
+    audioData.gapReady = false;
+    audioData.countGap = 0;
+    audioData.maxGap = floor((float)inputData["GAP_DFT_SECONS"] * (unsigned int)inputData["SAMPLE_RATE"]);
+    std::cout << "maxGap: " << audioData.maxGap << std::endl;
+    cv::Mat baseDft = createBaseDft(WINDOW_DFT);
+    unsigned int dftWidth = (numSamples - WINDOW_DFT) / audioData.maxGap;
+    std::cout << "dftWidth: " << dftWidth << std::endl;
+    cv::Mat *spectrogram = new cv::Mat(inputData["DFT_HEIGHT"], dftWidth, CV_32F, cv::Scalar::all(0));
 
     if (!initializeAudio())
     {
@@ -70,6 +80,7 @@ int main(int argc, char *argv[])
         while (true)
         {
             printAudioOnImage(&gray, &audioData, &inputData);
+            computeDft(&baseDft, &audioData, &inputData, spectrogram);
             showImage(&gray);
             int value = cv::waitKey(1);
             if (value == 113)

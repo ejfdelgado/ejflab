@@ -21,6 +21,9 @@ typedef struct
     SAMPLE *line;
     unsigned long startingPoint;
     unsigned long maxSize;
+    bool gapReady;
+    unsigned long countGap;
+    unsigned long maxGap;
 } UserAudioData;
 /* This routine will be called by the PortAudio engine when audio is needed.
  * It may called at interrupt level on some machines so don't do anything
@@ -63,6 +66,18 @@ static int listeningAudioCallback(const void *inputBuffer, void *outputBuffer,
     for (i = 0; i < thisBufferSize; i++)
     {
         *wptr++ = *rptr++;
+    }
+    if (data->countGap > data->maxGap)
+    {
+        if (!data->gapReady)
+        {
+            // Turn on flag
+            data->gapReady = true;
+        }
+    }
+    else
+    {
+        data->countGap += thisBufferSize;
     }
     data->startingPoint += loQueCabe;
     // finished = paComplete;

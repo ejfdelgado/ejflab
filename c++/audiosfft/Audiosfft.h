@@ -26,9 +26,69 @@ cv::Mat createGrayScaleImage(int height, int width, uchar value)
     return mat;
 }
 
+cv::Mat createBaseDft(unsigned int windowSize)
+{
+    cv::Mat audio(windowSize, 1, CV_32S, cv::Scalar::all(0));
+    return audio;
+}
+
 void showImage(cv::Mat *mat)
 {
     cv::imshow("gray", *mat);
+}
+
+void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::Mat *spectrogram)
+{
+    if (!audioData->gapReady)
+    {
+        return;
+    }
+    // Turn off flag
+    audioData->countGap = 0;
+    audioData->gapReady = false;
+    // Compute!
+    // std::cout << "Compute dft and add it!" << std::endl;
+
+    float val;
+    SAMPLE *buffer = audioData->line;
+    float maxValue = (*inputData)["MAX_AMPLITUD"];
+    const unsigned int bufferSize = audioData->maxSize;
+    const unsigned int offset = bufferSize - audioData->maxGap;
+    // Se copia la señal de audio a la matriz
+    for (int i = 0; i < audioData->maxGap; i++)
+    {
+        val = buffer[offset + i];
+        val = val / maxValue;
+        if (val > 1)
+        {
+            val = 1;
+        }
+        else if (val < -1)
+        {
+            val = -1;
+        }
+        // val = 256 * (val + 1) / 2; // [0, 255]
+        val = 256 * val; // [-255, 255]
+        audio->at<int>(i) = val;
+    }
+    cv::Mat planes[] = {cv::Mat_<float>(*audio), cv::Mat::zeros(audio->size(), CV_32F)};
+    cv::Mat complexI;
+    cv::merge(planes, 2, complexI);                 // Add to the expanded another plane with zeros
+    cv::dft(complexI, complexI);                    // this way the result may fit in the source matrix
+    cv::split(complexI, planes);                    // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+    cv::magnitude(planes[0], planes[1], planes[0]); // planes[0] = magnitude
+    cv::Mat magI = planes[0];
+    magI = magI(cv::Rect(0, 0, 1, audioData->maxGap / 2));
+    magI += cv::Scalar::all(1); // switch to logarithmic scale
+    cv::log(magI, magI);
+    // Represent Information
+    cv::Mat line;
+    magI.copyTo(line);
+    cv::resize(line, line, cv::Size(1, (*inputData)["DFT_HEIGHT"]));
+    // Normalize values to the Range : 0.0 to 1.0
+    cv::normalize(line, line, 0, 1, cv::NORM_MINMAX);
+    cv::flip(line, line, 0);
+    // cv::hconcat(line, spectrogram->colRange(0, spectrogram->cols - 1), *spectrogram);
 }
 
 void printAudioOnImage(cv::Mat *mat, UserAudioData *audioData, json *inputData)

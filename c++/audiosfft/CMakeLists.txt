@@ -6,7 +6,7 @@
 ## sudo rm -R build && mkdir build && cd build
 ## cmake ../ && make -j 8
 ## chmod +x Audiosfft
-## ./Audiosfft "1"
+## ./Audiosfft
 
 cmake_minimum_required(VERSION 2.8)
 project( Audiosfft )
