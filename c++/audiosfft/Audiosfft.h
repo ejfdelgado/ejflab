@@ -42,7 +42,7 @@ void showSTFT(cv::Mat *mat)
     cv::imshow("stft", *mat);
 }
 
-void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::Mat *spectrogram, cv::Mat *cm_spectrogram)
+void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::Mat *spectrogram, cv::Mat *cm_spectrogram, cv::Mat *planes0, cv::Mat *planes1)
 {
     if (!audioData->gapReady)
     {
@@ -72,11 +72,14 @@ void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::M
         {
             val = -1;
         }
-        // val = 256 * (val + 1) / 2; // [0, 255]
+        // val = 256 * (val + 1) / 2; // [0, 255] // NO
         val = 256 * val; // [-255, 255]
+        // val = 512 * val; // [-255, 255]
         audio->at<int>(i) = val;
     }
-    cv::Mat planes[] = {cv::Mat_<float>(*audio), cv::Mat::zeros(audio->size(), CV_32F)};
+    planes1->setTo(cv::Scalar(0));
+    audio->convertTo(*planes0, CV_32F);
+    cv::Mat planes[] = {*planes0, *planes1};
     cv::Mat complexI;
     cv::merge(planes, 2, complexI);                 // Add to the expanded another plane with zeros
     cv::dft(complexI, complexI);                    // this way the result may fit in the source matrix
@@ -101,8 +104,6 @@ void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::M
 
     spectrogram->convertTo(*cm_spectrogram, CV_8UC3, 255.0);
     cv::applyColorMap(*cm_spectrogram, *cm_spectrogram, cv::COLORMAP_JET);
-
-    // return cm_spectrogram;
 }
 
 void printAudioOnImage(cv::Mat *mat, UserAudioData *audioData, json *inputData)
