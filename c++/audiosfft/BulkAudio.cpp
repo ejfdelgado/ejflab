@@ -27,6 +27,7 @@ int numChannels;
 int sampleRate;
 PaSampleFormat sampleFormat;
 int bytesPerSample, bitsPerSample;
+UserAudioData audioData;
 
 int paStreamCallback(
     const void *input, void *output,
@@ -35,10 +36,18 @@ int paStreamCallback(
     PaStreamCallbackFlags statusFlags,
     void *userData)
 {
+    UserAudioData *data = (UserAudioData *)userData;
     size_t numRead = fread(output, bytesPerSample * numChannels, frameCount, wavfile);
-    output = (uint8_t *)output + numRead * numChannels * bytesPerSample;
-    frameCount -= numRead;
 
+    const uint8_t *rptr = (const uint8_t *)output;
+
+    output = (uint8_t *)output + numRead * numChannels * bytesPerSample;
+    frameCount -= numRead; // Es igual siempre excepto la última vez
+
+    // Copy fron one side to another
+    unsigned long startingPoint = data->startingPoint;
+    SAMPLE *wptr = &(data->line[startingPoint]);
+    // std::cout << "frameCount = " << frameCount << std::endl;
     if (frameCount > 0)
     {
         memset(output, 0, frameCount * numChannels * bytesPerSample);
@@ -48,7 +57,7 @@ int paStreamCallback(
     return paContinue;
 }
 
-bool portAudioOpen()
+bool portAudioOpen(json *inputData, UserAudioData *data)
 {
     CHECK(Pa_Initialize() == paNoError);
 
@@ -62,6 +71,14 @@ bool portAudioOpen()
     outputParameters.sampleFormat = sampleFormat;
     outputParameters.suggestedLatency = Pa_GetDeviceInfo(outputParameters.device)->defaultHighOutputLatency;
 
+    // Prepare user buffer
+    unsigned int numSamples = floor((float)(*inputData)["SECONDS"] * sampleRate);
+    int numBytes = numSamples * sizeof(SAMPLE);
+    std::cout << "Buffer has " << numBytes << " bytes with " << numSamples << " samples" << std::endl;
+    audioData.startingPoint = 0;
+    audioData.maxSize = numSamples;
+    audioData.line = (SAMPLE *)malloc(numBytes);
+
     PaError ret = Pa_OpenStream(
         &stream,
         NULL, // no input
@@ -70,7 +87,7 @@ bool portAudioOpen()
         paFramesPerBufferUnspecified, // framesPerBuffer
         0,                            // flags
         &paStreamCallback,
-        NULL // void *userData
+        data // void *userData
     );
 
     if (ret != paNoError)
@@ -151,8 +168,17 @@ void readFmtChunk(uint32_t chunkLen)
 
 int main(int argc, char **argv)
 {
-    CHECK(argc > 1);
-    wavfile = fopen(argv[1], "r");
+
+    cv::CommandLineParser parser(argc, argv,
+                                 "{@config   i|../data/example.json|config json file}"
+                                 "{@wav   o|../data/recorded/ejemplo.wav|wav file}");
+    parser.printMessage();
+    std::string configFilePath = parser.get<cv::String>("@config");
+    std::string wavFilePath = parser.get<cv::String>("@wav");
+    std::string fileContent = readTextFile(configFilePath);
+    json inputData = json::parse(fileContent);
+
+    wavfile = fopen(wavFilePath.c_str(), "r");
     CHECK(wavfile != NULL);
 
     CHECK(freadStr(wavfile, 4) == "RIFF");
@@ -180,7 +206,7 @@ int main(int argc, char **argv)
     }
 
     printf("start playing...\n");
-    CHECK(portAudioOpen());
+    CHECK(portAudioOpen(&inputData, &audioData));
 
     // wait until stream has finished playing
     while (Pa_IsStreamActive(stream) > 0)
@@ -190,4 +216,5 @@ int main(int argc, char **argv)
     fclose(wavfile);
     Pa_CloseStream(stream);
     Pa_Terminate();
+    free(audioData.line);
 }

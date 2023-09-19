@@ -1,6 +1,6 @@
 {
     "program": 2,
-    "SECONDS": 5,
+    "SECONDS": 10,
     "WINDOW_DFT_SECONS": 0.02,
     "GAP_DFT_SECONS": 0.01,
     "DFT_HEIGHT": 128,
