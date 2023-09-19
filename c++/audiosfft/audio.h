@@ -2,6 +2,7 @@
 #ifndef __audios_h__
 #define __audios_h__
 
+#include <fstream>
 #include "portaudio.h"
 #include <stdio.h>
 #include <nlohmann/json.hpp>
@@ -131,6 +132,94 @@ PaStream *sampleAudio(UserAudioData *data, PaStream *stream, PaStreamParameters 
         printf("Pa_StartStream ok: %p\n", stream);
         return stream;
     }
+}
+
+// saveWav("/home/acer/Masaüstü/kaydett.wav", &audioData, &inputData);
+void saveWav(std::string path, UserAudioData *audioData, json *inputData)
+{
+    float val;
+    SAMPLE *buffer = audioData->line;
+    float maxValue = (*inputData)["MAX_AMPLITUD"];
+    const unsigned int bufferSize = audioData->maxSize;
+    unsigned int myDataSize = bufferSize * 2;
+    char *myData = new char[myDataSize];
+    // Se copia la señal de audio a la matriz
+    for (int i = 0; i < bufferSize; i++)
+    {
+        val = buffer[i] / maxValue;
+        if (val > 1)
+        {
+            val = 1;
+        }
+        else if (val < -1)
+        {
+            val = -1;
+        }
+        val = 65536 * (val + 1) / 2; // [0, 255] // NO
+        //val = 256 * (val + 1) / 2; // [0, 255] // NO
+        // val = 65536 * val; // [-255, 255]
+        //  val = 512 * val; // [-255, 255]
+
+        
+        unsigned short val16 = (unsigned short)val;
+        unsigned short part1 = val16 & 0xFF;
+        unsigned short part2 = (val16 >> 8) & 0xFF;
+        myData[2 * i] = (char)part1;
+        myData[2 * i + 1] = (char)part2;
+        std::cout << val << " | " << (unsigned short)val16 << " | " << part1 << " | " << part2 << std::endl;
+        
+        //myData[2 * i] = (char)part1;
+
+    }
+
+    int sampleRate = SAMPLE_RATE;
+
+    int bitsPerSample = 16;
+
+    int subchunk1size = 16;
+
+    int numChannels = 1;
+
+    std::cout << "myDataSize=" << myDataSize << std::endl;
+
+    // int subchunk2size = numSamples * numChannels * bitsPerSample/8;
+    int subchunk2size = myDataSize * numChannels;
+
+    int chunksize = 36 + subchunk2size;
+
+    int audioFormat = 1;
+
+    int temp1 = bitsPerSample / 8;
+    // temp1 = sizeof(short);
+
+    int byteRate = sampleRate * numChannels * temp1;
+
+    int blockAlign = numChannels * temp1;
+
+    std::fstream myFile(path.c_str(), std::ios::out | std::ios::binary);
+
+    myFile.seekp(0, std::ios::beg);
+    myFile.write("RIFF", 4);
+    myFile.write((char *)&chunksize, 4); // 0
+    myFile.write("WAVE", 4);
+    myFile.write("fmt ", 4);
+    myFile.write((char *)&subchunk1size, 4); // 16=
+    myFile.write((char *)&audioFormat, 2);   // 1=
+    myFile.write((char *)&numChannels, 2);   // 1
+    myFile.write((char *)&sampleRate, 4);    // 44100
+
+    myFile.write((char *)&byteRate, 4);
+
+    myFile.write((char *)&blockAlign, 2);
+
+    myFile.write((char *)&bitsPerSample, 2); // 16
+    myFile.write("data", 4);
+    // myFile.write( (char*) &myDataSize, 4 );
+    myFile.write((char *)&subchunk2size, 4);
+    myFile.write(myData, myDataSize);
+    myFile.close();
+
+    delete[] myData;
 }
 
 bool initializeAudio()

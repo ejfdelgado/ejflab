@@ -1,13 +1,13 @@
 {
     "program": 2,
-    "SECONDS": 10,
+    "SECONDS": 5,
     "WINDOW_DFT_SECONS": 0.02,
     "GAP_DFT_SECONS": 0.01,
     "DFT_HEIGHT": 128,
     "SAMPLE_RATE": 44100,
-    "MAX_AMPLITUD": 0.6,
+    "MAX_AMPLITUD": 0.8,
     "device": -1,
     "channelCount": 1,
     "SAMPLED_FRAMES": 0,
-    "DISPLAY_WIDTH": 1500
+    "DISPLAY_WIDTH": 998
 }

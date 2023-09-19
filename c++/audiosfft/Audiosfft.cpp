@@ -84,12 +84,18 @@ int main(int argc, char *argv[])
         {
             printAudioOnImage(&gray, &audioData, &inputData);
             computeDft(&baseDft, &audioData, &inputData, spectrogram, cm_spectrogram, &planes0, &planes1);
-            // showImage(&gray);
+            showImage(&gray);
             showSTFT(cm_spectrogram);
             int value = cv::waitKey(1);
             if (value == 113)
             {
+                // q
                 break;
+            }
+            else if (value == 115)
+            {
+                // s
+                saveWav("/home/ejfdelgado/desarrollo/ejflab/c++/audiosfft/data/audio/salida.wav", &audioData, &inputData);
             }
         }
 
