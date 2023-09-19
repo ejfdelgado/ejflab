@@ -36,20 +36,31 @@ int paStreamCallback(
     PaStreamCallbackFlags statusFlags,
     void *userData)
 {
+    unsigned int i;
     UserAudioData *data = (UserAudioData *)userData;
     size_t numRead = fread(output, bytesPerSample * numChannels, frameCount, wavfile);
 
     const uint8_t *rptr = (const uint8_t *)output;
 
-    output = (uint8_t *)output + numRead * numChannels * bytesPerSample;
-    frameCount -= numRead; // Es igual siempre excepto la última vez
-
-    // Copy fron one side to another
+    // Copy from one side to another
     unsigned long startingPoint = data->startingPoint;
     SAMPLE *wptr = &(data->line[startingPoint]);
-    // std::cout << "frameCount = " << frameCount << std::endl;
+
+    for (i = 0; i < frameCount; i++)
+    {
+        // Este valor va de cero a 255
+        const uint8_t value = *rptr++;
+        // std::cout << (int)value << std::endl;
+        *wptr++ = value;
+    }
+
+    data->startingPoint += frameCount;
+
+    frameCount -= numRead; // Es igual siempre excepto la última vez
     if (frameCount > 0)
     {
+        // Rellena con ceros
+        output = (uint8_t *)output + numRead * numChannels * bytesPerSample;
         memset(output, 0, frameCount * numChannels * bytesPerSample);
         return paComplete;
     }
@@ -78,6 +89,10 @@ bool portAudioOpen(json *inputData, UserAudioData *data)
     audioData.startingPoint = 0;
     audioData.maxSize = numSamples;
     audioData.line = (SAMPLE *)malloc(numBytes);
+    for (unsigned int i = 0; i < numSamples; i++)
+    {
+        audioData.line[i] = 0;
+    }
 
     PaError ret = Pa_OpenStream(
         &stream,
@@ -171,7 +186,7 @@ int main(int argc, char **argv)
 
     cv::CommandLineParser parser(argc, argv,
                                  "{@config   i|../data/example.json|config json file}"
-                                 "{@wav   o|../data/recorded/ejemplo.wav|wav file}");
+                                 "{@wav   o|../data/recorded/mono.wav|wav file}");
     parser.printMessage();
     std::string configFilePath = parser.get<cv::String>("@config");
     std::string wavFilePath = parser.get<cv::String>("@wav");
