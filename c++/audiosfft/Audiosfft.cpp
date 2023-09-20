@@ -41,15 +41,17 @@ int main(int argc, char *argv[])
     }
 
     cv::Mat gray = createGrayScaleImage(sizeof(IMAGE_MAT_TYPE) * 256, inputData["DISPLAY_WIDTH"], 0);
-    // Create image for dft
-    unsigned int WINDOW_DFT = floor((float)inputData["WINDOW_DFT_SECONS"] * (unsigned int)inputData["SAMPLE_RATE"]);
-    // Force to be the closest even number...
-    WINDOW_DFT = round(WINDOW_DFT / 2) * 2;
-    std::cout << "WINDOW_DFT: " << WINDOW_DFT << std::endl;
+
     audioData.gapReady = false;
     audioData.countGap = 0;
     audioData.maxGap = floor((float)inputData["GAP_DFT_SECONS"] * (unsigned int)inputData["SAMPLE_RATE"]);
     std::cout << "maxGap: " << audioData.maxGap << std::endl;
+
+    // Create images for dft
+    unsigned int WINDOW_DFT = floor((float)inputData["WINDOW_DFT_SECONS"] * (unsigned int)inputData["SAMPLE_RATE"]);
+    // Force to be the closest even number...
+    WINDOW_DFT = round(WINDOW_DFT / 2) * 2;
+    std::cout << "WINDOW_DFT: " << WINDOW_DFT << std::endl;
     cv::Mat baseDft = createBaseDft(WINDOW_DFT);
     cv::Mat planes1 = cv::Mat::zeros(baseDft.size(), CV_32F);
     cv::Mat planes0 = cv::Mat_<float>(baseDft);

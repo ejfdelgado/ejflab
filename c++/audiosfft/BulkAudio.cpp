@@ -51,7 +51,13 @@ int paStreamCallback(
         // Este valor va de cero a 255
         const uint8_t value = *rptr++;
         // std::cout << (int)value << std::endl;
-        *wptr++ = value;
+        float converted = ((float)value) / 255;//0-1
+        converted *= 2;
+        converted -= 1;
+        converted *= 0.8;
+        //std::cout << converted << std::endl;
+        *wptr++ = converted;
+        //*wptr++ = ((float)value);
     }
 
     data->startingPoint += frameCount;
@@ -88,6 +94,8 @@ bool portAudioOpen(json *inputData, UserAudioData *data)
     std::cout << "Buffer has " << numBytes << " bytes with " << numSamples << " samples" << std::endl;
     audioData.startingPoint = 0;
     audioData.maxSize = numSamples;
+    audioData.maxGap = numSamples;// Esto hizo que otro valor diera cero en el log
+    std::cout << "maxGap: " << audioData.maxGap << std::endl;
     audioData.line = (SAMPLE *)malloc(numBytes);
     for (unsigned int i = 0; i < numSamples; i++)
     {
@@ -226,6 +234,27 @@ int main(int argc, char **argv)
     // wait until stream has finished playing
     while (Pa_IsStreamActive(stream) > 0)
         usleep(1000);
+
+    // Create images for dft
+    unsigned int numSamples = floor((float)inputData["SECONDS"] * sampleRate);
+    std::cout << "numSamples: " << numSamples << std::endl;
+    unsigned int WINDOW_DFT = floor((float)inputData["WINDOW_DFT_SECONS"] * sampleRate);
+    // Force to be the closest even number...
+    WINDOW_DFT = round(WINDOW_DFT / 2) * 2;
+    std::cout << "WINDOW_DFT: " << WINDOW_DFT << std::endl;
+    cv::Mat baseDft = createBaseDft(WINDOW_DFT);
+    cv::Mat planes1 = cv::Mat::zeros(baseDft.size(), CV_32F);
+    cv::Mat planes0 = cv::Mat_<float>(baseDft);
+    unsigned int dftWidth = (numSamples - WINDOW_DFT) / (float)audioData.maxGap;
+    std::cout << "audioData.maxGap: " << audioData.maxGap << std::endl;
+    std::cout << "dftWidth: " << dftWidth << std::endl;
+    cv::Mat *spectrogram = new cv::Mat(inputData["DFT_HEIGHT"], dftWidth, CV_32F, cv::Scalar::all(0));
+    cv::Mat *cm_spectrogram = new cv::Mat(inputData["DFT_HEIGHT"], dftWidth, CV_8UC3, cv::Scalar(0, 0, 0));
+
+    audioData.gapReady = true;
+    computeDft(&baseDft, &audioData, &inputData, spectrogram, cm_spectrogram, &planes0, &planes1);
+    showSTFT(cm_spectrogram);
+    while(cv::waitKey(1) != 27);
 
     printf("finished\n");
     fclose(wavfile);

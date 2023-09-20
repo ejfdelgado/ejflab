@@ -7,7 +7,7 @@
 ## cmake ../ && make -j 8
 ## chmod +x Audiosfft
 ## ./Audiosfft
-## ./BulkAudio /home/ejfdelgado/desarrollo/ejflab/c++/audiosfft/data/recorded/ejemplo.wav
+## ./BulkAudio
 
 cmake_minimum_required(VERSION 2.8)
 project( Audiosfft )

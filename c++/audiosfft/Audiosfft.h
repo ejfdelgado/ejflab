@@ -42,7 +42,14 @@ void showSTFT(cv::Mat *mat)
     cv::imshow("stft", *mat);
 }
 
-void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::Mat *spectrogram, cv::Mat *cm_spectrogram, cv::Mat *planes0, cv::Mat *planes1)
+void computeDft(
+    cv::Mat *audio,
+    UserAudioData *audioData,
+    json *inputData,
+    cv::Mat *spectrogram,
+    cv::Mat *cm_spectrogram,
+    cv::Mat *planes0,
+    cv::Mat *planes1)
 {
     if (!audioData->gapReady)
     {
@@ -63,6 +70,7 @@ void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::M
     for (int i = 0; i < audioData->maxGap; i++)
     {
         val = buffer[offset + i];
+        //std::cout << val << std::endl;
         val = val / maxValue;
         if (val > 1)
         {
@@ -75,6 +83,7 @@ void computeDft(cv::Mat *audio, UserAudioData *audioData, json *inputData, cv::M
         // val = 256 * (val + 1) / 2; // [0, 255] // NO
         val = 256 * val; // [-255, 255]
         // val = 512 * val; // [-255, 255]
+        //std::cout << val << std::endl;
         audio->at<int>(i) = val;
     }
     planes1->setTo(cv::Scalar(0));
