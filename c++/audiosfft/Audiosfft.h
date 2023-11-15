@@ -64,13 +64,11 @@ void computeDft(
     float val;
     SAMPLE *buffer = audioData->line;
     float maxValue = (*inputData)["MAX_AMPLITUD"];
-    const unsigned int bufferSize = audioData->maxSize;
-    const unsigned int offset = bufferSize - audioData->maxGap;
+    const unsigned int offset = audioData->maxSize - audioData->maxGap;
     // Se copia la señal de audio a la matriz
-    for (int i = 0; i < audioData->maxGap; i++)
+    for (unsigned int i = 0; i < audioData->maxGap; i++)
     {
         val = buffer[offset + i];
-        //std::cout << val << std::endl;
         val = val / maxValue;
         if (val > 1)
         {
@@ -83,7 +81,6 @@ void computeDft(
         // val = 256 * (val + 1) / 2; // [0, 255] // NO
         val = 256 * val; // [-255, 255]
         // val = 512 * val; // [-255, 255]
-        //std::cout << val << std::endl;
         audio->at<int>(i) = val;
     }
     planes1->setTo(cv::Scalar(0));
@@ -98,19 +95,20 @@ void computeDft(
     magI = magI(cv::Rect(0, 0, 1, audioData->maxGap / 2));
     magI += cv::Scalar::all(1); // switch to logarithmic scale
     cv::log(magI, magI);
-    // Represent Information
+    //  Represent Information
     cv::Mat line;
     magI.copyTo(line);
     cv::resize(line, line, cv::Size(1, (*inputData)["DFT_HEIGHT"]));
-    // Normalize values to the Range : 0.0 to 1.0
+    //  Normalize values to the Range : 0.0 to 1.0
     cv::normalize(line, line, 0, 1, cv::NORM_MINMAX);
     cv::flip(line, line, 0);
-    // shift image to left
+    //  shift image to left
     unsigned int shiftAmount = audio->cols;
-    (*spectrogram)(cv::Rect(shiftAmount, 0, spectrogram->cols - shiftAmount, spectrogram->rows)).copyTo((*spectrogram)(cv::Rect(0, 0, spectrogram->cols - shiftAmount, spectrogram->rows)));
+    cv::Rect rect1 = cv::Rect(shiftAmount, 0, spectrogram->cols - shiftAmount, spectrogram->rows);
+    cv::Rect rect2 = cv::Rect(0, 0, spectrogram->cols - shiftAmount, spectrogram->rows);
+    (*spectrogram)(rect1).copyTo((*spectrogram)(rect2));
     // Paint line
     line.copyTo((*spectrogram)(cv::Rect(spectrogram->cols - shiftAmount, 0, shiftAmount, spectrogram->rows)));
-
     spectrogram->convertTo(*cm_spectrogram, CV_8UC3, 255.0);
     cv::applyColorMap(*cm_spectrogram, *cm_spectrogram, cv::COLORMAP_JET);
 }

@@ -4,11 +4,10 @@
 ## export PortAudio_DIR=/usr/local/lib/cmake/portaudio
 ## cd /home/ejfdelgado/desarrollo/ejflab/c++/audiosfft
 ## sudo rm -R build && mkdir build && cd build
-## cmake ../ && make -j 8
 ## chmod +x Audiosfft
-## ./Audiosfft
 ## chmod +x BulkAudio
-## ./BulkAudio
+## cmake ../ && make -j 8 && ./Audiosfft
+## cmake ../ && make -j 8 && ./BulkAudio
 
 cmake_minimum_required(VERSION 2.8)
 project( Audiosfft )
