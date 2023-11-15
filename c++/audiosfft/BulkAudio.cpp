@@ -252,7 +252,9 @@ int main(int argc, char **argv)
     cv::Mat *cm_spectrogram = new cv::Mat(inputData["DFT_HEIGHT"], dftWidth, CV_8UC3, cv::Scalar(0, 0, 0));
 
     audioData.gapReady = true;
+    std::cout << "computeDft..." << std::endl;
     computeDft(&baseDft, &audioData, &inputData, spectrogram, cm_spectrogram, &planes0, &planes1);
+    std::cout << "showSTFT..." << std::endl;
     showSTFT(cm_spectrogram);
     while(cv::waitKey(1) != 27);
 

@@ -7,6 +7,7 @@
 ## cmake ../ && make -j 8
 ## chmod +x Audiosfft
 ## ./Audiosfft
+## chmod +x BulkAudio
 ## ./BulkAudio
 
 cmake_minimum_required(VERSION 2.8)
