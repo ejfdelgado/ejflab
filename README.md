@@ -1,20 +1,22 @@
 # Ejflab1
 
+La versión gcr.io/ejfexperiments/mainapp:v1.8 queda congelada
+
 Para mandar a Cloud Run de Google
 npm run build_local
-sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.8 .
+sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.10 .
     sudo docker run --platform linux/x86_64 -a STDERR -a STDOUT -i --rm --name mainapp -p 80:8080 gcr.io/ejfexperiments/mainapp:v1.7
     http://mylocalhost.com/projection
     Luego para detenerlo:
     sudo docker ps
     sudo docker stop da174c79ce24
-docker push gcr.io/ejfexperiments/mainapp:v1.8
+docker push gcr.io/ejfexperiments/mainapp:v1.10
 Luego usar terraform:
 cd terra
 terraform apply
 https://mainapp-7b6hvjg6ia-uc.a.run.app/projection
 Para borrar las versiones viejas:
-gcloud container images delete gcr.io/ejfexperiments/mainapp:v1.7
+gcloud container images delete gcr.io/ejfexperiments/mainapp:v1.10
 
 git config --global user.name "Edgar Delgado"
 git config --global user.email "edgar.jose.fernando.delgado@gmail.com"
