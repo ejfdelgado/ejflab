@@ -9,6 +9,7 @@ import { MyFileService } from "./srv/MyFileService.mjs";
 import * as http from 'http'
 import { Server } from "socket.io";
 import { MySocketStream } from "./srv/MySocketStream.mjs";
+import { UnrealEngineSocket } from "./srv/UnrealEngineSocket.mjs";
 import { TupleSrv } from "./srv/TupleSrv.mjs";
 import { AuthorizationSrv } from "./srv/AuthorizationSrv.mjs";
 import { UtilesSrv } from "./srv/UtilesSrv.mjs";
@@ -35,7 +36,7 @@ app.use(MainHandler.addGetUrl);
 app.use('/assets', express.static('src/assets'));
 
 // Services
-app.post('/srv/opencv/solvepnp', [commonHeaders, express.json({limit: '50mb'}), handleErrorsDecorator(OpenCVSrv.solvePnP)]);
+app.post('/srv/opencv/solvepnp', [commonHeaders, express.json({ limit: '50mb' }), handleErrorsDecorator(OpenCVSrv.solvePnP)]);
 app.get('/srv/pdf/render', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyPdf.render)]);
 app.get('/srv/shell', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyShell.run)]);
 
@@ -68,7 +69,7 @@ app.post('/srv/:pageId/file', [commonHeaders, checkAuthenticatedSilent, Authoriz
 app.post('/srv/:pageId/makefilepub', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.setFilePublicSrv)]);
 app.post('/srv/:pageId/makegif', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(MyFileService.makegif)]);
 app.use("/", handleErrorsDecorator(MainHandler.handle));// Esto solo funciona sin el npm run angular
-io.on('connection', MySocketStream.handle(io));
+io.on('connection', UnrealEngineSocket.handle(io));
 
 // fuser 8081/tcp
 // fuser -k 8081/tcp

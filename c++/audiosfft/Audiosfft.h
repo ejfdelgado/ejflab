@@ -66,9 +66,32 @@ void computeDft(
     float maxValue = (*inputData)["MAX_AMPLITUD"];
     const unsigned int offset = audioData->maxSize - audioData->maxGap;
     // Se copia la señal de audio a la matriz
+    /*
+    float min = 0;
+    float max = 0;
+    float suma = 0;
+    float average = 0;
+    std::stringstream ss;
+    */
     for (unsigned int i = 0; i < audioData->maxGap; i++)
     {
         val = buffer[offset + i];
+
+        //ss << val << ";";
+        /*
+        suma += val;
+        if (i==0) {
+            min = val;
+            max = val;
+        } else {
+            if (val < min) {
+                min = val;
+            }
+            if (val > max) {
+                max = val;
+            }
+        }
+        */
         val = val / maxValue;
         if (val > 1)
         {
@@ -83,6 +106,11 @@ void computeDft(
         // val = 512 * val; // [-255, 255]
         audio->at<int>(i) = val;
     }
+
+    //average = suma / audioData->maxGap;
+    //std::cout << ss.str() << std::endl;
+    //std::cout << "(" << min << ", " << max << ") average=" << average << std::endl; 
+
     planes1->setTo(cv::Scalar(0));
     audio->convertTo(*planes0, CV_32F);
     cv::Mat planes[] = {*planes0, *planes1};
@@ -95,6 +123,7 @@ void computeDft(
     magI = magI(cv::Rect(0, 0, 1, audioData->maxGap / 2));
     magI += cv::Scalar::all(1); // switch to logarithmic scale
     cv::log(magI, magI);
+    //cv::log(magI, magI);
     //  Represent Information
     cv::Mat line;
     magI.copyTo(line);

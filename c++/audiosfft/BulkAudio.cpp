@@ -40,7 +40,7 @@ int paStreamCallback(
     UserAudioData *data = (UserAudioData *)userData;
     size_t numRead = fread(output, bytesPerSample * numChannels, frameCount, wavfile);
 
-    const uint8_t *rptr = (const uint8_t *)output;
+    const __int16_t *rptr = (const __int16_t *)output;
 
     // Copy from one side to another
     unsigned long startingPoint = data->startingPoint;
@@ -49,12 +49,15 @@ int paStreamCallback(
     for (i = 0; i < frameCount; i++)
     {
         // Este valor va de cero a 255
-        const uint8_t value = *rptr++;
-        // std::cout << (int)value << std::endl;
-        float converted = ((float)value) / 255; // 0-1
-        converted *= 2;
-        converted -= 1;
-        converted *= 0.8;
+        const __int16_t value = *rptr++;
+        // std::cout << value << std::endl;
+        float converted = ((float)value); // -1 y 1
+        //converted = (ceil(converted / 2));
+        // converted -= 0.5; // -0.5 y 0.5
+        //converted *= 0.01;
+        converted *= 0.001;
+
+        // float converted = ((float)value); // 0-1
         *wptr++ = converted;
         //*wptr++ = ((float)value);
     }
@@ -257,7 +260,7 @@ int main(int argc, char **argv)
     audioData.maxGap = (baseDft.rows / 2);
     unsigned int maxSize = audioData.startingPoint;
     unsigned int increments = audioData.maxGap;
-    
+
     while (increments < (maxSize - audioData.maxGap))
     {
         audioData.maxSize = increments;
@@ -265,7 +268,10 @@ int main(int argc, char **argv)
         computeDft(&baseDft, &audioData, &inputData, spectrogram, cm_spectrogram, &planes0, &planes1);
         increments += audioData.maxGap;
     }
+    cv::Mat gray = createGrayScaleImage(sizeof(IMAGE_MAT_TYPE) * 256, inputData["DISPLAY_WIDTH"], 0);
+    printAudioOnImage(&gray, &audioData, &inputData);
     std::cout << "showSTFT..." << std::endl;
+    showImage(&gray);
     showSTFT(cm_spectrogram);
     while (cv::waitKey(1) != 113)
         ;

@@ -1,0 +1,48 @@
+version: '3'
+
+networks:
+    mysql-phpmyadmin:
+        name: mysql-phpmyadmin
+        # use the bridge driver
+        driver: bridge
+
+volumes:
+    mysqldata:
+        driver: local
+        driver_opts:
+            type: 'none'
+            o: 'bind'
+            device: '${HOME}/server/mysql-phpmyadmin/data'
+
+services:
+    mysql:
+        image: mysql:8.0
+        container_name: mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: p0l1c14
+            MYSQL_DATABASE: policia_vr
+            MYSQL_USER: user_name
+            MYSQL_PASSWORD: d14m0nd
+        ports:
+            - "6033:3306"
+        volumes:
+            - mysqldata:/var/lib/mysql
+        networks:
+            mysql-phpmyadmin:
+                aliases:
+                - mysql
+
+    phpmyadmin:
+        image: phpmyadmin:5.2.0
+        container_name: phpmyadmin
+        links:
+            - mysql
+        environment:
+            PMA_HOST: mysql
+            PMA_PORT: 3306
+        ports:
+            - 8081:80
+        networks:
+            mysql-phpmyadmin:
+                aliases:
+                - phpmyadmin

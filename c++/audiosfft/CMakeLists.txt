@@ -7,7 +7,8 @@
 ## chmod +x Audiosfft
 ## chmod +x BulkAudio
 ## cmake ../ && make -j 8 && ./Audiosfft
-## cmake ../ && make -j 8 && ./BulkAudio
+## cmake ../ && make -j 8 && ./BulkAudio --@wav=../data/recorded/aeiou.wav
+## ./BulkAudio --@wav=../data/recorded/uno_signed_16_bits_pcm.wav
 
 cmake_minimum_required(VERSION 2.8)
 project( Audiosfft )
