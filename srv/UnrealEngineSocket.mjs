@@ -7,17 +7,19 @@ export class UnrealEngineSocket {
 
     static handle(io) {
         return (socket) => {
+            const chatEvent = UnrealEngineSocket.chatEvent;
+            const clients = UnrealEngineSocket.clients;
             // convenience function to log server messages on the client
             // track connected clients via log
             clients.push(socket.id);
-            const clientConnectedMsg = 'User connected ' + util.inspect(socket.id) + ', total: ' + clients.length;
+            const clientConnectedMsg = 'User connected ' + (socket.id) + ', total: ' + clients.length;
             io.emit(chatEvent, clientConnectedMsg);
             console.log(clientConnectedMsg);
 
             // track disconnected clients via log
             socket.on('disconnect', () => {
                 clients.pop(socket.id);
-                const clientDisconnectedMsg = 'User disconnected ' + util.inspect(socket.id) + ', total: ' + clients.length;
+                const clientDisconnectedMsg = 'User disconnected ' + (socket.id) + ', total: ' + clients.length;
                 io.emit(chatEvent, clientDisconnectedMsg);
                 console.log(clientDisconnectedMsg);
             })

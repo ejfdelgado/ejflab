@@ -1,0 +1,6 @@
+<p>uechat works!</p>
+<input type="text" [(ngModel)]="mymessage" />
+<button (click)="sendMessage()">Enviar</button>
+<ul>
+    <li *ngFor="let message of messages">{{ message }}</li>
+</ul>

@@ -28,6 +28,7 @@ const PAGINAS = [
   { id: 'humanpose', module: 'HumanposeModule' },
   { id: 'projection', module: 'ProjectionModule' },
   { id: 'decisiontree', module: 'DecisiontreeModule' },
+  { id: 'uechat', module: 'UechatModule' },
 ];
 
 for (let i = 0; i < PAGINAS.length; i++) {
