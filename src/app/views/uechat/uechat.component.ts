@@ -4,10 +4,12 @@ import { MyConstants } from 'srcJs/MyConstants';
 
 interface ServerToClientEvents {
   chatMessage: (message: string) => void;
+  buscarParticipantesResponse: (message: string) => void;
 }
 
 interface ClientToServerEvents {
   chatMessage: (room: string) => void;
+  buscarParticipantes: (inicial: string) => void;
 }
 
 @Component({
@@ -28,10 +30,21 @@ export class UechatComponent implements OnInit {
     this.socket.on('chatMessage', (message) => {
       this.messages.push(message);
     });
+    this.socket.on('buscarParticipantesResponse', (message) => {
+      this.messages.push(message);
+    });
   }
 
   sendMessage(): void {
-    this.socket.emit('chatMessage', this.mymessage);
+    const patrones = [/^buscar_participantes_(.+)/];
+    if (patrones[0].test(this.mymessage)) {
+      const partes = patrones[0].exec(this.mymessage);
+      if (partes != null) {
+        this.socket.emit('buscarParticipantes', partes[1]);
+      }
+    } else {
+      this.socket.emit('chatMessage', this.mymessage);
+    }
     this.mymessage = '';
   }
 }

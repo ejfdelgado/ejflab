@@ -4,6 +4,7 @@ class MyConstants {
     static DOMAIN_ROUTER = {
         "srv/opencv/solvepnp": MyConstants.CLOUD_RUN_URL
     };
+    static ANONYMOUS_PATHS = ['/uechat'];
     static BUCKET = {
         URL_BASE: "https://storage.googleapis.com",
         PUBLIC: `labs-pro-public`,

@@ -34,19 +34,34 @@ export class MyUserService {
   ) {
     this.auth.getLoginEvent().subscribe((user) => {
       if (user != null) {
-        const consultaUsuario = this.httpSrv.get<MyUserData>('srv/usr/me');
-        consultaUsuario.then((usuario) => {
-          if (usuario) {
-            this.usuarioActual = usuario;
-            this.eventoUsuario.emit(usuario);
-          } else {
-            this.usuarioActual = null;
-          }
-        });
+        if (MyUserService.isAnonymousPath()) {
+          this.usuarioActual = null;
+        } else {
+          const consultaUsuario = this.httpSrv.get<MyUserData>('srv/usr/me');
+          consultaUsuario.then((usuario) => {
+            if (usuario) {
+              this.usuarioActual = usuario;
+              this.eventoUsuario.emit(usuario);
+            } else {
+              this.usuarioActual = null;
+            }
+          });
+        }
       } else {
         this.usuarioActual = null;
       }
     });
+  }
+
+  static isAnonymousPath() {
+    const lista = MyConstants.ANONYMOUS_PATHS;
+    const currentPath = location.pathname;
+    for (let i = 0; i < lista.length; i++) {
+      if (currentPath.endsWith(lista[i])) {
+        return true;
+      }
+    }
+    return false;
   }
 
   async getCurrentUser(): Promise<MyUserData | null> {
