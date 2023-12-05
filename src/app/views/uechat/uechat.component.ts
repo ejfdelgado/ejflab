@@ -50,19 +50,34 @@ export class UechatComponent implements OnInit {
 
   ngOnInit(): void {
     this.socket.on('chatMessage', (message) => {
-      this.messages.push(message);
+      this.messages.push(UechatComponent.beatyfull(message));
     });
     this.socket.on('personalChat', (message) => {
-      this.messages.push(message);
+      this.messages.push(UechatComponent.beatyfull(message));
     });
     this.socket.on('buscarParticipantesResponse', (message) => {
-      this.messages.push(message);
+      this.messages.push(UechatComponent.beatyfull(message));
     });
   }
 
+  static beatyfull(texto: string) {
+    try {
+      return JSON.stringify(JSON.parse(texto), null, 4);
+    } catch (err) {
+      return texto;
+    }
+  }
+
   updateSample(valor: any): void {
-    const createScore: CreateScoreData = { personId: 'CC1010166710', sceneId: 1 };
-    const updateScore: UpdateScoreData = { id: 0, column: 'puntaje_segundos', value: '300' };
+    const createScore: CreateScoreData = {
+      personId: 'CC1010166710',
+      sceneId: 1,
+    };
+    const updateScore: UpdateScoreData = {
+      id: 0,
+      column: 'puntaje_segundos',
+      value: '300',
+    };
     const MAPEO_SAMPLES: { [key: string]: string } = {
       chatMessage: '""',
       buscarParticipantes: '""',
