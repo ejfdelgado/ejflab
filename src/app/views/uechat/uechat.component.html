@@ -1,5 +1,12 @@
 <p>uechat works!</p>
-<input type="text" [(ngModel)]="mymessage" />
+<select [(ngModel)]="selectedAction" (change)="updateSample($event)">
+    <option value="chatMessage">Chat</option>
+    <option value="buscarParticipantes">Buscar participantes</option>
+    <option value="createScore">Crear Score</option>
+    <option value="updateScore">Actualizar Score</option>
+</select>
+<br>
+<textarea style="width: 100%; height: 100px;" [(ngModel)]="mymessage"></textarea>
 <button (click)="sendMessage()">Enviar</button>
 <ul>
     <li *ngFor="let message of messages">{{ message }}</li>

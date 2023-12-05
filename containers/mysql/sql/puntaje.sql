@@ -54,7 +54,7 @@ CREATE TABLE `puntaje` (
   `puntaje_movimiento_8` int DEFAULT NULL,
   `puntaje_movimiento_9` int DEFAULT NULL,
   `puntaje_movimiento_10` int DEFAULT NULL,
-  `puntaje_pareja` varchar(20) NOT NULL COMMENT 'Id de la pareja policial'
+  `puntaje_pareja` varchar(20) DEFAULT NULL COMMENT 'Id de la pareja policial'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

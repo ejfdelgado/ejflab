@@ -1,4 +1,5 @@
 import * as os from "os";
+import sortify from "../srcJs/sortify.js";
 import { PoliciaVrMySql } from "./MySqlSrv.mjs";
 
 export class UnrealEngineSocket {
@@ -6,12 +7,28 @@ export class UnrealEngineSocket {
     static clients = [];	//track connected clients
     static chatEvent = "chatMessage";
     static buscarParticipantesEvent = "buscarParticipantes";
+    static createScoreEvent = "createScore";
+    static updateScoreEvent = "updateScore";
+
     static databaseClient = null;
+
+    static async getDataBaseClient() {
+        if (UnrealEngineSocket.databaseClient == null) {
+            UnrealEngineSocket.databaseClient = new PoliciaVrMySql();
+            await UnrealEngineSocket.databaseClient.connect();
+        } else {
+            await UnrealEngineSocket.databaseClient.checkConnection();
+        }
+        return UnrealEngineSocket.databaseClient;
+    }
 
     static handle(io) {
         return (socket) => {
             const chatEvent = UnrealEngineSocket.chatEvent;
             const buscarParticipantesEvent = UnrealEngineSocket.buscarParticipantesEvent;
+            const createScoreEvent = UnrealEngineSocket.createScoreEvent;
+            const updateScoreEvent = UnrealEngineSocket.updateScoreEvent;
+
             const clients = UnrealEngineSocket.clients;
             // convenience function to log server messages on the client
             // track connected clients via log
@@ -41,15 +58,29 @@ export class UnrealEngineSocket {
             });
 
             socket.on(buscarParticipantesEvent, async (inicial) => {
-                if (UnrealEngineSocket.databaseClient == null) {
-                    UnrealEngineSocket.databaseClient = new PoliciaVrMySql();
-                    await UnrealEngineSocket.databaseClient.connect();
-                } else {
-                    await UnrealEngineSocket.databaseClient.checkConnection();
-                }
-                const databaseClient = UnrealEngineSocket.databaseClient;
+                const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                 const response = await databaseClient.getAllParticipantsByLastNameLetter(inicial);
                 io.to(socket.id).emit('buscarParticipantesResponse', JSON.stringify(response));
+            });
+
+            socket.on(createScoreEvent, async (payload) => {
+                const databaseClient = await UnrealEngineSocket.getDataBaseClient();
+                try {
+                    const insertedId = await databaseClient.createScore(payload.personId, payload.sceneId);
+                    io.to(socket.id).emit('personalChat', JSON.stringify(insertedId));
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(err));
+                }
+            });
+
+            socket.on(updateScoreEvent, async (payload) => {
+                const databaseClient = await UnrealEngineSocket.getDataBaseClient();
+                try {
+                    const insertedId = await databaseClient.updateScore(payload.id, payload.column, payload.value);
+                    io.to(socket.id).emit('personalChat', JSON.stringify("Ok"));
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(err));
+                }
             });
         };
     }

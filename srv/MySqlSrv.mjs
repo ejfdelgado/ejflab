@@ -43,15 +43,36 @@ export class MySqlSrv {
 }
 
 export class PoliciaVrMySql extends MySqlSrv {
+    async createScore(personId, sceneId) {
+        const theQuery = `\
+        INSERT INTO puntaje \
+        (puntaje_participante, puntaje_escenario) \
+        VALUES (?, ?)\
+        `;
+        const [rows] = await this.connection.execute(theQuery, [personId, sceneId]);
+        const insertedId = rows.insertId;
+        return insertedId;
+    }
+    async updateScore(id, column, value) {
+        const theQuery = `\
+        UPDATE puntaje \
+        SET ${column} = ? \
+        WHERE puntaje_id = ?\
+        `;
+        const [rows] = await this.connection.execute(theQuery, [value, id]);
+    }
     async getParticipantsByLastNameLetter(someWord, limit = 10, offset = 0) {
         const theQuery = `\
-        SELECT par.participante_apellidos AS ape, \
+        SELECT \
+        par.participante_apellidos AS ape, \
         par.participante_nombres AS nom, \
         uni.unidad_nombre AS uni, \
         par.participante_id AS id \
+        \
         FROM participante par \
         INNER JOIN unidad uni \
         ON uni.unidad_id = par.participante_unidad \
+        \
         WHERE par.participante_apellidos REGEXP ?\
         LIMIT ${offset}, ${limit}\
         `;
@@ -82,6 +103,20 @@ export class PoliciaVrMySql extends MySqlSrv {
         await client.disconnect();
         console.log("Test finished");
     }
+    static async test2() {
+        console.log("Test started");
+        const client = new PoliciaVrMySql();
+        await client.connect();
+        try {
+            await client.createScore("CC1010166710", 2);
+            await client.updateScore(2, "puntaje_segundos", 100);
+        } catch (err) {
+            console.log(err);
+        }
+        await client.disconnect();
+        console.log("Test finished");
+    }
 }
 
 // PoliciaVrMySql.test();
+// PoliciaVrMySql.test2();

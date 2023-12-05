@@ -2,14 +2,35 @@ import { Component, OnInit } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { MyConstants } from 'srcJs/MyConstants';
 
+enum SocketActions {
+  chatMessage = 'chatMessage',
+  buscarParticipantes = 'buscarParticipantes',
+  createScore = 'createScore',
+  updateScore = 'updateScore',
+}
+
+interface CreateScoreData {
+  personId: string;
+  sceneId: number;
+}
+
+interface UpdateScoreData {
+  id: number;
+  column: string;
+  value: any;
+}
+
 interface ServerToClientEvents {
   chatMessage: (message: string) => void;
+  personalChat: (message: string) => void;
   buscarParticipantesResponse: (message: string) => void;
 }
 
 interface ClientToServerEvents {
   chatMessage: (room: string) => void;
   buscarParticipantes: (inicial: string) => void;
+  createScore: (data: CreateScoreData) => void;
+  updateScore: (data: UpdateScoreData) => void;
 }
 
 @Component({
@@ -19,6 +40,7 @@ interface ClientToServerEvents {
 })
 export class UechatComponent implements OnInit {
   mymessage: string = '';
+  selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
   socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
     MyConstants.SRV_ROOT
@@ -30,21 +52,35 @@ export class UechatComponent implements OnInit {
     this.socket.on('chatMessage', (message) => {
       this.messages.push(message);
     });
+    this.socket.on('personalChat', (message) => {
+      this.messages.push(message);
+    });
     this.socket.on('buscarParticipantesResponse', (message) => {
       this.messages.push(message);
     });
   }
 
-  sendMessage(): void {
-    const patrones = [/^buscar_participantes_(.+)/];
-    if (patrones[0].test(this.mymessage)) {
-      const partes = patrones[0].exec(this.mymessage);
-      if (partes != null) {
-        this.socket.emit('buscarParticipantes', partes[1]);
-      }
-    } else {
-      this.socket.emit('chatMessage', this.mymessage);
+  updateSample(valor: any): void {
+    const createScore: CreateScoreData = { personId: 'CC1010166710', sceneId: 1 };
+    const updateScore: UpdateScoreData = { id: 0, column: 'puntaje_segundos', value: '300' };
+    const MAPEO_SAMPLES: { [key: string]: string } = {
+      chatMessage: '""',
+      buscarParticipantes: '""',
+      createScore: JSON.stringify(createScore, null, 4),
+      updateScore: JSON.stringify(updateScore, null, 4),
+    };
+    const key: string = valor.target.value;
+    const sample = MAPEO_SAMPLES[key];
+    if (typeof sample == 'string') {
+      this.mymessage = sample;
     }
-    this.mymessage = '';
+  }
+
+  sendMessage(): void {
+    if (this.selectedAction != null) {
+      this.socket.emit(this.selectedAction, JSON.parse(this.mymessage));
+      this.mymessage = '';
+      this.selectedAction = null;
+    }
   }
 }
