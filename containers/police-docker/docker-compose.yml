@@ -4,8 +4,13 @@ version: "3"
 # docker-compose logs -f police_nodejs
 # docker-compose ps
 # docker-compose build --no-cache
+# docker images
+# docker port police_nodejs
+# docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' police_nodejs
+# docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
 # NodeServer: http://127.0.0.1:3000/uechat
 # MySqlDatabase: http://localhost:8083/
+# ssh root@<your_IP_address>
 
 networks:
   mysql-phpmyadmin:
@@ -43,7 +48,7 @@ services:
     networks:
       mysql-phpmyadmin:
         aliases:
-          - mysql
+          - police_mysql
 
   police_phpmyadmin:
     image: phpmyadmin:5.2.0
@@ -58,28 +63,35 @@ services:
     networks:
       mysql-phpmyadmin:
         aliases:
-          - phpmyadmin
+          - police_phpmyadmin
+  
   police_nodejs:
     build:
       context: .
       dockerfile: Dockerfile
     image: nodejs
-    container_name: nodejs
+    container_name: police_nodejs
+    links:
+      - police_mysql
     restart: unless-stopped
     environment:
+      PMA_HOST: ${PMA_HOST}
+      PMA_PORT: ${PMA_PORT}
       PORT: ${PORT}
       ENV: ${ENV}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "3000:3000"
+      - "8081:3000"
+      - "2222:22"
     depends_on:
-      - police_mysql
+      - mysql
     volumes:
       - nodeapp:/home/node/app
     networks:
       mysql-phpmyadmin:
         aliases:
-          - mysql
+          - police_nodejs

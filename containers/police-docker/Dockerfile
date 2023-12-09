@@ -14,6 +14,7 @@ USER node
 
 ##COPY --chown=node:node . .
 
+EXPOSE 22
 EXPOSE 3000
 
 #RUN dir -s

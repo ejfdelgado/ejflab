@@ -58,14 +58,18 @@ export class UnrealEngineSocket {
             });
 
             socket.on(buscarParticipantesEvent, async (inicial) => {
-                const databaseClient = await UnrealEngineSocket.getDataBaseClient();
-                const response = await databaseClient.getAllParticipantsByLastNameLetter(inicial);
-                io.to(socket.id).emit('buscarParticipantesResponse', JSON.stringify(response));
+                try {
+                    const databaseClient = await UnrealEngineSocket.getDataBaseClient();
+                    const response = await databaseClient.getAllParticipantsByLastNameLetter(inicial);
+                    io.to(socket.id).emit('buscarParticipantesResponse', JSON.stringify(response));
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(err));
+                }
             });
 
             socket.on(createScoreEvent, async (payload) => {
-                const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                 try {
+                    const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                     const insertedId = await databaseClient.createScore(payload.personId, payload.sceneId);
                     const created = await databaseClient.readScore(insertedId);
                     io.to(socket.id).emit('personalChat', JSON.stringify(created));
@@ -75,8 +79,8 @@ export class UnrealEngineSocket {
             });
 
             socket.on(updateScoreEvent, async (payload) => {
-                const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                 try {
+                    const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                     await databaseClient.updateScore(payload.id, payload.column, payload.value);
                     const changed = await databaseClient.readScore(payload.id);
                     io.to(socket.id).emit('personalChat', JSON.stringify(changed));

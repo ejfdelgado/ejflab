@@ -7,11 +7,11 @@ export class MySqlSrv {
     }
 
     getConnectionParams() {
-        const host = process.env.MYSQL_HOST || "localhost";
-        const port = parseInt(process.env.MYSQL_PORT || "6033");
-        const user = process.env.MYSQL_USER || "root";
+        const host = process.env.PMA_HOST || "localhost";
+        const port = parseInt(process.env.PMA_PORT || "6033");
         const database = process.env.MYSQL_DATABASE || "policia_vr";
-        const password = process.env.MYSQL_PASS || "p0l1c14";
+        const user = process.env.MYSQL_ROOT_USER || "root";
+        const password = process.env.MYSQL_ROOT_PASSWORD || "p0l1c14";
         return {
             host,
             port,
