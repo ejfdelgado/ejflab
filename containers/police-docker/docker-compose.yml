@@ -1,0 +1,81 @@
+version: "3" 
+# docker compose up -d
+# docker compose down
+# docker-compose logs -f police_nodejs
+# docker-compose ps
+# docker-compose build --no-cache
+# http://127.0.0.1:3000/
+
+networks:
+  mysql-phpmyadmin:
+    name: mysql-phpmyadmin
+    # use the bridge driver
+    driver: bridge
+
+volumes:
+  mysqldata:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${HOME}/server/mysql-phpmyadmin/data"
+  nodeapp:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${HOME}/desarrollo/ejflab"
+
+services:
+  police_mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: p0l1c14
+      MYSQL_DATABASE: policia_vr
+      MYSQL_USER: user_name
+      MYSQL_PASSWORD: d14m0nd
+    ports:
+      - "6033:3306"
+    volumes:
+      - mysqldata:/var/lib/mysql
+    networks:
+      mysql-phpmyadmin:
+        aliases:
+          - mysql
+
+  police_phpmyadmin:
+    image: phpmyadmin:5.2.0
+    container_name: phpmyadmin
+    links:
+      - police_mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+    ports:
+      - 8083:80
+    networks:
+      mysql-phpmyadmin:
+        aliases:
+          - phpmyadmin
+  police_nodejs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nodejs
+    container_name: nodejs
+    restart: unless-stopped
+    environment:
+      PORT: 3000
+      #ENV: pro
+      MYSQL_ROOT_PASSWORD: p0l1c14
+    ports:
+      - "3000:3000"
+    depends_on:
+      - police_mysql
+    volumes:
+      - nodeapp:/home/node/app
+    networks:
+      mysql-phpmyadmin:
+        aliases:
+          - mysql
