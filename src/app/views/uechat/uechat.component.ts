@@ -1,63 +1,42 @@
-import { Component, OnInit } from '@angular/core';
-import { io, Socket } from 'socket.io-client';
-import { MyConstants } from 'srcJs/MyConstants';
-
-enum SocketActions {
-  chatMessage = 'chatMessage',
-  buscarParticipantes = 'buscarParticipantes',
-  createScore = 'createScore',
-  updateScore = 'updateScore',
-}
-
-interface CreateScoreData {
-  personId: string;
-  sceneId: number;
-}
-
-interface UpdateScoreData {
-  id: number;
-  column: string;
-  value: any;
-}
-
-interface ServerToClientEvents {
-  chatMessage: (message: string) => void;
-  personalChat: (message: string) => void;
-  buscarParticipantesResponse: (message: string) => void;
-}
-
-interface ClientToServerEvents {
-  chatMessage: (room: string) => void;
-  buscarParticipantes: (inicial: string) => void;
-  createScore: (data: CreateScoreData) => void;
-  updateScore: (data: UpdateScoreData) => void;
-}
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  CreateScoreData,
+  SocketActions,
+  UeSocketService,
+  UpdateScoreData,
+} from 'src/services/uesocket.service';
 
 @Component({
   selector: 'app-uechat',
   templateUrl: './uechat.component.html',
   styleUrls: ['./uechat.component.css'],
 })
-export class UechatComponent implements OnInit {
+export class UechatComponent implements OnInit, OnDestroy {
+  binded: (message: string) => any;
   mymessage: string = '';
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
-  socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
-    MyConstants.SRV_ROOT
-  );
 
-  constructor() {}
+  constructor(public socketService: UeSocketService) {}
 
   ngOnInit(): void {
-    this.socket.on('chatMessage', (message) => {
-      this.messages.push(UechatComponent.beatyfull(message));
-    });
-    this.socket.on('personalChat', (message) => {
-      this.messages.push(UechatComponent.beatyfull(message));
-    });
-    this.socket.on('buscarParticipantesResponse', (message) => {
-      this.messages.push(UechatComponent.beatyfull(message));
-    });
+    this.binded = this.receiveChatMessage.bind(this);
+    this.socketService.on('chatMessage', this.binded);
+    this.socketService.on('personalChat', this.binded);
+    this.socketService.on('buscarParticipantesResponse', this.binded);
+  }
+
+  ngOnDestroy(): void {
+    this.socketService.removeListener('chatMessage', this.binded);
+    this.socketService.removeListener('personalChat', this.binded);
+    this.socketService.removeListener(
+      'buscarParticipantesResponse',
+      this.binded
+    );
+  }
+
+  receiveChatMessage(message: any) {
+    this.messages.push(UechatComponent.beatyfull(message));
   }
 
   static beatyfull(texto: string) {
@@ -93,7 +72,7 @@ export class UechatComponent implements OnInit {
 
   sendMessage(): void {
     if (this.selectedAction != null) {
-      this.socket.emit(this.selectedAction, JSON.parse(this.mymessage));
+      this.socketService.emit(this.selectedAction, this.mymessage);
       this.mymessage = '';
       this.selectedAction = null;
     }
