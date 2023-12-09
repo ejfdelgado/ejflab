@@ -4,7 +4,8 @@ version: "3"
 # docker-compose logs -f police_nodejs
 # docker-compose ps
 # docker-compose build --no-cache
-# http://127.0.0.1:3000/
+# NodeServer: http://127.0.0.1:3000/uechat
+# MySqlDatabase: http://localhost:8083/
 
 networks:
   mysql-phpmyadmin:
@@ -18,23 +19,23 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${HOME}/server/mysql-phpmyadmin/data"
+      device: "${FOLDER_MYSQL}"
   nodeapp:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${HOME}/desarrollo/ejflab"
+      device: "${FOLDER_NODEAPP}"
 
 services:
   police_mysql:
     image: mysql:8.0
     container_name: mysql
     environment:
-      MYSQL_ROOT_PASSWORD: p0l1c14
-      MYSQL_DATABASE: policia_vr
-      MYSQL_USER: user_name
-      MYSQL_PASSWORD: d14m0nd
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "6033:3306"
     volumes:
@@ -50,8 +51,8 @@ services:
     links:
       - police_mysql
     environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
+      PMA_HOST: ${PMA_HOST}
+      PMA_PORT: ${PMA_PORT}
     ports:
       - 8083:80
     networks:
@@ -66,9 +67,12 @@ services:
     container_name: nodejs
     restart: unless-stopped
     environment:
-      PORT: 3000
-      #ENV: pro
-      MYSQL_ROOT_PASSWORD: p0l1c14
+      PORT: ${PORT}
+      ENV: ${ENV}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "3000:3000"
     depends_on:
