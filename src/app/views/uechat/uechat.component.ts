@@ -13,6 +13,7 @@ import {
 })
 export class UechatComponent implements OnInit, OnDestroy {
   binded: (message: string) => any;
+  selectedView: string = 'chat';
   mymessage: string = '';
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
@@ -33,6 +34,10 @@ export class UechatComponent implements OnInit, OnDestroy {
       'buscarParticipantesResponse',
       this.binded
     );
+  }
+
+  selectView(viewName: string) {
+    this.selectedView = viewName;
   }
 
   receiveChatMessage(message: any) {

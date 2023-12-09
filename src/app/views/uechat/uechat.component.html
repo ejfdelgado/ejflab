@@ -1,13 +1,36 @@
-<p>uechat works!</p>
-<select [(ngModel)]="selectedAction" (change)="updateSample($event)">
-    <option value="chatMessage">Chat</option>
-    <option value="buscarParticipantes">Buscar participantes</option>
-    <option value="createScore">Crear Score</option>
-    <option value="updateScore">Actualizar Score</option>
-</select>
-<br>
-<textarea style="width: 100%; height: 100px;" [(ngModel)]="mymessage"></textarea>
-<button (click)="sendMessage()">Enviar</button>
-<ul>
-    <li *ngFor="let message of messages">{{ message }}</li>
-</ul>
+<div class="menu">
+    <button (click)="selectView('chat')" class="mat-menu-item" [ngClass]="{'highlight': selectedView == 'chat'}">
+        <mat-icon>chat</mat-icon>
+        <span>Chat</span>
+    </button>
+    <button (click)="selectView('json')" class="mat-menu-item" [ngClass]="{'highlight': selectedView == 'json'}">
+        <mat-icon>park</mat-icon>
+        <span>Árbol de datos</span>
+    </button>
+    <button (click)="selectView('grafo')" class="mat-menu-item" [ngClass]="{'highlight': selectedView == 'grafo'}">
+        <mat-icon>account_tree</mat-icon>
+        <span>Estado</span>
+    </button>
+</div>
+<div class="content">
+    <div *ngIf="selectedView == 'chat'">
+        <select [(ngModel)]="selectedAction" (change)="updateSample($event)">
+            <option value="chatMessage">Chat</option>
+            <option value="buscarParticipantes">Buscar participantes</option>
+            <option value="createScore">Crear Score</option>
+            <option value="updateScore">Actualizar Score</option>
+        </select>
+        <br>
+        <textarea style="width: 100%; height: 100px;" [(ngModel)]="mymessage"></textarea>
+        <button (click)="sendMessage()">Enviar</button>
+        <ul>
+            <li *ngFor="let message of messages">{{ message }}</li>
+        </ul>
+    </div>
+    <div *ngIf="selectedView == 'json'">
+        <pre>Árbol de datos</pre>
+    </div>
+    <div *ngIf="selectedView == 'grafo'">
+        <pre>Grafo</pre>
+    </div>
+</div>

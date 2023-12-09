@@ -4,16 +4,10 @@ import { CommonModule } from '@angular/common';
 import { UechatRoutingModule } from './uechat-routing.module';
 import { UechatComponent } from './uechat.component';
 import { FormsModule } from '@angular/forms';
-
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
-  declarations: [
-    UechatComponent
-  ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    UechatRoutingModule
-  ]
+  declarations: [UechatComponent],
+  imports: [MatIconModule, CommonModule, FormsModule, UechatRoutingModule],
 })
-export class UechatModule { }
+export class UechatModule {}
