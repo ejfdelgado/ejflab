@@ -2,6 +2,14 @@ src/app/app.component.ts
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
+
+- desarrollar la mezcla de objectos, mejorada del assign
+- Permitir ver del json solo una jerarquia con un select, tal vez usar una función para obtener la ruta
+- Hacer la lectura de un punto específico
+- Hot reload en front end de angular
+
+
+
 - set field of view
 - guardar, progress
 - download allow security

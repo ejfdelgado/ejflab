@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { SimpleObj } from 'srcJs/SimpleObj';
 
@@ -16,7 +16,10 @@ export class UechatComponent implements OnInit, OnDestroy {
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
 
-  constructor(public socketService: UeSocketService) {}
+  constructor(
+    public socketService: UeSocketService,
+    public cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.socketService.on('chatMessage', (content: string) => {
@@ -51,10 +54,9 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.modelState = parsed.val;
     } else {
       // Se escribe solo el punto que dice key
-      this.modelState = SimpleObj.recreate(
-        this.modelState,
-        parsed.key,
-        parsed.val
+      this.modelState = Object.assign(
+        {},
+        SimpleObj.recreate(this.modelState, parsed.key, parsed.val)
       );
     }
   }
