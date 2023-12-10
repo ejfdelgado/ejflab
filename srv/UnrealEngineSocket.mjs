@@ -9,6 +9,7 @@ const buscarParticipantesEvent = "buscarParticipantes";
 const createScoreEvent = "createScore";
 const updateScoreEvent = "updateScore";
 const stateWriteEvent = "stateWrite";
+const stateReadEvent = "stateRead";
 const selectScenarioEvent = "selectScenario";
 
 export class UnrealEngineSocket {
@@ -75,6 +76,8 @@ export class UnrealEngineSocket {
                 socket.removeListener(selectScenarioEvent, selectScenarioEventHandler);
                 socket.removeListener(buscarParticipantesEvent, buscarParticipantesEventHandler);
                 socket.removeListener(chatEvent, chatEventHandler);
+                socket.removeListener(stateWriteEvent, stateWriteEventHandler);
+                socket.removeListener(stateReadEvent, stateReadEventHandler);
                 socket.removeListener('disconnect', disconnectHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
@@ -152,11 +155,54 @@ export class UnrealEngineSocket {
                 }
             };
 
+            const computeMineKey = (payload) => {
+                let key = payload.key.trim();
+                if (payload.mine === true) {
+                    const currentKey = getCurrentPlayerKey();
+                    if (currentKey == null) {
+                        throw "Primero debe Crear Score";
+                    }
+                    if (key != "") {
+                        key = currentKey + "." + key;
+                    } else {
+                        key = currentKey;
+                    }
+                }
+                return key;
+            };
+
+            const stateWriteEventHandler = async (payload) => {
+                try {
+                    // Se publica a todos
+                    const key = computeMineKey(payload);
+                    affectModel(key, payload.val);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            const stateReadEventHandler = async (payload) => {
+                try {
+                    // Se lee
+                    const key = computeMineKey(payload);
+                    const valor = this.state.readKey(key);
+                    // Se publica solo a quien lo solicitó
+                    io.to(socket.id).emit('stateChanged', JSON.stringify({
+                        key: key,
+                        val: valor
+                    }));
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
             socket.on(createScoreEvent, createScoreEventHandler);
             socket.on(updateScoreEvent, updateScoreEventHandler);
             socket.on(selectScenarioEvent, selectScenarioEventHandler);
             socket.on(buscarParticipantesEvent, buscarParticipantesEventHandler);
             socket.on(chatEvent, chatEventHandler);
+            socket.on(stateWriteEvent, stateWriteEventHandler);
+            socket.on(stateReadEvent, stateReadEventHandler);
             socket.on('disconnect', disconnectHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({

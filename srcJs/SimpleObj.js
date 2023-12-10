@@ -50,6 +50,24 @@ class SimpleObj {
         }
         return todo;
     }
+    static objectWrite(indice, ultimaLlave, valor) {
+        if (typeof indice[ultimaLlave] == "object" && [null, undefined].indexOf(indice[ultimaLlave]) < 0) {
+            if (typeof valor == "object" && [null, undefined].indexOf(valor) < 0) {
+                // Tanto origen como destino son objetos, se podría intentar mezclar
+                Object.assign(indice[ultimaLlave], valor);
+            } else if (valor === undefined) {
+                // El valor es indefinido, se entiende que se quiere borrar
+                delete indice[ultimaLlave];
+            } else {
+                // El nuevo valor no es un objeto, se entiende que se desea reemapolzar simplemente
+                indice[ultimaLlave] = valor;
+            }
+        } else {
+            // El destino no era un objeto entonces no hay necesidad de mezclar, solo asignar
+            // Sin importar lo que sea el nuevo valor
+            indice[ultimaLlave] = valor;
+        }
+    }
     static recreate(todo, llave, valor, simple = false) {
         const partes = llave.split(".");
         let indice = todo;
@@ -65,7 +83,7 @@ class SimpleObj {
             if (valor === undefined) {
                 delete indice[ultimaLlave];
             } else {
-                indice[ultimaLlave] = valor;
+                SimpleObj.objectWrite(indice, ultimaLlave, valor);
             }
             return todo;
         }
@@ -91,7 +109,8 @@ class SimpleObj {
                 }
             }
             if (!(valor instanceof Array)) {
-                Object.assign(indice[ultimaLlave], valor);
+                // Se mezclan los objetos
+                SimpleObj.objectWrite(indice, ultimaLlave, valor);
             }
         } else {
             indice[ultimaLlave] = valor;

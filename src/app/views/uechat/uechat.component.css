@@ -17,3 +17,14 @@
   flex: 1;
   overflow: scroll;
 }
+
+.bigselect {
+  font-size: 18px;
+  padding: 10px 10px 10px 0;
+  cursor: pointer;
+  width: 100%;
+}
+
+.bigtextarea {
+  font-size: 18px;
+}

@@ -118,6 +118,7 @@ export class UechatComponent implements OnInit, OnDestroy {
         4
       ),
       stateWrite: JSON.stringify(UeSocketService.stateWriteSample(), null, 4),
+      stateRead: JSON.stringify(UeSocketService.stateReadSample(), null, 4),
     };
     const key: string = valor.target.value;
     const sample = MAPEO_SAMPLES[key];

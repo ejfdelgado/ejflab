@@ -8,6 +8,8 @@ export enum SocketActions {
   buscarParticipantes = 'buscarParticipantes',
   createScore = 'createScore',
   updateScore = 'updateScore',
+  stateWrite = 'stateWrite',
+  stateRead = 'stateRead',
 }
 
 export interface CreateScoreData {
@@ -27,6 +29,12 @@ export interface SelectScenarioData {
 export interface StateWriteData {
   key: string;
   val: any;
+  mine: boolean;
+}
+
+export interface StateReadData {
+  key: string;
+  mine: boolean;
 }
 
 export interface StateChangedData {
@@ -48,6 +56,7 @@ interface ClientToServerEvents {
   updateScore: (data: UpdateScoreData) => void;
   selectScenario: (data: SelectScenarioData) => void;
   stateWrite: (data: StateWriteData) => void;
+  stateRead: (data: StateReadData) => void;
 }
 
 @Injectable({
@@ -67,7 +76,7 @@ export class UeSocketService {
 
   static createScoreSample(): CreateScoreData {
     return {
-      personId: 'CC1010166710'
+      personId: 'CC1010166710',
     };
   }
 
@@ -89,6 +98,14 @@ export class UeSocketService {
     return {
       key: 'test',
       val: true,
+      mine: false,
+    };
+  }
+
+  static stateReadSample(): StateReadData {
+    return {
+      key: 'test',
+      mine: false,
     };
   }
 
