@@ -24,6 +24,7 @@ import { ScrollfileComponent } from './components/scrollfile/scrollfile.componen
 import { SortByNamePipe } from './pipes/sort-by-name.pipe';
 import { NgInit } from './directives/NgInit';
 import { JsonColorPipe } from './pipes/json-color.pipe';
+import { Json2svg } from './pipes/json2svg.pipe';
 
 @NgModule({
   declarations: [
@@ -43,6 +44,7 @@ import { JsonColorPipe } from './pipes/json-color.pipe';
     ScrollfileComponent,
     SortByNamePipe,
     JsonColorPipe,
+    Json2svg,
     NgInit,
   ],
   imports: [
@@ -71,6 +73,7 @@ import { JsonColorPipe } from './pipes/json-color.pipe';
     PrejsonComponent,
     SortByNamePipe,
     JsonColorPipe,
+    Json2svg,
     NgInit,
   ],
 })

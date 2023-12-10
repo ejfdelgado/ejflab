@@ -1,4 +1,13 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnDestroy,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { DomSanitizer } from '@angular/platform-browser';
+import { faTemperature3 } from '@fortawesome/free-solid-svg-icons';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { SimpleObj } from 'srcJs/SimpleObj';
 
@@ -8,9 +17,9 @@ import { SimpleObj } from 'srcJs/SimpleObj';
   styleUrls: ['./uechat.component.css'],
 })
 export class UechatComponent implements OnInit, OnDestroy {
-  binded: (key: string, message: string) => any;
-  binded2: (key: string, message: string) => any;
-  modelState = {};
+  @ViewChild('mySvg') mySvgRef: ElementRef;
+  graphHtml: string = '';
+  modelState: any = {};
   selectedView: string = 'chat';
   mymessage: string = '';
   selectedAction: SocketActions | null = null;
@@ -18,7 +27,8 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   constructor(
     public socketService: UeSocketService,
-    public cdr: ChangeDetectorRef
+    public cdr: ChangeDetectorRef,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +57,72 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.selectedView = viewName;
   }
 
+  getGraph(): any {
+    const grafo = this.modelState['f1'];
+    let svgContent = '';
+    const style = 'fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0)';
+    if (grafo) {
+      const shapes = grafo.shapes;
+      if (shapes instanceof Array) {
+        for (let i = 0; i < shapes.length; i++) {
+          const shape = shapes[i];
+          const pos = shape.pos;
+          if (shape.type == 'box') {
+            svgContent += `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${style}"></rect>`;
+          } else if (shape.type == 'ellipse') {
+            svgContent += `<ellipse cx="${pos.x + pos.width * 0.5}" cy="${
+              pos.y + pos.height * 0.5
+            }" rx="${pos.width * 0.5}" ry="${
+              pos.height * 0.5
+            }" style="${style}"></ellipse>`;
+          } else if (shape.type == 'rhombus') {
+            svgContent += `<polygon points="`;
+            svgContent += `${pos.x.toFixed(0)},${pos.y + pos.height * 0.5} `;
+            svgContent += `${pos.x + pos.width * 0.5},${pos.y.toFixed(0)} `;
+            svgContent += `${(pos.x + pos.width).toFixed(0)},${
+              pos.y + pos.height * 0.5
+            } `;
+            svgContent += `${pos.x + pos.width * 0.5},${(
+              pos.y + pos.height
+            ).toFixed(0)}" `;
+            svgContent += `style="${style}"/>`;
+          }
+          if (typeof shape.txt == 'string') {
+            const lines = shape.txt.split(/\n/g);
+            const lineHeight = 15;
+            for (let j = 0; j < lines.length; j++) {
+              const line = lines[j];
+              svgContent += `<text font-family="Helvetica" font-size="13px" text-anchor="middle" x="${
+                pos.x + pos.width * 0.5
+              }" y="${
+                pos.y +
+                pos.height * 0.5 +
+                j * lineHeight -
+                (lines.length - 1) * lineHeight * 0.5 +
+                lineHeight * 0.25
+              }" fill="black">${line}</text>`;
+            }
+          }
+        }
+      }
+    }
+    this.graphRecomputeBoundingBox();
+    return this.sanitizer.bypassSecurityTrustHtml(svgContent);
+  }
+
+  graphRecomputeBoundingBox() {
+    setTimeout(() => {
+      if (this.mySvgRef) {
+        const svg = this.mySvgRef.nativeElement;
+        var bbox = svg.getBBox();
+        // Update the width and height using the size of the contents
+        svg.setAttribute('width', bbox.x + bbox.width + bbox.x);
+        svg.setAttribute('height', bbox.y + bbox.height + bbox.y);
+      }
+    });
+    return true;
+  }
+
   receiveStateChanged(key: string, content: string) {
     console.log(`[${key}]`);
     const parsed = JSON.parse(content);
@@ -59,6 +135,8 @@ export class UechatComponent implements OnInit, OnDestroy {
         SimpleObj.recreate(this.modelState, parsed.key, parsed.val)
       );
     }
+
+    this.graphHtml = this.getGraph();
   }
 
   receiveChatMessage(key: string, message: any) {

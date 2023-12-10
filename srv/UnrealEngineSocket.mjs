@@ -159,7 +159,7 @@ export class UnrealEngineSocket {
             socket.on(chatEvent, chatEventHandler);
             socket.on('disconnect', disconnectHandler);
 
-            io.emit('stateChanged', JSON.stringify({
+            io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",
                 val: this.state.estado
             }));
