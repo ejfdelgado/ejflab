@@ -8,8 +8,8 @@ import { SimpleObj } from 'srcJs/SimpleObj';
   styleUrls: ['./uechat.component.css'],
 })
 export class UechatComponent implements OnInit, OnDestroy {
-  binded: (message: string) => any;
-  binded2: (message: string) => any;
+  binded: (key: string, message: string) => any;
+  binded2: (key: string, message: string) => any;
   modelState = {};
   selectedView: string = 'chat';
   mymessage: string = '';
@@ -19,40 +19,49 @@ export class UechatComponent implements OnInit, OnDestroy {
   constructor(public socketService: UeSocketService) {}
 
   ngOnInit(): void {
-    this.binded = this.receiveChatMessage.bind(this);
-    this.binded2 = this.receiveStateChanged.bind(this);
-    this.socketService.on('chatMessage', this.binded);
-    this.socketService.on('personalChat', this.binded);
-    this.socketService.on('buscarParticipantesResponse', this.binded);
-    this.socketService.on('stateChanged', this.binded2);
+    this.socketService.on('chatMessage', (content: string) => {
+      this.receiveChatMessage('chatMessage', content);
+    });
+    this.socketService.on('personalChat', (content: string) => {
+      this.receiveChatMessage('chatMessage', content);
+    });
+    this.socketService.on('buscarParticipantesResponse', (content: string) => {
+      this.receiveChatMessage('chatMessage', content);
+    });
+    this.socketService.on('stateChanged', (content: string) => {
+      this.receiveStateChanged('stateChanged', content);
+    });
   }
 
   ngOnDestroy(): void {
-    this.socketService.removeListener('chatMessage', this.binded);
-    this.socketService.removeListener('personalChat', this.binded);
-    this.socketService.removeListener(
-      'buscarParticipantesResponse',
-      this.binded
-    );
-    this.socketService.removeListener('stateChanged', this.binded2);
+    this.socketService.removeAllListeners('chatMessage');
+    this.socketService.removeAllListeners('personalChat');
+    this.socketService.removeAllListeners('buscarParticipantesResponse');
+    this.socketService.removeAllListeners('stateChanged');
   }
 
   selectView(viewName: string) {
     this.selectedView = viewName;
   }
 
-  receiveStateChanged(content: string) {
+  receiveStateChanged(key: string, content: string) {
+    console.log(`[${key}]`);
     const parsed = JSON.parse(content);
     if (parsed.key == '') {
       this.modelState = parsed.val;
     } else {
       // Se escribe solo el punto que dice key
-      this.modelState = SimpleObj.recreate(this.modelState, parsed.key, parsed.val);
+      this.modelState = SimpleObj.recreate(
+        this.modelState,
+        parsed.key,
+        parsed.val
+      );
     }
   }
 
-  receiveChatMessage(message: any) {
-    this.messages.push(UechatComponent.beatyfull(message));
+  receiveChatMessage(key: string, message: any) {
+    console.log(`[${key}]`);
+    this.messages.push(`[${key}] ` + UechatComponent.beatyfull(message));
   }
 
   static beatyfull(texto: string) {

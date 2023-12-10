@@ -100,6 +100,10 @@ export class UeSocketService {
     this.socket.removeListener(llave, fun);
   }
 
+  removeAllListeners(llave: any) {
+    this.socket.removeAllListeners(llave);
+  }
+
   emit(llave: any, message: any) {
     this.socket.emit(llave, JSON.parse(message));
   }
