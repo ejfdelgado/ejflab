@@ -69,6 +69,16 @@ body {
   cursor: pointer;
 }
 
+.json-key {
+  color: brown;
+}
+.json-value {
+  color: navy;
+}
+.json-string {
+  color: olive;
+}
+
 @media (max-width: 800px) {
   .edit-user-dialog-container .mat-dialog-container {
     min-width: 80vw;

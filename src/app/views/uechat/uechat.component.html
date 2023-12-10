@@ -30,7 +30,7 @@
         </ul>
     </div>
     <div *ngIf="selectedView == 'json'">
-        <pre>{{ modelState | json }}</pre>
+        <pre [innerHtml]="modelState | jsonColor"></pre>
     </div>
     <div *ngIf="selectedView == 'grafo'">
         <pre>Grafo</pre>

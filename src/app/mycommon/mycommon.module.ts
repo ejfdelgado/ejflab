@@ -23,6 +23,7 @@ import { PrejsonComponent } from './components/prejson/prejson.component';
 import { ScrollfileComponent } from './components/scrollfile/scrollfile.component';
 import { SortByNamePipe } from './pipes/sort-by-name.pipe';
 import { NgInit } from './directives/NgInit';
+import { JsonColorPipe } from './pipes/json-color.pipe';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import { NgInit } from './directives/NgInit';
     PrejsonComponent,
     ScrollfileComponent,
     SortByNamePipe,
+    JsonColorPipe,
     NgInit,
   ],
   imports: [
@@ -68,6 +70,7 @@ import { NgInit } from './directives/NgInit';
     ScrollfilesComponent,
     PrejsonComponent,
     SortByNamePipe,
+    JsonColorPipe,
     NgInit,
   ],
 })
