@@ -7,8 +7,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
-import { faTemperature3 } from '@fortawesome/free-solid-svg-icons';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
+import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { SimpleObj } from 'srcJs/SimpleObj';
 
 @Component({
@@ -58,54 +58,8 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   getGraph(): any {
-    const grafo = this.modelState['f1'];
-    let svgContent = '';
-    const style = 'fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0)';
-    if (grafo) {
-      const shapes = grafo.shapes;
-      if (shapes instanceof Array) {
-        for (let i = 0; i < shapes.length; i++) {
-          const shape = shapes[i];
-          const pos = shape.pos;
-          if (shape.type == 'box') {
-            svgContent += `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${style}"></rect>`;
-          } else if (shape.type == 'ellipse') {
-            svgContent += `<ellipse cx="${pos.x + pos.width * 0.5}" cy="${
-              pos.y + pos.height * 0.5
-            }" rx="${pos.width * 0.5}" ry="${
-              pos.height * 0.5
-            }" style="${style}"></ellipse>`;
-          } else if (shape.type == 'rhombus') {
-            svgContent += `<polygon points="`;
-            svgContent += `${pos.x.toFixed(0)},${pos.y + pos.height * 0.5} `;
-            svgContent += `${pos.x + pos.width * 0.5},${pos.y.toFixed(0)} `;
-            svgContent += `${(pos.x + pos.width).toFixed(0)},${
-              pos.y + pos.height * 0.5
-            } `;
-            svgContent += `${pos.x + pos.width * 0.5},${(
-              pos.y + pos.height
-            ).toFixed(0)}" `;
-            svgContent += `style="${style}"/>`;
-          }
-          if (typeof shape.txt == 'string') {
-            const lines = shape.txt.split(/\n/g);
-            const lineHeight = 15;
-            for (let j = 0; j < lines.length; j++) {
-              const line = lines[j];
-              svgContent += `<text font-family="Helvetica" font-size="13px" text-anchor="middle" x="${
-                pos.x + pos.width * 0.5
-              }" y="${
-                pos.y +
-                pos.height * 0.5 +
-                j * lineHeight -
-                (lines.length - 1) * lineHeight * 0.5 +
-                lineHeight * 0.25
-              }" fill="black">${line}</text>`;
-            }
-          }
-        }
-      }
-    }
+    const grafo = this.modelState['zflowchart'];
+    const svgContent = FlowChartDiagram.computeGraph(grafo);
     this.graphRecomputeBoundingBox();
     return this.sanitizer.bypassSecurityTrustHtml(svgContent);
   }
