@@ -50,7 +50,7 @@ class SimpleObj {
         }
         return todo;
     }
-    static recreate(todo, llave, valor) {
+    static recreate(todo, llave, valor, simple = false) {
         const partes = llave.split(".");
         let indice = todo;
         for (let i = 0; i < partes.length - 1; i++) {
@@ -61,6 +61,14 @@ class SimpleObj {
             indice = indice[parte];
         }
         const ultimaLlave = partes[partes.length - 1];
+        if (simple) {
+            if (valor === undefined) {
+                delete indice[ultimaLlave];
+            } else {
+                indice[ultimaLlave] = valor;
+            }
+            return todo;
+        }
         if (typeof valor == "object" && valor !== null) {
             if (!indice[ultimaLlave]) {
                 if (valor instanceof Array) {
@@ -81,6 +89,9 @@ class SimpleObj {
                     }
                     indice[ultimaLlave] = nuevo;
                 }
+            }
+            if (!(valor instanceof Array)) {
+                Object.assign(indice[ultimaLlave], valor);
             }
         } else {
             indice[ultimaLlave] = valor;

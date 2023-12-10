@@ -1,10 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import {
-  CreateScoreData,
-  SocketActions,
-  UeSocketService,
-  UpdateScoreData,
-} from 'src/services/uesocket.service';
+import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
+import { SimpleObj } from 'srcJs/SimpleObj';
 
 @Component({
   selector: 'app-uechat',
@@ -13,6 +9,8 @@ import {
 })
 export class UechatComponent implements OnInit, OnDestroy {
   binded: (message: string) => any;
+  binded2: (message: string) => any;
+  modelState = {};
   selectedView: string = 'chat';
   mymessage: string = '';
   selectedAction: SocketActions | null = null;
@@ -22,9 +20,11 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.binded = this.receiveChatMessage.bind(this);
+    this.binded2 = this.receiveStateChanged.bind(this);
     this.socketService.on('chatMessage', this.binded);
     this.socketService.on('personalChat', this.binded);
     this.socketService.on('buscarParticipantesResponse', this.binded);
+    this.socketService.on('stateChanged', this.binded2);
   }
 
   ngOnDestroy(): void {
@@ -34,10 +34,21 @@ export class UechatComponent implements OnInit, OnDestroy {
       'buscarParticipantesResponse',
       this.binded
     );
+    this.socketService.removeListener('stateChanged', this.binded2);
   }
 
   selectView(viewName: string) {
     this.selectedView = viewName;
+  }
+
+  receiveStateChanged(content: string) {
+    const parsed = JSON.parse(content);
+    if (parsed.key == '') {
+      this.modelState = parsed.val;
+    } else {
+      // Se escribe solo el punto que dice key
+      this.modelState = SimpleObj.recreate(this.modelState, parsed.key, parsed.val);
+    }
   }
 
   receiveChatMessage(message: any) {
@@ -53,20 +64,17 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   updateSample(valor: any): void {
-    const createScore: CreateScoreData = {
-      personId: 'CC1010166710',
-      sceneId: 1,
-    };
-    const updateScore: UpdateScoreData = {
-      id: 0,
-      column: 'puntaje_segundos',
-      value: '300',
-    };
     const MAPEO_SAMPLES: { [key: string]: string } = {
       chatMessage: '""',
       buscarParticipantes: '""',
-      createScore: JSON.stringify(createScore, null, 4),
-      updateScore: JSON.stringify(updateScore, null, 4),
+      createScore: JSON.stringify(UeSocketService.createScoreSample(), null, 4),
+      updateScore: JSON.stringify(UeSocketService.updateScoreSample(), null, 4),
+      selectScenario: JSON.stringify(
+        UeSocketService.selectScenarioSample(),
+        null,
+        4
+      ),
+      stateWrite: JSON.stringify(UeSocketService.stateWriteSample(), null, 4),
     };
     const key: string = valor.target.value;
     const sample = MAPEO_SAMPLES[key];

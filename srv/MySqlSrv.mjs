@@ -53,6 +53,18 @@ export class PoliciaVrMySql extends MySqlSrv {
         const insertedId = rows.insertId;
         return insertedId;
     }
+    async readParticipant(id) {
+        const theQuery = `\
+        SELECT * FROM participante \
+        WHERE participante_id = ?\
+        `;
+        const [rows] = await this.connection.execute(theQuery, [id]);
+        if (rows.length > 0) {
+            return rows[0];
+        } else {
+            return null;
+        }
+    }
     async readScore(id) {
         const theQuery = `\
         SELECT * FROM puntaje \

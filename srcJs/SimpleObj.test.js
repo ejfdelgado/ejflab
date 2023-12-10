@@ -1,4 +1,5 @@
 const { SimpleObj } = require("./SimpleObj");
+const sortify = require("./sortify");
 
 const testGetValue = () => {
     const MY_CASES = [
@@ -30,4 +31,28 @@ const testGetValue = () => {
     console.log(JSON.stringify(SimpleObj.convertMapToArray({ "1": "Primero", "2": "Segundo" })));
 }
 
-testGetValue();
+const testWriteValue = () => {
+    const MY_CASES = [
+        { obj: { a: 1 }, key: "a", val: 2, exp: { a: 2 } },
+        { obj: { players: {} }, key: "players.P12", val: { name: "Edgar" }, exp: { players: { P12: { name: "Edgar" } } } },
+    ];
+    for (let i = 0; i < MY_CASES.length; i++) {
+        const MY_CASE = MY_CASES[i];
+        const obj = MY_CASE.obj;
+        const key = MY_CASE.key;
+        const val = MY_CASE.val;
+        const myExpected = MY_CASE.exp;
+        const response = SimpleObj.recreate(obj, key, val);
+        const textoEsperado = sortify(myExpected);
+        const textoCalculado = sortify(response);
+        if (textoCalculado !== textoEsperado) {
+            throw Error(`expected ${JSON.stringify(textoEsperado)} actual ${JSON.stringify(textoCalculado)}`);
+        } else {
+            console.log(`case ${i + 1} OK! ${JSON.stringify(textoEsperado)} equals ${JSON.stringify(textoCalculado)}`);
+        }
+    }
+};
+
+//testGetValue();
+
+testWriteValue();

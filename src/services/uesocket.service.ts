@@ -12,7 +12,6 @@ export enum SocketActions {
 
 export interface CreateScoreData {
   personId: string;
-  sceneId: number;
 }
 
 export interface UpdateScoreData {
@@ -21,10 +20,25 @@ export interface UpdateScoreData {
   value: any;
 }
 
+export interface SelectScenarioData {
+  name: string;
+}
+
+export interface StateWriteData {
+  key: string;
+  val: any;
+}
+
+export interface StateChangedData {
+  key: string;
+  val: any;
+}
+
 interface ServerToClientEvents {
   chatMessage: (message: string) => void;
   personalChat: (message: string) => void;
   buscarParticipantesResponse: (message: string) => void;
+  stateChanged: (message: string) => void;
 }
 
 interface ClientToServerEvents {
@@ -32,6 +46,8 @@ interface ClientToServerEvents {
   buscarParticipantes: (inicial: string) => void;
   createScore: (data: CreateScoreData) => void;
   updateScore: (data: UpdateScoreData) => void;
+  selectScenario: (data: SelectScenarioData) => void;
+  stateWrite: (data: StateWriteData) => void;
 }
 
 @Injectable({
@@ -47,6 +63,33 @@ export class UeSocketService {
   constructor() {
     this.evento = new EventEmitter<any>();
     this.eventResponse = new EventEmitter<any>();
+  }
+
+  static createScoreSample(): CreateScoreData {
+    return {
+      personId: 'CC1010166710'
+    };
+  }
+
+  static updateScoreSample(): UpdateScoreData {
+    return {
+      id: 0,
+      column: 'puntaje_segundos',
+      value: '300',
+    };
+  }
+
+  static selectScenarioSample(): SelectScenarioData {
+    return {
+      name: 'barla20-cooperante',
+    };
+  }
+
+  static stateWriteSample(): StateWriteData {
+    return {
+      key: 'test',
+      val: true,
+    };
   }
 
   on(llave: any, fun: Function) {
