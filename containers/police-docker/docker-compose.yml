@@ -24,13 +24,13 @@ volumes:
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${FOLDER_MYSQL}"
+      device: "${HOME}${FOLDER_MYSQL}"
   nodeapp:
     driver: local
     driver_opts:
       type: "none"
       o: "bind"
-      device: "${FOLDER_NODEAPP}"
+      device: "${HOME}${FOLDER_NODEAPP}"
 
 services:
   police_mysql:

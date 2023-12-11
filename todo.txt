@@ -3,9 +3,8 @@ https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</m
 https://fontawesome.com/icons?d=gallery FontAwesome
 
 
+- si pide leer la raiz "" debe poder actualizar todo
 - crear virtual "me" and "other"
-- Tener el estado del nodo actual
-- Evidenciar el estado actual con un color diferente
 - Crear evento de iniciarJuego, validar 2 jugadores y escenario
 - desarrollar la mezcla de objectos, mejorada del assign
 - Permitir ver del json solo una jerarquia con un select, tal vez usar una función para obtener la ruta
