@@ -1,7 +1,13 @@
 {
     "scene": {
         "id": 1,
+        "type": "cooperante-si",
         "name": "Bar la 20"
+    },
+    "st": {
+        "current": null,
+        "age": 1,
+        "open": false
     },
     "players": {}
 }

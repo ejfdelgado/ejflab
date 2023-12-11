@@ -12,6 +12,19 @@ export class UnrealEngineState {
         return FlowChartDiagram.processFlowChart(nodos);
     }
 
+    getIdNodeWithText(text) {
+        const shapes = this.estado.zflowchart?.shapes;
+        if (shapes instanceof Array) {
+            for (let i = 0; i < shapes.length; i++) {
+                const shape = shapes[i];
+                if (shape.txt == text) {
+                    return shape.id;
+                }
+            }
+        }
+        return null;
+    }
+
     loadState(id) {
         const data = fs.readFileSync(`./data/ue/scenes/${id}.json`, 'utf8');
         const xmlFlowText = fs.readFileSync(`./data/ue/scenes/${id}.drawio`, 'utf8');

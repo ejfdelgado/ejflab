@@ -166,6 +166,11 @@ class MyTemplate extends CsvWithFilters {
             times: 1
         };
     }
+    computeIf(formula, data) {
+        const plainFormula = this.replaceBareValues(formula, data, "\\{", "\\}", "\\}", true);
+        //console.log(plainFormula);
+        return eval(plainFormula);// Yes it's safe here, believeme, uncomment above
+    }
     replaceIfs(template, data) {
         const someIf = MyTemplate.getBiggerIf(template);
         if (someIf == null) {
@@ -174,10 +179,8 @@ class MyTemplate extends CsvWithFilters {
                 times: 0,
             };
         }
-
-        const plainFormula = this.replaceBareValues(someIf.formula, data, "\\{", "\\}", "\\}", true);
         //console.log(plainFormula);
-        const isTrue = eval(plainFormula);// Yes it's safe here, believeme, uncomment above
+        const isTrue = this.computeIf(someIf.formula, data);
         if (isTrue === true) {
             return {
                 template: someIf.part1 + someIf.localTemplateTrue + someIf.part2,

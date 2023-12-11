@@ -10,6 +10,8 @@ export enum SocketActions {
   updateScore = 'updateScore',
   stateWrite = 'stateWrite',
   stateRead = 'stateRead',
+  startGame = 'startGame',
+  endGame = 'endGame',
 }
 
 export interface CreateScoreData {
@@ -42,6 +44,10 @@ export interface StateChangedData {
   val: any;
 }
 
+export interface StartGameData {}
+
+export interface EndGameData {}
+
 interface ServerToClientEvents {
   chatMessage: (message: string) => void;
   personalChat: (message: string) => void;
@@ -57,6 +63,8 @@ interface ClientToServerEvents {
   selectScenario: (data: SelectScenarioData) => void;
   stateWrite: (data: StateWriteData) => void;
   stateRead: (data: StateReadData) => void;
+  startGame: (data: StartGameData) => void;
+  endGame: (data: EndGameData) => void;
 }
 
 @Injectable({
@@ -107,6 +115,14 @@ export class UeSocketService {
       key: 'test',
       mine: false,
     };
+  }
+
+  static startGameSample(): StartGameData {
+    return {};
+  }
+
+  static endGameSample(): EndGameData {
+    return {};
   }
 
   on(llave: any, fun: Function) {

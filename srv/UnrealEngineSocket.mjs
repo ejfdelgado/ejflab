@@ -11,9 +11,11 @@ const updateScoreEvent = "updateScore";
 const stateWriteEvent = "stateWrite";
 const stateReadEvent = "stateRead";
 const selectScenarioEvent = "selectScenario";
+const startGameEvent = "startGame";
+const endGameEvent = "endGame";
 
 export class UnrealEngineSocket {
-
+    static GAME_INTERVAL = 2000;
     static clients = [];	//track connected clients
     static databaseClient = null;
     static state = new UnrealEngineState();
@@ -79,6 +81,8 @@ export class UnrealEngineSocket {
                 socket.removeListener(stateWriteEvent, stateWriteEventHandler);
                 socket.removeListener(stateReadEvent, stateReadEventHandler);
                 socket.removeListener('disconnect', disconnectHandler);
+                socket.removeListener(startGameEvent, startGameEventHandler);
+                socket.removeListener(endGameEvent, endGameEventHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -114,7 +118,7 @@ export class UnrealEngineSocket {
                         affectModel(currentKey, undefined);
                     }
 
-                    const insertedId = await databaseClient.createScore(payload.personId, this.state.estado.scene.id);
+                    const insertedId = await databaseClient.createScore(payload.personId, this.state.estado.scene?.id);
                     const created = await databaseClient.readScore(insertedId);
                     const participant = await databaseClient.readParticipant(payload.personId);
 
@@ -196,6 +200,70 @@ export class UnrealEngineSocket {
                 }
             };
 
+            const goToStartingPoint = () => {
+                const currentState = this.state.readKey("st.current");
+                if (currentState != null) {
+                    throw `El entrenamiento ya está iniciado y está corriendo`;
+                }
+                const idNode = this.state.getIdNodeWithText("inicio");
+                affectModel("st.current", idNode);
+                setTimeout(() => {
+                    moveState();
+                }, UnrealEngineSocket.GAME_INTERVAL);
+            }
+
+            const moveState = async () => {
+                const currentState = this.state.readKey("st.current");
+                if (currentState == null) {
+                    // El juego ya terminó
+                    return;
+                }
+                const graph = this.state.readKey("zflowchart");
+                console.log(`Evaluating next step from ${currentState}`);
+
+                // Validar las flechas de salida si son verdaderas y tomar la primera
+
+                // Ejecutar las acciones que existan en el nodo de llegada
+
+                setTimeout(() => {
+                    moveState();
+                }, UnrealEngineSocket.GAME_INTERVAL);
+            };
+
+            const startGameEventHandler = async (payload) => {
+                try {
+                    // Se debe validar si ya hay escenario
+
+                    if (!(this.state.estado?.scene?.id)) {
+                        throw "Debe seleccionar primero el escenario";
+                    }
+                    if (!(this.state.estado?.players)) {
+                        throw "Debe seleccionar los participantes";
+                    }
+                    if (Object.keys(this.state.estado?.players).length < 2) {
+                        throw "Debe seleccionar al menos dos participantes";
+                    }
+                    console.log("Starting game...");
+                    // Buscar inicio
+                    goToStartingPoint();
+
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            const endGameEventHandler = async (payload) => {
+                try {
+                    const currentState = this.state.readKey("st.current");
+                    if (currentState == null) {
+                        throw "El entrenamiento ya está terminado";
+                    }
+                    affectModel("st.current", null);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
             socket.on(createScoreEvent, createScoreEventHandler);
             socket.on(updateScoreEvent, updateScoreEventHandler);
             socket.on(selectScenarioEvent, selectScenarioEventHandler);
@@ -204,6 +272,8 @@ export class UnrealEngineSocket {
             socket.on(stateWriteEvent, stateWriteEventHandler);
             socket.on(stateReadEvent, stateReadEventHandler);
             socket.on('disconnect', disconnectHandler);
+            socket.on(startGameEvent, startGameEventHandler);
+            socket.on(endGameEvent, endGameEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",

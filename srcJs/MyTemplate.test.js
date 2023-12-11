@@ -39,8 +39,8 @@ function myTest() {
             exp: "Esto es una prueba  parent Dog has   parent Bird has   parent Cat has   here there is nothing",
         },
         {
-            txt: "Es $[if ${color.id} == 1 && ${algo} === undefined ] Es uno $[endif] fin",
-            data: { color: { id: 1 } },
+            txt: 'Es $[if ${color.id} == "texto" && ${algo} === undefined && ${otro.valor} == ${color.id} ] Es uno $[endif] fin',
+            data: { color: { id: "texto" }, otro: { valor: "texto" } },
             exp: "Es  Es uno  fin",
         },
         {
