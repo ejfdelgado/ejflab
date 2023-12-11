@@ -227,6 +227,15 @@ export class UnrealEngineSocket {
                 return arrows.filter((arrow) => arrow.src == srcId);
             }
 
+            const findNodeById = (nodes, id) => {
+                const temp = nodes.filter((node) => node.id == id);
+                if (temp.length > 0) {
+                    return temp[0];
+                } else {
+                    return null;
+                }
+            };
+
             const moveState = async () => {
                 const currentState = this.state.readKey("st.current");
                 const startedAt = this.state.readKey("st.startedAt");
@@ -240,6 +249,7 @@ export class UnrealEngineSocket {
                 }
                 const graph = this.state.readKey("zflowchart");
                 const arrows = graph.arrows;
+                const shapes = graph.shapes;
                 //console.log(`Evaluating next steps from ${currentState}`);
 
                 // Validar las flechas y tomar todas las que sean verdaderas
@@ -271,26 +281,51 @@ export class UnrealEngineSocket {
                     }
                 }
                 // Se hace el cambio
+                let forceFinish = false;
                 const nodosViejos = Object.keys(outputPositiveGlobal);
                 for (let i = 0; i < nodosViejos.length; i++) {
                     const srcId = nodosViejos[i];
                     const nodosLlegada = outputPositiveGlobal[srcId];
                     // Ejecutar las acciones que existan en los nodos de llegada
+
                     const indiceViejo = currentState.indexOf(srcId);
                     if (indiceViejo >= 0) {
                         currentState.splice(indiceViejo);
                     }
                     for (let j = 0; j < nodosLlegada.length; j++) {
                         const nodoLlegada = nodosLlegada[j];
+                        const theNode = findNodeById(shapes, nodoLlegada);
+                        if (["box", "ellipse", "rhombus"].indexOf(theNode.type) >= 0) {
+                            const textNode = theNode.txt;
+                            if (typeof textNode == "string") {
+                                if (textNode == "fin") {
+                                    forceFinish = true;
+                                }
+                                const commands = textNode.split(/\n/ig);
+                                for (let m = 0; m < commands.length; m++) {
+                                    const command = commands[m];
+                                    const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
+                                    if (tokensCommand != null) {
+                                        const destinationVar = tokensCommand[1];
+                                        const preProcesedValue = tokensCommand[2];
+                                        const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
+                                        //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
+                                        affectModel(destinationVar, value);
+                                    }
+                                }
+                            }
+                        }
                         currentState.push(nodoLlegada);
                     }
                 }
                 const nuevosSt = {
-
                     duration: new Date().getTime() - startedAt,
                 };
                 if (nodosViejos.length > 0) {
                     nuevosSt.current = currentState;
+                }
+                if (forceFinish) {
+                    nuevosSt.current = null;
                 }
                 affectModel("st", nuevosSt);
 
