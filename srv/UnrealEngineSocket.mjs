@@ -204,14 +204,23 @@ export class UnrealEngineSocket {
 
             const goToStartingPoint = () => {
                 const currentState = this.state.readKey("st.current");
+                let interval = this.state.readKey("scene.interval");
+                if (!(typeof interval == "number")) {
+                    interval = UnrealEngineSocket.GAME_INTERVAL;
+                }
                 if (currentState != null) {
                     throw `El entrenamiento ya está iniciado y está corriendo`;
                 }
                 const nodeIds = this.state.getIdNodeWithText("inicio");
-                affectModel("st.current", nodeIds);
+                const nuevosSt = {
+                    current: nodeIds,
+                    startedAt: new Date().getTime(),
+                    duration: 0,
+                };
+                affectModel("st", nuevosSt);
                 setTimeout(() => {
                     moveState();
-                }, UnrealEngineSocket.GAME_INTERVAL);
+                }, interval);
             }
 
             const filterSourceArrowsFromSource = (arrows, srcId) => {
@@ -220,6 +229,11 @@ export class UnrealEngineSocket {
 
             const moveState = async () => {
                 const currentState = this.state.readKey("st.current");
+                const startedAt = this.state.readKey("st.startedAt");
+                let interval = this.state.readKey("scene.interval");
+                if (!(typeof interval == "number")) {
+                    interval = UnrealEngineSocket.GAME_INTERVAL;
+                }
                 if (currentState == null) {
                     // El juego ya terminó
                     return;
@@ -271,13 +285,18 @@ export class UnrealEngineSocket {
                         currentState.push(nodoLlegada);
                     }
                 }
+                const nuevosSt = {
+
+                    duration: new Date().getTime() - startedAt,
+                };
                 if (nodosViejos.length > 0) {
-                    affectModel("st.current", currentState);
+                    nuevosSt.current = currentState;
                 }
+                affectModel("st", nuevosSt);
 
                 setTimeout(() => {
                     moveState();
-                }, UnrealEngineSocket.GAME_INTERVAL);
+                }, interval);
             };
 
             const startGameEventHandler = async (payload) => {
