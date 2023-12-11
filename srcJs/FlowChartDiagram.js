@@ -23,10 +23,11 @@ class FlowChartDiagram {
             tar: tarPos,
         };
     }
-    static computeGraph(grafo) {
+    static computeGraph(grafo, currentNodes=[]) {
         const lineHeight = 15;
         let svgContent = '';
         const style = 'fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0)';
+        const styleHighlight = 'fill:rgb(222,255,0);stroke-width:1;stroke:rgb(0,0,0)';
         const styleTar = 'fill:rgb(0,0,0);stroke-width:1;stroke:rgb(0,0,0)';
         if (grafo) {
             const shapes = grafo.shapes;
@@ -92,13 +93,18 @@ class FlowChartDiagram {
                 for (let i = 0; i < shapes.length; i++) {
                     const shape = shapes[i];
                     const id = shape.id;
+                    const isHiglighted = currentNodes.indexOf(id) >= 0;
                     const pos = shape.pos;
+                    let localStyle = style;
+                    if (isHiglighted) {
+                        localStyle = styleHighlight;
+                    }
                     if (shape.type == 'box') {
-                        svgContent += `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${style}"></rect>`;
+                        svgContent += `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${localStyle}"></rect>`;
                     } else if (shape.type == 'ellipse') {
                         svgContent += `<ellipse cx="${pos.x + pos.width * 0.5}" cy="${pos.y + pos.height * 0.5
                             }" rx="${pos.width * 0.5}" ry="${pos.height * 0.5
-                            }" style="${style}"></ellipse>`;
+                            }" style="${localStyle}"></ellipse>`;
                     } else if (shape.type == 'rhombus') {
                         svgContent += `<polygon points="`;
                         svgContent += `${pos.x.toFixed(0)},${pos.y + pos.height * 0.5} `;
@@ -108,7 +114,7 @@ class FlowChartDiagram {
                         svgContent += `${pos.x + pos.width * 0.5},${(
                             pos.y + pos.height
                         ).toFixed(0)}" `;
-                        svgContent += `style="${style}"/>`;
+                        svgContent += `style="${localStyle}"/>`;
                     }
                     if (typeof shape.txt == 'string') {
                         const lines = shape.txt.split(/\n/g);

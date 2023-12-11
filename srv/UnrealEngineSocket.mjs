@@ -240,7 +240,8 @@ export class UnrealEngineSocket {
                             try {
                                 let evaluated = true;
                                 if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
-                                    evaluated = UnrealEngineSocket.conditionalEngine.computeIf(outputArrow.txt, this.state.estado);
+                                    const textoIf = outputArrow.txt.replace(/\n/ig, ' ');
+                                    evaluated = UnrealEngineSocket.conditionalEngine.computeIf(textoIf, this.state.estado);
                                 }
                                 if (evaluated) {
                                     if (!(srcId in outputPositiveGlobal)) {
