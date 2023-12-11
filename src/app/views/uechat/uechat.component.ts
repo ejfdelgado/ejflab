@@ -86,7 +86,7 @@ export class UechatComponent implements OnInit, OnDestroy {
       // Se escribe solo el punto que dice key
       this.modelState = Object.assign(
         {},
-        SimpleObj.recreate(this.modelState, parsed.key, parsed.val)
+        SimpleObj.recreate(this.modelState, parsed.key, parsed.val, true)
       );
     }
 

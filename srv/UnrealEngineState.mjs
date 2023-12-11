@@ -9,20 +9,21 @@ export class UnrealEngineState {
 
     processFlowChart(xmlFlow) {
         const nodos = xmlFlow?.mxfile?.diagram?.mxGraphModel?.root?.mxCell;
-        return FlowChartDiagram.processFlowChart(nodos);
+        return FlowChartDiagram.processFlowChart(nodos, he);
     }
 
     getIdNodeWithText(text) {
+        const founds = [];
         const shapes = this.estado.zflowchart?.shapes;
         if (shapes instanceof Array) {
             for (let i = 0; i < shapes.length; i++) {
                 const shape = shapes[i];
                 if (shape.txt == text) {
-                    return shape.id;
+                    founds.push(shape.id);
                 }
             }
         }
-        return null;
+        return founds;
     }
 
     loadState(id) {

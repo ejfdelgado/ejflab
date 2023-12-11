@@ -3,6 +3,7 @@ import sortify from "../srcJs/sortify.js";
 import { PoliciaVrMySql } from "./MySqlSrv.mjs";
 import { UnrealEngineState } from "./UnrealEngineState.mjs";
 import { serializeError } from 'serialize-error';
+import { MyTemplate } from "../srcJs/MyTemplate.js";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -19,6 +20,7 @@ export class UnrealEngineSocket {
     static clients = [];	//track connected clients
     static databaseClient = null;
     static state = new UnrealEngineState();
+    static conditionalEngine = new MyTemplate();
 
     static async getDataBaseClient() {
         if (UnrealEngineSocket.databaseClient == null) {
@@ -205,11 +207,15 @@ export class UnrealEngineSocket {
                 if (currentState != null) {
                     throw `El entrenamiento ya está iniciado y está corriendo`;
                 }
-                const idNode = this.state.getIdNodeWithText("inicio");
-                affectModel("st.current", idNode);
+                const nodeIds = this.state.getIdNodeWithText("inicio");
+                affectModel("st.current", nodeIds);
                 setTimeout(() => {
                     moveState();
                 }, UnrealEngineSocket.GAME_INTERVAL);
+            }
+
+            const filterSourceArrowsFromSource = (arrows, srcId) => {
+                return arrows.filter((arrow) => arrow.src == srcId);
             }
 
             const moveState = async () => {
@@ -219,11 +225,54 @@ export class UnrealEngineSocket {
                     return;
                 }
                 const graph = this.state.readKey("zflowchart");
-                console.log(`Evaluating next step from ${currentState}`);
+                const arrows = graph.arrows;
+                //console.log(`Evaluating next steps from ${currentState}`);
 
-                // Validar las flechas de salida si son verdaderas y tomar la primera
-
-                // Ejecutar las acciones que existan en el nodo de llegada
+                // Validar las flechas y tomar todas las que sean verdaderas
+                const outputPositiveGlobal = {};
+                for (let i = 0; i < currentState.length; i++) {
+                    const srcId = currentState[i];
+                    const outputArrows = filterSourceArrowsFromSource(arrows, srcId);
+                    if (outputArrows.length > 0) {
+                        // Este nodo se debe validar si cumple al menos una salida
+                        for (let j = 0; j < outputArrows.length; j++) {
+                            const outputArrow = outputArrows[j];
+                            try {
+                                let evaluated = true;
+                                if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
+                                    evaluated = UnrealEngineSocket.conditionalEngine.computeIf(outputArrow.txt, this.state.estado);
+                                }
+                                if (evaluated) {
+                                    if (!(srcId in outputPositiveGlobal)) {
+                                        outputPositiveGlobal[srcId] = [];
+                                    }
+                                    outputPositiveGlobal[srcId].push(outputArrow.tar);
+                                }
+                            } catch (err) {
+                                console.log(outputArrow.txt);
+                                console.log(err);
+                            }
+                        }
+                    }
+                }
+                // Se hace el cambio
+                const nodosViejos = Object.keys(outputPositiveGlobal);
+                for (let i = 0; i < nodosViejos.length; i++) {
+                    const srcId = nodosViejos[i];
+                    const nodosLlegada = outputPositiveGlobal[srcId];
+                    // Ejecutar las acciones que existan en los nodos de llegada
+                    const indiceViejo = currentState.indexOf(srcId);
+                    if (indiceViejo >= 0) {
+                        currentState.splice(indiceViejo);
+                    }
+                    for (let j = 0; j < nodosLlegada.length; j++) {
+                        const nodoLlegada = nodosLlegada[j];
+                        currentState.push(nodoLlegada);
+                    }
+                }
+                if (nodosViejos.length > 0) {
+                    affectModel("st.current", currentState);
+                }
 
                 setTimeout(() => {
                     moveState();
@@ -237,12 +286,14 @@ export class UnrealEngineSocket {
                     if (!(this.state.estado?.scene?.id)) {
                         throw "Debe seleccionar primero el escenario";
                     }
+                    /*
                     if (!(this.state.estado?.players)) {
                         throw "Debe seleccionar los participantes";
                     }
                     if (Object.keys(this.state.estado?.players).length < 2) {
                         throw "Debe seleccionar al menos dos participantes";
                     }
+                    */
                     console.log("Starting game...");
                     // Buscar inicio
                     goToStartingPoint();

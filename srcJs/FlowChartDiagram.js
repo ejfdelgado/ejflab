@@ -128,7 +128,7 @@ class FlowChartDiagram {
         }
         return svgContent;
     }
-    static processFlowChart(nodos) {
+    static processFlowChart(nodos, he = null) {
         const simple = {
             shapes: [],
             arrows: [],
@@ -157,7 +157,9 @@ class FlowChartDiagram {
                 let texto = '';
                 if (typeof txt == "string") {
                     texto = txt;
-                    //texto = he.decode(texto);
+                    if (he != null) {
+                        texto = he.decode(texto);
+                    }
                     texto = texto.replace(/<\/?br\/?>/ig, '\n');
                 }
                 const style = nodo['@_style'];
@@ -208,7 +210,14 @@ class FlowChartDiagram {
                 const llave = llavesFlechas[i];
                 const flecha = mapaFlechas[llave];
                 if (flecha.ref.txt == "") {
-                    flecha.ref.txt = flecha.txt;
+                    let temp = flecha.txt;
+                    if (typeof temp == "string") {
+                        if (he != null) {
+                            temp = he.decode(temp);
+                        }
+                        temp = temp.replace(/<\/?br\/?>/ig, '\n');
+                    }
+                    flecha.ref.txt = temp;
                 }
             }
         }

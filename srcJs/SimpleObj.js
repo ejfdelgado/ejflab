@@ -51,10 +51,22 @@ class SimpleObj {
         return todo;
     }
     static objectWrite(indice, ultimaLlave, valor) {
+        //console.log(`indice ${JSON.stringify(indice)}, ultimaLlave ${ultimaLlave}, valor ${JSON.stringify(valor)}`);
         if (typeof indice[ultimaLlave] == "object" && [null, undefined].indexOf(indice[ultimaLlave]) < 0) {
+            //console.log("Caso 1");
+            // El destino es un objeto o arreglo
             if (typeof valor == "object" && [null, undefined].indexOf(valor) < 0) {
-                // Tanto origen como destino son objetos, se podría intentar mezclar
-                Object.assign(indice[ultimaLlave], valor);
+                // Tanto origen como destino son objetos o arreglos, se podría intentar mezclar
+                if (valor instanceof Array) {
+                    for (let k = 0; k < valor.length; k++) {
+                        const elem = valor[k];
+                        if (elem != undefined) {
+                            indice[ultimaLlave][k] = elem;
+                        }
+                    }
+                } else {
+                    Object.assign(indice[ultimaLlave], valor);
+                }
             } else if (valor === undefined) {
                 // El valor es indefinido, se entiende que se quiere borrar
                 delete indice[ultimaLlave];
@@ -63,6 +75,7 @@ class SimpleObj {
                 indice[ultimaLlave] = valor;
             }
         } else {
+            //console.log("Caso 2");
             // El destino no era un objeto entonces no hay necesidad de mezclar, solo asignar
             // Sin importar lo que sea el nuevo valor
             indice[ultimaLlave] = valor;
@@ -108,10 +121,7 @@ class SimpleObj {
                     indice[ultimaLlave] = nuevo;
                 }
             }
-            if (!(valor instanceof Array)) {
-                // Se mezclan los objetos
-                SimpleObj.objectWrite(indice, ultimaLlave, valor);
-            }
+            SimpleObj.objectWrite(indice, ultimaLlave, valor);
         } else {
             indice[ultimaLlave] = valor;
         }
