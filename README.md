@@ -54,6 +54,8 @@ sudo docker login -u ejfdelgado
 
 sudo docker push ejfdelgado/mainapp:v1.0
 
+docker rmi -f 0c3bab35e3d4 768890f11be7 09a04891ccee 18c9552ac86f 9108a8886d6c
+
 gcloud auth configure-docker
 
 gsutil cors set cors.json gs://labs-pro-public
