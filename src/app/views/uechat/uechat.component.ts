@@ -128,6 +128,7 @@ export class UechatComponent implements OnInit, OnDestroy {
       stateRead: JSON.stringify(UeSocketService.stateReadSample(), null, 4),
       startGame: JSON.stringify(UeSocketService.startGameSample(), null, 4),
       endGame: JSON.stringify(UeSocketService.endGameSample(), null, 4),
+      updateCode: JSON.stringify(UeSocketService.updateCodeSample(), null, 4),
     };
     const key: string = valor.target.value;
     const sample = MAPEO_SAMPLES[key];

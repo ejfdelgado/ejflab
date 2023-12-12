@@ -12,6 +12,7 @@ export enum SocketActions {
   stateRead = 'stateRead',
   startGame = 'startGame',
   endGame = 'endGame',
+  updateCode = 'updateCode',
 }
 
 export interface CreateScoreData {
@@ -48,6 +49,8 @@ export interface StartGameData {}
 
 export interface EndGameData {}
 
+export interface UpdateCodeData {}
+
 interface ServerToClientEvents {
   chatMessage: (message: string) => void;
   personalChat: (message: string) => void;
@@ -65,6 +68,7 @@ interface ClientToServerEvents {
   stateRead: (data: StateReadData) => void;
   startGame: (data: StartGameData) => void;
   endGame: (data: EndGameData) => void;
+  updateCode: (data: UpdateCodeData) => void;
 }
 
 @Injectable({
@@ -122,6 +126,10 @@ export class UeSocketService {
   }
 
   static endGameSample(): EndGameData {
+    return {};
+  }
+
+  static updateCodeSample(): UpdateCodeData {
     return {};
   }
 

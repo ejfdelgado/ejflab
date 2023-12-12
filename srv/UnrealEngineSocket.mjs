@@ -4,6 +4,7 @@ import { PoliciaVrMySql } from "./MySqlSrv.mjs";
 import { UnrealEngineState } from "./UnrealEngineState.mjs";
 import { serializeError } from 'serialize-error';
 import { MyTemplate } from "../srcJs/MyTemplate.js";
+import { MyShell } from "./MyShell.mjs";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -14,6 +15,7 @@ const stateReadEvent = "stateRead";
 const selectScenarioEvent = "selectScenario";
 const startGameEvent = "startGame";
 const endGameEvent = "endGame";
+const updateCodeEvent = "updateCode";
 
 export class UnrealEngineSocket {
     static GAME_INTERVAL = 2000;
@@ -85,6 +87,7 @@ export class UnrealEngineSocket {
                 socket.removeListener('disconnect', disconnectHandler);
                 socket.removeListener(startGameEvent, startGameEventHandler);
                 socket.removeListener(endGameEvent, endGameEventHandler);
+                socket.removeListener(updateCodeEvent, updateCodeEventHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -370,6 +373,15 @@ export class UnrealEngineSocket {
                 }
             };
 
+            const updateCodeEventHandler = async (payload) => {
+                try {
+                    const dato = await MyShell.runLocal("git pull", null);
+                    io.to(socket.id).emit('personalChat', dato);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
             socket.on(createScoreEvent, createScoreEventHandler);
             socket.on(updateScoreEvent, updateScoreEventHandler);
             socket.on(selectScenarioEvent, selectScenarioEventHandler);
@@ -380,6 +392,7 @@ export class UnrealEngineSocket {
             socket.on('disconnect', disconnectHandler);
             socket.on(startGameEvent, startGameEventHandler);
             socket.on(endGameEvent, endGameEventHandler);
+            socket.on(updateCodeEvent, updateCodeEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",
