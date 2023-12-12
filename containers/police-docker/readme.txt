@@ -46,7 +46,7 @@ npm install
 // Open port 8081
 
 // Para actualizar el código:
-git pull && npm install && npm run build_local
+cd ~/desarrollo/ejflab && git pull && npm install && npm run build_local
 
 // Para correr el servidor:
 npm run start
@@ -75,5 +75,45 @@ apt autoremove
 apt-get autoremove
 apt-get install npm
 
+// Adding environment variables
+vi ~/.profile
+. ~/.profile
+
+// Clear linux
+cd /tmp && rm -rf *
+
 luego lanzar el docker:
+cd ~/desarrollo/ejflab/containers/police-docker
+service docker start
+service docker status
 docker compose up -d
+
+apt install apt-transport-https ca-certificates curl software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable"
+apt-cache policy docker-ce
+apt install docker-ce
+systemctl status docker
+
+usermod -aG docker ${USER}
+su - ${USER}
+
+vi /usr/lib/systemd/system/docker.service
+
+curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+docker-compose --version
+
+service docker stop
+service docker start
+service docker restart
+service docker status
+dockerd
+docker context ls
+
+
+docker volume create policiavr_volume
+mv /var/lib/docker_old/* /var/lib/docker
+
+df -h /
+df -h /var/lib/docker
