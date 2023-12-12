@@ -86,7 +86,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
       - "8081:3000"
-      - "2222:22"
+      - "2220:22"
     depends_on:
       - police_mysql
     volumes:

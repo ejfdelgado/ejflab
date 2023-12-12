@@ -46,17 +46,16 @@ npm install
 // Open port 8081
 
 // Para actualizar el código:
-git pull && npm run build_local
+git pull && npm install && npm run build_local
 
 // Para correr el servidor:
 npm run start
 
-
 npm cache clean
 rm -rf $TMPDIR/npm-*
 
-
-
+// Problemas con npm y nodejs:
+// Solución 1
 rm -rf /usr/local/bin/npm /usr/local/share/man/man1/node* ~/.npm
 rm -rf /usr/local/lib/node*
 rm -rf /usr/local/bin/node*
@@ -66,7 +65,7 @@ tar -xf node-v20.10.0-linux-x64.tar.xz
 mv ./node-v20.10.0-linux-x64/bin/* /usr/local/bin/
 mv ./node-v20.10.0-linux-x64/lib/node_modules/ /usr/local/lib/
 
-
+// Solución 2
 rm -rf /usr/local/bin/npm /usr/local/share/man/man1/node* ~/.npm
 rm -rf /usr/local/lib/node*
 rm -rf /usr/local/bin/node*
@@ -75,8 +74,6 @@ apt-get purge nodejs npm
 apt autoremove
 apt-get autoremove
 apt-get install npm
-
-
 
 luego lanzar el docker:
 docker compose up -d
