@@ -15,6 +15,7 @@ apt-get install git
 apt-get install vim
 apt-get install nodejs
 apt-get install npm
+apt-get install gnupg wget -y
 // docker compose
 
 // Configurar git
@@ -40,7 +41,7 @@ vi ~/.ssh/id_ed25519_policevr.pub
 cd ~/desarrollo
 git clone git@github.com:ejfdelgado/ejflab.git
 cd ~/desarrollo/ejflab
-npm run install
+npm install
 
 // Open port 8081
 
@@ -50,9 +51,32 @@ git pull && npm run build_local
 // Para correr el servidor:
 npm run start
 
+
+npm cache clean
+rm -rf $TMPDIR/npm-*
+
+
+
+rm -rf /usr/local/bin/npm /usr/local/share/man/man1/node* ~/.npm
+rm -rf /usr/local/lib/node*
+rm -rf /usr/local/bin/node*
+rm -rf /usr/local/include/node*
+wget https://nodejs.org/dist/v20.10.0/node-v20.10.0-linux-x64.tar.xz
+tar -xf node-v20.10.0-linux-x64.tar.xz
+mv ./node-v20.10.0-linux-x64/bin/* /usr/local/bin/
+mv ./node-v20.10.0-linux-x64/lib/node_modules/ /usr/local/lib/
+
+
+rm -rf /usr/local/bin/npm /usr/local/share/man/man1/node* ~/.npm
+rm -rf /usr/local/lib/node*
+rm -rf /usr/local/bin/node*
+rm -rf /usr/local/include/node*
+apt-get purge nodejs npm
+apt autoremove
+apt-get autoremove
+apt-get install npm
+
+
+
 luego lanzar el docker:
 docker compose up -d
-
-
-pre-built-binary/napi-v5/4.14.0/CPU-linux-4.14.0.tar.gz
-pre-built-binary/napi-v5/4.14.0-rc.0/CPU-linux-4.14.0-rc.0.tar.gz

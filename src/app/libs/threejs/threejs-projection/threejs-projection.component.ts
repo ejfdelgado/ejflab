@@ -45,7 +45,7 @@ export class ThreejsProjectionComponent
   @ViewChild('myparent') prentRef: ElementRef;
   sandRunning: boolean = false;
   sandReference: Array<Array<number>> = [];
-  sandInterval: NodeJS.Timer | null = null;
+  sandInterval: any = null;
   sandRemapping: Array<Array<number>> | null = null;
   sandUid: string | null = null;
   sandActual: THREE.Group | null = null;
