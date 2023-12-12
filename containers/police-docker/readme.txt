@@ -44,11 +44,15 @@ npm run install
 
 // Open port 8081
 
-npm run build_local
+// Para actualizar el código:
+git pull && npm run build_local
+
+// Para correr el servidor:
 npm run start
 
 luego lanzar el docker:
 docker compose up -d
 
 
-https://storage.googleapis.com/tf-builds/pre-built-binary/napi-v5/4.14.0/CPU-linux-4.14.0.tar.gz
+pre-built-binary/napi-v5/4.14.0/CPU-linux-4.14.0.tar.gz
+pre-built-binary/napi-v5/4.14.0-rc.0/CPU-linux-4.14.0-rc.0.tar.gz
