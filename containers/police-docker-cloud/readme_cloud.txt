@@ -19,6 +19,7 @@ ssh root@localhost -p 2222
 docker ps
 docker commit -m "ejf project added" -p 2c0fe7178c74  ejfdelgado/policiavr:v1.2
 
+8081
 
 docker commit --change "ENV PORT=3000" c3f279d17e0a   ejfdelgado/policiavr:v1.3
 docker commit --change "EXPOSE 3000" c3f279d17e0a   ejfdelgado/policiavr:v1.3

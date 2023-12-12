@@ -25,18 +25,26 @@ git config --global user.email "edgar.jose.fernando.delgado@gmail.com"
 cd  ~/.ssh
 ssh-keygen -t ed25519 -C "edgar.jose.fernando.delgado@gmail.com" -f id_ed25519_policevr
 eval `ssh-agent -s`
+
+// Crear el archivo
+vi ~/.ssh/config
+// Con el contenido
+IdentityFile ~/.ssh/id_ed25519_policevr
+
 ssh-add ~/.ssh/id_ed25519_policevr
 vi ~/.ssh/id_ed25519_policevr.pub
+
+
 
 // Descargar y actualizar el proyecto
 cd ~/desarrollo
 git clone git@github.com:ejfdelgado/ejflab.git
-cd ejflab
+cd ~/desarrollo/ejflab
 npm run install
 
-// Showed error
-Failed at the @tensorflow/tfjs-node@4.14.0 install script.
-npm run install
+
+npm run build_local
+npm run start
 
 luego lanzar el docker:
 docker compose up -d
