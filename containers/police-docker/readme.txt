@@ -34,6 +34,9 @@ git clone git@github.com:ejfdelgado/ejflab.git
 cd ejflab
 npm run install
 
+// Showed error
+Failed at the @tensorflow/tfjs-node@4.14.0 install script.
+npm run install
 
 luego lanzar el docker:
 docker compose up -d
