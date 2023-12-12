@@ -42,9 +42,13 @@ git clone git@github.com:ejfdelgado/ejflab.git
 cd ~/desarrollo/ejflab
 npm run install
 
+// Open port 8081
 
 npm run build_local
 npm run start
 
 luego lanzar el docker:
 docker compose up -d
+
+
+https://storage.googleapis.com/tf-builds/pre-built-binary/napi-v5/4.14.0/CPU-linux-4.14.0.tar.gz
