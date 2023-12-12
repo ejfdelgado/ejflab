@@ -14,7 +14,7 @@ interface RecordedAudioOutput {
 export class MyAudioService {
   private stream: MediaStream | null = null;
   private recorder: RecordRTC.StereoAudioRecorder | null = null;
-  private interval: NodeJS.Timer;
+  private interval: any;
   private startTime: moment.Moment | null = null;
   private _recorded = new Subject<RecordedAudioOutput>();
   private _recordingTime = new Subject<string>();
