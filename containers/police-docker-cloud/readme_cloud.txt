@@ -42,3 +42,13 @@ docker commit --change "EXPOSE 8083" 1e59521fe592 ejfdelgado/policiavr:v1.12
 
 docker commit --change "WORKDIR /root/desarrollo/ejflab" cfb63fc5b27e ejfdelgado/policiavr:v1.81
 docker commit --change='CMD echo /usr/sbin/sshd -D;npm run start' d3673e2c49ea ejfdelgado/policiavr:v1.82
+
+
+--------
+
+cd /home/ejfdelgado/desarrollo/ejflab/containers/police-docker/terra
+export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json
+gcloud config set project ejfexperiments
+gcloud config set account edgar.jose.fernando.delgado@gmail.com
+terraform init
+terraform apply
