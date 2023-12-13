@@ -46,7 +46,7 @@ export class UnrealEngineState {
             return texto;
         }
         const data = fs.readFileSync(key, 'utf8');
-        inmemoryDisk[key] = data;
+        inmemoryDisk[key] = "data:text/plain;base64,"+Buffer.from(data, "utf8").toString('base64');
         return data;
     }
 
