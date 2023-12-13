@@ -104,6 +104,9 @@ curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compo
 chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
+chmod +x localrun.sh
+./localrun.sh
+
 service docker stop
 service docker start
 service docker restart
