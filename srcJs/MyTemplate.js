@@ -224,6 +224,32 @@ class MyTemplate extends CsvWithFilters {
         });
         return template;
     }
+
+    // MyTemplate.readCall("call(sound, ${val} + ${val1}, param2)", { val: 5, val1: 8 });
+    static readCall(texto, model) {
+        const renderer = new MyTemplate();
+        const response = {
+            action: null,
+            arguments: [],
+        }
+        const partes = /^\s*call\(\s*([^,]+)\s*(.+)\)\s*$/ig.exec(texto);
+        if (partes) {
+            response.action = partes[1];
+            const argumentos = partes[2].split(",");
+            for (let i = 0; i < argumentos.length; i++) {
+                const argumento = argumentos[i].trim();
+                if (argumento.length > 0) {
+                    try {
+                        const evaluado = renderer.computeIf(argumento, model);
+                        response.arguments.push(evaluado);
+                    } catch (err) {
+                        response.arguments.push(argumento);
+                    }
+                }
+            }
+        }
+        return response;
+    }
 };
 
 module.exports = {

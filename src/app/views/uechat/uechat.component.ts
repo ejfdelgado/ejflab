@@ -10,6 +10,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { FileResponseData, FileService } from 'src/services/file.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
+import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { SimpleObj } from 'srcJs/SimpleObj';
 
 @Component({
@@ -34,6 +35,11 @@ export class UechatComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    const SOUNDS_ROOT = '/assets/police/sounds';
+    ModuloSonido.preload([
+      `${SOUNDS_ROOT}/end.mp3`,
+      `${SOUNDS_ROOT}/finish.mp3`,
+    ]);
     this.socketService.on('chatMessage', (content: string) => {
       this.receiveChatMessage('chatMessage', content);
     });
@@ -46,6 +52,13 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('stateChanged', (content: string) => {
       this.receiveStateChanged('stateChanged', content);
     });
+    this.socketService.on('sound', (content: string) => {
+      const argumento = JSON.parse(content);
+      ModuloSonido.play(`${SOUNDS_ROOT}/${argumento}`);
+    });
+    this.socketService.on('animate', (content: string) => {
+      console.log(`animate ${JSON.stringify(content)}`);
+    });
   }
 
   ngOnDestroy(): void {
@@ -53,6 +66,8 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.removeAllListeners('personalChat');
     this.socketService.removeAllListeners('buscarParticipantesResponse');
     this.socketService.removeAllListeners('stateChanged');
+    this.socketService.removeAllListeners('sound');
+    this.socketService.removeAllListeners('animate');
   }
 
   selectView(viewName: string) {

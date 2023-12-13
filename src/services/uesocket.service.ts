@@ -62,6 +62,8 @@ interface ServerToClientEvents {
   personalChat: (message: string) => void;
   buscarParticipantesResponse: (message: string) => void;
   stateChanged: (message: string) => void;
+  sound: (message: string) => void;
+  animate: (message: string) => void;
 }
 
 interface ClientToServerEvents {

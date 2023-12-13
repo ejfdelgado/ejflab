@@ -319,13 +319,27 @@ export class UnrealEngineSocket {
                                 const commands = textNode.split(/\n/ig);
                                 for (let m = 0; m < commands.length; m++) {
                                     const command = commands[m];
-                                    const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
-                                    if (tokensCommand != null) {
-                                        const destinationVar = tokensCommand[1];
-                                        const preProcesedValue = tokensCommand[2];
-                                        const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
-                                        //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
-                                        affectModel(destinationVar, value);
+                                    // Se valida si es un comando call{sound, param, param}
+                                    const callArgs = MyTemplate.readCall(command, this.state.estado);
+                                    if (callArgs.action != null) {
+                                        // Se ejecuta la acción
+                                        console.log(`call ${callArgs.action}`);
+                                        if (callArgs.length == 0) {
+                                            io.emit(callArgs.action, '""');
+                                        } else if (callArgs.arguments.length == 1) {
+                                            io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
+                                        } else {
+                                            io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
+                                        }
+                                    } else {
+                                        const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
+                                        if (tokensCommand != null) {
+                                            const destinationVar = tokensCommand[1];
+                                            const preProcesedValue = tokensCommand[2];
+                                            const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
+                                            //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
+                                            affectModel(destinationVar, value);
+                                        }
                                     }
                                 }
                             }
