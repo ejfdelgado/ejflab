@@ -266,10 +266,20 @@ export class UnrealEngineSocket {
                         // Este nodo se debe validar si cumple al menos una salida
                         for (let j = 0; j < outputArrows.length; j++) {
                             const outputArrow = outputArrows[j];
+                            const arrowId = outputArrow.id;
                             try {
                                 let evaluated = true;
                                 if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
-                                    const textoIf = outputArrow.txt.replace(/\n/ig, ' ');
+                                    let textoIf = outputArrow.txt.replace(/\n/ig, ' ');
+
+                                    // Se hace manejo de sleep(###)
+                                    textoIf = textoIf.replace(/sleep\((\d+)\)/ig, "${st.duration} - ${timer." + arrowId + "} > $1");
+                                    const timerKey = `timer.${arrowId}`;
+                                    const oldTimer = this.state.readKey(timerKey);
+                                    if (!(typeof oldTimer == "number")) {
+                                        const currentTime = this.state.readKey("st.duration");
+                                        this.state.writeKey(timerKey, currentTime);
+                                    }
                                     evaluated = UnrealEngineSocket.conditionalEngine.computeIf(textoIf, this.state.estado);
                                 }
                                 if (evaluated) {
@@ -356,6 +366,7 @@ export class UnrealEngineSocket {
                     */
                     console.log("Starting game...");
                     // Buscar inicio
+                    this.state.writeKey("timer", {});
                     goToStartingPoint();
 
                 } catch (err) {

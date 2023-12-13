@@ -23,7 +23,7 @@ class FlowChartDiagram {
             tar: tarPos,
         };
     }
-    static computeGraph(grafo, currentNodes=[]) {
+    static computeGraph(grafo, currentNodes = []) {
         const lineHeight = 15;
         let svgContent = '';
         const style = 'fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0)';
@@ -175,8 +175,9 @@ class FlowChartDiagram {
                     const nuevaFlecha = {
                         src: source,
                         tar: target,
-                        txt: texto
-                    }
+                        txt: texto,
+                        id,
+                    };
                     mapaFlechas[id].ref = nuevaFlecha;
                     simple.arrows.push(nuevaFlecha);
                 } else {
