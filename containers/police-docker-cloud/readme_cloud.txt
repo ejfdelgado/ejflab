@@ -51,4 +51,5 @@ export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/
 gcloud config set project ejfexperiments
 gcloud config set account edgar.jose.fernando.delgado@gmail.com
 terraform init
+terraform plan
 terraform apply
