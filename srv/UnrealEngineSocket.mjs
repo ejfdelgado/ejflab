@@ -16,6 +16,7 @@ const selectScenarioEvent = "selectScenario";
 const startGameEvent = "startGame";
 const endGameEvent = "endGame";
 const updateCodeEvent = "updateCode";
+const synchronizeFileEvent = "synchronizeFile";
 
 export class UnrealEngineSocket {
     static GAME_INTERVAL = 2000;
@@ -88,6 +89,7 @@ export class UnrealEngineSocket {
                 socket.removeListener(startGameEvent, startGameEventHandler);
                 socket.removeListener(endGameEvent, endGameEventHandler);
                 socket.removeListener(updateCodeEvent, updateCodeEventHandler);
+                socket.removeListener(synchronizeFileEvent, synchronizeFileEventHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -153,7 +155,7 @@ export class UnrealEngineSocket {
 
             const selectScenarioEventHandler = async (payload) => {
                 try {
-                    const modelo = this.state.loadState(payload.name);
+                    const modelo = await this.state.loadState(payload.name);
                     // Se envia la raíz del estado para ser reemplazado.
                     io.emit('stateChanged', JSON.stringify({
                         key: "",
@@ -382,6 +384,15 @@ export class UnrealEngineSocket {
                 }
             };
 
+            const synchronizeFileEventHandler = async (payload) => {
+                try {
+                    this.state.saveInMemoryTextFile(`./data/ue/scenes/${payload.fileName}`, payload.base64);
+                    io.to(socket.id).emit('personalChat', "Ok");
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
             socket.on(createScoreEvent, createScoreEventHandler);
             socket.on(updateScoreEvent, updateScoreEventHandler);
             socket.on(selectScenarioEvent, selectScenarioEventHandler);
@@ -393,6 +404,7 @@ export class UnrealEngineSocket {
             socket.on(startGameEvent, startGameEventHandler);
             socket.on(endGameEvent, endGameEventHandler);
             socket.on(updateCodeEvent, updateCodeEventHandler);
+            socket.on(synchronizeFileEvent, synchronizeFileEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",

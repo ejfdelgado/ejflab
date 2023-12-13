@@ -13,6 +13,7 @@ export enum SocketActions {
   startGame = 'startGame',
   endGame = 'endGame',
   updateCode = 'updateCode',
+  synchronizeFile = 'synchronizeFile',
 }
 
 export interface CreateScoreData {
@@ -51,6 +52,11 @@ export interface EndGameData {}
 
 export interface UpdateCodeData {}
 
+export interface SynchronizeFileData {
+  fileName: string;
+  base64: string;
+}
+
 interface ServerToClientEvents {
   chatMessage: (message: string) => void;
   personalChat: (message: string) => void;
@@ -69,6 +75,7 @@ interface ClientToServerEvents {
   startGame: (data: StartGameData) => void;
   endGame: (data: EndGameData) => void;
   updateCode: (data: UpdateCodeData) => void;
+  synchronizeFile: (data: SynchronizeFileData) => void;
 }
 
 @Injectable({

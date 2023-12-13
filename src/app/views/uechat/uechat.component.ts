@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { FileResponseData, FileService } from 'src/services/file.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { SimpleObj } from 'srcJs/SimpleObj';
@@ -28,7 +29,8 @@ export class UechatComponent implements OnInit, OnDestroy {
   constructor(
     public socketService: UeSocketService,
     public cdr: ChangeDetectorRef,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    public fileService: FileService
   ) {}
 
   ngOnInit(): void {
@@ -143,5 +145,32 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.mymessage = '';
       this.selectedAction = null;
     }
+  }
+
+  async processFile(responseData: FileResponseData) {
+    /*
+    const indice = responseData.base64.indexOf(';base64,');
+    let mimeType = responseData.base64.substring(0, indice);
+    mimeType = mimeType.replace(/^data:/, '');
+    const base64 = responseData.base64.substring(indice + 8);
+    const buff = Buffer.from(base64, 'base64');
+    const blob = new Blob([buff], { type: mimeType });
+    */
+    if (responseData.canceled !== true) {
+      const fileName = responseData.fileName;
+      const base64 = responseData.base64;
+      this.socketService.emit(
+        SocketActions.synchronizeFile,
+        JSON.stringify({
+          fileName,
+          base64,
+        })
+      );
+    }
+  }
+
+  askForFile(): void {
+    const processFileThis = this.processFile.bind(this);
+    this.fileService.sendRequest({ type: 'file' }, processFileThis);
   }
 }

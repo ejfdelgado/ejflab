@@ -3,7 +3,8 @@
         "id": 1,
         "type": "cooperante-si",
         "name": "Bar la 20",
-        "interval": 500
+        "interval": 500,
+        "flowchart": "barla20.drawio"
     },
     "st": {
         "current": null,

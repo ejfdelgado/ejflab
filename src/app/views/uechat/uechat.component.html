@@ -29,12 +29,17 @@
                 <option value="startGame">Iniciar Entrenamiento</option>
                 <option value="endGame">Finalizar Entrenamiento</option>
                 <option value="updateCode">Actualizar Código</option>
+                <option value="writeFile">write file</option>
             </select>
             <br>
             <textarea class="bigtextarea" style="width: 100%; height: 100px;" [(ngModel)]="mymessage"></textarea>
             <button (click)="sendMessage()" class="mat-menu-item manito" style="width: 100%;">
                 <mat-icon>play_arrow</mat-icon>
                 <span>Enviar</span>
+            </button>
+            <button (click)="askForFile()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>Sincronizar Archivo</span>
             </button>
             <ul>
                 <li *ngFor="let message of messages">{{ message }}</li>

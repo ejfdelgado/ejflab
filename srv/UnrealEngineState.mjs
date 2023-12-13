@@ -5,6 +5,7 @@ import he from 'he';
 import { FlowChartDiagram } from "../srcJs/FlowChartDiagram.js";
 
 export class UnrealEngineState {
+    static inmemoryDisk = {};
     estado = {};
 
     processFlowChart(xmlFlow) {
@@ -26,15 +27,39 @@ export class UnrealEngineState {
         return founds;
     }
 
-    loadState(id) {
-        const data = fs.readFileSync(`./data/ue/scenes/${id}.json`, 'utf8');
-        const xmlFlowText = fs.readFileSync(`./data/ue/scenes/${id}.drawio`, 'utf8');
+    saveInMemoryTextFile(key, value) {
+        const inmemoryDisk = UnrealEngineState.inmemoryDisk;
+        inmemoryDisk[key] = value;
+    }
+
+    async proxyReadFile(key) {
+        const inmemoryDisk = UnrealEngineState.inmemoryDisk;
+        if (key in inmemoryDisk) {
+            let base64 = inmemoryDisk[key];
+            const indice = base64.indexOf(';base64,');
+            let mimeType = base64.substring(0, indice);
+            mimeType = mimeType.replace(/^data:/, '');
+            base64 = base64.substring(indice + 8);
+            const buff = Buffer.from(base64, 'base64');
+            const blob = new Blob([buff], { type: mimeType });
+            const texto = await blob.text();
+            return texto;
+        }
+        const data = fs.readFileSync(key, 'utf8');
+        //inmemoryDisk[key] = data;
+        return data;
+    }
+
+    async loadState(id) {
+        const data = await this.proxyReadFile(`./data/ue/scenes/${id}.json`);
+        this.estado = JSON.parse(data);
+        const xmlFlowText = this.proxyReadFile(`./data/ue/scenes/${this.estado.scene.flowchart}`);
         const options = {
             ignoreAttributes: false,
         };
         const parser = new XMLParser(options);
         const xmlFlow = parser.parse(xmlFlowText)
-        this.estado = JSON.parse(data);
+
         //this.estado.flow = xmlFlow;
         this.estado.zflowchart = this.processFlowChart(xmlFlow);
         return this.estado;
