@@ -31,7 +31,7 @@ gcloud auth activate-service-account dev-600@ejfexperiments.iam.gserviceaccount.
 docker push gcr.io/ejfexperiments/policiavr:v1.86
 
 docker ps
-docker stop 164107915a7c
+docker stop 09048d3b4588
 
 ssh root@localhost -p 2222
 

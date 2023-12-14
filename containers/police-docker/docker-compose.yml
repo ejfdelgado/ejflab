@@ -8,7 +8,7 @@ version: "3"
 # docker port police_nodejs
 # docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' police_nodejs
 # docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
-# NodeServer: http://127.0.0.1:3000/uechat
+# NodeServer: http://127.0.0.1:8081/uechat
 # MySqlDatabase: http://localhost:8083/
 # ssh root@<your_IP_address>
 
