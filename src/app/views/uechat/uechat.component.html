@@ -3,7 +3,7 @@
         <button (click)="selectView('chat')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'chat'}">
             <mat-icon>chat</mat-icon>
-            <span>Chat</span>
+            <span>Log</span>
         </button>
         <button (click)="selectView('json')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'json'}">
@@ -17,33 +17,42 @@
         </button>
     </div>
     <div class="content full_content">
-        <div *ngIf="selectedView == 'chat'">
-            <select class="bigselect" [(ngModel)]="selectedAction" (change)="updateSample($event)">
-                <option value="chatMessage">Chat</option>
-                <option value="buscarParticipantes">Buscar participantes</option>
-                <option value="createScore">Crear Score</option>
-                <option value="updateScore">Actualizar Score</option>
-                <option value="selectScenario">Seleccionar Escenario</option>
-                <option value="stateWrite">Escribir estado</option>
-                <option value="stateRead">Leer estado</option>
-                <option value="startGame">Iniciar Entrenamiento</option>
-                <option value="endGame">Finalizar Entrenamiento</option>
-                <option value="updateCode">Actualizar Código</option>
-                <option value="writeFile">write file</option>
-            </select>
-            <br>
-            <textarea class="bigtextarea" style="width: 100%; height: 100px;" [(ngModel)]="mymessage"></textarea>
-            <button (click)="sendMessage()" class="mat-menu-item manito" style="width: 100%;">
-                <mat-icon>play_arrow</mat-icon>
-                <span>Enviar</span>
-            </button>
-            <button (click)="askForFile()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>Sincronizar Archivo</span>
-            </button>
-            <ul>
-                <li *ngFor="let message of messages">{{ message }}</li>
-            </ul>
+        <div *ngIf="selectedView == 'chat'" class="chat_parent">
+            <div class="chat_child">
+                <select class="bigselect" [(ngModel)]="selectedAction" (change)="updateSample($event)">
+                    <option value="chatMessage">Chat</option>
+                    <option value="buscarParticipantes">Buscar participantes</option>
+                    <option value="createScore">Crear Score</option>
+                    <option value="updateScore">Actualizar Score</option>
+                    <option value="selectScenario">Seleccionar Escenario</option>
+                    <option value="stateWrite">Escribir estado</option>
+                    <option value="stateRead">Leer estado</option>
+                    <option value="startGame">Iniciar Entrenamiento</option>
+                    <option value="endGame">Finalizar Entrenamiento</option>
+                    <option value="updateCode">Actualizar Código</option>
+                    <option value="writeFile">write file</option>
+                </select>
+                <br>
+                <textarea class="bigtextarea" style="height: 100px;" [(ngModel)]="mymessage"></textarea>
+                <button (click)="sendMessage()" class="mat-menu-item manito" style="width: 100%;">
+                    <mat-icon>play_arrow</mat-icon>
+                    <span>Enviar</span>
+                </button>
+                <button (click)="askForFile()" class="mat-menu-item manito">
+                    <mat-icon>file_upload</mat-icon>
+                    <span>Sincronizar Archivo</span>
+                </button>
+                <ul>
+                    <li *ngFor="let message of messages">{{ message }}</li>
+                </ul>
+            </div>
+            <div class="chat_child">
+                <input type="text" class="biginput" [(ngModel)]="myvoice"/>
+                <button (click)="sendVoice()" class="mat-menu-item manito" style="width: 100%;">
+                    <mat-icon>play_arrow</mat-icon>
+                    <span>Enviar</span>
+                </button>
+            </div>
         </div>
         <div *ngIf="selectedView == 'json'">
             <pre [innerHtml]="modelState | jsonColor"></pre>

@@ -7,6 +7,19 @@
 -- Versión del servidor: 8.0.35
 -- Versión de PHP: 8.0.27
 
+/*
+Los datos a registrar son: 
+- nombres, OK
+- apellidos, OK 
+- cédula, OK
+- edad, (fecha de nacimiento)* 
+- género, (tabla foreign key)*
+- etnia (Creo que no se necesita, si sí, tabla foreign key)*
+- unidad a la que pertenece (OK)
+- tiempo que lleva en la institución (fecha ingreso a institución)*
+- cargo actual (tabla foreign key)*
+*/
+
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";

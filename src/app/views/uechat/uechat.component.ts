@@ -24,6 +24,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   modelState: any = {};
   selectedView: string = 'chat';
   mymessage: string = '';
+  myvoice: string = '';
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
 
@@ -160,6 +161,11 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.mymessage = '';
       this.selectedAction = null;
     }
+  }
+
+  sendVoice(): void {
+    this.socketService.emit('voice', JSON.stringify(this.myvoice));
+    this.myvoice = '';
   }
 
   async processFile(responseData: FileResponseData) {

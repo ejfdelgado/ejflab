@@ -3,10 +3,14 @@ https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</m
 https://fontawesome.com/icons?d=gallery FontAwesome
 
 
+- desarrollar ejecución de animación a un npc especifico desde servidor node
+- desarrollar arbol completo de guiones
+- desarrollar recepción de comandos de voz por texto
+
+
 - si pide leer la raiz "" debe poder actualizar todo
 - crear virtual "me" and "other"
-- Crear evento de iniciarJuego, validar 2 jugadores y escenario
-- desarrollar la mezcla de objectos, mejorada del assign
+- desarrollar la mezcla de objetos, mejorada del assign
 - Permitir ver del json solo una jerarquia con un select, tal vez usar una función para obtener la ruta
 
 - set field of view

@@ -18,7 +18,7 @@
   overflow: scroll;
 }
 
-.bigselect {
+.bigselect, .biginput {
   font-size: 18px;
   padding: 10px 10px 10px 0;
   cursor: pointer;
@@ -27,4 +27,16 @@
 
 .bigtextarea {
   font-size: 18px;
+}
+
+.chat_parent {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.chat_child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
