@@ -58,12 +58,15 @@ class SimpleObj {
             if (typeof valor == "object" && [null, undefined].indexOf(valor) < 0) {
                 // Tanto origen como destino son objetos o arreglos, se podría intentar mezclar
                 if (valor instanceof Array) {
+                    /*
                     for (let k = 0; k < valor.length; k++) {
                         const elem = valor[k];
                         if (elem != undefined) {
                             indice[ultimaLlave][k] = elem;
                         }
                     }
+                    */
+                    indice[ultimaLlave] = valor;
                 } else {
                     Object.assign(indice[ultimaLlave], valor);
                 }

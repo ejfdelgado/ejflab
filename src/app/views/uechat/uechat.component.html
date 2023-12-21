@@ -47,7 +47,7 @@
                 </ul>
             </div>
             <div class="chat_child">
-                <input type="text" class="biginput" [(ngModel)]="myvoice"/>
+                <input type="text" class="biginput" [(ngModel)]="myvoice" (keyup.enter)="sendVoice()"/>
                 <button (click)="sendVoice()" class="mat-menu-item manito" style="width: 100%;">
                     <mat-icon>play_arrow</mat-icon>
                     <span>Enviar</span>

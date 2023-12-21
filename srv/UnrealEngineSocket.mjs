@@ -17,6 +17,7 @@ const startGameEvent = "startGame";
 const endGameEvent = "endGame";
 const updateCodeEvent = "updateCode";
 const synchronizeFileEvent = "synchronizeFile";
+const voiceEvent = "voice";
 
 export class UnrealEngineSocket {
     static GAME_INTERVAL = 2000;
@@ -90,6 +91,8 @@ export class UnrealEngineSocket {
                 socket.removeListener(endGameEvent, endGameEventHandler);
                 socket.removeListener(updateCodeEvent, updateCodeEventHandler);
                 socket.removeListener(synchronizeFileEvent, synchronizeFileEventHandler);
+                socket.removeListener(voiceEvent, voiceEventHandler);
+
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -418,6 +421,116 @@ export class UnrealEngineSocket {
                 }
             };
 
+            const voiceEventHandler = async (payload) => {
+                try {
+                    let voiceHistory = this.state.readKey("st.voice");
+
+                    if (!(voiceHistory instanceof Array)) {
+                        voiceHistory = [];
+                    }
+                    // reemplazar todo lo que no es texto con vacio
+                    const sanitized = payload.toLowerCase().replace(/[^a-zA-Z\s]/ig, '').replace(/\s{2,}/, " ");
+                    // partir en tokens
+                    const tokens = sanitized.split(/\s/);
+                    // crear objeto con fecha
+                    const ahora = new Date().getTime();
+                    for (let i = 0; i < tokens.length; i++) {
+                        const token = tokens[i];
+                        if (token.trim().length > 0) {
+                            voiceHistory.push({
+                                t: ahora,
+                                d: token,
+                            });
+                        }
+                    }
+                    // Se filtran los que tienen X tiempo de antiguedad
+                    let { changes, voiceHistoryFiltered } = filterVoiceGap(voiceHistory);
+                    if (changes) {
+                        voiceHistory = voiceHistoryFiltered;
+                    }
+                    //this.state.writeKey("st.voice", voiceHistory);
+                    affectModel("st.voice", voiceHistory);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            }
+
+            const addEmptyVoice = () => {
+                const ahora = new Date().getTime();
+                let voiceHistory = this.state.readKey("st.voice");
+
+                if (!(voiceHistory instanceof Array)) {
+                    voiceHistory = [];
+                }
+                if (voiceHistory.length == 0) {
+                    this.state.writeKey("st.voice", [{
+                        t: ahora,
+                        d: "",
+                    }]);
+                }
+            }
+
+            const haySilencio = () => {
+                const contenido = readVoice();
+                if (contenido == null) {
+                    return true;
+                }
+                return false;
+            }
+
+            const voiceDetection = (llave) => {
+                const redaccion = readVoice();
+                if (redaccion == null) {
+                    return false;
+                }
+                // TODO agregar homologación o mapeo
+                return redaccion.indexOf(llave) >= 0;
+            }
+
+            const readVoice = (show = false) => {
+                let voiceHistory = this.state.readKey("st.voice");
+                // Si no es arreglo
+                if (!(voiceHistory instanceof Array)) {
+                    return null;
+                }
+                // Si está vacio
+                if (voiceHistory.length == 0) {
+                    return null;
+                }
+
+                // De lo contrario lo filtra
+                let { changes, voiceHistoryFiltered } = filterVoiceGap(voiceHistory);
+                if (changes) {
+                    voiceHistory = voiceHistoryFiltered;
+                }
+                // Si cambio lo reescribe sin notificar
+                // Arma el texto con espacios .join(' ');
+                const texto = voiceHistory.join(" ");
+                if (show) {
+                    affectModel("st.voicegap", texto);
+                }
+                return texto;
+            }
+
+            const filterVoiceGap = (voiceHistory) => {
+                const ahora = new Date().getTime();
+                let VOZ_MILLIS_BUFFER = this.state.readKey("scene.voz_segundos_buffer");
+                if (!(typeof VOZ_MILLIS_BUFFER == "number")) {
+                    VOZ_MILLIS_BUFFER = 5;
+                }
+                VOZ_MILLIS_BUFFER *= 1000;
+                let changes = false;
+                voiceHistory = voiceHistory.filter((elem) => {
+                    if (ahora - elem.t > VOZ_MILLIS_BUFFER) {
+                        changes = true;
+                        return false;
+                    }
+                    return true;
+                });
+
+                return { changes, voiceHistoryFiltered: voiceHistory };
+            }
+
             socket.on(createScoreEvent, createScoreEventHandler);
             socket.on(updateScoreEvent, updateScoreEventHandler);
             socket.on(selectScenarioEvent, selectScenarioEventHandler);
@@ -430,6 +543,7 @@ export class UnrealEngineSocket {
             socket.on(endGameEvent, endGameEventHandler);
             socket.on(updateCodeEvent, updateCodeEventHandler);
             socket.on(synchronizeFileEvent, synchronizeFileEventHandler);
+            socket.on(voiceEvent, voiceEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",

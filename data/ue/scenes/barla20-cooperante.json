@@ -4,6 +4,7 @@
         "type": "cooperante-si",
         "name": "Bar la 20",
         "interval": 500,
+        "voz_segundos_buffer": 5,
         "flowchart": "barla20.drawio"
     },
     "st": {
