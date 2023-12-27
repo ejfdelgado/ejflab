@@ -22,22 +22,23 @@ docker rmi -f ejfdelgado/policiavr:v1.84
 
 // Se lanza la imagen
 docker volume create policiavr_volume
-docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.85
+docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.86
 docker run -p 2222:22 -p 8081:8081 -p 8083:8083 --rm -it ejfdelgado/policiavr:v1.14
 
-docker tag ejfdelgado/policiavr:v1.86 gcr.io/ejfexperiments/policiavr:v1.86
+docker tag ejfdelgado/policiavr:v1.87 gcr.io/ejfexperiments/policiavr:v1.87
 gcloud auth login
 gcloud auth activate-service-account dev-600@ejfexperiments.iam.gserviceaccount.com --key-file=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-f1c7c49b937c.json
-docker push gcr.io/ejfexperiments/policiavr:v1.86
+docker push gcr.io/ejfexperiments/policiavr:v1.87
 
 docker ps
-docker stop 09048d3b4588
+docker stop c9e19156a846
 
+root123
 ssh root@localhost -p 2222
 
 // Se actualiza una nueva versión
 docker ps
-docker commit -m "dev sound play" -p 09048d3b4588  ejfdelgado/policiavr:v1.86
+docker commit -m "arrows fixed" -p c9e19156a846  ejfdelgado/policiavr:v1.87
 
 docker commit --change "EXPOSE 8081" 832921e27f27 ejfdelgado/policiavr:v1.6
 docker commit --change "EXPOSE 8083" 1e59521fe592 ejfdelgado/policiavr:v1.12

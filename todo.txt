@@ -3,13 +3,11 @@ https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</m
 https://fontawesome.com/icons?d=gallery FontAwesome
 
 
-- audio en loop
 - marcar con otro color por donde ya pasó
 - delay de un wav o mp3 automático
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones
-- desarrollar recepción de comandos de voz por texto
 - agregar la galería de fbx
 
 - si pide leer la raiz "" debe poder actualizar todo
