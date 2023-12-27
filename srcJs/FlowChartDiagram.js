@@ -23,6 +23,10 @@ class FlowChartDiagram {
             tar: tarPos,
         };
     }
+    // FlowChartDiagram.drawLine(src, tar)
+    static drawLine(src, tar) {
+        return `<line x1="${src.x}" x2="${tar.x}" y1="${src.y}" y2="${tar.y}" stroke="black" stroke-width="1" stroke-linecap="round"/>`;
+    }
     static computeGraph(grafo, currentNodes = []) {
         const lineHeight = 15;
         let svgContent = '';
@@ -61,29 +65,88 @@ class FlowChartDiagram {
                 if (arrows instanceof Array) {
                     for (let i = 0; i < arrows.length; i++) {
                         const arrow = arrows[i];
+                        const points = [];
                         const srcList = centers[arrow.src];
                         const tarList = centers[arrow.tar];
                         // Debo buscar la combinación más corta
-                        const { src, tar } = FlowChartDiagram.searchClosest(srcList, tarList);
-                        svgContent += `<line x1="${src.x}" x2="${tar.x}" y1="${src.y}" y2="${tar.y}" stroke="black" stroke-width="1" stroke-linecap="round"/>`;
+                        let tar;
+                        let statistics = null;
+                        if (arrow.points instanceof Array) {
+                            for (let j = 0; j < arrow.points.length; j++) {
+                                const punto = arrow.points[j];
+                                points.push(punto);
+                            }
+
+                            const points1 = FlowChartDiagram.searchClosest(srcList, [points[0]]);
+                            const points2 = FlowChartDiagram.searchClosest([points[points.length - 1]], tarList);
+                            points.unshift(points1.src);// Al inicio
+                            points.push(points2.tar);//Al final
+                            tar = points2.tar;
+                        } else {
+                            const points0 = FlowChartDiagram.searchClosest(srcList, tarList);
+                            points.push(points0.src);
+                            points.push(points0.tar);
+                            tar = points0.tar;
+                        }
+
+                        // draw all lines...
+                        for (let j = 0; j < points.length - 1; j++) {
+                            svgContent += FlowChartDiagram.drawLine(points[j], points[j + 1]);
+                        }
+
+                        //compute position of text
+                        points.forEach((point) => {
+                            if (statistics == null) {
+                                statistics = {
+                                    xmin: point.x,
+                                    ymin: point.y,
+                                    xmax: point.x,
+                                    ymax: point.y,
+                                };
+                            } else {
+                                if (point.x < statistics.xmin) {
+                                    statistics.xmin = point.x;
+                                }
+                                if (point.y < statistics.ymin) {
+                                    statistics.ymin = point.y;
+                                }
+                                if (point.x > statistics.xmax) {
+                                    statistics.xmax = point.x;
+                                }
+                                if (point.y > statistics.ymax) {
+                                    statistics.ymax = point.y;
+                                }
+                            }
+                        });
+
+                        //draw end point
                         svgContent += `<ellipse cx="${tar.x}" cy="${tar.y}" rx="5" ry="5" style="${styleTar}"></ellipse>`;
+
                         // Se escribe el texto de la línea
                         if (typeof arrow.txt == "string") {
                             const lines = arrow.txt.split(/\n/g);
                             const pos = {
-                                x: Math.min(src.x, tar.x),
-                                y: Math.min(src.y, tar.y),
-                                width: Math.abs(src.x - tar.x),
-                                height: Math.abs(src.y - tar.y),
+                                x: statistics.xmin,
+                                y: statistics.ymin,
+                                width: Math.abs(statistics.xmax - statistics.xmin),
+                                height: Math.abs(statistics.ymax - statistics.ymin),
                             };
                             for (let j = 0; j < lines.length; j++) {
                                 const line = lines[j];
-                                const xPos = pos.x + pos.width * 0.5;
-                                const yPos = pos.y +
-                                    pos.height * 0.5 +
-                                    j * lineHeight -
-                                    (lines.length - 1) * lineHeight * 0.5 +
-                                    lineHeight * 0.25;
+                                let xPos, yPos;
+                                if (points.length <= 2) {
+                                    xPos = pos.x + pos.width * 0.5;
+                                    yPos = pos.y +
+                                        pos.height * 0.5 +
+                                        j * lineHeight -
+                                        (lines.length - 1) * lineHeight * 0.5 +
+                                        lineHeight * 0.25;
+                                } else {
+                                    // take intermediate point
+                                    const median = Math.floor(points.length * 0.5);
+                                    xPos = points[median].x;
+                                    yPos = points[median].y;
+                                }
                                 svgContent += `<text font-family="Helvetica" font-size="13px" text-anchor="middle" x="${xPos}" y="${yPos}" fill="black">${line}</text>`;
                             }
                         }
@@ -180,7 +243,12 @@ class FlowChartDiagram {
                     };
                     // Se valida si tiene puntos intermedios
                     if (details?.Array?.mxPoint instanceof Array) {
-                        nuevaFlecha.points = details?.Array?.mxPoint;
+                        nuevaFlecha.points = details?.Array?.mxPoint.map((point) => {
+                            return {
+                                x: point["@_x"],
+                                y: point["@_y"],
+                            };
+                        });
                     }
                     mapaFlechas[id].ref = nuevaFlecha;
                     simple.arrows.push(nuevaFlecha);
