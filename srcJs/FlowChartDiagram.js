@@ -257,6 +257,12 @@ class FlowChartDiagram {
                                 y: point["@_y"],
                             };
                         });
+                    } else if (details?.Array?.mxPoint) {
+                        const mxPoint = details?.Array?.mxPoint;
+                        nuevaFlecha.points = [{
+                            x: mxPoint["@_x"],
+                            y: mxPoint["@_y"],
+                        }];
                     }
                     mapaFlechas[id].ref = nuevaFlecha;
                     simple.arrows.push(nuevaFlecha);

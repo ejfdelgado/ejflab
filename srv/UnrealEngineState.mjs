@@ -65,7 +65,7 @@ export class UnrealEngineState {
         const parser = new XMLParser(options);
         const xmlFlow = parser.parse(xmlFlowText)
 
-        this.estado.flow = xmlFlow;
+        //this.estado.flow = xmlFlow;
         this.estado.zflowchart = this.processFlowChart(xmlFlow);
         return this.estado;
     }

@@ -1,0 +1,13 @@
+Comandos posibles:
+
+Nodos:
+Asignar un valor específico: ${st.fixme} = "yes"
+Asignar un valor de otra parte: ${players.some} = ${st.fixme}
+Llamados:
+call(sound, "mario-coin.mp3")
+
+
+Flechas:
+pregunta por valores: ${st.open} == true && sleep(5000)
+esperar: sleep(5000)
+esperar que no haya voz: silence()
