@@ -4,9 +4,7 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 
 
-- agregar algo parecido a los timer que sea "silinces" y si una flecha pide validar el silencio,
-primero asegure que la llave de la flecha esté en "silences". y que haya invocado addEmptyVoice
-- agregar voiceDetection y haySilencio
+- delay de un wav o mp3
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones

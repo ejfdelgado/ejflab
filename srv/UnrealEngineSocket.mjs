@@ -25,6 +25,8 @@ export class UnrealEngineSocket {
     static databaseClient = null;
     static state = new UnrealEngineState();
     static conditionalEngine = new MyTemplate();
+    static HOMOLOGACION_VOZ = {};
+    static ONE_TIME_ARROWS = {};
 
     static async getDataBaseClient() {
         if (UnrealEngineSocket.databaseClient == null) {
@@ -225,6 +227,7 @@ export class UnrealEngineSocket {
                     startedAt: new Date().getTime(),
                     duration: 0,
                 };
+                UnrealEngineSocket.ONE_TIME_ARROWS = {};
                 affectModel("st", nuevosSt);
                 setTimeout(() => {
                     moveState();
@@ -262,39 +265,92 @@ export class UnrealEngineSocket {
 
                 // Validar las flechas y tomar todas las que sean verdaderas
                 const outputPositiveGlobal = {};
+                const currentTime = this.state.readKey("st.duration");
                 for (let i = 0; i < currentState.length; i++) {
                     const srcId = currentState[i];
                     const outputArrows = filterSourceArrowsFromSource(arrows, srcId);
                     if (outputArrows.length > 0) {
+                        const silenceArrowKeys = [];
+                        const timerArrowKeys = [];
+                        let atLeastOneOutput = false;
                         // Este nodo se debe validar si cumple al menos una salida
                         for (let j = 0; j < outputArrows.length; j++) {
                             const outputArrow = outputArrows[j];
                             const arrowId = outputArrow.id;
+                            let isOneTimeArrow = false;
                             try {
                                 let evaluated = true;
                                 if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
+                                    // Se valida si es una flecha de una sola vez con el asterisco
                                     let textoIf = outputArrow.txt.replace(/\n/ig, ' ');
-
-                                    // Se hace manejo de sleep(###)
-                                    textoIf = textoIf.replace(/sleep\((\d+)\)/ig, "${st.duration} - ${timer." + arrowId + "} > $1");
-                                    const timerKey = `timer.${arrowId}`;
-                                    const oldTimer = this.state.readKey(timerKey);
-                                    if (!(typeof oldTimer == "number")) {
-                                        const currentTime = this.state.readKey("st.duration");
-                                        this.state.writeKey(timerKey, currentTime);
+                                    if (/^\s*\*/.test(textoIf)) {
+                                        textoIf = textoIf.replace(/^\s*\*/, "");
+                                        isOneTimeArrow = true;
+                                        if (typeof UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] == "number") {
+                                            textoIf = "false";
+                                        }
                                     }
+                                    // Se hace manejo de sleep(###)
+                                    if (/sleep\((\d+)\)/ig.exec(textoIf) != null) {
+                                        textoIf = textoIf.replace(/sleep\((\d+)\)/ig, "${st.duration} - ${timer." + arrowId + "} > $1");
+                                        const timerKey = `timer.${arrowId}`;
+                                        timerArrowKeys.push(arrowId);
+                                        const oldTimer = this.state.readKey(timerKey);
+
+                                        if (!(typeof oldTimer == "number")) {
+                                            this.state.writeKey(timerKey, currentTime);
+                                        }
+                                    }
+                                    // Se hace manejo de silence()
+                                    if (/silence\(\s*\)/ig.exec(textoIf) != null) {
+                                        textoIf = textoIf.replace(/silence\(\s*\)/ig, "${st.duration} - ${st.lastvoice} > ${scene.voz_segundos_buffer}*1000");
+                                        const silencesKey = `silences.${arrowId}`;
+                                        silenceArrowKeys.push(arrowId);
+                                        const oldSilenceValue = this.state.readKey(silencesKey);
+                                        if (!(typeof oldSilenceValue == "number")) {
+                                            this.state.writeKey(silencesKey, currentTime);
+                                            this.state.writeKey("st.lastvoice", currentTime);
+                                        }
+                                    }
+                                    // Se hace manejo de voice(...)
+                                    textoIf = textoIf.replace(/voice\(([^)]+)\)/ig, (wholeMatch, searchedText) => {
+                                        // Se debe validar si este texto existe en el record de voz
+                                        if (voiceDetection(searchedText)) {
+                                            return "true";
+                                        } else {
+                                            return "false";
+                                        }
+                                    });
                                     evaluated = UnrealEngineSocket.conditionalEngine.computeIf(textoIf, this.state.estado);
                                 }
                                 if (evaluated) {
+                                    atLeastOneOutput = true;
                                     if (!(srcId in outputPositiveGlobal)) {
                                         outputPositiveGlobal[srcId] = [];
                                     }
                                     outputPositiveGlobal[srcId].push(outputArrow.tar);
+                                    if (isOneTimeArrow) {
+                                        UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] = currentTime;
+                                    }
                                 }
                             } catch (err) {
                                 console.log(outputArrow.txt);
                                 console.log(err);
                             }
+                        }
+                        if (atLeastOneOutput) {
+                            // Se limpian las marcas temporales de salida
+                            for (let k = 0; k < silenceArrowKeys.length; k++) {
+                                const arrowId = silenceArrowKeys[k];
+                                const silencesKey = `silences.${arrowId}`;
+                                this.state.writeKey(silencesKey, null);
+                            }
+                            for (let k = 0; k < timerArrowKeys.length; k++) {
+                                const arrowId = timerArrowKeys[k];
+                                const silencesKey = `timer.${arrowId}`;
+                                this.state.writeKey(silencesKey, null);
+                            }
+
                         }
                     }
                 }
@@ -326,7 +382,7 @@ export class UnrealEngineSocket {
                                     const callArgs = MyTemplate.readCall(command, this.state.estado);
                                     if (callArgs.action != null) {
                                         // Se ejecuta la acción
-                                        console.log(`call ${callArgs.action}`);
+                                        //console.log(`call ${callArgs.action}`);
                                         if (callArgs.length == 0) {
                                             io.emit(callArgs.action, '""');
                                         } else if (callArgs.arguments.length == 1) {
@@ -381,6 +437,9 @@ export class UnrealEngineSocket {
                         throw "Debe seleccionar al menos dos participantes";
                     }
                     */
+                    // Se cargan las homologaciones de voz
+                    UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/homologacion_voz.json"));
+                    //console.log(JSON.stringify(UnrealEngineSocket.HOMOLOGACION_VOZ));
                     console.log("Starting game...");
                     // Buscar inicio
                     this.state.writeKey("timer", {});
@@ -433,7 +492,7 @@ export class UnrealEngineSocket {
                     // partir en tokens
                     const tokens = sanitized.split(/\s/);
                     // crear objeto con fecha
-                    const ahora = new Date().getTime();
+                    const ahora = this.state.readKey("st.duration");
                     for (let i = 0; i < tokens.length; i++) {
                         const token = tokens[i];
                         if (token.trim().length > 0) {
@@ -448,43 +507,33 @@ export class UnrealEngineSocket {
                     if (changes) {
                         voiceHistory = voiceHistoryFiltered;
                     }
-                    //this.state.writeKey("st.voice", voiceHistory);
+                    this.state.writeKey("st.lastvoice", ahora);
                     affectModel("st.voice", voiceHistory);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
             }
 
-            const addEmptyVoice = () => {
-                const ahora = new Date().getTime();
-                let voiceHistory = this.state.readKey("st.voice");
-
-                if (!(voiceHistory instanceof Array)) {
-                    voiceHistory = [];
-                }
-                if (voiceHistory.length == 0) {
-                    this.state.writeKey("st.voice", [{
-                        t: ahora,
-                        d: "",
-                    }]);
-                }
-            }
-
-            const haySilencio = () => {
-                const contenido = readVoice();
-                if (contenido == null) {
-                    return true;
-                }
-                return false;
-            }
-
             const voiceDetection = (llave) => {
                 const redaccion = readVoice();
+                //console.log(`detection ${llave} en ${redaccion}`);
                 if (redaccion == null) {
                     return false;
                 }
-                // TODO agregar homologación o mapeo
-                return redaccion.indexOf(llave) >= 0;
+                const homologacion = UnrealEngineSocket.HOMOLOGACION_VOZ;
+                if (redaccion.indexOf(llave) >= 0) {
+                    return true;
+                }
+                const alternativas = homologacion[llave];
+                if (alternativas instanceof Array) {
+                    for (let i = 0; i < alternativas.length; i++) {
+                        const alternativa = alternativas[i];
+                        if (redaccion.indexOf(alternativa) >= 0) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
             }
 
             const readVoice = (show = false) => {
@@ -505,7 +554,9 @@ export class UnrealEngineSocket {
                 }
                 // Si cambio lo reescribe sin notificar
                 // Arma el texto con espacios .join(' ');
-                const texto = voiceHistory.join(" ");
+                const texto = voiceHistory.reduce((previousValue, currentValue, currentIndex, array) => {
+                    return previousValue + " " + currentValue.d;
+                }, "");
                 if (show) {
                     affectModel("st.voicegap", texto);
                 }
@@ -513,7 +564,7 @@ export class UnrealEngineSocket {
             }
 
             const filterVoiceGap = (voiceHistory) => {
-                const ahora = new Date().getTime();
+                const ahora = this.state.readKey("st.duration");
                 let VOZ_MILLIS_BUFFER = this.state.readKey("scene.voz_segundos_buffer");
                 if (!(typeof VOZ_MILLIS_BUFFER == "number")) {
                     VOZ_MILLIS_BUFFER = 5;

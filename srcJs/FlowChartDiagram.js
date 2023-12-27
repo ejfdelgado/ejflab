@@ -178,11 +178,15 @@ class FlowChartDiagram {
                         txt: texto,
                         id,
                     };
+                    // Se valida si tiene puntos intermedios
+                    if (details?.Array?.mxPoint instanceof Array) {
+                        nuevaFlecha.points = details?.Array?.mxPoint;
+                    }
                     mapaFlechas[id].ref = nuevaFlecha;
                     simple.arrows.push(nuevaFlecha);
                 } else {
                     if (parentArrow) {
-                        // Save text
+                        // Save text in the parent
                         parentArrow.txt = texto;
                         continue;
                     }

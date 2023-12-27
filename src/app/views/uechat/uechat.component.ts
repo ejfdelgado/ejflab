@@ -40,6 +40,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     ModuloSonido.preload([
       `${SOUNDS_ROOT}/end.mp3`,
       `${SOUNDS_ROOT}/finish.mp3`,
+      `${SOUNDS_ROOT}/mario-coin.mp3`,
     ]);
     this.socketService.on('chatMessage', (content: string) => {
       this.receiveChatMessage('chatMessage', content);
