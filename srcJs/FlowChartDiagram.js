@@ -29,7 +29,15 @@ class FlowChartDiagram {
     }
     static computeGraph(grafo, currentNodes = []) {
         const lineHeight = 15;
-        let svgContent = '';
+        let svgContent = '  <defs>\
+        <filter x="0" y="0" width="1" height="1" id="solid">\
+          <feFlood flood-color="yellow" flood-opacity="0.5" result="bg" />\
+          <feMerge>\
+            <feMergeNode in="bg"/>\
+            <feMergeNode in="SourceGraphic"/>\
+          </feMerge>\
+        </filter>\
+      </defs>';
         const style = 'fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0)';
         const styleHighlight = 'fill:rgb(222,255,0);stroke-width:1;stroke:rgb(0,0,0)';
         const styleTar = 'fill:rgb(0,0,0);stroke-width:1;stroke:rgb(0,0,0)';
@@ -147,7 +155,7 @@ class FlowChartDiagram {
                                     xPos = points[median].x;
                                     yPos = points[median].y;
                                 }
-                                svgContent += `<text font-family="Helvetica" font-size="13px" text-anchor="middle" x="${xPos}" y="${yPos}" fill="black">${line}</text>`;
+                                svgContent += `<text filter="url(#solid)" font-family="Helvetica" font-size="13px" text-anchor="middle" x="${xPos}" y="${yPos}" fill="black">${line}</text>`;
                             }
                         }
                     }
