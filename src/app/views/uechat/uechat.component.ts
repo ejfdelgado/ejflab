@@ -27,6 +27,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   myvoice: string = '';
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
+  isActive: boolean = false;
 
   constructor(
     public socketService: UeSocketService,
@@ -39,6 +40,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     const SOUNDS_ROOT = '/assets/police/sounds';
     ModuloSonido.preload([
       `${SOUNDS_ROOT}/end.mp3`,
+      `${SOUNDS_ROOT}/noise.wav`,
       `${SOUNDS_ROOT}/finish.mp3`,
       `${SOUNDS_ROOT}/mario-coin.mp3`,
     ]);
@@ -56,7 +58,14 @@ export class UechatComponent implements OnInit, OnDestroy {
     });
     this.socketService.on('sound', (content: string) => {
       const argumento = JSON.parse(content);
-      ModuloSonido.play(`${SOUNDS_ROOT}/${argumento}`);
+      if (typeof argumento == 'string') {
+        ModuloSonido.play(`${SOUNDS_ROOT}/${argumento}`);
+      } else if (argumento instanceof Array) {
+        ModuloSonido.play(
+          `${SOUNDS_ROOT}/${argumento[0]}`,
+          argumento[1] == 'loop'
+        );
+      }
     });
     this.socketService.on('animate', (content: string) => {
       console.log(`animate ${JSON.stringify(content)}`);
@@ -117,6 +126,20 @@ export class UechatComponent implements OnInit, OnDestroy {
     }
 
     this.graphHtml = this.getGraph();
+    if (this.modelState.st.current == null && this.isActive) {
+      this.callStopGame();
+      this.isActive = false;
+    } else if (this.modelState.st.current !== null && !this.isActive) {
+      this.callStartGame();
+      this.isActive = true;
+    }
+  }
+
+  async callStartGame() {
+    console.log('Starting game');
+  }
+  async callStopGame() {
+    ModuloSonido.stopAll();
   }
 
   receiveChatMessage(key: string, message: any) {

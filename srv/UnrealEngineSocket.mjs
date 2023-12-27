@@ -443,6 +443,7 @@ export class UnrealEngineSocket {
                     console.log("Starting game...");
                     // Buscar inicio
                     this.state.writeKey("timer", {});
+                    this.state.writeKey("st.voice", undefined);
                     goToStartingPoint();
 
                 } catch (err) {
