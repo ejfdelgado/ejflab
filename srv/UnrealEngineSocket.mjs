@@ -8,6 +8,7 @@ import { MyTemplate } from "../srcJs/MyTemplate.js";
 import { MyShell } from "./MyShell.mjs";
 import wavFileInfo from "wav-file-info";
 import { MyUtilities } from "../srcJs/MyUtilities.js";
+import mm from 'music-metadata';
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -301,45 +302,52 @@ export class UnrealEngineSocket {
                                     // Se hace manejo de call(sound,...,...)
                                     textoIf = await MyUtilities.replaceAsync(textoIf, /call\s*\(([^)]+)\)/ig, async (command) => {
                                         const callArgs = MyTemplate.readCall(command, this.state.estado);
+                                        let replaceValue = "true";
                                         if (callArgs.action != null) {
-                                            if (callArgs.length == 0) {
-                                                io.emit(callArgs.action, '""');
-                                            } else if (callArgs.arguments.length == 1) {
-                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
-                                            } else {
-                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
-                                            }
+                                            let callSkip = false;
                                             // Si es un call de sound:
                                             if (callArgs.action == "sound") {
                                                 // sin loop, se reemplaza por el timer
                                                 if (callArgs.arguments.length >= 2 && callArgs.arguments[1] !== "loop") {
                                                     const filename = callArgs.arguments[0];
-                                                    if (/\.wav$/i.test(filename)) {
+                                                    if (/\.(wav|mp3)$/i.test(filename)) {
                                                         // Si es wav, se lee el archivo y se pregunta por:
                                                         // frame rate & number of frames
-                                                        const promesaInfo = new Promise((resolve) => {
-                                                            wavFileInfo.infoByFilename(`./src/assets/police/sounds/${filename}`, function (err, info) {
-                                                                if (err) {
-                                                                    // Do nothing, best effor
-                                                                    console.log(err);
-                                                                    resolve(null);
-                                                                } else {
-                                                                    resolve(info);
-                                                                }
-                                                            });
-                                                        });
-                                                        const info = await promesaInfo;
-                                                        if (info != null) {
-                                                            const durationMillis = info.duration * 1000;
-                                                            return `sleep(${Math.ceil(durationMillis)}, ${filename})`;
+                                                        const filePath = `./src/assets/police/sounds/${filename}`;
+                                                        let metadata = null;
+                                                        try {
+                                                            metadata = await mm.parseFile(filePath);
+                                                        } catch (err) {
+                                                            console.log(err);
+                                                        }
+                                                        if (metadata != null) {
+                                                            const durationMillis = metadata.format.duration * 1000;
+                                                            const name = `,${filename}`;
+                                                            const arrowIdTimer = `${arrowId}${md5(name)}`;
+                                                            const timerKey = `timer.${arrowIdTimer}`;
+                                                            const oldTimer = this.state.readKey(timerKey);
+                                                            if (typeof oldTimer == "number") {
+                                                                // El timer ya fue asignado y no se debe hacer skip a la acción
+                                                                callSkip = true;
+                                                            }
+                                                            replaceValue = `sleep(${Math.ceil(durationMillis)}${name})`;
                                                         }
                                                     }
                                                 }
                                             }
-                                        }
-                                        return "true";
-                                    });
 
+                                            if (!callSkip) {
+                                                if (callArgs.length == 0) {
+                                                    io.emit(callArgs.action, '""');
+                                                } else if (callArgs.arguments.length == 1) {
+                                                    io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
+                                                } else {
+                                                    io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
+                                                }
+                                            }
+                                        }
+                                        return replaceValue;
+                                    });
                                     // Se hace manejo de sleep(###)
                                     if (/sleep\((\d+)([^)]*)\)/ig.exec(textoIf) != null) {
                                         textoIf = textoIf.replace(/sleep\((\d+)([^)]*)\)/ig, (match, tiempo, name) => {
