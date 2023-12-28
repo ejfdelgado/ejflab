@@ -12,3 +12,19 @@ pregunta por valores: ${st.open} == true && sleep(5000)
 esperar: sleep(5000)
 esperar que no haya voz: silence()
 detectar secuencia de palabras: voice(buenos dias)
+
+Comunicación por sockets:
+
+Servidor hacia clientes:
+Comando:
+sound
+Cuerpo:
+["noise.wav", "loop"]
+["noise.wav", ""]
+
+Clientes hacia servidor:
+Comando:
+voice
+Cuerpo:
+"cinco cero cinco"
+"buen dia"

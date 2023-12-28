@@ -102,6 +102,16 @@ class MyUtilities {
         const blob2 = text2Blob(text, mime);
         downloadBlob(blob2, filename);
     }
+
+    static async replaceAsync(str, regex, asyncFn) {
+        const promises = [];
+        str.replace(regex, (match, ...args) => {
+            const promise = asyncFn(match, ...args);
+            promises.push(promise);
+        });
+        const data = await Promise.all(promises);
+        return str.replace(regex, () => data.shift());
+    }
 }
 
 module.exports = {

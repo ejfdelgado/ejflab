@@ -3,8 +3,9 @@ https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</m
 https://fontawesome.com/icons?d=gallery FontAwesome
 
 
-- marcar con otro color por donde ya pasó
 - delay de un wav o mp3 automático
+- marcar con otro color por donde ya pasó
+- action: call(mute, "noise.wav")
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones

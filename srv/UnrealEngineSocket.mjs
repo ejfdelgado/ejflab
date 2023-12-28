@@ -1,10 +1,13 @@
 import * as os from "os";
+import md5 from "md5";
 import sortify from "../srcJs/sortify.js";
 import { PoliciaVrMySql } from "./MySqlSrv.mjs";
 import { UnrealEngineState } from "./UnrealEngineState.mjs";
 import { serializeError } from 'serialize-error';
 import { MyTemplate } from "../srcJs/MyTemplate.js";
 import { MyShell } from "./MyShell.mjs";
+import wavFileInfo from "wav-file-info";
+import { MyUtilities } from "../srcJs/MyUtilities.js";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -226,8 +229,13 @@ export class UnrealEngineSocket {
                     current: nodeIds,
                     startedAt: new Date().getTime(),
                     duration: 0,
+                    voice: undefined,
+                    lastvoice: undefined,
                 };
+                // Buscar inicio
+                this.state.writeKey("timer", {});
                 UnrealEngineSocket.ONE_TIME_ARROWS = {};
+                // Inicialización
                 affectModel("st", nuevosSt);
                 setTimeout(() => {
                     moveState();
@@ -290,16 +298,64 @@ export class UnrealEngineSocket {
                                             textoIf = "false";
                                         }
                                     }
-                                    // Se hace manejo de sleep(###)
-                                    if (/sleep\((\d+)\)/ig.exec(textoIf) != null) {
-                                        textoIf = textoIf.replace(/sleep\((\d+)\)/ig, "${st.duration} - ${timer." + arrowId + "} > $1");
-                                        const timerKey = `timer.${arrowId}`;
-                                        timerArrowKeys.push(arrowId);
-                                        const oldTimer = this.state.readKey(timerKey);
-
-                                        if (!(typeof oldTimer == "number")) {
-                                            this.state.writeKey(timerKey, currentTime);
+                                    // Se hace manejo de call(sound,...,...)
+                                    textoIf = await MyUtilities.replaceAsync(textoIf, /call\s*\(([^)]+)\)/ig, async (command) => {
+                                        const callArgs = MyTemplate.readCall(command, this.state.estado);
+                                        if (callArgs.action != null) {
+                                            if (callArgs.length == 0) {
+                                                io.emit(callArgs.action, '""');
+                                            } else if (callArgs.arguments.length == 1) {
+                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
+                                            } else {
+                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
+                                            }
+                                            // Si es un call de sound:
+                                            if (callArgs.action == "sound") {
+                                                // sin loop, se reemplaza por el timer
+                                                if (callArgs.arguments.length >= 2 && callArgs.arguments[1] !== "loop") {
+                                                    const filename = callArgs.arguments[0];
+                                                    if (/\.wav$/i.test(filename)) {
+                                                        // Si es wav, se lee el archivo y se pregunta por:
+                                                        // frame rate & number of frames
+                                                        const promesaInfo = new Promise((resolve) => {
+                                                            wavFileInfo.infoByFilename(`./src/assets/police/sounds/${filename}`, function (err, info) {
+                                                                if (err) {
+                                                                    // Do nothing, best effor
+                                                                    console.log(err);
+                                                                    resolve(null);
+                                                                } else {
+                                                                    resolve(info);
+                                                                }
+                                                            });
+                                                        });
+                                                        const info = await promesaInfo;
+                                                        if (info != null) {
+                                                            const durationMillis = info.duration * 1000;
+                                                            return `sleep(${Math.ceil(durationMillis)}, ${filename})`;
+                                                        }
+                                                    }
+                                                }
+                                            }
                                         }
+                                        return "true";
+                                    });
+
+                                    // Se hace manejo de sleep(###)
+                                    if (/sleep\((\d+)([^)]*)\)/ig.exec(textoIf) != null) {
+                                        textoIf = textoIf.replace(/sleep\((\d+)([^)]*)\)/ig, (match, tiempo, name) => {
+                                            let arrowIdTimer = arrowId;
+                                            if (typeof name == "string" && name.length > 0) {
+                                                arrowIdTimer += md5(name);
+                                            }
+                                            const timerKey = `timer.${arrowIdTimer}`;
+                                            timerArrowKeys.push(arrowIdTimer);
+                                            const oldTimer = this.state.readKey(timerKey);
+
+                                            if (!(typeof oldTimer == "number")) {
+                                                this.state.writeKey(timerKey, currentTime);
+                                            }
+                                            return "${st.duration} - ${timer." + arrowIdTimer + "} > " + tiempo;
+                                        });
                                     }
                                     // Se hace manejo de silence()
                                     if (/silence\(\s*\)/ig.exec(textoIf) != null) {
@@ -441,9 +497,7 @@ export class UnrealEngineSocket {
                     UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/homologacion_voz.json"));
                     //console.log(JSON.stringify(UnrealEngineSocket.HOMOLOGACION_VOZ));
                     console.log("Starting game...");
-                    // Buscar inicio
-                    this.state.writeKey("timer", {});
-                    this.state.writeKey("st.voice", undefined);
+
                     goToStartingPoint();
 
                 } catch (err) {
