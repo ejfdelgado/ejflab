@@ -12,11 +12,8 @@
         </button>
     </div>
     <div *ngIf="selectedView !== 'chat'">
-        <input type="text" class="biginput" [(ngModel)]="myvoice" (keyup.enter)="sendVoice()" />
-        <button (click)="sendVoice()" class="mat-menu-item manito" style="width: 100%;">
-            <mat-icon>play_arrow</mat-icon>
-            <span>Enviar</span>
-        </button>
+        <input type="text" class="voice_recognition" placeholder="buenos dias" [(ngModel)]="myvoice"
+            (keyup.enter)="sendVoice()" />
     </div>
     <div class="content full_content" *ngIf="selectedView == 'chat'">
         <div class="chat_parent">
@@ -55,7 +52,8 @@
             <svg #mySvg class="" [innerHtml]="graphHtml"></svg>
         </div>
         <div class="all_scroll_right">
-            <input type="text" class="biginput" [(ngModel)]="mypath" (keyup.enter)="setPath()" />
+            <input type="text" class="voice_recognition" placeholder="st" [(ngModel)]="mypath"
+                (keyup.enter)="setPath()" />
             <div class="content_pre">
                 <pre [innerHtml]="modelStatePath | jsonColor"></pre>
             </div>

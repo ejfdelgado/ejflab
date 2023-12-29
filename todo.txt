@@ -2,21 +2,18 @@ src/app/app.component.ts
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-Bugs:
-- que cuando no dice loop el sound entienda que es con false en loop
-
 - que cuando reproduce un sonido interpole variables para crear el texto
-
 - action: call(mute, "noise.wav")
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones
 - agregar la galería de fbx
 
-- si pide leer la raiz "" debe poder actualizar todo
 - crear virtual "me" and "other"
 - desarrollar la mezcla de objetos, mejorada del assign
-- Permitir ver del json solo una jerarquia con un select, tal vez usar una función para obtener la ruta
+
+Bugs:
+- que cuando no dice loop el sound entienda que es con false en loop
 
 - set field of view
 - guardar, progress

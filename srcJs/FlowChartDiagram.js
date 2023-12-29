@@ -4,7 +4,7 @@ const DONE_BORDER_WIDTH = "3";
 const PENDING_BORDER_COLOR = "rgb(0,0,0)";
 const PENDING_BORDER_WIDTH = "1";
 const NORMAL_STATES_COLOR = "rgb(255,255,255)";
-const CURRENT_STATES_COLOR = "rgb(222,255,0)";
+const CURRENT_STATES_COLOR = "rgb(255,255,129)";
 
 class FlowChartDiagram {
     static searchClosest(srcList, tarList) {
@@ -55,7 +55,7 @@ class FlowChartDiagram {
         const lineHeight = 15;
         let svgContent = '  <defs>\
         <filter x="0" y="0" width="1" height="1" id="solid">\
-          <feFlood flood-color="yellow" flood-opacity="0.5" result="bg" />\
+          <feFlood flood-color="white" flood-opacity="0.8" result="bg" />\
           <feMerge>\
             <feMergeNode in="bg"/>\
             <feMergeNode in="SourceGraphic"/>\

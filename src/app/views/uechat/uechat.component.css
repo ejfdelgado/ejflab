@@ -49,6 +49,14 @@
   width: 100%;
 }
 
+.voice_recognition {
+  background-color: lightyellow;
+  cursor: unset;
+  font-size: 18px;
+  padding: 10px 10px 10px 10px;
+  width: 100%;
+}
+
 .bigtextarea {
   font-size: 18px;
 }
