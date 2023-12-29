@@ -4,6 +4,7 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 - mover el chat a la vista de diagrama de estados
 - action: call(mute, "noise.wav")
+- que cuando no dice loop el sound entienda que es con false en loop
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones

@@ -236,6 +236,7 @@ export class UnrealEngineSocket {
                 };
                 // Buscar inicio
                 this.state.writeKey("timer", {});
+                this.state.writeKey("silences", {});
                 UnrealEngineSocket.ONE_TIME_ARROWS = {};
                 // Inicialización
                 affectModel("st", nuevosSt);

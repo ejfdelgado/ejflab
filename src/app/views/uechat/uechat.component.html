@@ -16,6 +16,13 @@
             <span>Estado</span>
         </button>
     </div>
+    <div *ngIf="selectedView !== 'chat'">
+        <input type="text" class="biginput" [(ngModel)]="myvoice" (keyup.enter)="sendVoice()"/>
+        <button (click)="sendVoice()" class="mat-menu-item manito" style="width: 100%;">
+            <mat-icon>play_arrow</mat-icon>
+            <span>Enviar</span>
+        </button>
+    </div>
     <div class="content full_content">
         <div *ngIf="selectedView == 'chat'" class="chat_parent">
             <div class="chat_child">
@@ -46,19 +53,12 @@
                     <li *ngFor="let message of messages">{{ message }}</li>
                 </ul>
             </div>
-            <div class="chat_child">
-                <input type="text" class="biginput" [(ngModel)]="myvoice" (keyup.enter)="sendVoice()"/>
-                <button (click)="sendVoice()" class="mat-menu-item manito" style="width: 100%;">
-                    <mat-icon>play_arrow</mat-icon>
-                    <span>Enviar</span>
-                </button>
-            </div>
         </div>
         <div *ngIf="selectedView == 'json'">
             <pre [innerHtml]="modelState | jsonColor"></pre>
         </div>
         <div *ngIf="selectedView == 'grafo'">
-            <svg #mySvg class="svgcontainer" [innerHtml]="graphHtml" *ngIf="graphRecomputeBoundingBox()">
+            <svg #mySvg class="svgcontainer" [innerHtml]="graphHtml">
 
             </svg>
         </div>

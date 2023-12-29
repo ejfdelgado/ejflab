@@ -86,16 +86,11 @@ interface ClientToServerEvents {
   providedIn: 'root',
 })
 export class UeSocketService {
-  evento: EventEmitter<any>;
-  eventResponse: EventEmitter<any>;
   socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
     MyConstants.SRV_ROOT
   );
 
-  constructor() {
-    this.evento = new EventEmitter<any>();
-    this.eventResponse = new EventEmitter<any>();
-  }
+  constructor() {}
 
   static createScoreSample(): CreateScoreData {
     return {
