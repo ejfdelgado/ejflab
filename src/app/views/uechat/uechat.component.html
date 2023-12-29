@@ -12,8 +12,27 @@
         </button>
     </div>
     <div *ngIf="selectedView !== 'chat'">
-        <input type="text" class="voice_recognition" placeholder="voice ..." [(ngModel)]="myvoice"
-            (keyup.enter)="sendVoice()" />
+
+        <div style="width: 100%; display: flex; flex-direction: row; gap: 10px;">
+            <div style="flex: 1; display: flex;">
+                <input type="text" class="voice_recognition" style="flex: 1;" placeholder="voice ..."
+                    [(ngModel)]="myvoice" (keyup.enter)="sendVoice()" />
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: row;">
+                <input type="text" style="flex: 2;" class="voice_recognition" placeholder="collision source ..."
+                    [(ngModel)]="collision.of" />
+                <input type="text" style="flex: 2;" class="voice_recognition" placeholder="collision target ... "
+                    [(ngModel)]="collision.with" />
+                <button (click)="collide()" style="flex: 1;" class="mat-menu-item manito">
+                    <mat-icon>touch_app</mat-icon>
+                    <span>On</span>
+                </button>
+                <button (click)="uncollide()" style="flex: 1;" class="mat-menu-item manito">
+                    <mat-icon>do_not_touch</mat-icon>
+                    <span>Off</span>
+                </button>
+            </div>
+        </div>
     </div>
     <div class="content full_content" *ngIf="selectedView == 'chat'">
         <div class="chat_parent">

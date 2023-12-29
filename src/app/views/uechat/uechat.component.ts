@@ -30,6 +30,10 @@ export class UechatComponent implements OnInit, OnDestroy {
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
   isActive: boolean = false;
+  collision: any = {
+    of: '',
+    with: '',
+  };
 
   constructor(
     public socketService: UeSocketService,
@@ -228,6 +232,16 @@ export class UechatComponent implements OnInit, OnDestroy {
   sendVoice(): void {
     this.socketService.emit('voice', JSON.stringify(this.myvoice));
     this.myvoice = '';
+  }
+
+  collide(): void {
+    const collision = this.collision;
+    console.log(`Collide ${JSON.stringify(collision)}`);
+  }
+
+  uncollide(): void {
+    const collision = this.collision;
+    console.log(`Uncollide ${JSON.stringify(collision)}`);
   }
 
   async processFile(responseData: FileResponseData) {
