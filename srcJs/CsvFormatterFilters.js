@@ -18,6 +18,17 @@ class CsvFormatterFilters {
     static json(valor) {
         return JSON.stringify(valor);
     }
+    static rand(val, ...args) {
+        let lista = args;
+        if (lista.length == 0) {
+            lista = val;
+        }
+        if (!(lista instanceof Array)) {
+            return "";
+        }
+        let myRandom = Math.floor(Math.random() * lista.length);
+        return "" + lista[myRandom];
+    }
     static map(myMap) {
         return (key) => {
             return myMap[key];

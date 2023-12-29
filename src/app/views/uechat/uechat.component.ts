@@ -22,9 +22,11 @@ export class UechatComponent implements OnInit, OnDestroy {
   @ViewChild('mySvg') mySvgRef: ElementRef;
   graphHtml: string = '';
   modelState: any = {};
+  modelStatePath: any = null;
   selectedView: string = 'chat';
   mymessage: string = '';
   myvoice: string = '';
+  mypath: string = '';
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
   isActive: boolean = false;
@@ -83,6 +85,21 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   selectView(viewName: string) {
     this.selectedView = viewName;
+    if (this.selectedView == 'grafo') {
+      this.graphHtml = this.getGraph();
+      this.graphRecomputeBoundingBox();
+    }
+  }
+
+  setPath() {
+    if (this.mypath == '') {
+      this.modelStatePath = this.modelState;
+    } else {
+      this.modelStatePath = SimpleObj.getValue(this.modelState, this.mypath);
+    }
+    if (this.modelStatePath == undefined) {
+      this.modelStatePath = null;
+    }
   }
 
   getGraph(): any {
@@ -103,7 +120,6 @@ export class UechatComponent implements OnInit, OnDestroy {
       currentNodes,
       history
     );
-    this.graphRecomputeBoundingBox();
     return this.sanitizer.bypassSecurityTrustHtml(svgContent);
   }
 
@@ -132,8 +148,10 @@ export class UechatComponent implements OnInit, OnDestroy {
         SimpleObj.recreate(this.modelState, parsed.key, parsed.val, true)
       );
     }
+    this.setPath();
 
     this.graphHtml = this.getGraph();
+    this.graphRecomputeBoundingBox();
     if (this.modelState.st.current == null && this.isActive) {
       this.callStopGame();
       this.isActive = false;

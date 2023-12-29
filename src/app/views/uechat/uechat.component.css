@@ -1,8 +1,3 @@
-.svgcontainer {
-  width: 100%;
-  height: 100%;
-}
-
 .full_screen {
   position: fixed;
   left: 0;
@@ -18,7 +13,36 @@
   overflow: scroll;
 }
 
-.bigselect, .biginput {
+.full_screen .fill {
+  flex: 1;
+  position: relative;
+}
+
+.full_screen .fill .all_scroll_left {
+  overflow: scroll;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 34%;
+  bottom: 0;
+}
+
+.full_screen .fill .all_scroll_right {
+  position: absolute;
+  top: 0;
+  left: 66%;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.full_screen .fill .all_scroll_right .content_pre {
+  overflow: scroll;
+}
+
+.bigselect,
+.biginput {
   font-size: 18px;
   padding: 10px 10px 10px 0;
   cursor: pointer;

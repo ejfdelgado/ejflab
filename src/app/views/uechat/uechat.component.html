@@ -5,11 +5,6 @@
             <mat-icon>chat</mat-icon>
             <span>Log</span>
         </button>
-        <button (click)="selectView('json')" class="mat-menu-item manito"
-            [ngClass]="{'highlight': selectedView == 'json'}">
-            <mat-icon>park</mat-icon>
-            <span>Árbol de datos</span>
-        </button>
         <button (click)="selectView('grafo')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'grafo'}">
             <mat-icon>account_tree</mat-icon>
@@ -17,14 +12,14 @@
         </button>
     </div>
     <div *ngIf="selectedView !== 'chat'">
-        <input type="text" class="biginput" [(ngModel)]="myvoice" (keyup.enter)="sendVoice()"/>
+        <input type="text" class="biginput" [(ngModel)]="myvoice" (keyup.enter)="sendVoice()" />
         <button (click)="sendVoice()" class="mat-menu-item manito" style="width: 100%;">
             <mat-icon>play_arrow</mat-icon>
             <span>Enviar</span>
         </button>
     </div>
-    <div class="content full_content">
-        <div *ngIf="selectedView == 'chat'" class="chat_parent">
+    <div class="content full_content" *ngIf="selectedView == 'chat'">
+        <div class="chat_parent">
             <div class="chat_child">
                 <select class="bigselect" [(ngModel)]="selectedAction" (change)="updateSample($event)">
                     <option value="chatMessage">Chat</option>
@@ -54,13 +49,16 @@
                 </ul>
             </div>
         </div>
-        <div *ngIf="selectedView == 'json'">
-            <pre [innerHtml]="modelState | jsonColor"></pre>
+    </div>
+    <div class="content fill" *ngIf="selectedView == 'grafo'">
+        <div class="all_scroll_left">
+            <svg #mySvg class="" [innerHtml]="graphHtml"></svg>
         </div>
-        <div *ngIf="selectedView == 'grafo'">
-            <svg #mySvg class="svgcontainer" [innerHtml]="graphHtml">
-
-            </svg>
+        <div class="all_scroll_right">
+            <input type="text" class="biginput" [(ngModel)]="mypath" (keyup.enter)="setPath()" />
+            <div class="content_pre">
+                <pre [innerHtml]="modelStatePath | jsonColor"></pre>
+            </div>
         </div>
     </div>
 </div>

@@ -71,6 +71,7 @@ function myTest() {
     renderer.registerFunction("personal", (val, ...args) => {
         return val + "-" + args.join("-");
     });
+    renderer.registerFunction("rand", CsvFormatterFilters.rand);
 
     for (let i = 0; i < cases.length; i++) {
         const myCase = cases[i];
@@ -83,7 +84,7 @@ function myTest() {
         }
     }
 
-    console.log(MyTemplate.interpolate("Todo salió bien ${person.name}", { person: { name: "Amigo" } }));
+    console.log(renderer.render('Todo salió bien ${person.name} ${o|rand:"azul":"amarillo":"verde"}', { person: { name: "Amigo" }, n: null }));
 }
 
 myTest();

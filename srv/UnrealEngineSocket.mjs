@@ -9,6 +9,7 @@ import { MyShell } from "./MyShell.mjs";
 import wavFileInfo from "wav-file-info";
 import { MyUtilities } from "../srcJs/MyUtilities.js";
 import mm from 'music-metadata';
+import { CsvFormatterFilters } from "../srcJs/CsvFormatterFilters.js";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -31,6 +32,10 @@ export class UnrealEngineSocket {
     static conditionalEngine = new MyTemplate();
     static HOMOLOGACION_VOZ = {};
     static ONE_TIME_ARROWS = {};
+
+    static {
+        UnrealEngineSocket.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
+    }
 
     static async getDataBaseClient() {
         if (UnrealEngineSocket.databaseClient == null) {
