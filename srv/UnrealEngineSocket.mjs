@@ -6,7 +6,6 @@ import { UnrealEngineState } from "./UnrealEngineState.mjs";
 import { serializeError } from 'serialize-error';
 import { MyTemplate } from "../srcJs/MyTemplate.js";
 import { MyShell } from "./MyShell.mjs";
-import wavFileInfo from "wav-file-info";
 import { MyUtilities } from "../srcJs/MyUtilities.js";
 import mm from 'music-metadata';
 import { CsvFormatterFilters } from "../srcJs/CsvFormatterFilters.js";
@@ -35,6 +34,7 @@ export class UnrealEngineSocket {
     static conditionalEngine = new MyTemplate();
     static HOMOLOGACION_VOZ = {};
     static ONE_TIME_ARROWS = {};
+    static GLOBAL_ONE_TIME_ARROWS = {};
     static collisionEngine = new CollisionsEngine();
 
     static {
@@ -297,6 +297,7 @@ export class UnrealEngineSocket {
 
                 // Validar las flechas y tomar todas las que sean verdaderas
                 const outputPositiveGlobal = {};
+                const outputArrowsReset = [];
                 const currentTime = this.state.readKey("st.duration");
                 for (let i = 0; i < currentState.length; i++) {
                     const srcId = currentState[i];
@@ -305,23 +306,39 @@ export class UnrealEngineSocket {
                         const silenceArrowKeys = [];
                         const timerArrowKeys = [];
                         let atLeastOneOutput = false;
+                        let arrowsReset = false;
                         // Este nodo se debe validar si cumple al menos una salida
                         for (let j = 0; j < outputArrows.length; j++) {
                             const outputArrow = outputArrows[j];
                             const arrowId = outputArrow.id;
                             let isOneTimeArrow = false;
+                            let isGlobalOneTimeArrow = false;
                             try {
                                 let evaluated = true;
                                 if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
                                     // Se valida si es una flecha de una sola vez con el asterisco
                                     let textoIf = outputArrow.txt.replace(/\n/ig, ' ');
-                                    if (/^\s*\*/.test(textoIf)) {
-                                        textoIf = textoIf.replace(/^\s*\*/, "");
+                                    const tokensAsterisk = /^\s*([*]{1,2})/.exec(textoIf);
+                                    if (tokensAsterisk != null) {
+                                        //console.log(JSON.stringify(tokensAsterisk));
+                                        textoIf = textoIf.replace(/^\s*[*]{1,2}/, "");
                                         isOneTimeArrow = true;
-                                        if (typeof UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] == "number") {
+                                        if (tokensAsterisk[1] == "**") {
+                                            isGlobalOneTimeArrow = true;
+                                            // Globalmente se debe usar solo una vez esta flecha
+                                            if (typeof UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] == "number") {
+                                                textoIf = "false";
+                                            }
+                                        } else if (typeof UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] == "number") {
                                             textoIf = "false";
                                         }
                                     }
+                                    // Se valida si la flecha tiene arrowsreset()
+                                    textoIf = textoIf.replace(/arrowsreset\s*\(\s*\)/ig, () => {
+                                        arrowsReset = true;
+                                        return "true";
+                                    });
+
                                     // Se hace manejo de touched() istouched() isnottouched() untouched()
                                     textoIf = textoIf.replace(/(touched|istouched|isnottouched|untouched)\(([^)]+)\)/ig, (wholeMatch, command, content) => {
                                         // console.log(`command = ${command} content = ${content}`);
@@ -440,8 +457,14 @@ export class UnrealEngineSocket {
                                         outputPositiveGlobal[srcId] = [];
                                     }
                                     outputPositiveGlobal[srcId].push(outputArrow.tar);
+                                    if (arrowsReset) {
+                                        outputArrowsReset.push(outputArrow.tar);
+                                    }
                                     if (isOneTimeArrow) {
                                         UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] = currentTime;
+                                        if (isGlobalOneTimeArrow) {
+                                            UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] = currentTime;
+                                        }
                                     }
                                 }
                             } catch (err) {
@@ -504,6 +527,21 @@ export class UnrealEngineSocket {
                                             io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
                                         }
                                     } else {
+                                        // se valida si es increase(...)
+                                        const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
+                                        if (tokensIncrease != null) {
+                                            const increaseKey = tokensIncrease[1].trim();
+                                            // console.log(`increaseKey = ${increaseKey}`);
+                                            let currentValue = this.state.readKey(increaseKey);
+                                            if (!(typeof currentValue == "number")) {
+                                                currentValue = 0;
+                                            }
+                                            currentValue += 1;
+                                            //this.state.writeKey(increaseKey, currentValue);//Not live
+                                            affectModel(increaseKey, currentValue);//Live
+                                            continue;
+                                        }
+                                        // Default way to resolve node actions
                                         const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
                                         if (tokensCommand != null) {
                                             const destinationVar = tokensCommand[1];
@@ -519,6 +557,16 @@ export class UnrealEngineSocket {
                         currentState.push(nodoLlegada);
                         //console.log(`vamos en ${JSON.stringify(currentState)}`);
                         history.push({ id: theNode.id, t: currentTime, type: "node", txt: theNode.txt });
+                        // Se valida si llegó a este nodo por medio de una flecha con arrowsreset()
+                        if (outputArrowsReset.indexOf(nodoLlegada) >= 0) {
+                            // Se deben borrar los ids de las flechas de salida de este nodo
+                            const outputArrowsNext = filterSourceArrowsFromSource(arrows, nodoLlegada);
+                            for (let k = 0; k < outputArrowsNext.length; k++) {
+                                const outputArrow = outputArrowsNext[k];
+                                const arrowId = outputArrow.id;
+                                delete UnrealEngineSocket.ONE_TIME_ARROWS[arrowId];
+                            }
+                        }
                     }
                 }
                 const nuevosSt = {

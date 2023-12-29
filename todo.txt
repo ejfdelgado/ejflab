@@ -2,7 +2,7 @@ src/app/app.component.ts
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-- permitir configurar el en vivo de st.voice o st.touch
+- crear capacidad para mostrar popup con: texto, n opciones y unica respuesta.
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones
@@ -12,7 +12,7 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 - desarrollar la mezcla de objetos, mejorada del assign
 
 Bugs:
-- no
+  - permitir configurar el Live de st.voice o st.touch o points
 
 - set field of view
 - guardar, progress
