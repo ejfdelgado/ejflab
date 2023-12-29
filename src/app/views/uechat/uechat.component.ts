@@ -72,6 +72,14 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('animate', (content: string) => {
       console.log(`animate ${JSON.stringify(content)}`);
     });
+    this.socketService.on('mute', (content: string) => {
+      const argumento = JSON.parse(content);
+      if (typeof argumento == 'string') {
+        ModuloSonido.stop(`${SOUNDS_ROOT}/${argumento}`);
+      } else if (argumento instanceof Array) {
+        ModuloSonido.stop(`${SOUNDS_ROOT}/${argumento[0]}`);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -81,6 +89,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.removeAllListeners('stateChanged');
     this.socketService.removeAllListeners('sound');
     this.socketService.removeAllListeners('animate');
+    this.socketService.removeAllListeners('mute');
   }
 
   selectView(viewName: string) {

@@ -53,18 +53,24 @@ class ModuloSonido {
 		let isPlaying = ref.currentTime > 0 && !ref.paused && !ref.ended
 			&& ref.readyState > 2;
 		if (!isPlaying) {
-			if (loop) {
-				ref.loop = loop;
-			}
+			ref.loop = loop;
 			ref.play();
 		}
 	};
+
+	static stop(llave) {
+		const sonido = ModuloSonido.sonidos[llave];
+		if (sonido) {
+			sonido.pause();
+			sonido.currentTime = 0;
+		}
+	}
 
 	static stopAll() {
 		const llaves = Object.keys(ModuloSonido.sonidos);
 		for (let i = 0; i < llaves.length; i++) {
 			const llave = llaves[i];
-			let sonido = ModuloSonido.sonidos[llave];
+			const sonido = ModuloSonido.sonidos[llave];
 			sonido.pause();
 			sonido.currentTime = 0;
 		}

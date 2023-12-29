@@ -65,6 +65,7 @@ interface ServerToClientEvents {
   stateChanged: (message: string) => void;
   sound: (message: string) => void;
   animate: (message: string) => void;
+  mute: (message: string) => void;
 }
 
 interface ClientToServerEvents {
