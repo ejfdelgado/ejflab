@@ -246,6 +246,7 @@ export class UnrealEngineSocket {
                     duration: 0,
                     voice: undefined,
                     lastvoice: undefined,
+                    touch: undefined,
                     history: history,
                 };
                 // Buscar inicio
@@ -595,7 +596,9 @@ export class UnrealEngineSocket {
                         voiceHistory = voiceHistoryFiltered;
                     }
                     this.state.writeKey("st.lastvoice", ahora);
-                    affectModel("st.voice", voiceHistory);
+
+                    //this.state.writeKey("st.voice", voiceHistory);//Not live
+                    affectModel("st.voice", voiceHistory);//Live
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -603,7 +606,19 @@ export class UnrealEngineSocket {
 
             const touchEventHandler = async (payload) => {
                 try {
-                    console.log(`Touch ${payload}`);
+                    // console.log(`Touch ${payload}`);
+                    let memory = this.state.readKey("st.touch");
+                    if (!memory) {
+                        memory = {};
+                    }
+                    const partes = payload.split(":");
+                    const key = partes[0];
+                    const objectKey = partes[1];
+                    const changed = UnrealEngineSocket.collisionEngine.collide(memory, key, objectKey);
+                    if (changed) {
+                        //this.state.writeKey("st.touch", memory);//Not live
+                        affectModel("st.touch", memory);//Live
+                    }
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -611,7 +626,19 @@ export class UnrealEngineSocket {
 
             const untouchEventHandler = async (payload) => {
                 try {
-                    console.log(`Untouch ${payload}`);
+                    // console.log(`Untouch ${payload}`);
+                    let memory = this.state.readKey("st.touch");
+                    if (!memory) {
+                        memory = {};
+                    }
+                    const partes = payload.split(":");
+                    const key = partes[0];
+                    const objectKey = partes[1];
+                    const changed = UnrealEngineSocket.collisionEngine.uncollide(memory, key, objectKey);
+                    if (changed) {
+                        //this.state.writeKey("st.touch", memory);//Not live
+                        affectModel("st.touch", memory);//Live
+                    }
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }

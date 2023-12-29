@@ -151,13 +151,13 @@ class CollisionsEngine {
         const verifyCollision = (key, objectKey, mode, expected) => {
             let value;
 
-            if (mode == "hadCollision") {// collided
+            if (mode == "hadCollision") {// touched
                 value = engine.hadCollision(key, objectKey);
-            } else if (mode == "hasCollision") {// iscollided
+            } else if (mode == "hasCollision") {// istouched
                 value = engine.hasCollision(memory, key, objectKey);
-            } else if (mode == "hasNotCollision") {// isntcollided es igual a !iscollided
+            } else if (mode == "hasNotCollision") {// isnttouched es igual a !istouched
                 value = engine.hasNotCollision(memory, key, objectKey);
-            } else if (mode == "hadUncollision") {// uncollided
+            } else if (mode == "hadUncollision") {// untouched
                 value = engine.hadUncollision(key, objectKey);
             }
             if (value == expected) {
