@@ -13,12 +13,12 @@
     </div>
     <div *ngIf="selectedView !== 'chat'">
 
-        <div style="width: 100%; display: flex; flex-direction: row; gap: 10px;">
+        <div style="width: 100%; display: flex; flex-direction: row; gap: 30px; margin: 10px 0px;">
             <div style="flex: 1; display: flex;">
                 <input type="text" class="voice_recognition" style="flex: 1;" placeholder="voice ..."
                     [(ngModel)]="myvoice" (keyup.enter)="sendVoice()" />
             </div>
-            <div style="flex: 1; display: flex; flex-direction: row;">
+            <div style="flex: 1; display: flex; flex-direction: row; gap: 5px;">
                 <input type="text" style="flex: 2;" class="voice_recognition" placeholder="collision source ..."
                     [(ngModel)]="collision.of" />
                 <input type="text" style="flex: 2;" class="voice_recognition" placeholder="collision target ... "
