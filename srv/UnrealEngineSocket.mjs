@@ -231,13 +231,16 @@ export class UnrealEngineSocket {
                     throw `El entrenamiento ya está iniciado y está corriendo`;
                 }
                 const nodeIds = this.state.getIdNodeWithText("inicio");
+                const history = nodeIds.map((node) => {
+                    return { id: node, t: 0 }
+                });
                 const nuevosSt = {
                     current: nodeIds,
                     startedAt: new Date().getTime(),
                     duration: 0,
                     voice: undefined,
                     lastvoice: undefined,
-                    history: [{ id: nodeIds[0], t: 0 }],
+                    history: history,
                 };
                 // Buscar inicio
                 this.state.writeKey("timer", {});
@@ -278,7 +281,7 @@ export class UnrealEngineSocket {
                 const graph = this.state.readKey("zflowchart");
                 const arrows = graph.arrows;
                 const shapes = graph.shapes;
-                //console.log(`Evaluating next steps from ${currentState}`);
+                //console.log(`Evaluating next steps from ${JSON.stringify(currentState)}`);
 
                 // Validar las flechas y tomar todas las que sean verdaderas
                 const outputPositiveGlobal = {};
@@ -427,6 +430,7 @@ export class UnrealEngineSocket {
                         }
                     }
                 }
+
                 // Se hace el cambio
                 let forceFinish = false;
                 const nodosViejos = Object.keys(outputPositiveGlobal);
@@ -437,7 +441,8 @@ export class UnrealEngineSocket {
 
                     const indiceViejo = currentState.indexOf(srcId);
                     if (indiceViejo >= 0) {
-                        currentState.splice(indiceViejo);
+                        //console.log(`Sacando nodo ${srcId} del estado actual en índice ${indiceViejo}`);
+                        currentState.splice(indiceViejo, 1);
                     }
                     for (let j = 0; j < nodosLlegada.length; j++) {
                         const nodoLlegada = nodosLlegada[j];
@@ -477,6 +482,7 @@ export class UnrealEngineSocket {
                             }
                         }
                         currentState.push(nodoLlegada);
+                        //console.log(`vamos en ${JSON.stringify(currentState)}`);
                         history.push({ id: theNode.id, t: currentTime, type: "node", txt: theNode.txt });
                     }
                 }
@@ -490,6 +496,7 @@ export class UnrealEngineSocket {
                 if (forceFinish) {
                     nuevosSt.current = null;
                 }
+                //console.log(`Escribiendo ${JSON.stringify(nuevosSt)}`);
                 affectModel("st", nuevosSt);
 
                 setTimeout(() => {

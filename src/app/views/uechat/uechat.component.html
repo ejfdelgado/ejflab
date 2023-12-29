@@ -3,22 +3,22 @@
         <button (click)="selectView('chat')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'chat'}">
             <mat-icon>chat</mat-icon>
-            <span>Log</span>
+            <span>Consola de control & log</span>
         </button>
         <button (click)="selectView('grafo')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'grafo'}">
             <mat-icon>account_tree</mat-icon>
-            <span>Estado</span>
+            <span>Árbol de decisión & estado</span>
         </button>
     </div>
     <div *ngIf="selectedView !== 'chat'">
-        <input type="text" class="voice_recognition" placeholder="buenos dias" [(ngModel)]="myvoice"
+        <input type="text" class="voice_recognition" placeholder="voice ..." [(ngModel)]="myvoice"
             (keyup.enter)="sendVoice()" />
     </div>
     <div class="content full_content" *ngIf="selectedView == 'chat'">
         <div class="chat_parent">
             <div class="chat_child">
-                <select class="bigselect" [(ngModel)]="selectedAction" (change)="updateSample($event)">
+                <select class="bigselect select_action" [(ngModel)]="selectedAction" (change)="updateSample($event)">
                     <option value="chatMessage">Chat</option>
                     <option value="buscarParticipantes">Buscar participantes</option>
                     <option value="createScore">Crear Score</option>
@@ -31,13 +31,12 @@
                     <option value="updateCode">Actualizar Código</option>
                     <option value="writeFile">write file</option>
                 </select>
-                <br>
                 <textarea class="bigtextarea" style="height: 100px;" [(ngModel)]="mymessage"></textarea>
-                <button (click)="sendMessage()" class="mat-menu-item manito" style="width: 100%;">
+                <button (click)="sendMessage()" class="mat-menu-item manito boton_enviar" style="width: 100%;">
                     <mat-icon>play_arrow</mat-icon>
                     <span>Enviar</span>
                 </button>
-                <button (click)="askForFile()" class="mat-menu-item manito">
+                <button (click)="askForFile()" class="mat-menu-item manito boton_sincornizar">
                     <mat-icon>file_upload</mat-icon>
                     <span>Sincronizar Archivo</span>
                 </button>
@@ -52,7 +51,7 @@
             <svg #mySvg class="" [innerHtml]="graphHtml"></svg>
         </div>
         <div class="all_scroll_right">
-            <input type="text" class="voice_recognition" placeholder="st" [(ngModel)]="mypath"
+            <input type="text" class="voice_recognition" placeholder="key path ..." [(ngModel)]="mypath"
                 (keyup.enter)="setPath()" />
             <div class="content_pre">
                 <pre [innerHtml]="modelStatePath | jsonColor"></pre>

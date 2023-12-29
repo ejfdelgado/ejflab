@@ -2,6 +2,8 @@ src/app/app.component.ts
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
+- agregar collide parecido a voice
+
 - desarrollar ejecución de animación a un npc especifico desde servidor node
 - desarrollar arbol completo de guiones
 - agregar la galería de fbx
