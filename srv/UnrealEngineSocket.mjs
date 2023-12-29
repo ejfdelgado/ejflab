@@ -10,6 +10,7 @@ import wavFileInfo from "wav-file-info";
 import { MyUtilities } from "../srcJs/MyUtilities.js";
 import mm from 'music-metadata';
 import { CsvFormatterFilters } from "../srcJs/CsvFormatterFilters.js";
+import { CollisionsEngine } from "../srcJs/CollisionsEngine.js";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -32,6 +33,7 @@ export class UnrealEngineSocket {
     static conditionalEngine = new MyTemplate();
     static HOMOLOGACION_VOZ = {};
     static ONE_TIME_ARROWS = {};
+    static collisionEngine = new CollisionsEngine();
 
     static {
         UnrealEngineSocket.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
@@ -222,6 +224,7 @@ export class UnrealEngineSocket {
             };
 
             const goToStartingPoint = () => {
+                UnrealEngineSocket.collisionEngine = new CollisionsEngine();
                 const currentState = this.state.readKey("st.current");
                 let interval = this.state.readKey("scene.interval");
                 if (!(typeof interval == "number")) {
