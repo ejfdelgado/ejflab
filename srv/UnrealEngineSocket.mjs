@@ -278,6 +278,11 @@ export class UnrealEngineSocket {
                 const currentState = this.state.readKey("st.current");
                 const startedAt = this.state.readKey("st.startedAt");
                 let interval = this.state.readKey("scene.interval");
+                let collisionMemory = this.state.readKey("st.touch");
+                if (!collisionMemory) {
+                    collisionMemory = {};
+                }
+
                 if (!(typeof interval == "number")) {
                     interval = UnrealEngineSocket.GAME_INTERVAL;
                 }
@@ -317,6 +322,29 @@ export class UnrealEngineSocket {
                                             textoIf = "false";
                                         }
                                     }
+                                    // Se hace manejo de touched() istouched() isnottouched() untouched()
+                                    textoIf = textoIf.replace(/(touched|istouched|isnottouched|untouched)\(([^)]+)\)/ig, (wholeMatch, command, content) => {
+                                        // console.log(`command = ${command} content = ${content}`);
+                                        const partes = content.split(":");
+                                        const key = partes[0].trim();
+                                        const objectKey = partes[1].trim();
+                                        const collisionEngine = UnrealEngineSocket.collisionEngine;
+                                        let response = false;
+                                        if (command == "touched") {
+                                            response = collisionEngine.hadCollision(key, objectKey);
+                                        } else if (command == "istouched") {
+                                            response = collisionEngine.hasCollision(collisionMemory, key, objectKey);
+                                        } else if (command == "isnottouched") {
+                                            response = collisionEngine.hasNotCollision(collisionMemory, key, objectKey);
+                                        } else if (command == "untouched") {
+                                            response = collisionEngine.hadUncollision(key, objectKey);
+                                        }
+                                        if (response === false) {
+                                            return "false";
+                                        } else {
+                                            return "true";
+                                        }
+                                    });
                                     // Se hace manejo de call(sound,...,...)
                                     textoIf = await MyUtilities.replaceAsync(textoIf, /call\s*\(([^)]+)\)/ig, async (command) => {
                                         const callArgs = MyTemplate.readCall(command, this.state.estado);

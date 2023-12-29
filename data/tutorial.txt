@@ -13,6 +13,10 @@ esperar: sleep(5000)
 esperar que no haya voz: silence()
 detectar secuencia de palabras: voice(buenos dias)
 Reproduce un sonido y espera a que acabe: call(sound, "mario-coin.mp3", "")
+touched(police:radio)
+istouched(police:radio)
+isnottouched(police:radio)
+untouched(police:radio)
 
 Comunicación por sockets:
 
