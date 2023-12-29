@@ -27,7 +27,8 @@ class CsvFormatterFilters {
             return "";
         }
         let myRandom = Math.floor(Math.random() * lista.length);
-        return "" + lista[myRandom];
+        const choosed = "" + lista[myRandom];
+        return choosed;
     }
     static map(myMap) {
         return (key) => {

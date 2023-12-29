@@ -100,6 +100,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     if (this.modelStatePath == undefined) {
       this.modelStatePath = null;
     }
+    this.modelStatePath = Object.assign({}, this.modelStatePath);
   }
 
   getGraph(): any {
@@ -152,12 +153,14 @@ export class UechatComponent implements OnInit, OnDestroy {
 
     this.graphHtml = this.getGraph();
     this.graphRecomputeBoundingBox();
-    if (this.modelState.st.current == null && this.isActive) {
-      this.callStopGame();
-      this.isActive = false;
-    } else if (this.modelState.st.current !== null && !this.isActive) {
-      this.callStartGame();
-      this.isActive = true;
+    if (this.modelState.st) {
+      if (this.modelState.st.current == null && this.isActive) {
+        this.callStopGame();
+        this.isActive = false;
+      } else if (this.modelState.st.current !== null && !this.isActive) {
+        this.callStartGame();
+        this.isActive = true;
+      }
     }
   }
 

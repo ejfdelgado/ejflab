@@ -5,7 +5,6 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 Bugs:
 - que cuando no dice loop el sound entienda que es con false en loop
 
-- que asigne valores aleatorios
 - que cuando reproduce un sonido interpole variables para crear el texto
 
 - action: call(mute, "noise.wav")
