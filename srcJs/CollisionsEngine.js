@@ -5,7 +5,7 @@ class CollisionsEngine {
         this.sessionCollide = [];
         this.sessionUncollide = [];
     }
-    getCompoundKey(key, objectKey) {
+    static getCompoundKey(key, objectKey) {
         return `${key}:${objectKey}`;
     }
     collide(memory, key, objectKey) {
@@ -20,7 +20,7 @@ class CollisionsEngine {
         }
         old.push(objectKey);
         memory[key] = old;
-        const compoundKey = this.getCompoundKey(key, objectKey);
+        const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         // Lo agrego a la detección de trigger de colisión
         const indiceTriggerCollide = this.triggerCollide.indexOf(compoundKey);
         if (indiceTriggerCollide < 0) {
@@ -45,7 +45,7 @@ class CollisionsEngine {
         }
         old.splice(indice, 1);
         memory[key] = old;
-        const compoundKey = this.getCompoundKey(key, objectKey);
+        const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         // Lo quito de la detección de colisión
         const indiceTriggerCollide = this.triggerCollide.indexOf(compoundKey);
         if (indiceTriggerCollide >= 0) {
@@ -86,7 +86,7 @@ class CollisionsEngine {
 
     }
     hadCollision(key, objectKey) {
-        const compoundKey = this.getCompoundKey(key, objectKey);
+        const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         const indiceTriggerCollide = this.triggerCollide.indexOf(compoundKey);
         if (indiceTriggerCollide >= 0) {
             if (this.sessionCollide.indexOf(compoundKey) < 0) {
@@ -97,7 +97,7 @@ class CollisionsEngine {
         return false;
     }
     hadUncollision(key, objectKey) {
-        const compoundKey = this.getCompoundKey(key, objectKey);
+        const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         const indiceTriggerUncollide = this.triggerUncollide.indexOf(compoundKey);
         if (indiceTriggerUncollide >= 0) {
             if (this.sessionUncollide.indexOf(compoundKey) < 0) {
@@ -108,7 +108,7 @@ class CollisionsEngine {
         return false;
     }
     hasCollision(memory, key, objectKey) {
-        //const compoundKey = this.getCompoundKey(key, objectKey);
+        //const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         // console.log(JSON.stringify(memory, null, 4));
         let old = memory[key];
         if (!(old instanceof Array)) {
@@ -121,7 +121,7 @@ class CollisionsEngine {
         return false;
     }
     hasNotCollision(memory, key, objectKey) {
-        //const compoundKey = this.getCompoundKey(key, objectKey);
+        //const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         // console.log(JSON.stringify(memory, null, 4));
         let old = memory[key];
         if (!(old instanceof Array)) {
@@ -134,7 +134,7 @@ class CollisionsEngine {
         return false;
     }
     hadUncollision(key, objectKey) {
-        const compoundKey = this.getCompoundKey(key, objectKey);
+        const compoundKey = CollisionsEngine.getCompoundKey(key, objectKey);
         const indiceTriggerUncollide = this.triggerUncollide.indexOf(compoundKey);
         if (indiceTriggerUncollide >= 0) {
             if (this.sessionUncollide.indexOf(compoundKey) < 0) {

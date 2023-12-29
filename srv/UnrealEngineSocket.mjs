@@ -24,6 +24,8 @@ const endGameEvent = "endGame";
 const updateCodeEvent = "updateCode";
 const synchronizeFileEvent = "synchronizeFile";
 const voiceEvent = "voice";
+const touchEvent = "touch";
+const untouchEvent = "untouch";
 
 export class UnrealEngineSocket {
     static GAME_INTERVAL = 2000;
@@ -105,7 +107,8 @@ export class UnrealEngineSocket {
                 socket.removeListener(updateCodeEvent, updateCodeEventHandler);
                 socket.removeListener(synchronizeFileEvent, synchronizeFileEventHandler);
                 socket.removeListener(voiceEvent, voiceEventHandler);
-
+                socket.removeListener(touchEvent, touchEventHandler);
+                socket.removeListener(untouchEvent, untouchEventHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -598,6 +601,22 @@ export class UnrealEngineSocket {
                 }
             }
 
+            const touchEventHandler = async (payload) => {
+                try {
+                    console.log(`Touch ${payload}`);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            }
+
+            const untouchEventHandler = async (payload) => {
+                try {
+                    console.log(`Untouch ${payload}`);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            }
+
             const voiceDetection = (llave) => {
                 const redaccion = readVoice();
                 //console.log(`detection ${llave} en ${redaccion}`);
@@ -679,6 +698,8 @@ export class UnrealEngineSocket {
             socket.on(updateCodeEvent, updateCodeEventHandler);
             socket.on(synchronizeFileEvent, synchronizeFileEventHandler);
             socket.on(voiceEvent, voiceEventHandler);
+            socket.on(touchEvent, touchEventHandler);
+            socket.on(untouchEvent, untouchEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",

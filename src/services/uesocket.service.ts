@@ -15,6 +15,8 @@ export enum SocketActions {
   updateCode = 'updateCode',
   synchronizeFile = 'synchronizeFile',
   voice = 'voice',
+  touch = 'touch',
+  untouch = 'untouch',
 }
 
 export interface CreateScoreData {
@@ -81,6 +83,8 @@ interface ClientToServerEvents {
   updateCode: (data: UpdateCodeData) => void;
   synchronizeFile: (data: SynchronizeFileData) => void;
   voice: (text: string) => void;
+  touch: (text: string) => void;
+  untouch: (text: string) => void;
 }
 
 @Injectable({

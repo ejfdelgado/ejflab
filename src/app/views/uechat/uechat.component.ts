@@ -9,6 +9,7 @@ import {
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileResponseData, FileService } from 'src/services/file.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
+import { CollisionsEngine } from 'srcJs/CollisionsEngine';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { SimpleObj } from 'srcJs/SimpleObj';
@@ -236,12 +237,30 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   collide(): void {
     const collision = this.collision;
-    console.log(`Collide ${JSON.stringify(collision)}`);
+    collision.of = collision.of.trim();
+    collision.with = collision.with.trim();
+    if (collision.of.length == 0 || collision.with.length == 0) {
+      return;
+    }
+    const compoundKey = CollisionsEngine.getCompoundKey(
+      collision.of,
+      collision.with
+    );
+    this.socketService.emit('touch', JSON.stringify(compoundKey));
   }
 
   uncollide(): void {
     const collision = this.collision;
-    console.log(`Uncollide ${JSON.stringify(collision)}`);
+    collision.of = collision.of.trim();
+    collision.with = collision.with.trim();
+    if (collision.of.length == 0 || collision.with.length == 0) {
+      return;
+    }
+    const compoundKey = CollisionsEngine.getCompoundKey(
+      collision.of,
+      collision.with
+    );
+    this.socketService.emit('untouch', JSON.stringify(compoundKey));
   }
 
   async processFile(responseData: FileResponseData) {
