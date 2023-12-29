@@ -4,7 +4,7 @@ Nodos:
 Asignar un valor específico: ${st.fixme} = "yes"
 Asignar un valor de otra parte: ${players.some} = ${st.fixme}
 Llamados:
-call(sound, "mario-coin.mp3")
+call(sound, "mario-coin.mp3", "loop")
 
 
 Flechas:
@@ -12,6 +12,7 @@ pregunta por valores: ${st.open} == true && sleep(5000)
 esperar: sleep(5000)
 esperar que no haya voz: silence()
 detectar secuencia de palabras: voice(buenos dias)
+Reproduce un sonido y espera a que acabe: call(sound, "mario-coin.mp3", "")
 
 Comunicación por sockets:
 

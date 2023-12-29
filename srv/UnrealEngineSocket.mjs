@@ -232,6 +232,7 @@ export class UnrealEngineSocket {
                     duration: 0,
                     voice: undefined,
                     lastvoice: undefined,
+                    history: [{ id: nodeIds[0], t: 0 }],
                 };
                 // Buscar inicio
                 this.state.writeKey("timer", {});
@@ -257,6 +258,7 @@ export class UnrealEngineSocket {
             };
 
             const moveState = async () => {
+                const history = this.state.readKey("st.history");
                 const currentState = this.state.readKey("st.current");
                 const startedAt = this.state.readKey("st.startedAt");
                 let interval = this.state.readKey("scene.interval");
@@ -323,7 +325,7 @@ export class UnrealEngineSocket {
                                                         if (metadata != null) {
                                                             const durationMillis = metadata.format.duration * 1000;
                                                             const name = `,${filename}`;
-                                                            const arrowIdTimer = `${arrowId}${md5(name)}`;
+                                                            const arrowIdTimer = `${arrowId}_${md5(name)}`;
                                                             const timerKey = `timer.${arrowIdTimer}`;
                                                             const oldTimer = this.state.readKey(timerKey);
                                                             if (typeof oldTimer == "number") {
@@ -353,7 +355,7 @@ export class UnrealEngineSocket {
                                         textoIf = textoIf.replace(/sleep\((\d+)([^)]*)\)/ig, (match, tiempo, name) => {
                                             let arrowIdTimer = arrowId;
                                             if (typeof name == "string" && name.length > 0) {
-                                                arrowIdTimer += md5(name);
+                                                arrowIdTimer += "_" + md5(name);
                                             }
                                             const timerKey = `timer.${arrowIdTimer}`;
                                             timerArrowKeys.push(arrowIdTimer);
@@ -389,6 +391,7 @@ export class UnrealEngineSocket {
                                 }
                                 if (evaluated) {
                                     atLeastOneOutput = true;
+                                    history.push({ id: arrowId, t: currentTime, type: "arrow", txt: outputArrow.txt });
                                     if (!(srcId in outputPositiveGlobal)) {
                                         outputPositiveGlobal[srcId] = [];
                                     }
@@ -468,12 +471,14 @@ export class UnrealEngineSocket {
                             }
                         }
                         currentState.push(nodoLlegada);
+                        history.push({ id: theNode.id, t: currentTime, type: "node", txt: theNode.txt });
                     }
                 }
                 const nuevosSt = {
                     duration: new Date().getTime() - startedAt,
                 };
                 if (nodosViejos.length > 0) {
+                    nuevosSt.history = history;
                     nuevosSt.current = currentState;
                 }
                 if (forceFinish) {

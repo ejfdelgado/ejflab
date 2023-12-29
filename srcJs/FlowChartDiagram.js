@@ -1,4 +1,11 @@
 
+const DONE_BORDER_COLOR = "rgb(255,0,0)";
+const DONE_BORDER_WIDTH = "3";
+const PENDING_BORDER_COLOR = "rgb(0,0,0)";
+const PENDING_BORDER_WIDTH = "1";
+const NORMAL_STATES_COLOR = "rgb(255,255,255)";
+const CURRENT_STATES_COLOR = "rgb(222,255,0)";
+
 class FlowChartDiagram {
     static searchClosest(srcList, tarList) {
         let closestDistance = null;
@@ -24,10 +31,27 @@ class FlowChartDiagram {
         };
     }
     // FlowChartDiagram.drawLine(src, tar)
-    static drawLine(src, tar) {
-        return `<line x1="${src.x}" x2="${tar.x}" y1="${src.y}" y2="${tar.y}" stroke="black" stroke-width="1" stroke-linecap="round"/>`;
+    static drawLine(src, tar, isDone = false) {
+        let color = PENDING_BORDER_COLOR;
+        let width = PENDING_BORDER_WIDTH;
+        if (isDone) {
+            color = DONE_BORDER_COLOR;
+            width = DONE_BORDER_WIDTH;
+        }
+        return `<line x1="${src.x}" x2="${tar.x}" y1="${src.y}" y2="${tar.y}" stroke="${color}" stroke-width="${width}" stroke-linecap="round"/>`;
     }
-    static computeGraph(grafo, currentNodes = []) {
+    static isIdInHistory(nodeId, history) {
+        if (history instanceof Array) {
+            for (let i = 0; i < history.length; i++) {
+                const oneHistory = history[i];
+                if (oneHistory.id == nodeId) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    };
+    static computeGraph(grafo, currentNodes = [], history = []) {
         const lineHeight = 15;
         let svgContent = '  <defs>\
         <filter x="0" y="0" width="1" height="1" id="solid">\
@@ -38,9 +62,12 @@ class FlowChartDiagram {
           </feMerge>\
         </filter>\
       </defs>';
-        const style = 'fill:rgb(255,255,255);stroke-width:1;stroke:rgb(0,0,0)';
-        const styleHighlight = 'fill:rgb(222,255,0);stroke-width:1;stroke:rgb(0,0,0)';
+        const style = `fill:${NORMAL_STATES_COLOR}`;
+        const styleHighlight = `fill:${CURRENT_STATES_COLOR}`;
+        const borderPending = `;stroke-width:${PENDING_BORDER_WIDTH};stroke:${PENDING_BORDER_COLOR}`;
+        const borderDone = `;stroke-width:${DONE_BORDER_WIDTH};stroke:${DONE_BORDER_COLOR}`;
         const styleTar = 'fill:rgb(0,0,0);stroke-width:1;stroke:rgb(0,0,0)';
+
         if (grafo) {
             const shapes = grafo.shapes;
             const arrows = grafo.arrows;
@@ -73,6 +100,7 @@ class FlowChartDiagram {
                 if (arrows instanceof Array) {
                     for (let i = 0; i < arrows.length; i++) {
                         const arrow = arrows[i];
+                        const isDone = FlowChartDiagram.isIdInHistory(arrow.id, history);
                         const points = [];
                         const srcList = centers[arrow.src];
                         const tarList = centers[arrow.tar];
@@ -99,7 +127,7 @@ class FlowChartDiagram {
 
                         // draw all lines...
                         for (let j = 0; j < points.length - 1; j++) {
-                            svgContent += FlowChartDiagram.drawLine(points[j], points[j + 1]);
+                            svgContent += FlowChartDiagram.drawLine(points[j], points[j + 1], isDone);
                         }
 
                         //compute position of text
@@ -164,11 +192,17 @@ class FlowChartDiagram {
                 for (let i = 0; i < shapes.length; i++) {
                     const shape = shapes[i];
                     const id = shape.id;
+                    const isDone = FlowChartDiagram.isIdInHistory(id, history);
                     const isHiglighted = currentNodes.indexOf(id) >= 0;
                     const pos = shape.pos;
                     let localStyle = style;
                     if (isHiglighted) {
                         localStyle = styleHighlight;
+                    }
+                    if (isDone) {
+                        localStyle += borderDone;
+                    } else {
+                        localStyle += borderPending;
                     }
                     if (shape.type == 'box') {
                         svgContent += `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${localStyle}"></rect>`;

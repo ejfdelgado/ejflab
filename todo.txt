@@ -2,9 +2,7 @@ src/app/app.component.ts
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-
-- delay de un wav o mp3 automático
-- marcar con otro color por donde ya pasó
+- mover el chat a la vista de diagrama de estados
 - action: call(mute, "noise.wav")
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node

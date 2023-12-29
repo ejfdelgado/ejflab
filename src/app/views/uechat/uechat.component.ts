@@ -94,7 +94,15 @@ export class UechatComponent implements OnInit, OnDestroy {
     if (!currentNodes) {
       currentNodes = [];
     }
-    const svgContent = FlowChartDiagram.computeGraph(grafo, currentNodes);
+    let history = SimpleObj.getValue(this.modelState, 'st.history');
+    if (!history) {
+      history = [];
+    }
+    const svgContent = FlowChartDiagram.computeGraph(
+      grafo,
+      currentNodes,
+      history
+    );
     this.graphRecomputeBoundingBox();
     return this.sanitizer.bypassSecurityTrustHtml(svgContent);
   }
