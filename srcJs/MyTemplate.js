@@ -1,3 +1,4 @@
+const { CsvFormatterFilters } = require("./CsvFormatterFilters");
 const { CsvWithFilters } = require("./CsvWithFilters");
 const { SimpleObj } = require("./SimpleObj");
 
@@ -228,6 +229,7 @@ class MyTemplate extends CsvWithFilters {
     // MyTemplate.readCall("call(sound, ${val} + ${val1}, param2)", { val: 5, val1: 8 });
     static readCall(texto, model) {
         const renderer = new MyTemplate();
+        renderer.registerFunction("rand", CsvFormatterFilters.rand);
         const response = {
             action: null,
             arguments: [],
@@ -240,8 +242,13 @@ class MyTemplate extends CsvWithFilters {
                 const argumento = argumentos[i].trim();
                 if (argumento.length > 0) {
                     try {
-                        const evaluado = renderer.computeIf(argumento, model);
-                        response.arguments.push(evaluado);
+                        const evaluado = renderer.render(argumento, model);
+                        try {
+                            const evaluado2 = eval(evaluado);
+                            response.arguments.push(evaluado2);
+                        } catch (err0) {
+                            response.arguments.push(evaluado);
+                        }
                     } catch (err) {
                         response.arguments.push(argumento);
                     }

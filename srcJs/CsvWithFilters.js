@@ -20,7 +20,7 @@ class CsvWithFilters {
     registerFunction(key, myFunction) {
         if (typeof myFunction == "function") {
             this.filterRegistry.methods[key] = myFunction;
-            console.log(`registerFunction(${key}) OK`);
+            //console.log(`registerFunction(${key}) OK`);
         }
     }
     filterValue(valor, columna, dato) {

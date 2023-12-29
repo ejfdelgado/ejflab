@@ -317,7 +317,7 @@ export class UnrealEngineSocket {
                                             if (callArgs.action == "sound") {
                                                 // sin loop, se reemplaza por el timer
                                                 if (callArgs.arguments.length >= 2 && callArgs.arguments[1] !== "loop") {
-                                                    const filename = callArgs.arguments[0];
+                                                    let filename = callArgs.arguments[0];
                                                     if (/\.(wav|mp3)$/i.test(filename)) {
                                                         // Si es wav, se lee el archivo y se pregunta por:
                                                         // frame rate & number of frames
