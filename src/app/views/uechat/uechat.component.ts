@@ -8,6 +8,7 @@ import {
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FileResponseData, FileService } from 'src/services/file.service';
+import { ModalService } from 'src/services/modal.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { CollisionsEngine } from 'srcJs/CollisionsEngine';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
@@ -40,7 +41,8 @@ export class UechatComponent implements OnInit, OnDestroy {
     public socketService: UeSocketService,
     public cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
-    public fileService: FileService
+    public fileService: FileService,
+    private modalSrv: ModalService
   ) {}
 
   ngOnInit(): void {
@@ -85,9 +87,10 @@ export class UechatComponent implements OnInit, OnDestroy {
         ModuloSonido.stop(`${SOUNDS_ROOT}/${argumento[0]}`);
       }
     });
-    this.socketService.on('popupopen', (content: string) => {
+    this.socketService.on('popupopen', async (content: string) => {
       const argumento = JSON.parse(content);
-      console.log(JSON.stringify(argumento, null, 4));
+      const response = await this.modalSrv.generic(argumento);
+      console.log(JSON.stringify(response));
     });
     this.socketService.on('popupclose', (content: string) => {
       const argumento = JSON.parse(content);

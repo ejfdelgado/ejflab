@@ -1,7 +1,17 @@
 import { Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { AlertComponent, AlertData } from 'src/app/components/alert/alert.component';
-import { ConfirmComponent, ConfirmData } from 'src/app/components/confirm/confirm.component';
+import {
+  AlertComponent,
+  AlertData,
+} from 'src/app/components/alert/alert.component';
+import {
+  ConfirmComponent,
+  ConfirmData,
+} from 'src/app/components/confirm/confirm.component';
+import {
+  GenericComponent,
+  GenericData,
+} from 'src/app/components/generic/generic.component';
 
 @Injectable({
   providedIn: 'root',
@@ -31,6 +41,18 @@ export class ModalService {
 
   async confirm(payload: ConfirmData) {
     const dialogRef = this.dialog.open(ConfirmComponent, { data: payload });
+    return new Promise((resolve) => {
+      dialogRef.afterClosed().subscribe((result) => {
+        resolve(result);
+      });
+    });
+  }
+
+  async generic(payload: GenericData) {
+    const dialogRef = this.dialog.open(GenericComponent, {
+      data: payload,
+      disableClose: true,//Force pick a choice
+    });
     return new Promise((resolve) => {
       dialogRef.afterClosed().subscribe((result) => {
         resolve(result);

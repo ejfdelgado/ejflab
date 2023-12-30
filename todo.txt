@@ -63,6 +63,8 @@ ng generate component mycommon/components/threejs-projection
 ng generate component views/projection/components/license
 ng generate component views/decisiontree/components/whenthen
 
+ng generate component components/generic
+
 ng generate component libs/threejs/threejs-projection
 
 Hacer un validador de formulario de backend y front end con base en:

@@ -43,6 +43,7 @@ import { PayupopupComponent } from './components/payupopup/payupopup.component';
 import { ThreejsModule } from './libs/threejs/threejs.module';
 import { WavesurferModule } from './libs/wavesurfer/wavesurfer.module';
 import { TensorflowModule } from './libs/tensorflow/tensorflow.module';
+import { GenericComponent } from './components/generic/generic.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { TensorflowModule } from './libs/tensorflow/tensorflow.module';
     UserpopupComponent,
     WebcamComponent,
     PayupopupComponent,
+    GenericComponent,
   ],
   imports: [
     FormsModule,
