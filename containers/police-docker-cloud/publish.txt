@@ -1,0 +1,17 @@
+1. Se lanza la última versión correcta:
+
+docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.88
+
+2. Se ingresa por ssh para actualizar el código:
+
+ssh root@localhost -p 2222
+root123
+
+3. Se actualiza el código y se compila
+
+cd ~/desarrollo/ejflab && git pull && npm install && npm run build_local
+
+4. Se sale de ssh y se hace commit de la versión docker:
+
+docker ps
+docker commit -m "se agrega colision, popup" -p 44165409e892  ejfdelgado/policiavr:v1.88

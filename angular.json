@@ -52,7 +52,10 @@
               "srcJs/ModuloVideos",
               "@ffmpeg/ffmpeg",
               "@tensorflow/tfjs",
-              "@tensorflow/tfjs-vis"
+              "@tensorflow/tfjs-vis",
+              "srcJs/CollisionsEngine",
+              "srcJs/FlowChartDiagram",
+              "srcJs/SimpleObj"
             ]
           },
           "configurations": {
@@ -65,7 +68,7 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
+                  "maximumWarning": "3kb",
                   "maximumError": "4kb"
                 }
               ],
