@@ -85,6 +85,14 @@ export class UechatComponent implements OnInit, OnDestroy {
         ModuloSonido.stop(`${SOUNDS_ROOT}/${argumento[0]}`);
       }
     });
+    this.socketService.on('popupopen', (content: string) => {
+      const argumento = JSON.parse(content);
+      console.log(JSON.stringify(argumento, null, 4));
+    });
+    this.socketService.on('popupclose', (content: string) => {
+      const argumento = JSON.parse(content);
+      console.log(JSON.stringify(argumento, null, 4));
+    });
   }
 
   ngOnDestroy(): void {
@@ -95,6 +103,8 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.removeAllListeners('sound');
     this.socketService.removeAllListeners('animate');
     this.socketService.removeAllListeners('mute');
+    this.socketService.removeAllListeners('popupopen');
+    this.socketService.removeAllListeners('popupclose');
   }
 
   selectView(viewName: string) {

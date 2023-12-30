@@ -68,6 +68,8 @@ interface ServerToClientEvents {
   sound: (message: string) => void;
   animate: (message: string) => void;
   mute: (message: string) => void;
+  popupopen: (message: string) => void;
+  popupclose: (message: string) => void;
 }
 
 interface ClientToServerEvents {

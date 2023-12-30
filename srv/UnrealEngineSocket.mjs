@@ -551,7 +551,7 @@ export class UnrealEngineSocket {
                                                 continue;
                                             }
                                             // Asigno la ruta como cllbackid
-                                            currentValue.callback = currentValue;
+                                            currentValue.callback = popupKey;
                                             this.state.writeKey("currentpopup", currentValue);
                                             io.emit('popupopen', JSON.stringify(currentValue));
                                             continue;
