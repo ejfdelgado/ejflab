@@ -19,10 +19,25 @@
             "txt": "Bienvenido amigo",
             "title": "Información",
             "timeout": 5000,
+            "type": "knowledge",
+            "destination": [
+                "points.${userid}.knowledge",
+                "points.knowledge"
+            ],
             "choices": [
                 {
-                    "txt": "Aceptar",
-                    "val": "ok"
+                    "txt": "Correcta",
+                    "val": "ok",
+                    "points": 2
+                },
+                {
+                    "txt": "Medio correcta",
+                    "val": "maybe",
+                    "points": 1
+                },
+                {
+                    "txt": "Incorrecta",
+                    "val": "no"
                 }
             ]
         }

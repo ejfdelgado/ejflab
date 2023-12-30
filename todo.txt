@@ -2,20 +2,7 @@ src/app/app.component.ts
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-- increase(points.${userid}.amabilidad); reemplazar con socketId.
-- crear capacidad para mostrar popup con: texto, n opciones y unica respuesta con opcion de callback y timeout
-// En el servidor:
-// Escribir en popup.value el contenido de text, callbackId, choices y timeout
-// Invocar un nuevo socket action con "popupopen" y el mismo contenido
-// En el cliente mostrar el contenido y agregar eventos de click
-// Cuando le da click a una opción envia un comando socket "mychoice" con la opcion seleccionada
-// En el servidor escucha "mychoice", de manera que le pasa a una función: quien (socketId), choice y el popup actual.
-// En esa función debe hacer casuistica para:
- - Info (aceptar)
- - Asignar Busqueda o seguridad
- - Juego de prueba de conocimiento
- - enviar "popupclose"
-// Se delega al cliente cerrar el popup después de la selección de opción.
+- Asignar Busqueda o seguridad (qué pasa si los dos seleccionan lo mismo?)
 
 - desarrollar arbol completo de guiones
 

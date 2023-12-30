@@ -1,1 +1,12 @@
-<p>generic works!</p>
+<div mat-dialog-title>
+    <h1 class="centrado">{{ title }}</h1>
+    <span class="boton_cerrar" [mat-dialog-close]>
+        <fa-icon [icon]="faXmark"></fa-icon>
+    </span>
+</div>
+<p>{{ text }}</p>
+<div class="bottom_buttons">
+    <button *ngFor="let someChoice of choices" mat-raised-button color="" (click)="selectChoice(someChoice.val)">
+        {{ someChoice.txt }}
+    </button>
+</div>

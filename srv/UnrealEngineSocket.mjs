@@ -25,6 +25,7 @@ const synchronizeFileEvent = "synchronizeFile";
 const voiceEvent = "voice";
 const touchEvent = "touch";
 const untouchEvent = "untouch";
+const popupchoiceEvent = "popupchoice";
 
 export class UnrealEngineSocket {
     static GAME_INTERVAL = 2000;
@@ -65,6 +66,10 @@ export class UnrealEngineSocket {
             const clientConnectedMsg = 'User connected ' + (socket.id) + ', total: ' + clients.length;
             console.log(clientConnectedMsg);
             io.emit(chatEvent, clientConnectedMsg);
+
+            const replaceUserId = (text) => {
+                return text.replace(/\$\s*\{\s*userid\s*\}/ig, socket.id);
+            };
 
             const getCurrentPlayerKey = () => {
                 const players = this.state.estado.players;
@@ -109,6 +114,7 @@ export class UnrealEngineSocket {
                 socket.removeListener(voiceEvent, voiceEventHandler);
                 socket.removeListener(touchEvent, touchEventHandler);
                 socket.removeListener(untouchEvent, untouchEventHandler);
+                socket.removeListener(popupchoiceEvent, popupchoiceEventHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -271,6 +277,18 @@ export class UnrealEngineSocket {
                 } else {
                     return null;
                 }
+            };
+
+            const increaseAmount = (key, amount = 1) => {
+                const increaseKey = replaceUserId(key.trim());
+                // console.log(`increaseKey = ${increaseKey}`);
+                let currentValue = this.state.readKey(increaseKey);
+                if (!(typeof currentValue == "number")) {
+                    currentValue = 0;
+                }
+                currentValue += amount;
+                //this.state.writeKey(increaseKey, currentValue);//Not live
+                affectModel(increaseKey, currentValue);//Live
             };
 
             const moveState = async () => {
@@ -531,15 +549,7 @@ export class UnrealEngineSocket {
                                         // se valida si es increase(...)
                                         const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
                                         if (tokensIncrease != null) {
-                                            const increaseKey = tokensIncrease[1].trim();
-                                            // console.log(`increaseKey = ${increaseKey}`);
-                                            let currentValue = this.state.readKey(increaseKey);
-                                            if (!(typeof currentValue == "number")) {
-                                                currentValue = 0;
-                                            }
-                                            currentValue += 1;
-                                            //this.state.writeKey(increaseKey, currentValue);//Not live
-                                            affectModel(increaseKey, currentValue);//Live
+                                            increaseAmount(tokensIncrease[1], 1)
                                             continue;
                                         }
                                         const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
@@ -552,7 +562,6 @@ export class UnrealEngineSocket {
                                             }
                                             // Asigno la ruta como cllbackid
                                             currentValue.callback = popupKey;
-                                            this.state.writeKey("currentpopup", currentValue);
                                             io.emit('popupopen', JSON.stringify(currentValue));
                                             continue;
                                         }
@@ -735,6 +744,38 @@ export class UnrealEngineSocket {
                 }
             }
 
+            const popupchoiceEventHandler = async (payload) => {
+                try {
+                    //console.log(`PopUp Choice ${JSON.stringify(payload)}`);
+                    const popupRef = this.state.readKey(payload.callback);
+                    const mychoice = payload.choice;
+                    if (popupRef.type == "info") {
+                        // Ignore
+                    } else if (popupRef.type == "knowledge") {
+                        // Check correct answer
+                        let points = 0;
+                        popupRef.choices.forEach((choice) => {
+                            if (choice.val == mychoice) {
+                                if (typeof choice.points == "number") {
+                                    points += choice.points;
+                                }
+                            }
+                        });
+                        if (points > 0) {
+                            const destination = popupRef.destination;
+                            if (destination instanceof Array) {
+                                for (let i = 0; i < destination.length; i++) {
+                                    const keyPath = destination[i];
+                                    increaseAmount(keyPath, points)
+                                }
+                            }
+                        }
+                    }
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            }
+
             const voiceDetection = (llave) => {
                 const redaccion = readVoice();
                 //console.log(`detection ${llave} en ${redaccion}`);
@@ -818,6 +859,7 @@ export class UnrealEngineSocket {
             socket.on(voiceEvent, voiceEventHandler);
             socket.on(touchEvent, touchEventHandler);
             socket.on(untouchEvent, untouchEventHandler);
+            socket.on(popupchoiceEvent, popupchoiceEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",

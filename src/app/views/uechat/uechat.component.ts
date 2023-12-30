@@ -90,7 +90,8 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('popupopen', async (content: string) => {
       const argumento = JSON.parse(content);
       const response = await this.modalSrv.generic(argumento);
-      console.log(JSON.stringify(response));
+      // console.log(JSON.stringify(response));
+      this.socketService.emit('popupchoice', JSON.stringify(response));
     });
     this.socketService.on('popupclose', (content: string) => {
       const argumento = JSON.parse(content);

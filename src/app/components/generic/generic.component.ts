@@ -43,7 +43,7 @@ export class GenericComponent implements OnInit {
     if (data.choices instanceof Array) {
       this.choices = data.choices;
     }
-    if (typeof data.callback == 'number') {
+    if (typeof data.callback == 'string') {
       this.callback = data.callback;
     }
   }

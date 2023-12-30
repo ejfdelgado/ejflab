@@ -17,6 +17,7 @@ export enum SocketActions {
   voice = 'voice',
   touch = 'touch',
   untouch = 'untouch',
+  popupchoice = 'popupchoice',
 }
 
 export interface CreateScoreData {
@@ -47,6 +48,11 @@ export interface StateReadData {
 export interface StateChangedData {
   key: string;
   val: any;
+}
+
+export interface PopupChoiceData {
+  callback: string;
+  choice: string;
 }
 
 export interface StartGameData {}
@@ -87,6 +93,7 @@ interface ClientToServerEvents {
   voice: (text: string) => void;
   touch: (text: string) => void;
   untouch: (text: string) => void;
+  popupchoice: (data: PopupChoiceData) => void;
 }
 
 @Injectable({
