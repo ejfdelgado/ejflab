@@ -6,6 +6,7 @@ Asignar un valor de otra parte: ${players.some} = ${st.fixme}
 Llamados:
 call(sound, "mario-coin.mp3", "loop")
 call(mute, "noise.wav")
+popup(...)
 
 Flechas:
 pregunta por valores: ${st.open} == true && sleep(5000)

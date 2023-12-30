@@ -489,6 +489,7 @@ export class UnrealEngineSocket {
                     }
                 }
 
+                // Ejecución de los nodos donde llega
                 // Se hace el cambio
                 let forceFinish = false;
                 const nodosViejos = Object.keys(outputPositiveGlobal);
@@ -539,6 +540,20 @@ export class UnrealEngineSocket {
                                             currentValue += 1;
                                             //this.state.writeKey(increaseKey, currentValue);//Not live
                                             affectModel(increaseKey, currentValue);//Live
+                                            continue;
+                                        }
+                                        const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
+                                        if (tokensPopUp != null) {
+                                            const popupKey = tokensPopUp[1].trim();
+                                            const currentValue = this.state.readKey(popupKey);
+                                            if (!currentValue) {
+                                                console.log(`Error leyendo popup de ${popupKey}`);
+                                                continue;
+                                            }
+                                            // Asigno la ruta como cllbackid
+                                            currentValue.callback = currentValue;
+                                            this.state.writeKey("currentpopup", currentValue);
+                                            io.emit('popupopen', JSON.stringify(currentValue));
                                             continue;
                                         }
                                         // Default way to resolve node actions
