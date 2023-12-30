@@ -71,6 +71,28 @@ export class UnrealEngineSocket {
                 return text.replace(/\$\s*\{\s*userid\s*\}/ig, socket.id);
             };
 
+            const replaceUserPath = (text) => {
+                const path = getCurrentPlayerKey();
+                let nextValue = text;
+                let founds = false;
+                nextValue = nextValue.replace(/\$\s*\{\s*userpath\s*\}/ig, () => {
+                    founds = true;
+                    if (path === null) {
+                        return "";
+                    }
+                    return path;
+                });
+                if (founds && path === null) {
+                    throw `Debe seleccionar primero un participante`;
+                }
+                //console.log(`nextValue = ${nextValue}`);
+                return nextValue;
+            };
+
+            const replaceUserVars = (text) => {
+                return replaceUserId(replaceUserPath(text.trim()));
+            };
+
             const getCurrentPlayerKey = () => {
                 const players = this.state.estado.players;
                 if (players != undefined) {
@@ -280,15 +302,19 @@ export class UnrealEngineSocket {
             };
 
             const increaseAmount = (key, amount = 1) => {
-                const increaseKey = replaceUserId(key.trim());
-                // console.log(`increaseKey = ${increaseKey}`);
-                let currentValue = this.state.readKey(increaseKey);
-                if (!(typeof currentValue == "number")) {
-                    currentValue = 0;
+                try {
+                    const increaseKey = replaceUserVars(key);
+                    // console.log(`increaseKey = ${increaseKey}`);
+                    let currentValue = this.state.readKey(increaseKey);
+                    if (!(typeof currentValue == "number")) {
+                        currentValue = 0;
+                    }
+                    currentValue += amount;
+                    //this.state.writeKey(increaseKey, currentValue);//Not live
+                    affectModel(increaseKey, currentValue);//Live
+                } catch (err) {
+                    io.emit(chatEvent, err);
                 }
-                currentValue += amount;
-                //this.state.writeKey(increaseKey, currentValue);//Not live
-                affectModel(increaseKey, currentValue);//Live
             };
 
             const moveState = async () => {
@@ -766,8 +792,19 @@ export class UnrealEngineSocket {
                             if (destination instanceof Array) {
                                 for (let i = 0; i < destination.length; i++) {
                                     const keyPath = destination[i];
-                                    increaseAmount(keyPath, points)
+                                    increaseAmount(keyPath, points);
                                 }
+                            }
+                        }
+                    } else if (popupRef.type == "assignment") {
+                        const destination = popupRef.destination;
+                        if (destination instanceof Array) {
+                            for (let i = 0; i < destination.length; i++) {
+                                let keyPath = destination[i];
+                                keyPath = replaceUserVars(keyPath);
+                                //console.log(`keyPath = ${keyPath} mychoice = ${mychoice}`);
+                                //this.state.writeKey(keyPath, mychoice);//Not live
+                                affectModel(keyPath, mychoice);//Live
                             }
                         }
                     }

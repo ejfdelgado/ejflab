@@ -48,7 +48,17 @@ export class GenericComponent implements OnInit {
     }
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    // Si hay timeout, se configura
+    if (this.timeout > 0) {
+      setTimeout(() => {
+        this.dialogRef.close({
+          callback: this.callback,
+          choice: '', //Empty choice...
+        });
+      }, this.timeout);
+    }
+  }
 
   selectChoice(choice: string) {
     this.dialogRef.close({

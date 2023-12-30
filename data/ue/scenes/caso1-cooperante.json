@@ -21,7 +21,7 @@
             "timeout": 5000,
             "type": "knowledge",
             "destination": [
-                "points.${userid}.knowledge",
+                "${userpath}.points.knowledge",
                 "points.knowledge"
             ],
             "choices": [
@@ -38,6 +38,25 @@
                 {
                     "txt": "Incorrecta",
                     "val": "no"
+                }
+            ]
+        },
+        "busquedaseguridad": {
+            "txt": "¿Qué rol vas a desempeñar?",
+            "title": "Pregunta",
+            "timeout": 5000,
+            "type": "assignment",
+            "destination": [
+                "${userpath}.role"
+            ],
+            "choices": [
+                {
+                    "txt": "Búsqueda",
+                    "val": "busqueda"
+                },
+                {
+                    "txt": "Seguridad",
+                    "val": "seguridad"
                 }
             ]
         }
