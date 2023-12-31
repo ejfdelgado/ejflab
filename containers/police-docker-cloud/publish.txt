@@ -13,5 +13,45 @@ cd ~/desarrollo/ejflab && git pull && npm install && npm run build_local
 
 4. Se sale de ssh y se hace commit de la versión docker:
 
+exit
 docker ps
-docker commit -m "se agrega colision, popup" -p 44165409e892  ejfdelgado/policiavr:v1.88
+
+Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
+
+docker commit -m "se agrega colision, popup" -p 16bce607717f  ejfdelgado/policiavr:v1.89
+
+5. Crear el tag para subir a gcr.io
+
+docker tag ejfdelgado/policiavr:v1.89 gcr.io/ejfexperiments/policiavr:v1.89
+
+6. Subirlo a gcr.io
+
+docker push gcr.io/ejfexperiments/policiavr:v1.89
+
+6.1. Apagar la instancia de docker:
+
+docker stop 16bce607717f
+
+7. Actualizar la versión en terraform en run.tf
+
+8. Agregar credenciales de google:
+
+export GOOGLE_APPLICATION_CREDENTIALS=/home/ejfdelgado/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json
+gcloud config set project ejfexperiments
+gcloud config set account edgar.jose.fernando.delgado@gmail.com
+
+9. Desde la carpeta de terraform subir el proyecto:
+
+cd /home/ejfdelgado/desarrollo/ejflab/containers/police-docker/terra
+
+terraform apply
+
+yes
+
+Listo!
+
+Si desea ver la imagen en gcr.io:
+https://console.cloud.google.com/gcr/images/ejfexperiments/global/policiavr?hl=es&project=ejfexperiments
+
+
+
