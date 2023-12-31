@@ -1,0 +1,15 @@
+1. Levantar la instancia de docker compose:
+
+docker compose up -d
+
+2. Observar los logs de node:
+
+docker-compose logs -f police_nodejs
+
+3. Lanzar el servidor de angular
+
+npm run angular
+
+4. Ver el servidor corriendo:
+
+http://localhost:4200/uechat
