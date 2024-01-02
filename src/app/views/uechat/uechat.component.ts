@@ -303,4 +303,21 @@ export class UechatComponent implements OnInit, OnDestroy {
     const processFileThis = this.processFile.bind(this);
     this.fileService.sendRequest({ type: 'file' }, processFileThis);
   }
+
+  reloadScenario(): void {
+    this.socketService.emit(
+      'selectScenario',
+      JSON.stringify({
+        name: 'caso1-cooperante',
+      })
+    );
+  }
+
+  playScenario(): void {
+    this.socketService.emit('startGame', JSON.stringify({}));
+  }
+
+  stopScenario(): void {
+    this.socketService.emit('endGame', JSON.stringify({}));
+  }
 }

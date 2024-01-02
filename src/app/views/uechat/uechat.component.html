@@ -15,6 +15,20 @@
 
         <div style="width: 100%; display: flex; flex-direction: row; gap: 30px; margin: 10px 0px;">
             <div style="flex: 1; display: flex;">
+                <div>
+                    <button (click)="reloadScenario()" style="height: 100%;" class="mat-menu-item manito">
+                        <mat-icon>refresh</mat-icon>
+                        <span>Reload</span>
+                    </button>
+                    <button (click)="playScenario()" style="height: 100%;" class="mat-menu-item manito">
+                        <mat-icon>play_circle</mat-icon>
+                        <span>Play</span>
+                    </button>
+                    <button (click)="stopScenario()" style="height: 100%;" class="mat-menu-item manito">
+                        <mat-icon>stop_circle</mat-icon>
+                        <span>Stop</span>
+                    </button>
+                </div>
                 <input type="text" class="voice_recognition" style="flex: 1;" placeholder="voice ..."
                     [(ngModel)]="myvoice" (keyup.enter)="sendVoice()" />
             </div>

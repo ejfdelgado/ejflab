@@ -281,6 +281,7 @@ export class UnrealEngineSocket {
                 this.state.writeKey("timer", {});
                 this.state.writeKey("silences", {});
                 UnrealEngineSocket.ONE_TIME_ARROWS = {};
+                UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS = {};
                 // Inicialización
                 affectModel("st", nuevosSt);
                 setTimeout(() => {
