@@ -14,10 +14,10 @@ esperar: sleep(5000)
 esperar que no haya voz: silence()
 detectar secuencia de palabras: voice(buenos dias)
 Reproduce un sonido y espera a que acabe: call(sound, "mario-coin.mp3", "")
-touched(police:radio)
-istouched(police:radio)
-isnottouched(police:radio)
-untouched(police:radio)
+touched(police:radio) Es el flanco de subida
+istouched(police:radio) Si actualmente lo está tocando
+isnottouched(police:radio) Si actualmente no lo está tocando
+untouched(police:radio) Es el flanco de bajada
 
 Comunicación por sockets:
 
