@@ -189,6 +189,7 @@ class FlowChartDiagram {
                     }
                 }
                 // Acá van los nodos
+                let error = null;
                 for (let i = 0; i < shapes.length; i++) {
                     const shape = shapes[i];
                     const id = shape.id;
@@ -204,22 +205,37 @@ class FlowChartDiagram {
                     } else {
                         localStyle += borderPending;
                     }
+
+                    const isRectCorrect = [pos.x, pos.y, pos.width, pos.height].reduce((acum, current) => { return acum && (typeof current == "number"); }, true);
                     if (shape.type == 'box') {
-                        svgContent += `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${localStyle}"></rect>`;
+                        if (isRectCorrect) {
+                            const tempRect = `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${localStyle}"></rect>`;
+                            svgContent += tempRect;
+                        } else {
+                            error = `${shape.type} with id ${id} is malformed`;
+                        }
                     } else if (shape.type == 'ellipse') {
-                        svgContent += `<ellipse cx="${pos.x + pos.width * 0.5}" cy="${pos.y + pos.height * 0.5
-                            }" rx="${pos.width * 0.5}" ry="${pos.height * 0.5
-                            }" style="${localStyle}"></ellipse>`;
+                        if (isRectCorrect) {
+                            svgContent += `<ellipse cx="${pos.x + pos.width * 0.5}" cy="${pos.y + pos.height * 0.5
+                                }" rx="${pos.width * 0.5}" ry="${pos.height * 0.5
+                                }" style="${localStyle}"></ellipse>`;
+                        } else {
+                            error = `${shape.type} with id ${id} is malformed`;
+                        }
                     } else if (shape.type == 'rhombus') {
-                        svgContent += `<polygon points="`;
-                        svgContent += `${pos.x.toFixed(0)},${pos.y + pos.height * 0.5} `;
-                        svgContent += `${pos.x + pos.width * 0.5},${pos.y.toFixed(0)} `;
-                        svgContent += `${(pos.x + pos.width).toFixed(0)},${pos.y + pos.height * 0.5
-                            } `;
-                        svgContent += `${pos.x + pos.width * 0.5},${(
-                            pos.y + pos.height
-                        ).toFixed(0)}" `;
-                        svgContent += `style="${localStyle}"/>`;
+                        if (isRectCorrect) {
+                            svgContent += `<polygon points="`;
+                            svgContent += `${pos.x.toFixed(0)},${pos.y + pos.height * 0.5} `;
+                            svgContent += `${pos.x + pos.width * 0.5},${pos.y.toFixed(0)} `;
+                            svgContent += `${(pos.x + pos.width).toFixed(0)},${pos.y + pos.height * 0.5
+                                } `;
+                            svgContent += `${pos.x + pos.width * 0.5},${(
+                                pos.y + pos.height
+                            ).toFixed(0)}" `;
+                            svgContent += `style="${localStyle}"/>`;
+                        } else {
+                            error = `${shape.type} with id ${id} is malformed`;
+                        }
                     }
                     if (typeof shape.txt == 'string') {
                         const lines = shape.txt.split(/\n/g);
@@ -234,6 +250,9 @@ class FlowChartDiagram {
                                 }" fill="black">${line}</text>`;
                         }
                     }
+                }
+                if (error != null) {
+                    alert(error);
                 }
             }
         }

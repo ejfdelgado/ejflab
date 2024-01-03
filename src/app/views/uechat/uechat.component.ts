@@ -108,7 +108,6 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   bindDragEvents(): void {
-    console.log(`bindDragEvents`);
     if (!this.mySvgContainerRef) {
       setTimeout(() => {
         this.bindDragEvents();
