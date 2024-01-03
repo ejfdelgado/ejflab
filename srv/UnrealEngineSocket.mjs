@@ -324,6 +324,8 @@ export class UnrealEngineSocket {
                 const startedAt = this.state.readKey("st.startedAt");
                 let interval = this.state.readKey("scene.interval");
                 let collisionMemory = this.state.readKey("st.touch");
+                const collisionEngine = UnrealEngineSocket.collisionEngine;
+                collisionEngine.startSession();
                 if (!collisionMemory) {
                     collisionMemory = {};
                 }
@@ -333,6 +335,7 @@ export class UnrealEngineSocket {
                 }
                 if (currentState == null) {
                     // El juego ya terminó
+                    collisionEngine.endSession();
                     return;
                 }
                 const graph = this.state.readKey("zflowchart");
@@ -390,7 +393,6 @@ export class UnrealEngineSocket {
                                         const partes = content.split(":");
                                         const key = partes[0].trim();
                                         const objectKey = partes[1].trim();
-                                        const collisionEngine = UnrealEngineSocket.collisionEngine;
                                         let response = false;
                                         if (command == "touched") {
                                             response = collisionEngine.hadCollision(key, objectKey);
@@ -632,6 +634,7 @@ export class UnrealEngineSocket {
                 }
                 //console.log(`Escribiendo ${JSON.stringify(nuevosSt)}`);
                 affectModel("st", nuevosSt);
+                collisionEngine.endSession();
 
                 setTimeout(() => {
                     moveState();
