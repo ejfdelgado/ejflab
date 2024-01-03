@@ -558,10 +558,16 @@ export class UnrealEngineSocket {
                             if (typeof textNode == "string") {
                                 if (textNode == "fin") {
                                     forceFinish = true;
+                                    continue;
                                 }
                                 const commands = textNode.split(/\n/ig);
                                 for (let m = 0; m < commands.length; m++) {
                                     const command = commands[m];
+                                    // Si es un comentario continúa
+                                    if (/^\s*[/]{2,}/.exec(command) != null) {
+                                        console.log(`Skiping ${command}`);
+                                        continue;
+                                    }
                                     // Se valida si es un comando call{sound, param, param}
                                     const callArgs = MyTemplate.readCall(command, this.state.estado);
                                     if (callArgs.action != null) {
