@@ -16,5 +16,10 @@
         "patrulla",
         "patruya",
         "apoyo"
+    ],
+    "donde": [
+        "quien",
+        "quienes",
+        "cual"
     ]
 }

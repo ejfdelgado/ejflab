@@ -7,6 +7,9 @@ Llamados:
 call(sound, "mario-coin.mp3", "loop")
 call(mute, "noise.wav")
 popup(...)
+Asigna un valor aleatorio
+${var.admin.name} = ${o|rand:"maria":"mario"}
+
 
 Flechas:
 pregunta por valores: ${st.open} == true && sleep(5000)
