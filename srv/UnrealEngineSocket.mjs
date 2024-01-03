@@ -541,9 +541,11 @@ export class UnrealEngineSocket {
                 // Ejecución de los nodos donde llega
                 // Se hace el cambio
                 let forceFinish = false;
-                const nodosViejos = Object.keys(outputPositiveGlobal);
-                for (let i = 0; i < nodosViejos.length; i++) {
-                    const srcId = nodosViejos[i];
+                const flechasHabilitadas = Object.keys(outputPositiveGlobal);
+                // Esto asegura que no se ejecute un nodo de llegada dos veces
+                const executedNodesIds = [];
+                for (let i = 0; i < flechasHabilitadas.length; i++) {
+                    const srcId = flechasHabilitadas[i];
                     const nodosLlegada = outputPositiveGlobal[srcId];
                     // Ejecutar las acciones que existan en los nodos de llegada
 
@@ -555,67 +557,77 @@ export class UnrealEngineSocket {
                     for (let j = 0; j < nodosLlegada.length; j++) {
                         const nodoLlegada = nodosLlegada[j];
                         const theNode = findNodeById(shapes, nodoLlegada);
-                        if (["box", "ellipse", "rhombus"].indexOf(theNode.type) >= 0) {
-                            const textNode = theNode.txt;
-                            if (typeof textNode == "string") {
-                                if (textNode == "fin") {
-                                    forceFinish = true;
-                                    continue;
-                                }
-                                const commands = textNode.split(/\n/ig);
-                                for (let m = 0; m < commands.length; m++) {
-                                    const command = commands[m];
-                                    // Si es un comentario continúa
-                                    if (/^\s*[/]{2,}/.exec(command) != null) {
-                                        console.log(`Skiping ${command}`);
+                        if (executedNodesIds.indexOf(nodoLlegada) < 0) {
+                            // Esto asegura que no se ejecute un nodo de llegada dos veces
+                            executedNodesIds.push(nodoLlegada);
+                            if (["box", "ellipse", "rhombus"].indexOf(theNode.type) >= 0) {
+                                const textNode = theNode.txt;
+                                if (typeof textNode == "string") {
+                                    if (textNode == "fin") {
+                                        forceFinish = true;
                                         continue;
                                     }
-                                    // Se valida si es un comando call{sound, param, param}
-                                    const callArgs = MyTemplate.readCall(command, this.state.estado);
-                                    if (callArgs.action != null) {
-                                        // Se ejecuta la acción
-                                        //console.log(`call ${callArgs.action}`);
-                                        if (callArgs.length == 0) {
-                                            io.emit(callArgs.action, '""');
-                                        } else if (callArgs.arguments.length == 1) {
-                                            io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
-                                        } else {
-                                            io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
-                                        }
-                                    } else {
-                                        // se valida si es increase(...)
-                                        const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
-                                        if (tokensIncrease != null) {
-                                            increaseAmount(tokensIncrease[1], 1)
+                                    const commands = textNode.split(/\n/ig);
+                                    for (let m = 0; m < commands.length; m++) {
+                                        const command = commands[m];
+                                        // Si es un comentario continúa
+                                        if (/^\s*[/]{2,}/.exec(command) != null) {
+                                            console.log(`Skiping ${command}`);
                                             continue;
                                         }
-                                        const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
-                                        if (tokensPopUp != null) {
-                                            const popupKey = tokensPopUp[1].trim();
-                                            const currentValue = this.state.readKey(popupKey);
-                                            if (!currentValue) {
-                                                console.log(`Error leyendo popup de ${popupKey}`);
+                                        // Si es un comando para las flechas...
+                                        if (/^\s*choose\(([^)]+)\)/ig.exec(command) != null) {
+                                            //console.log(`Next choose only some arrows`);
+                                            continue;
+                                        }
+                                        // Se valida si es un comando call{sound, param, param}
+                                        const callArgs = MyTemplate.readCall(command, this.state.estado);
+                                        if (callArgs.action != null) {
+                                            // Se ejecuta la acción
+                                            //console.log(`call ${callArgs.action}`);
+                                            if (callArgs.length == 0) {
+                                                io.emit(callArgs.action, '""');
+                                            } else if (callArgs.arguments.length == 1) {
+                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
+                                            } else {
+                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
+                                            }
+                                        } else {
+                                            // se valida si es increase(...)
+                                            const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
+                                            if (tokensIncrease != null) {
+                                                increaseAmount(tokensIncrease[1], 1)
                                                 continue;
                                             }
-                                            // Asigno la ruta como cllbackid
-                                            currentValue.callback = popupKey;
-                                            io.emit('popupopen', JSON.stringify(currentValue));
-                                            continue;
-                                        }
-                                        // Default way to resolve node actions
-                                        const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
-                                        if (tokensCommand != null) {
-                                            const destinationVar = tokensCommand[1];
-                                            const preProcesedValue = tokensCommand[2];
-                                            const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
-                                            //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
-                                            affectModel(destinationVar, value);
+                                            const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
+                                            if (tokensPopUp != null) {
+                                                const popupKey = tokensPopUp[1].trim();
+                                                const currentValue = this.state.readKey(popupKey);
+                                                if (!currentValue) {
+                                                    console.log(`Error leyendo popup de ${popupKey}`);
+                                                    continue;
+                                                }
+                                                // Asigno la ruta como cllbackid
+                                                currentValue.callback = popupKey;
+                                                io.emit('popupopen', JSON.stringify(currentValue));
+                                                continue;
+                                            }
+                                            // Default way to resolve node actions
+                                            const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
+                                            if (tokensCommand != null) {
+                                                const destinationVar = tokensCommand[1];
+                                                const preProcesedValue = tokensCommand[2];
+                                                const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
+                                                //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
+                                                affectModel(destinationVar, value);
+                                            }
                                         }
                                     }
                                 }
                             }
+                            currentState.push(nodoLlegada);
                         }
-                        currentState.push(nodoLlegada);
+
                         //console.log(`vamos en ${JSON.stringify(currentState)}`);
                         history.push({ id: theNode.id, t: currentTime, type: "node", txt: theNode.txt });
                         // Se valida si llegó a este nodo por medio de una flecha con arrowsreset()
@@ -633,7 +645,7 @@ export class UnrealEngineSocket {
                 const nuevosSt = {
                     duration: new Date().getTime() - startedAt,
                 };
-                if (nodosViejos.length > 0) {
+                if (flechasHabilitadas.length > 0) {
                     nuevosSt.history = history;
                     nuevosSt.current = currentState;
                 }
