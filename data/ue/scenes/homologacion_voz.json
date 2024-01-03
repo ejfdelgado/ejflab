@@ -2,12 +2,22 @@
     "cinco cero cinco": [
         "cinco zero cinco"
     ],
-    "buenos dias": [
+    "buenas": [
+        "saludo",
         "buen dia",
         "buenas",
         "buenas noches",
         "buenas tardes",
         "buena tarde"
+    ],
+    "policia nacional": [],
+    "presentacion": [
+        "patrullero",
+        "patrullera",
+        "subintendente",
+        "intendente",
+        "subteniente",
+        "teniente"
     ],
     "chao": [
         "adios"
