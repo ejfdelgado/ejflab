@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-        <mxGraphModel dx="759" dy="563" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+        <mxGraphModel dx="665" dy="516" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
             <root>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-0"/>
                 <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0"/>
@@ -338,7 +338,7 @@
                 </mxCell>
                 <mxCell id="168" value="touched(police:mesero3)" style="edgeLabel;align=center;verticalAlign=middle;resizable=0;points=[];" parent="165" vertex="1" connectable="0">
                     <mxGeometry x="0.045" relative="1" as="geometry">
-                        <mxPoint x="16" y="-17" as="offset"/>
+                        <mxPoint x="64" y="10" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="167" style="edgeStyle=none;rounded=0;html=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="151" target="166" edge="1">
@@ -351,7 +351,7 @@
                         <mxPoint as="offset"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="151" value="choose(1)" style="rounded=1;whiteSpace=wrap;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
+                <mxCell id="151" value="" style="rounded=1;whiteSpace=wrap;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
                     <mxGeometry x="1558.5" y="1470" width="70" height="50" as="geometry"/>
                 </mxCell>
                 <mxCell id="153" value="" style="rounded=1;whiteSpace=wrap;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -377,6 +377,11 @@
                 <mxCell id="201" style="edgeStyle=none;rounded=0;html=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="164" target="200" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
+                <mxCell id="216" value="call(sound,&amp;nbsp;&quot;mesero3_greet${var.mesero3.greet1}.mp3&quot;,&amp;nbsp;&quot;&quot;)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="201">
+                    <mxGeometry x="0.2935" y="-1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
                 <mxCell id="164" value="${var.mesero3.greet1} = ${o|rand:1:2:3}&#10;${var.mesero3.greet2} = ${o|rand:1:2:3:4:5:6:7:8:9:10}" style="rounded=1;whiteSpace=wrap;arcSize=17;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
                     <mxGeometry x="940" y="1640" width="340" height="50" as="geometry"/>
                 </mxCell>
@@ -396,11 +401,6 @@
                             <mxPoint x="1810" y="2235"/>
                             <mxPoint x="1810" y="1500"/>
                         </Array>
-                    </mxGeometry>
-                </mxCell>
-                <mxCell id="177" value="sleep(5000)" style="edgeLabel;align=center;verticalAlign=middle;resizable=0;points=[];" parent="176" vertex="1" connectable="0">
-                    <mxGeometry x="-0.0794" y="-3" relative="1" as="geometry">
-                        <mxPoint y="16" as="offset"/>
                     </mxGeometry>
                 </mxCell>
                 <mxCell id="171" value="" style="rounded=1;whiteSpace=wrap;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
@@ -506,6 +506,11 @@
                 </mxCell>
                 <mxCell id="204" style="edgeStyle=none;rounded=0;html=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="202" target="171" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="217" value="call(sound,&amp;nbsp;&quot;mesero3_greet_ind${var.mesero3.greet2}.mp3&quot;,&amp;nbsp;&quot;&quot;)" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="204">
+                    <mxGeometry x="-0.3114" y="1" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
                 </mxCell>
                 <mxCell id="202" value="" style="rounded=1;whiteSpace=wrap;" parent="WIyWlLk6GJQsqaUBKTNV-1" vertex="1">
                     <mxGeometry x="940" y="1900" width="100" height="50" as="geometry"/>
