@@ -347,18 +347,31 @@ export class UnrealEngineSocket {
                 const outputPositiveGlobal = {};
                 const outputArrowsReset = [];
                 const currentTime = this.state.readKey("st.duration");
+                const arrowChooseGroups = {};
                 for (let i = 0; i < currentState.length; i++) {
                     const srcId = currentState[i];
                     const outputArrows = filterSourceArrowsFromSource(arrows, srcId);
                     if (outputArrows.length > 0) {
                         const silenceArrowKeys = [];
                         const timerArrowKeys = [];
+                        const temporalArrowsPositive = {};
                         let atLeastOneOutput = false;
                         let arrowsReset = false;
                         // Este nodo se debe validar si cumple al menos una salida
                         for (let j = 0; j < outputArrows.length; j++) {
                             const outputArrow = outputArrows[j];
+                            const srcNode = findNodeById(shapes, outputArrow.src);
+                            const hasChoose = /choose\((\d+)\)/ig.exec(srcNode.txt);
                             const arrowId = outputArrow.id;
+                            if (hasChoose) {
+                                if (!(arrowChooseGroups[srcNode.id])) {
+                                    arrowChooseGroups[srcNode.id] = {
+                                        n: parseInt(hasChoose[1]),
+                                        list: [],
+                                    };
+                                }
+                                arrowChooseGroups[srcNode.id].list.push(arrowId);
+                            }
                             let isOneTimeArrow = false;
                             let isGlobalOneTimeArrow = false;
                             try {
@@ -500,27 +513,36 @@ export class UnrealEngineSocket {
                                     evaluated = UnrealEngineSocket.conditionalEngine.computeIf(textoIf, this.state.estado);
                                 }
                                 if (evaluated) {
-                                    atLeastOneOutput = true;
-                                    history.push({ id: arrowId, t: currentTime, type: "arrow", txt: outputArrow.txt });
-                                    if (!(srcId in outputPositiveGlobal)) {
-                                        outputPositiveGlobal[srcId] = [];
-                                    }
-                                    outputPositiveGlobal[srcId].push(outputArrow.tar);
-                                    if (arrowsReset) {
-                                        outputArrowsReset.push(outputArrow.tar);
-                                    }
-                                    if (isOneTimeArrow) {
-                                        UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] = currentTime;
-                                        if (isGlobalOneTimeArrow) {
-                                            UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] = currentTime;
-                                        }
-                                    }
+                                    temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
                                 }
                             } catch (err) {
                                 console.log(outputArrow.txt);
                                 console.log(err);
                             }
                         }
+
+                        // Acá se podría filtrar
+                        const llavesOutputArrows = Object.keys(temporalArrowsPositive);
+                        for (let z = 0; z < llavesOutputArrows.length; z++) {
+                            const arrowId = llavesOutputArrows[z];
+                            const { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow } = temporalArrowsPositive[arrowId];
+                            atLeastOneOutput = true;
+                            history.push({ id: arrowId, t: currentTime, type: "arrow", txt: outputArrow.txt });
+                            if (!(srcId in outputPositiveGlobal)) {
+                                outputPositiveGlobal[srcId] = [];
+                            }
+                            outputPositiveGlobal[srcId].push(outputArrow.tar);
+                            if (arrowsReset) {
+                                outputArrowsReset.push(outputArrow.tar);
+                            }
+                            if (isOneTimeArrow) {
+                                UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] = currentTime;
+                                if (isGlobalOneTimeArrow) {
+                                    UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] = currentTime;
+                                }
+                            }
+                        }
+
                         if (atLeastOneOutput) {
                             // Se limpian las marcas temporales de salida
                             for (let k = 0; k < silenceArrowKeys.length; k++) {
