@@ -347,13 +347,13 @@ export class UnrealEngineSocket {
                 const outputPositiveGlobal = {};
                 const outputArrowsReset = [];
                 const currentTime = this.state.readKey("st.duration");
-                const arrowChooseGroups = {};
                 for (let i = 0; i < currentState.length; i++) {
                     const srcId = currentState[i];
                     const outputArrows = filterSourceArrowsFromSource(arrows, srcId);
                     if (outputArrows.length > 0) {
                         const silenceArrowKeys = [];
                         const timerArrowKeys = [];
+                        const arrowChooseGroups = {};
                         const temporalArrowsPositive = {};
                         let atLeastOneOutput = false;
                         let arrowsReset = false;
@@ -523,8 +523,26 @@ export class UnrealEngineSocket {
 
                         // Acá se podría filtrar
                         const llavesOutputArrows = Object.keys(temporalArrowsPositive);
+                        const llavesArrowGroups = Object.keys(arrowChooseGroups);
+                        const removedList = [];
+                        for (let z = 0; z < llavesArrowGroups.length; z++) {
+                            const llave = llavesArrowGroups[z];
+                            const arrowGroup = arrowChooseGroups[llave];
+                            const { n, list } = arrowGroup;
+                            // Debo asegurar que la lista tiene solo n elementos aleatorios
+                            while (list.length > n) {
+                                const removed = list.splice(Math.floor(Math.random() * list.length), 1);
+                                if (removed.length == 1) {
+                                    removedList.push(removed[0]);
+                                }
+                            }
+                        }
+
                         for (let z = 0; z < llavesOutputArrows.length; z++) {
                             const arrowId = llavesOutputArrows[z];
+                            if (removedList.indexOf(arrowId) >= 0) {
+                                continue;
+                            }
                             const { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow } = temporalArrowsPositive[arrowId];
                             atLeastOneOutput = true;
                             history.push({ id: arrowId, t: currentTime, type: "arrow", txt: outputArrow.txt });
