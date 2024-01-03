@@ -9,6 +9,7 @@ call(mute, "noise.wav")
 popup(...)
 Asigna un valor aleatorio
 ${var.admin.name} = ${o|rand:"maria":"mario"}
+choose(1)
 
 
 Flechas:

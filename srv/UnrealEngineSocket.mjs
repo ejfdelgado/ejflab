@@ -529,9 +529,13 @@ export class UnrealEngineSocket {
                             const llave = llavesArrowGroups[z];
                             const arrowGroup = arrowChooseGroups[llave];
                             const { n, list } = arrowGroup;
-                            // Debo asegurar que la lista tiene solo n elementos aleatorios
-                            while (list.length > n) {
-                                const removed = list.splice(Math.floor(Math.random() * list.length), 1);
+                            // 1. Hago la intersección entre list y llavesOutputArrows
+                            const intersecion = llavesOutputArrows.filter((actual) => {
+                                return list.indexOf(actual) >= 0;
+                            });
+                            // 2. Debo asegurar que la intersección tiene solo n elementos y además aleatorios
+                            while (intersecion.length > n) {
+                                const removed = intersecion.splice(Math.floor(Math.random() * intersecion.length), 1);
                                 if (removed.length == 1) {
                                     removedList.push(removed[0]);
                                 }
