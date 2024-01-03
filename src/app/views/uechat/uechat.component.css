@@ -92,3 +92,7 @@
   background-color: #d9d9ff;
   border-radius: 10px;
 }
+
+.graph_class {
+  cursor: pointer;
+}

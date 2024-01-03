@@ -22,6 +22,8 @@ import { SimpleObj } from 'srcJs/SimpleObj';
 })
 export class UechatComponent implements OnInit, OnDestroy {
   @ViewChild('mySvg') mySvgRef: ElementRef;
+  @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
+  bindDragEventsThis: any;
   graphHtml: string = '';
   modelState: any = {};
   modelStatePath: any = null;
@@ -32,6 +34,11 @@ export class UechatComponent implements OnInit, OnDestroy {
   selectedAction: SocketActions | null = null;
   messages: Array<String> = [];
   isActive: boolean = false;
+  isDragging: boolean = false;
+  firstDragX: number = 0;
+  firstDragY: number = 0;
+  firstScrollX: number = 0;
+  firstScrollY: number = 0;
   collision: any = {
     of: '',
     with: '',
@@ -46,6 +53,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.bindDragEventsThis = this.bindDragEvents.bind(this);
     const SOUNDS_ROOT = '/assets/police/sounds';
     ModuloSonido.preload([
       `${SOUNDS_ROOT}/end.mp3`,
@@ -97,6 +105,104 @@ export class UechatComponent implements OnInit, OnDestroy {
       const argumento = JSON.parse(content);
       console.log(JSON.stringify(argumento, null, 4));
     });
+  }
+
+  bindDragEvents(): void {
+    console.log(`bindDragEvents`);
+    if (!this.mySvgContainerRef) {
+      setTimeout(() => {
+        this.bindDragEvents();
+      });
+      return;
+    }
+    const mySvgContainerRef = this.mySvgContainerRef.nativeElement;
+    mySvgContainerRef.addEventListener('mousedown', this.pressEventHandler);
+    mySvgContainerRef.addEventListener('mousemove', this.dragEventHandler);
+    mySvgContainerRef.addEventListener('mouseup', this.releaseEventHandler);
+    mySvgContainerRef.addEventListener('mouseout', this.cancelEventHandler);
+
+    mySvgContainerRef.addEventListener('touchstart', this.pressEventHandler);
+    mySvgContainerRef.addEventListener('touchmove', this.dragEventHandler);
+    mySvgContainerRef.addEventListener('touchend', this.releaseEventHandler);
+    mySvgContainerRef.addEventListener('touchcancel', this.cancelEventHandler);
+  }
+
+  private pressEventHandler = (e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
+    const mySvgContainerRef = this.mySvgContainerRef.nativeElement;
+    const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
+    this.isDragging = true;
+    this.firstDragX = mouseX;
+    this.firstDragY = mouseY;
+    this.firstScrollX = mySvgContainerRef.scrollLeft;
+    this.firstScrollY = mySvgContainerRef.scrollTop;
+  };
+
+  private dragEventHandler = (e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
+    if (this.isDragging) {
+      const mySvgContainerRef = this.mySvgContainerRef.nativeElement;
+      const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
+      const differenceX = this.firstDragX - mouseX;
+      const differenceY = this.firstDragY - mouseY;
+
+      mySvgContainerRef.scrollLeft = this.firstScrollX + differenceX;
+      mySvgContainerRef.scrollTop = this.firstScrollY + differenceY;
+    }
+  };
+
+  private releaseEventHandler = (e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
+    this.isDragging = false;
+  };
+
+  private cancelEventHandler = (e: MouseEvent | TouchEvent) => {
+    e.preventDefault();
+    this.isDragging = false;
+  };
+
+  private getCoordinatesFromEvent(e: MouseEvent | TouchEvent) {
+    const source = e.target || e.srcElement;
+    const touchEvent = e as TouchEvent;
+    const mouseEvent = e as MouseEvent;
+    let mouseX = touchEvent.changedTouches
+      ? touchEvent.changedTouches[0].pageX
+      : mouseEvent.pageX;
+    let mouseY = touchEvent.changedTouches
+      ? touchEvent.changedTouches[0].pageY
+      : mouseEvent.pageY;
+    /*
+    if (source) {
+      const el = source as HTMLElement;
+      const response = this.getGlobalOffset(el);
+      if (response.x !== null) {
+        mouseX -= response.x;
+      }
+      if (response.y !== null) {
+        mouseY -= response.y;
+      }
+    }
+    */
+    return {
+      mouseX,
+      mouseY,
+    };
+  }
+
+  private getGlobalOffset(el: HTMLElement) {
+    let x = 0;
+    let y = 0;
+    x += el.offsetLeft;
+    y += el.offsetTop;
+    if (el.offsetParent) {
+      const response = this.getGlobalOffset(el.offsetParent as HTMLElement);
+      x += response.x;
+      y += response.y;
+    }
+    return {
+      x,
+      y,
+    };
   }
 
   ngOnDestroy(): void {

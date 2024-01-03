@@ -80,8 +80,8 @@
         </div>
     </div>
     <div class="content fill" *ngIf="selectedView == 'grafo'">
-        <div class="all_scroll_left">
-            <svg #mySvg class="" [innerHtml]="graphHtml"></svg>
+        <div #mySvgContainer class="all_scroll_left">
+            <svg #mySvg class="graph_class noselect" [ngInit]="bindDragEventsThis" [innerHtml]="graphHtml"></svg>
         </div>
         <div class="all_scroll_right">
             <input type="text" class="voice_recognition" placeholder="key path ..." [(ngModel)]="mypath"
