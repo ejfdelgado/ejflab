@@ -459,8 +459,8 @@ export class UnrealEngineSocket {
                                         return replaceValue;
                                     });
                                     // Se hace manejo de sleep(###)
-                                    if (/sleep\((\d+)([^)]*)\)/ig.exec(textoIf) != null) {
-                                        textoIf = textoIf.replace(/sleep\((\d+)([^)]*)\)/ig, (match, tiempo, name) => {
+                                    if (/sleep\(([^),]*)([^)]*)\)/ig.exec(textoIf) != null) {
+                                        textoIf = textoIf.replace(/sleep\(([^),]*)([^)]*)\)/ig, (match, tiempo, name) => {
                                             let arrowIdTimer = arrowId;
                                             if (typeof name == "string" && name.length > 0) {
                                                 arrowIdTimer += "_" + md5(name);
@@ -472,7 +472,9 @@ export class UnrealEngineSocket {
                                             if (!(typeof oldTimer == "number")) {
                                                 this.state.writeKey(timerKey, currentTime);
                                             }
-                                            return "${st.duration} - ${timer." + arrowIdTimer + "} > " + tiempo;
+                                            const renderedTime = this.conditionalEngine.computeIf(tiempo, this.state.estado);
+                                            //console.log(`renderedTime = ${renderedTime}`);
+                                            return "${st.duration} - ${timer." + arrowIdTimer + "} > " + renderedTime;
                                         });
                                     }
                                     // Se hace manejo de silence()
