@@ -604,6 +604,7 @@ export class UnrealEngineSocket {
                         if (executedNodesIds.indexOf(nodoLlegada) < 0) {
                             // Esto asegura que no se ejecute un nodo de llegada dos veces
                             executedNodesIds.push(nodoLlegada);
+                            let esNodoDeFinalizacion = false;
                             if (["box", "ellipse", "rhombus"].indexOf(theNode.type) >= 0) {
                                 const textNode = theNode.txt;
                                 if (typeof textNode == "string") {
@@ -617,6 +618,10 @@ export class UnrealEngineSocket {
                                         // Si es un comentario continúa
                                         if (/^\s*[/]{2,}/.exec(command) != null) {
                                             console.log(`Skiping ${command}`);
+                                            continue;
+                                        }
+                                        if (/^\s*ok\s*$/.exec(command) != null) {
+                                            esNodoDeFinalizacion = true;
                                             continue;
                                         }
                                         // Si es un comando para las flechas...
@@ -669,7 +674,9 @@ export class UnrealEngineSocket {
                                     }
                                 }
                             }
-                            currentState.push(nodoLlegada);
+                            if (!esNodoDeFinalizacion) {
+                                currentState.push(nodoLlegada);
+                            }
                         }
 
                         //console.log(`vamos en ${JSON.stringify(currentState)}`);
