@@ -36,7 +36,7 @@
                 <input type="text" style="flex: 2;" class="voice_recognition" placeholder="collision source ..."
                     [(ngModel)]="collision.of" />
                 <input type="text" style="flex: 2;" class="voice_recognition" placeholder="collision target ... "
-                    [(ngModel)]="collision.with" />
+                    [(ngModel)]="collision.with" (keyup.enter)="collide()" />
                 <button (click)="collide()" style="flex: 1;" class="mat-menu-item manito">
                     <mat-icon>touch_app</mat-icon>
                     <span>On</span>
