@@ -1,6 +1,6 @@
 1. Se lanza la última versión correcta:
 
-docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.88
+docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.89
 
 2. Se ingresa por ssh para actualizar el código:
 
@@ -18,19 +18,19 @@ docker ps
 
 Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
 
-docker commit -m "se agrega colision, popup" -p 16bce607717f  ejfdelgado/policiavr:v1.89
+docker commit -m "se avanza primer guión" -p 6c3b1eb234e4  ejfdelgado/policiavr:v1.90
 
 5. Crear el tag para subir a gcr.io
 
-docker tag ejfdelgado/policiavr:v1.89 gcr.io/ejfexperiments/policiavr:v1.89
+docker tag ejfdelgado/policiavr:v1.90 gcr.io/ejfexperiments/policiavr:v1.90
 
 6. Subirlo a gcr.io
 
-docker push gcr.io/ejfexperiments/policiavr:v1.89
+docker push gcr.io/ejfexperiments/policiavr:v1.90
 
 6.1. Apagar la instancia de docker:
 
-docker stop 16bce607717f
+docker stop 6c3b1eb234e4
 
 7. Actualizar la versión en terraform en run.tf
 
