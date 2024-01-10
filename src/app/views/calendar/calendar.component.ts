@@ -39,14 +39,43 @@ export interface MiDia {
   styleUrls: ['./calendar.component.css'],
 })
 export class CalendarComponent implements OnInit {
-  anio: number = 2023;
+  anio: number = new Date().getFullYear();
   esPar: boolean = true;
   weekEven: boolean = true;
   titulos: Array<MiMes> = [];
   dias: Array<MiDia> = [];
   festivos: { [key: number]: { [key: number]: { [key: number]: boolean } } } = {
     2022: {},
-    2024: {},
+    2024: {
+      //Enero
+      1: { 1: true, 8: true },
+      //Febrero
+      2: {},
+      //marzo
+      3: {
+        25: true,
+        28: true,
+        29: true,
+      },
+      //abril
+      4: {},
+      //mayo
+      5: { 1: true, 13: true },
+      //junio
+      6: { 3: true, 10: true },
+      //julio
+      7: { 1: true, 20: true },
+      //agosto
+      8: { 7: true, 19: true },
+      //septiembre
+      9: {},
+      //octubre
+      10: { 14: true },
+      //noviembre
+      11: { 4: true, 11: true },
+      //diciembre
+      12: { 8: true, 25: true },
+    },
     2023: {
       //Enero
       1: { 1: true, 9: true },
@@ -98,6 +127,45 @@ export class CalendarComponent implements OnInit {
     this.calendarios.push({
       label: 'Jardín',
       dates: {
+        2024: {
+          1: {},
+          2: {
+            9: { txt: '2 Open Day' },
+          },
+          3: {
+            //marzo
+          },
+          4: {
+            //abril
+            19: { txt: '3 Open Day' },
+          },
+          5: {
+            //mayo
+          },
+          6: {
+            //junio
+            21: { txt: 'Último día de clases' },
+            24: { txt: 'Open Day' },
+          },
+          7: {
+            //julio
+          },
+          8: {
+            //agosto
+          },
+          9: {
+            //septiembre
+          },
+          10: {
+            //octubre
+          },
+          11: {
+            //noviembre
+          },
+          12: {
+            //diciembre
+          },
+        },
         2023: {
           1: {
             // Enero

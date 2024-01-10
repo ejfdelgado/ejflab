@@ -47,8 +47,10 @@
     "donde": [
         "dnde",
         "quien",
+        "quines",
         "quienes",
-        "cual"
+        "cual",
+        "cuales"
     ],
     "apague musica": [
         "enjuague msica",
@@ -58,13 +60,26 @@
         "apaguen la msica"
     ],
     "prenda luces": [
+        "entienda la luz",
         "entiendan las luces",
+        "encienda la luz",
+        "encienda las luces",
+        "enciendan las luces",
         "prenda las luces",
+        "prenda la luz",
         "prendan las luces",
         "brenda luces",
+        "brindarn las luces",
+        "brindarn luces",
+        "brenda luz",
+        "brenda la luz",
         "greta luces",
+        "greta la luz",
         "brenda las luces",
         "brendan las luces",
         "greta las luces"
+    ],
+    "administrador": [
+        "dministrador"
     ]
 }

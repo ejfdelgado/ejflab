@@ -25,3 +25,6 @@ node_modules
 bin
 bin-local
 bin-docker
+
+src/assets/police
+src/assets/video
