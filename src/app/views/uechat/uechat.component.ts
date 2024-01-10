@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { DictateService } from 'src/services/dictate-service';
 import { FileResponseData, FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
@@ -19,6 +20,7 @@ import { SimpleObj } from 'srcJs/SimpleObj';
   selector: 'app-uechat',
   templateUrl: './uechat.component.html',
   styleUrls: ['./uechat.component.css'],
+  providers: [DictateService]
 })
 export class UechatComponent implements OnInit, OnDestroy {
   @ViewChild('mySvg') mySvgRef: ElementRef;
@@ -43,13 +45,15 @@ export class UechatComponent implements OnInit, OnDestroy {
     of: '',
     with: '',
   };
+  buttonText = 'On';
 
   constructor(
     public socketService: UeSocketService,
     public cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     public fileService: FileService,
-    private modalSrv: ModalService
+    private modalSrv: ModalService,
+    private dictateService: DictateService
   ) {}
 
   ngOnInit(): void {
@@ -57,7 +61,6 @@ export class UechatComponent implements OnInit, OnDestroy {
     const SOUNDS_ROOT = '/assets/police/sounds';
     ModuloSonido.preload([
       `${SOUNDS_ROOT}/end.mp3`,
-      `${SOUNDS_ROOT}/noise.wav`,
       `${SOUNDS_ROOT}/finish.mp3`,
       `${SOUNDS_ROOT}/mario-coin.mp3`,
     ]);
@@ -424,5 +427,33 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   stopScenario(): void {
     this.socketService.emit('endGame', JSON.stringify({}));
+  }
+
+  switchSpeechRecognition() {
+    if (!this.dictateService.isInitialized()) {
+      this.dictateService.init({
+        server: "ws://localhost:2700",
+        onResults: (hyp: any) => {
+          //console.log(hyp);
+        },
+        onPartialResults: (hyp: any) => {
+          //console.log(hyp);
+          this.socketService.emit('voice', JSON.stringify(hyp));
+        },
+        onError: (code: any, data: any) => {
+          console.log(code, data);
+        },
+        onEvent: (code: any, data: any) => {
+          //console.log(code, data);
+        }
+      });
+      this.buttonText = 'Off';
+    } else if (this.dictateService.isRunning()) {
+      this.dictateService.resume();
+      this.buttonText = 'Off';
+    } else {
+      this.dictateService.pause();
+      this.buttonText = 'On';
+    }
   }
 }
