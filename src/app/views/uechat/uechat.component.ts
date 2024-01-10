@@ -46,6 +46,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     with: '',
   };
   buttonText = 'On';
+  partialSpeechToText: null | string = '';
 
   constructor(
     public socketService: UeSocketService,
@@ -434,11 +435,20 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.dictateService.init({
         server: "ws://localhost:2700",
         onResults: (hyp: any) => {
-          //console.log(hyp);
-        },
-        onPartialResults: (hyp: any) => {
-          //console.log(hyp);
+          //console.log(`result ${hyp}`);
+          this.partialSpeechToText = null;
           this.socketService.emit('voice', JSON.stringify(hyp));
+        },
+        onPartialResults: (hyp: string) => {
+          //console.log(`partial ${hyp}`);
+          let nuevo = '';
+          if (this.partialSpeechToText == null) {
+            nuevo = hyp;
+          } else {
+            // get substring
+            nuevo = hyp.substring(this.partialSpeechToText.length, hyp.length);
+          }
+          this.partialSpeechToText = nuevo;
         },
         onError: (code: any, data: any) => {
           console.log(code, data);
