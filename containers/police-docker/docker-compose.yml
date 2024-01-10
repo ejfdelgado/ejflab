@@ -99,7 +99,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "8082:3000"
+      - ${NODE_PORT}
       - "2220:22"
     depends_on:
       - police_mysql

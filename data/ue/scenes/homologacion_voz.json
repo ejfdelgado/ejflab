@@ -2,6 +2,21 @@
     "cinco cero cinco": [
         "cinco zero cinco"
     ],
+    "cinco ventitres": [
+        "cinco veintitrs",
+        "cencoex eintitrs",
+        "cinco o veintitrs",
+        "se nco veintitrs",
+        "cinco eintitrs",
+        "cinco o veintitrs"
+    ],
+    "cincuenta y cuatro": [
+        "se ncuenta y cuatro",
+        "sencuenta y cuatro"
+    ],
+    "nada mas": [
+        "nada ms"
+    ],
     "buenas": [
         "saludo",
         "buen dia",
@@ -10,7 +25,9 @@
         "buenas tardes",
         "buena tarde"
     ],
-    "policia nacional": [],
+    "policia nacional": [
+        "polica nacional"
+    ],
     "presentacion": [
         "patrullero",
         "patrullera",
@@ -28,11 +45,26 @@
         "apoyo"
     ],
     "donde": [
+        "dnde",
         "quien",
         "quienes",
         "cual"
     ],
     "apague musica": [
-        "apague msica"
+        "enjuague msica",
+        "apague msica",
+        "apaguen msica",
+        "apague la msica",
+        "apaguen la msica"
+    ],
+    "prenda luces": [
+        "entiendan las luces",
+        "prenda las luces",
+        "prendan las luces",
+        "brenda luces",
+        "greta luces",
+        "brenda las luces",
+        "brendan las luces",
+        "greta las luces"
     ]
 }

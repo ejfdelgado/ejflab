@@ -20,7 +20,7 @@ import { SimpleObj } from 'srcJs/SimpleObj';
   selector: 'app-uechat',
   templateUrl: './uechat.component.html',
   styleUrls: ['./uechat.component.css'],
-  providers: [DictateService]
+  providers: [DictateService],
 })
 export class UechatComponent implements OnInit, OnDestroy {
   @ViewChild('mySvg') mySvgRef: ElementRef;
@@ -433,14 +433,13 @@ export class UechatComponent implements OnInit, OnDestroy {
   switchSpeechRecognition() {
     if (!this.dictateService.isInitialized()) {
       this.dictateService.init({
-        server: "ws://localhost:2700",
+        server: 'ws://localhost:2700',
         onResults: (hyp: any) => {
           //console.log(`result ${hyp}`);
           this.partialSpeechToText = null;
-          this.socketService.emit('voice', JSON.stringify(hyp));
+          //this.socketService.emit('voice', JSON.stringify(hyp));
         },
         onPartialResults: (hyp: string) => {
-          //console.log(`partial ${hyp}`);
           let nuevo = '';
           if (this.partialSpeechToText == null) {
             nuevo = hyp;
@@ -448,14 +447,18 @@ export class UechatComponent implements OnInit, OnDestroy {
             // get substring
             nuevo = hyp.substring(this.partialSpeechToText.length, hyp.length);
           }
-          this.partialSpeechToText = nuevo;
+          this.partialSpeechToText = hyp;
+          //console.log(`partial ${nuevo}`);
+          if (nuevo.trim().length > 0) {
+            this.socketService.emit('voice', JSON.stringify(nuevo));
+          }
         },
         onError: (code: any, data: any) => {
           console.log(code, data);
         },
         onEvent: (code: any, data: any) => {
           //console.log(code, data);
-        }
+        },
       });
       this.buttonText = 'Off';
     } else if (this.dictateService.isRunning()) {

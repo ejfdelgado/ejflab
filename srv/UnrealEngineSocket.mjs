@@ -894,6 +894,7 @@ export class UnrealEngineSocket {
                 if (redaccion == null) {
                     return false;
                 }
+                //console.log(`redaccion = ${redaccion} vs ${llave}`);
                 const homologacion = UnrealEngineSocket.HOMOLOGACION_VOZ;
                 if (redaccion.indexOf(llave) >= 0) {
                     return true;
@@ -902,6 +903,7 @@ export class UnrealEngineSocket {
                 if (alternativas instanceof Array) {
                     for (let i = 0; i < alternativas.length; i++) {
                         const alternativa = alternativas[i];
+                        //console.log(`redaccion = ${redaccion} vs ${alternativa}`);
                         if (redaccion.indexOf(alternativa) >= 0) {
                             return true;
                         }
