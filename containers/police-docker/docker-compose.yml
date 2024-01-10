@@ -1,4 +1,6 @@
 version: "3"
+# $ENV:HOME = 'c:/Users/MT DIAMOND'
+# echo $ENV:HOME
 # docker compose up -d
 # docker compose down
 # docker-compose logs -f police_nodejs
@@ -10,7 +12,7 @@ version: "3"
 # docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
 # NodeServer: http://127.0.0.1:8081/uechat
 # MySqlDatabase: http://localhost:8083/
-# MySqlDatabase: http://localhost:2700/
+# Server speech to text: http://localhost:2700/
 # ssh root@<your_IP_address>
 
 networks:
@@ -97,7 +99,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     ports:
-      - "8081:3000"
+      - "8082:3000"
       - "2220:22"
     depends_on:
       - police_mysql
