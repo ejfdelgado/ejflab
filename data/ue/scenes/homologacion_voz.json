@@ -1,22 +1,13 @@
 {
-    "cinco cero cinco": [
-        "cinco zero cinco"
-    ],
+    "cinco cero cinco": [],
     "cinco ventitres": [
-        "cinco veintitrs",
-        "cencoex eintitrs",
-        "cinco o veintitrs",
         "se nco veintitrs",
-        "cinco eintitrs",
         "cinco o veintitrs"
     ],
     "cincuenta y cuatro": [
-        "se ncuenta y cuatro",
-        "sencuenta y cuatro"
+        "se ncuenta y cuatro"
     ],
-    "nada mas": [
-        "nada ms"
-    ],
+    "nada mas": [],
     "buenas": [
         "saludo",
         "buen dia",
@@ -25,9 +16,7 @@
         "buenas tardes",
         "buena tarde"
     ],
-    "policia nacional": [
-        "polica nacional"
-    ],
+    "policia nacional": [],
     "presentacion": [
         "patrullero",
         "patrullera",
@@ -41,11 +30,9 @@
     ],
     "patrulla de apoyo": [
         "patrulla",
-        "patruya",
         "apoyo"
     ],
     "donde": [
-        "dnde",
         "quien",
         "quines",
         "quienes",
@@ -53,33 +40,16 @@
         "cuales"
     ],
     "apague musica": [
-        "enjuague msica",
-        "apague msica",
-        "apaguen msica",
-        "apague la msica",
-        "apaguen la msica"
+        "apague la musica",
+        "apaguen la musica"
     ],
     "prenda luces": [
-        "entienda la luz",
-        "entiendan las luces",
-        "encienda la luz",
-        "encienda las luces",
-        "enciendan las luces",
-        "prenda las luces",
-        "prenda la luz",
+        "huyendo a las luces",
         "prendan las luces",
-        "brenda luces",
-        "brindarn las luces",
-        "brindarn luces",
-        "brenda luz",
-        "brenda la luz",
-        "greta luces",
-        "greta la luz",
-        "brenda las luces",
-        "brendan las luces",
-        "greta las luces"
+        "encienda luces",
+        "enciendan las luces"
     ],
     "administrador": [
-        "dministrador"
+        "administradora"
     ]
 }

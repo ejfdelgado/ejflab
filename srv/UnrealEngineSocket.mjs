@@ -34,12 +34,35 @@ export class UnrealEngineSocket {
     static state = new UnrealEngineState();
     static conditionalEngine = new MyTemplate();
     static HOMOLOGACION_VOZ = {};
+    static SINONIMOS_VOZ = {};
     static ONE_TIME_ARROWS = {};
     static GLOBAL_ONE_TIME_ARROWS = {};
     static collisionEngine = new CollisionsEngine();
 
+    static preprocessSinonimosVoz = (sinonimos) => {
+        const result = {};
+        // Debo iterar las llaves
+        const llaves = Object.keys(sinonimos);
+        for (let i = 0; i < llaves.length; i++) {
+            const llave = llaves[i];
+            const lista = sinonimos[llave];
+            for (let j = 0; j < lista.length; j++) {
+                const palabraFea = lista[j];
+                result[palabraFea] = llave;
+            }
+        }
+        return result;
+    };
+
     static {
         UnrealEngineSocket.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
+        // Se cargan las homologaciones de voz
+        UnrealEngineSocket.reloadVoiceHelpers();
+    }
+
+    static async reloadVoiceHelpers() {
+        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/homologacion_voz.json"));
+        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/sinonimos_voz.json")));
     }
 
     static async getDataBaseClient() {
@@ -727,8 +750,6 @@ export class UnrealEngineSocket {
                         throw "Debe seleccionar al menos dos participantes";
                     }
                     */
-                    // Se cargan las homologaciones de voz
-                    UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/homologacion_voz.json"));
                     //console.log(JSON.stringify(UnrealEngineSocket.HOMOLOGACION_VOZ));
                     console.log("Starting game...");
 
@@ -783,7 +804,12 @@ export class UnrealEngineSocket {
                     // crear objeto con fecha
                     const ahora = this.state.readKey("st.duration");
                     for (let i = 0; i < tokens.length; i++) {
-                        const token = tokens[i];
+                        let token = tokens[i];
+                        // Se homologa de lo feo a lo que tiene sentido
+                        if (token in UnrealEngineSocket.SINONIMOS_VOZ) {
+                            console.log(`${token} => ${UnrealEngineSocket.SINONIMOS_VOZ[token]}`);
+                            token = UnrealEngineSocket.SINONIMOS_VOZ[token];
+                        }
                         if (token.trim().length > 0) {
                             voiceHistory.push({
                                 t: ahora,
