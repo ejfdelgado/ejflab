@@ -10,6 +10,7 @@ version: "3"
 # docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
 # NodeServer: http://127.0.0.1:8081/uechat
 # MySqlDatabase: http://localhost:8083/
+# MySqlDatabase: http://localhost:2700/
 # ssh root@<your_IP_address>
 
 networks:
@@ -33,6 +34,16 @@ volumes:
       device: "${HOME}${FOLDER_NODEAPP}"
 
 services:
+
+  police_speech_to_text:
+    image: alphacep/kaldi-es:latest
+    ports:
+      - "2700:2700"
+    networks:
+      mysql-phpmyadmin:
+        aliases:
+          - police_speech_to_text
+
   police_mysql:
     image: mysql:8.0
     container_name: mysql
