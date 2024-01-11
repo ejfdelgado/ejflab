@@ -5,11 +5,10 @@
     "cincuenta": [
         "sencuenta"
     ],
-    "mas": [
-        "ms"
-    ],
-    "donde": [
-        "dnde"
+    "mas": [],
+    "donde": [],
+    "estan": [
+        "esta"
     ],
     "apague": [
         "enjuague"
@@ -33,17 +32,13 @@
         "brendan",
         "gretan"
     ],
-    "musica": [
-        "msica"
-    ],
+    "musica": [],
     "administrador": [
-        "dministrador"
+        "dministrador",
+        "administrar"
     ],
     "ventitres": [
-        "veintitrs",
-        "eintitrs"
+        "eintitres"
     ],
-    "policia": [
-        "polica"
-    ]
+    "policia": []
 }

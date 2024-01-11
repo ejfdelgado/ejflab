@@ -1,8 +1,8 @@
 {
     "cinco cero cinco": [],
     "cinco ventitres": [
-        "se nco veintitrs",
-        "cinco o veintitrs"
+        "se nco veintitres",
+        "cinco eintitres"
     ],
     "cincuenta y cuatro": [
         "se ncuenta y cuatro"
@@ -36,6 +36,7 @@
     ],
     "quienes": [
         "donde estan las personas",
+        "donde estan n las personas",
         "quien",
         "quines",
         "quienes",
@@ -43,6 +44,8 @@
         "cuales son"
     ],
     "apague musica": [
+        "apaga la musica",
+        "apaga musica",
         "apague la musica",
         "apaguen la musica"
     ],
@@ -50,16 +53,23 @@
         "huyendo a las luces",
         "prendan las luces",
         "encienda luces",
-        "enciendan las luces"
+        "enciendan las luces",
+        "prende luces",
+        "prende las luces",
+        "prende la luz",
+        "prende luz"
     ],
     "administrador": [
         "administradora"
     ],
     "salidas emergencia": [
         "salida de emergencia",
+        "salida emergencia",
         "salidas de emergencia"
     ],
     "propietario": [
-        "propietaria"
+        "propietaria",
+        "dueña",
+        "dueño"
     ]
 }

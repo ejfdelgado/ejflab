@@ -802,7 +802,9 @@ export class UnrealEngineSocket {
                         voiceHistory = [];
                     }
                     // reemplazar todo lo que no es texto con vacio
-                    const sanitized = payload.toLowerCase().replace(/[^a-zA-Z\s]/ig, '').replace(/\s{2,}/, " ");
+                    let sanitized = payload.toLowerCase();
+                    sanitized = sanitized.replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u");
+                    sanitized = sanitized.replace(/[^a-zñ\s]/ig, '').replace(/\s{2,}/, " ");
                     // partir en tokens
                     const tokens = sanitized.split(/\s/);
                     // crear objeto con fecha

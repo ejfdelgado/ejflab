@@ -1,7 +1,7 @@
 {
     "scene": {
         "id": 1,
-        "type": "cooperante-no",
+        "type": "cooperante-si",
         "name": "Bar la 20",
         "interval": 500,
         "voz_segundos_buffer": 5,
