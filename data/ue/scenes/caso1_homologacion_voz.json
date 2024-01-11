@@ -34,12 +34,13 @@
         "patrulla",
         "apoyo"
     ],
-    "donde": [
+    "quienes": [
+        "donde estan las personas",
         "quien",
         "quines",
         "quienes",
-        "cual",
-        "cuales"
+        "cual es",
+        "cuales son"
     ],
     "apague musica": [
         "apague la musica",
