@@ -810,13 +810,17 @@ export class UnrealEngineSocket {
                     // crear objeto con fecha
                     const ahora = this.state.readKey("st.duration");
                     for (let i = 0; i < tokens.length; i++) {
-                        let token = tokens[i];
+                        let token = tokens[i].trim();
                         // Se homologa de lo feo a lo que tiene sentido
                         if (token in UnrealEngineSocket.SINONIMOS_VOZ) {
-                            console.log(`${token} => ${UnrealEngineSocket.SINONIMOS_VOZ[token]}`);
+                            // console.log(`${token} => ${UnrealEngineSocket.SINONIMOS_VOZ[token]}`);
                             token = UnrealEngineSocket.SINONIMOS_VOZ[token];
                         }
-                        if (token.trim().length > 0) {
+                        if (token.length > 0) {
+                            if (token.length == 1 && ["y", "o", "a"].indexOf(token) < 0) {
+                                // De una sola letra solo se acepta y/o/a
+                                continue;
+                            }
                             voiceHistory.push({
                                 t: ahora,
                                 d: token,
