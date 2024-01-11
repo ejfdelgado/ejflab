@@ -53,5 +53,12 @@
     ],
     "administrador": [
         "administradora"
+    ],
+    "salidas emergencia": [
+        "salida de emergencia",
+        "salidas de emergencia"
+    ],
+    "propietario": [
+        "propietaria"
     ]
 }

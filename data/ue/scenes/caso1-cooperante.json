@@ -5,7 +5,9 @@
         "name": "Bar la 20",
         "interval": 500,
         "voz_segundos_buffer": 5,
-        "flowchart": "caso1.drawio"
+        "flowchart": "caso1.drawio",
+        "homologacion_voz": "caso1_homologacion_voz.json",
+        "sinonimos_voz": "caso1_sinonimos_voz.json"
     },
     "st": {
         "duration": 0,

@@ -57,12 +57,14 @@ export class UnrealEngineSocket {
     static {
         UnrealEngineSocket.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
         // Se cargan las homologaciones de voz
-        UnrealEngineSocket.reloadVoiceHelpers();
     }
 
-    static async reloadVoiceHelpers() {
-        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/homologacion_voz.json"));
-        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile("./data/ue/scenes/sinonimos_voz.json")));
+    //UnrealEngineSocket.reloadVoiceHelpers("homologacion_voz.json", "caso1_sinonimos_voz.json");
+    static async reloadVoiceHelpers(homologacionFile, sinonimosFile) {
+        console.log(`Loading voice helpers ${homologacionFile} ${sinonimosFile}...`);
+        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile(`./data/ue/scenes/${homologacionFile}`));
+        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile(`./data/ue/scenes/${sinonimosFile}`)));
+        console.log("Voice helpers ok!");
     }
 
     static async getDataBaseClient() {
@@ -226,6 +228,8 @@ export class UnrealEngineSocket {
             const selectScenarioEventHandler = async (payload) => {
                 try {
                     const modelo = await this.state.loadState(payload.name);
+
+                    await UnrealEngineSocket.reloadVoiceHelpers(modelo?.scene?.homologacion_voz || "homologacion_voz.json", modelo?.scene?.sinonimos_voz || "caso1_sinonimos_voz.json");
                     // Se envia la raíz del estado para ser reemplazado.
                     io.emit('stateChanged', JSON.stringify({
                         key: "",
