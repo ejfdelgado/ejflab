@@ -229,10 +229,13 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   setPath() {
-    if (this.mypath == '') {
+    if (this.mypath.trim() == '') {
       this.modelStatePath = this.modelState;
     } else {
-      this.modelStatePath = SimpleObj.getValue(this.modelState, this.mypath);
+      this.modelStatePath = SimpleObj.getValue(
+        this.modelState,
+        this.mypath.trim()
+      );
     }
     if (this.modelStatePath == undefined) {
       this.modelStatePath = null;

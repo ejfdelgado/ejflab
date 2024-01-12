@@ -71,5 +71,29 @@
         "propietaria",
         "dueña",
         "dueño"
+    ],
+    "registropersonas": [
+        "registro a personas",
+        "registro personas",
+        "registro personal",
+        "suelten",
+        "se levantan",
+        "se levanta",
+        "levantense",
+        "levantense",
+        "silencio",
+        "media vuelta",
+        "manos detras",
+        "manos atras",
+        "manos a atras",
+        "entrelace dedos",
+        "entre lacen los dedos",
+        "entre lazan los dedos"
+    ],
+    "documentosidentificacion": [
+        "documentos",
+        "identificacion",
+        "y dentificacion",
+        "papeles"
     ]
 }
