@@ -95,5 +95,12 @@
         "identificacion",
         "y dentificacion",
         "papeles"
+    ],
+    "indagacionpolicia": [
+        "problema",
+        "que paso"
+    ],
+    "se retiran": [
+        "se retira"
     ]
 }
