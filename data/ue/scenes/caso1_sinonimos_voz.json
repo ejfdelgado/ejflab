@@ -11,26 +11,25 @@
         "esta"
     ],
     "apague": [
-        "enjuague"
-    ],
-    "apaguen": [
+        "enjuague",
+        "apaguen",
         "enjuaguen"
     ],
     "encienda": [
-        "entienda"
-    ],
-    "enciendan": [
+        "entienda",
+        "enciendan",
         "entiendan"
     ],
     "prenda": [
         "brenda",
-        "greta"
-    ],
-    "prendan": [
+        "greta",
+        "prendan",
+        "prenderan",
         "prendas",
         "brindarn",
         "brendan",
-        "gretan"
+        "gretan",
+        "prende"
     ],
     "musica": [],
     "administrador": [
@@ -43,5 +42,8 @@
     "policia": [],
     "dueño": [
         "dwayne"
+    ],
+    "luces": [
+        "uces"
     ]
 }

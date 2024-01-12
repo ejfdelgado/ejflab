@@ -512,9 +512,14 @@ export class UnrealEngineSocket {
                                             if (!(typeof oldTimer == "number")) {
                                                 this.state.writeKey(timerKey, currentTime);
                                             }
-                                            const renderedTime = this.conditionalEngine.computeIf(tiempo, this.state.estado);
-                                            //console.log(`renderedTime = ${renderedTime}`);
-                                            return "${st.duration} - ${timer." + arrowIdTimer + "} > " + renderedTime;
+                                            try {
+                                                const renderedTime = this.conditionalEngine.computeIf(tiempo, this.state.estado);
+                                                //console.log(`renderedTime = ${renderedTime}`);
+                                                return "${st.duration} - ${timer." + arrowIdTimer + "} > " + renderedTime;
+                                            } catch (err1) {
+                                                io.to(socket.id).emit('personalChat', sortify(serializeError(err1)));
+                                                return "false";
+                                            }
                                         });
                                     }
                                     // Se hace manejo de silence()
@@ -529,7 +534,7 @@ export class UnrealEngineSocket {
                                         }
                                     }
                                     // Se hace manejo de voice(...)
-                                    textoIf = textoIf.replace(/voice\(([^)]+)\)/ig, (wholeMatch, searchedText) => {
+                                    textoIf = textoIf.replace(/voice\(([^)]*)\)/ig, (wholeMatch, searchedText) => {
                                         // Se debe validar si este texto existe en el record de voz
                                         if (voiceDetection(searchedText)) {
                                             return "true";
@@ -543,10 +548,11 @@ export class UnrealEngineSocket {
                                     temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
                                 }
                             } catch (err) {
-                                console.log(outputArrow.txt);
-                                console.log(err);
+                                io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                             }
                         }
+
+
 
                         // Acá se podría filtrar
                         const llavesOutputArrows = Object.keys(temporalArrowsPositive);
@@ -693,9 +699,13 @@ export class UnrealEngineSocket {
                                             if (tokensCommand != null) {
                                                 const destinationVar = tokensCommand[1];
                                                 const preProcesedValue = tokensCommand[2];
-                                                const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
-                                                //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
-                                                affectModel(destinationVar, value);
+                                                try {
+                                                    const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
+                                                    //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
+                                                    affectModel(destinationVar, value);
+                                                } catch (err1) {
+                                                    io.to(socket.id).emit('personalChat', sortify(serializeError(err1)));
+                                                }
                                             }
                                         }
                                     }
@@ -929,6 +939,10 @@ export class UnrealEngineSocket {
                 //console.log(`detection ${llave} en ${redaccion}`);
                 if (redaccion == null) {
                     return false;
+                }
+                if (llave.trim().length == 0) {
+                    // Si era vacío lo que tenía que buscar y hay algo de redacción, entonces es true
+                    return true;
                 }
                 //console.log(`redaccion = ${redaccion} vs ${llave}`);
                 const homologacion = UnrealEngineSocket.HOMOLOGACION_VOZ;
