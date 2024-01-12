@@ -17,9 +17,30 @@
     },
     "players": {},
     "popups": {
+        "ingreso": {
+            "title": "Prueba de conocimiento",
+            "txt": "¿Para ingresar al establecimiento público necesita autorización del administrador?",
+            "timeout": 10000,
+            "type": "knowledge",
+            "destination": [
+                "${userpath}.points.test_ingreso",
+                "points.test_ingreso"
+            ],
+            "choices": [
+                {
+                    "txt": "No",
+                    "val": "ok",
+                    "points": 1
+                },
+                {
+                    "txt": "Sí",
+                    "val": "no"
+                }
+            ]
+        },
         "wellcome": {
-            "txt": "Bienvenido amigo",
             "title": "Información",
+            "txt": "Bienvenido amigo",
             "timeout": 5000,
             "type": "knowledge",
             "destination": [
@@ -44,8 +65,8 @@
             ]
         },
         "busquedaseguridad": {
-            "txt": "¿Qué rol vas a desempeñar?",
             "title": "Pregunta",
+            "txt": "¿Qué rol vas a desempeñar?",
             "timeout": 5000,
             "type": "assignment",
             "destination": [

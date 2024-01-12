@@ -975,6 +975,10 @@ export class UnrealEngineSocket {
 
                 // De lo contrario lo filtra
                 let { changes, voiceHistoryFiltered } = filterVoiceGap(voiceHistory);
+                // Si está vacio el gap
+                if (voiceHistoryFiltered.length == 0) {
+                    return null;
+                }
                 if (changes) {
                     voiceHistory = voiceHistoryFiltered;
                 }

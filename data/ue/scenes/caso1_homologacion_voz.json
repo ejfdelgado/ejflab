@@ -1,5 +1,7 @@
 {
-    "cinco cero cinco": [],
+    "cinco cero cinco": [
+        "sin co cero cinco"
+    ],
     "cinco ventitres": [
         "se nco veintitres",
         "cinco eintitres"
@@ -45,6 +47,10 @@
     ],
     "apague musica": [
         "apaga la musica",
+        "apagar la musica",
+        "apagar musica",
+        "apagas la musica",
+        "apagas musica",
         "apaga musica",
         "apague la musica"
     ],
