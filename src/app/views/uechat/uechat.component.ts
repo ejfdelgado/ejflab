@@ -50,7 +50,6 @@ export class UechatComponent implements OnInit, OnDestroy {
   buttonText = 'On';
   partialSpeechToText: null | string = '';
   currentImage = '';
-  pointsImage = '';
 
   constructor(
     public socketService: UeSocketService,
@@ -117,8 +116,6 @@ export class UechatComponent implements OnInit, OnDestroy {
       const argumento = JSON.parse(content);
       if (argumento[1] == 'main') {
         this.currentImage = argumento[0];
-      } else if (argumento[1] == 'points') {
-        this.pointsImage = argumento[0];
       }
     });
   }
