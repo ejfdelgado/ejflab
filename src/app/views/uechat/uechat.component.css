@@ -96,3 +96,24 @@
 .graph_class {
   cursor: pointer;
 }
+
+.image_game {
+  width: 100%;
+  height: 100%;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.image_points {
+  border: 5px solid;
+  border-radius: 100%;
+  position: absolute;
+  top: 100px;
+  right: 100px;
+  width: 208px;
+  height: 208px;
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}

@@ -4,10 +4,10 @@
         "type": "cooperante-no",
         "name": "Bar hasta el amanecer",
         "interval": 500,
-        "voz_segundos_buffer": 3,
-        "flowchart": "word-game.drawio",
-        "homologacion_voz": "word-game-homologacion.json",
-        "sinonimos_voz": "word-game-sinonimos.json"
+        "voz_segundos_buffer": 5,
+        "flowchart": "caso1.drawio",
+        "homologacion_voz": "caso1_homologacion_voz.json",
+        "sinonimos_voz": "caso1_sinonimos_voz.json"
     },
     "st": {
         "duration": 0,

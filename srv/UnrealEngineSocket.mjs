@@ -536,7 +536,9 @@ export class UnrealEngineSocket {
                                     // Se hace manejo de voice(...)
                                     textoIf = textoIf.replace(/voice\(([^)]*)\)/ig, (wholeMatch, searchedText) => {
                                         // Se debe validar si este texto existe en el record de voz
-                                        if (voiceDetection(searchedText)) {
+                                        // La voz puede requerir interpolación
+                                        const renderedText = this.conditionalEngine.computeIf(searchedText, this.state.estado);
+                                        if (voiceDetection(renderedText)) {
                                             return "true";
                                         } else {
                                             return "false";

@@ -23,6 +23,8 @@ import { SimpleObj } from 'srcJs/SimpleObj';
   providers: [DictateService],
 })
 export class UechatComponent implements OnInit, OnDestroy {
+  IMAGES_ROOT = '/assets/word-game/';
+  SOUNDS_ROOT = '/assets/police/sounds';
   @ViewChild('mySvg') mySvgRef: ElementRef;
   @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
   bindDragEventsThis: any;
@@ -47,6 +49,8 @@ export class UechatComponent implements OnInit, OnDestroy {
   };
   buttonText = 'On';
   partialSpeechToText: null | string = '';
+  currentImage = '';
+  pointsImage = '';
 
   constructor(
     public socketService: UeSocketService,
@@ -59,11 +63,11 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.bindDragEventsThis = this.bindDragEvents.bind(this);
-    const SOUNDS_ROOT = '/assets/police/sounds';
+
     ModuloSonido.preload([
-      `${SOUNDS_ROOT}/end.mp3`,
-      `${SOUNDS_ROOT}/finish.mp3`,
-      `${SOUNDS_ROOT}/mario-coin.mp3`,
+      `${this.SOUNDS_ROOT}/end.mp3`,
+      `${this.SOUNDS_ROOT}/finish.mp3`,
+      `${this.SOUNDS_ROOT}/mario-coin.mp3`,
     ]);
     this.socketService.on('chatMessage', (content: string) => {
       this.receiveChatMessage('chatMessage', content);
@@ -80,10 +84,10 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('sound', (content: string) => {
       const argumento = JSON.parse(content);
       if (typeof argumento == 'string') {
-        ModuloSonido.play(`${SOUNDS_ROOT}/${argumento}`);
+        ModuloSonido.play(`${this.SOUNDS_ROOT}/${argumento}`);
       } else if (argumento instanceof Array) {
         ModuloSonido.play(
-          `${SOUNDS_ROOT}/${argumento[0]}`,
+          `${this.SOUNDS_ROOT}/${argumento[0]}`,
           argumento[1] == 'loop'
         );
       }
@@ -94,9 +98,9 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('mute', (content: string) => {
       const argumento = JSON.parse(content);
       if (typeof argumento == 'string') {
-        ModuloSonido.stop(`${SOUNDS_ROOT}/${argumento}`);
+        ModuloSonido.stop(`${this.SOUNDS_ROOT}/${argumento}`);
       } else if (argumento instanceof Array) {
-        ModuloSonido.stop(`${SOUNDS_ROOT}/${argumento[0]}`);
+        ModuloSonido.stop(`${this.SOUNDS_ROOT}/${argumento[0]}`);
       }
     });
     this.socketService.on('popupopen', async (content: string) => {
@@ -108,6 +112,14 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('popupclose', (content: string) => {
       const argumento = JSON.parse(content);
       console.log(JSON.stringify(argumento, null, 4));
+    });
+    this.socketService.on('image', (content: string) => {
+      const argumento = JSON.parse(content);
+      if (argumento[1] == 'main') {
+        this.currentImage = argumento[0];
+      } else if (argumento[1] == 'points') {
+        this.pointsImage = argumento[0];
+      }
     });
   }
 
@@ -420,7 +432,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.emit(
       'selectScenario',
       JSON.stringify({
-        name: 'caso1-cooperante',
+        name: 'caso1-cooperante-si',
       })
     );
   }
