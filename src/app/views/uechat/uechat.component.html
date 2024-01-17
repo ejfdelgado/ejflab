@@ -1,10 +1,5 @@
 <div class="full_screen">
     <div class="menu">
-        <button (click)="selectView('chat')" class="mat-menu-item manito"
-            [ngClass]="{'highlight': selectedView == 'chat'}">
-            <mat-icon>chat</mat-icon>
-            <span>Consola de control & log</span>
-        </button>
         <button (click)="selectView('grafo')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'grafo'}">
             <mat-icon>account_tree</mat-icon>
@@ -13,7 +8,12 @@
         <button (click)="selectView('images')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'images'}">
             <mat-icon>view_in_ar</mat-icon>
-            <span>Imágenes</span>
+            <span>3D</span>
+        </button>
+        <button (click)="selectView('chat')" class="mat-menu-item manito"
+            [ngClass]="{'highlight': selectedView == 'chat'}">
+            <mat-icon>chat</mat-icon>
+            <span>Consola de control & log</span>
         </button>
     </div>
     <div *ngIf="selectedView == 'grafo'">
@@ -96,8 +96,7 @@
         </div>
     </div>
     <div class="content fill" *ngIf="selectedView == 'images'">
-        <div class="image_game" [style.background-image]="'url(' + IMAGES_ROOT + currentImage + ')'">
-        </div>
+
     </div>
     <div class="subtitles_container">
         <div class="button_container">
