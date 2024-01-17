@@ -1,5 +1,6 @@
 class MyConstants {
     static SRV_ROOT = "/";
+    static SPEECH_TO_TEXT_SERVER = "ws://localhost:2700";
     static CLOUD_RUN_URL = "https://mainapp-7b6hvjg6ia-uc.a.run.app/";
     static DOMAIN_ROUTER = {
         "srv/opencv/solvepnp": MyConstants.CLOUD_RUN_URL
@@ -94,6 +95,7 @@ class MyConstants {
 try {
     if (location.hostname == "localhost") {
         MyConstants.SRV_ROOT = "http://localhost:8081/";
+        MyConstants.SPEECH_TO_TEXT_SERVER = "ws://localhost:2700";
     }
 } catch (err) {
 

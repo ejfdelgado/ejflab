@@ -13,3 +13,44 @@ npm run angular
 4. Ver el servidor corriendo:
 
 http://localhost:4200/uechat
+
+
+
+whoami
+
+net localgroup docker-users "desktop-d1ibqhd\mt diamond" /add
+
+cd "C:\Users\MT DIAMOND\desarrollo\ejflab\containers\police-docker"
+
+$ENV:GOOGLE_APPLICATION_CREDENTIALS = 'C:/Users/MT DIAMOND/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json'
+
+$ENV:HOME = 'c:/Users/MT DIAMOND'
+
+Set-ExecutionPolicy Unrestricted
+
+S
+
+Get-Content 'C:/Users/MT DIAMOND/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json' | docker login -u _json_key --password-stdin https://gcr.io
+
+
+
+  image_node_server:
+    image: gcr.io/ejfexperiments/policiavr:v1.91
+    container_name: image_node_server
+    environment:
+      USE_CACHE_FILES: "0"
+      PMA_HOST: ${PMA_HOST}
+      PMA_PORT: ${PMA_PORT}
+      PORT: ${PORT}
+      ENV: ${ENV}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - 8081:80
+    networks:
+      mysql-phpmyadmin:
+        aliases:
+          - police_phpmyadmin
