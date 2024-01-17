@@ -104,6 +104,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     });
     this.socketService.on('popupopen', async (content: string) => {
       const argumento = JSON.parse(content);
+      //console.log(`popupopen ${content}`);
       const response = await this.modalSrv.generic(argumento);
       // console.log(JSON.stringify(response));
       this.socketService.emit('popupchoice', JSON.stringify(response));
@@ -271,6 +272,17 @@ export class UechatComponent implements OnInit, OnDestroy {
       history
     );
     return this.sanitizer.bypassSecurityTrustHtml(svgContent);
+  }
+
+  getSpeechToText() {
+    let speech = SimpleObj.getValue(this.modelState, 'st.voice');
+    let transcript = '';
+    if (speech instanceof Array) {
+      for (let i = 0; i < speech.length; i++) {
+        transcript += speech[i].d + ' ';
+      }
+    }
+    return transcript;
   }
 
   graphRecomputeBoundingBox() {
@@ -449,7 +461,7 @@ export class UechatComponent implements OnInit, OnDestroy {
         onResults: (hyp: any) => {
           //console.log(`result ${hyp}`);
           this.partialSpeechToText = null;
-          //this.socketService.emit('voice', JSON.stringify(hyp));
+          this.socketService.emit('voice', JSON.stringify(hyp));
         },
         onPartialResults: (hyp: string) => {
           let nuevo = '';

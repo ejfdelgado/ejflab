@@ -345,6 +345,15 @@ export class UnrealEngineSocket {
                 }
             };
 
+            const sendCommand = (command, content) => {
+                const completo = {
+                    command,
+                    content,
+                };
+                io.emit(completo.command, JSON.stringify(completo.content));
+                io.emit('personalChat', JSON.stringify(completo));
+            };
+
             const moveState = async () => {
                 const history = this.state.readKey("st.history");
                 const currentState = this.state.readKey("st.current");
@@ -488,11 +497,11 @@ export class UnrealEngineSocket {
 
                                             if (!callSkip) {
                                                 if (callArgs.length == 0) {
-                                                    io.emit(callArgs.action, '""');
+                                                    sendCommand(callArgs.action, "");
                                                 } else if (callArgs.arguments.length == 1) {
-                                                    io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
+                                                    sendCommand(callArgs.action, callArgs.arguments[0]);
                                                 } else {
-                                                    io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
+                                                    sendCommand(callArgs.action, callArgs.arguments);
                                                 }
                                             }
                                         }
@@ -675,11 +684,11 @@ export class UnrealEngineSocket {
                                             // Se ejecuta la acción
                                             //console.log(`call ${callArgs.action}`);
                                             if (callArgs.length == 0) {
-                                                io.emit(callArgs.action, '""');
+                                                sendCommand(callArgs.action, "");
                                             } else if (callArgs.arguments.length == 1) {
-                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments[0]));
+                                                sendCommand(callArgs.action, callArgs.arguments[0]);
                                             } else {
-                                                io.emit(callArgs.action, JSON.stringify(callArgs.arguments));
+                                                sendCommand(callArgs.action, callArgs.arguments);
                                             }
                                         } else {
                                             // se valida si es increase(...)
@@ -698,7 +707,7 @@ export class UnrealEngineSocket {
                                                 }
                                                 // Asigno la ruta como cllbackid
                                                 currentValue.callback = popupKey;
-                                                io.emit('popupopen', JSON.stringify(currentValue));
+                                                sendCommand('popupopen', currentValue);
                                                 continue;
                                             }
                                             // Default way to resolve node actions
@@ -947,7 +956,7 @@ export class UnrealEngineSocket {
                 if (redaccion == null) {
                     return false;
                 }
-                if (llave.trim().length == 0) {
+                if (llave === undefined || llave.trim().length == 0) {
                     // Si era vacío lo que tenía que buscar y hay algo de redacción, entonces es true
                     return true;
                 }

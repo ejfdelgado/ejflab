@@ -12,7 +12,7 @@
         </button>
         <button (click)="selectView('images')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'images'}">
-            <mat-icon>account_tree</mat-icon>
+            <mat-icon>view_in_ar</mat-icon>
             <span>Imágenes</span>
         </button>
     </div>
@@ -31,10 +31,6 @@
                     <button (click)="stopScenario()" style="height: 100%;" class="mat-menu-item manito">
                         <mat-icon>stop_circle</mat-icon>
                         <span>Stop</span>
-                    </button>
-                    <button (click)="switchSpeechRecognition()" style="height: 100%;" class="mat-menu-item manito">
-                        <mat-icon>mic</mat-icon>
-                        <span>{{ buttonText }}</span>
                     </button>
                 </div>
                 <input type="text" class="voice_recognition" style="flex: 1;" placeholder="voice ..."
@@ -101,6 +97,17 @@
     </div>
     <div class="content fill" *ngIf="selectedView == 'images'">
         <div class="image_game" [style.background-image]="'url(' + IMAGES_ROOT + currentImage + ')'">
+        </div>
+    </div>
+    <div class="subtitles_container">
+        <div class="button_container">
+            <button (click)="switchSpeechRecognition()" class="mat-menu-item manito">
+                <mat-icon>mic</mat-icon>
+                <span>{{ buttonText }}</span>
+            </button>
+        </div>
+        <div class="white_subtitle">
+            <p>{{ getSpeechToText() }}</p>
         </div>
     </div>
 </div>

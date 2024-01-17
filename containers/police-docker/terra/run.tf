@@ -151,7 +151,7 @@ resource "google_cloud_run_v2_service" "policiavr" {
   template {
     max_instance_request_concurrency = 80
     containers {
-      image = "gcr.io/ejfexperiments/policiavr:v1.90"
+      image = "gcr.io/ejfexperiments/policiavr:v1.91"
       resources {
         limits = {
           # 512Mi
