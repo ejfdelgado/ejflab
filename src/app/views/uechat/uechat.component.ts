@@ -50,6 +50,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   buttonText = 'On';
   partialSpeechToText: null | string = '';
   currentImage = '';
+  transcriptSpeechToText = '';
 
   constructor(
     public socketService: UeSocketService,
@@ -282,7 +283,7 @@ export class UechatComponent implements OnInit, OnDestroy {
         transcript += speech[i].d + ' ';
       }
     }
-    return transcript;
+    this.transcriptSpeechToText = transcript;
   }
 
   graphRecomputeBoundingBox() {
@@ -309,6 +310,9 @@ export class UechatComponent implements OnInit, OnDestroy {
         {},
         SimpleObj.recreate(this.modelState, parsed.key, parsed.val, true)
       );
+      if (parsed.key.startsWith('st.voice')) {
+        this.getSpeechToText();
+      }
     }
     this.setPath();
 
