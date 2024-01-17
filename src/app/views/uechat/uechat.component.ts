@@ -31,7 +31,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   graphHtml: string = '';
   modelState: any = {};
   modelStatePath: any = null;
-  selectedView: string = 'chat';
+  selectedView: string = 'grafo';
   mymessage: string = '';
   myvoice: string = '';
   mypath: string = '';
