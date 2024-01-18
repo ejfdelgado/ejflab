@@ -21,19 +21,19 @@ docker ps
 
 Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
 
-docker commit -m "se reordena" -p 97d519ea4d1a  ejfdelgado/policiavr:v1.92
+docker commit -m "se reordena" -p 2e9c7dbbec69  ejfdelgado/policiavr:v1.93
 
 5. Crear el tag para subir a gcr.io
 
-docker tag ejfdelgado/policiavr:v1.92 gcr.io/ejfexperiments/policiavr:v1.92
+docker tag ejfdelgado/policiavr:v1.93 gcr.io/ejfexperiments/policiavr:v1.93
 
 6. Subirlo a gcr.io
 
-docker push gcr.io/ejfexperiments/policiavr:v1.92
+docker push gcr.io/ejfexperiments/policiavr:v1.93
 
 6.1. Apagar la instancia de docker:
 
-docker stop 97d519ea4d1a
+docker stop 2e9c7dbbec69
 
 7. Actualizar la versión en terraform en run.tf
 
