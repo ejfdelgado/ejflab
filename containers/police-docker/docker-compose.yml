@@ -1,6 +1,5 @@
 version: "3"
 # $ENV:HOME = 'c:/Users/MT DIAMOND'
-# docker login gcr.io
 # echo $ENV:HOME
 # docker compose up -d
 # docker compose down

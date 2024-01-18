@@ -33,3 +33,10 @@ S
 Get-Content 'C:/Users/MT DIAMOND/desarrollo/ejflab/llaves/ejfexperiments-c2ef2a890ca5.json' | docker login -u _json_key --password-stdin https://gcr.io
 
 
+08:BF:B8:04:73:0D desktop 192.168.50.65
+https://192.168.50.65/uechat
+
+D8:FC:93:9B:80:61 laptop 192.168.50.245
+https://192.168.50.245/uechat
+
+http://www.asusrouter.com/Advanced_DHCP_Content.asp
