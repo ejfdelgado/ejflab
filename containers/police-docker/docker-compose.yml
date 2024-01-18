@@ -45,8 +45,6 @@ volumes:
 
 services:
   police_speech_to_text:
-    profiles:
-      - donotstart
     image: alphacep/kaldi-es:latest
     ports:
       - "2700:2700"

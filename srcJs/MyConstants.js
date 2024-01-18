@@ -1,6 +1,6 @@
 class MyConstants {
     static SRV_ROOT = "/";
-    static SPEECH_TO_TEXT_SERVER = "ws://localhost:2700";
+    static SPEECH_TO_TEXT_SERVER = `wss://${location.hostname}/ws`;
     static CLOUD_RUN_URL = "https://mainapp-7b6hvjg6ia-uc.a.run.app/";
     static DOMAIN_ROUTER = {
         "srv/opencv/solvepnp": MyConstants.CLOUD_RUN_URL
