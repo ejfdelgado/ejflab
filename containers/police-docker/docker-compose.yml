@@ -71,8 +71,6 @@ services:
           - police_mysql
 
   police_phpmyadmin:
-    profiles:
-      - donotstart
     image: phpmyadmin:5.2.0
     container_name: phpmyadmin
     links:
