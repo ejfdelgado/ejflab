@@ -1,18 +1,12 @@
-import {
-  Injectable,
-  ApplicationRef,
-  Inject,
-  Optional,
-} from '@angular/core';
+import { Injectable, ApplicationRef, Inject, Optional } from '@angular/core';
 import { MyConstants } from 'srcJs/MyConstants';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DictateService {
-
   // Defaults
-  readonly SERVER = MyConstants.SPEECH_TO_TEXT_SERVER;
+  readonly SERVER = MyConstants.getSpeechToTextServer();
   // Send blocks 4 x per second as recommended in the server doc.
   readonly INTERVAL = 250;
   // Path to worker javascript
@@ -45,47 +39,62 @@ export class DictateService {
   private intervalKey: any;
   private paused: any;
 
-  constructor() {
-  }
+  constructor() {}
 
   init(cfg: any) {
-    console.log("Starting speech to text client");
+    console.log('Starting speech to text client');
     this.config = cfg || {};
     this.config.server = this.config.server || this.SERVER;
     this.config.audioSourceId = this.config.audioSourceId;
     this.config.interval = this.config.interval || this.INTERVAL;
-    this.config.onReadyForSpeech = this.config.onReadyForSpeech || function() { };
-    this.config.onEndOfSpeech = this.config.onEndOfSpeech || function() { };
-    this.config.onResults = this.config.onResults || function(data: any) { };
-    this.config.onPartialResults = this.config.onPartialResults || function(data: any) { };
-    this.config.onEndOfSession = this.config.onEndOfSession || function() { };
-    this.config.onEvent = this.config.onEvent || function(e: any, data: any) { };
-    this.config.onError = this.config.onError || function(e: any, data: any) { };
+    this.config.onReadyForSpeech =
+      this.config.onReadyForSpeech || function () {};
+    this.config.onEndOfSpeech = this.config.onEndOfSpeech || function () {};
+    this.config.onResults = this.config.onResults || function (data: any) {};
+    this.config.onPartialResults =
+      this.config.onPartialResults || function (data: any) {};
+    this.config.onEndOfSession = this.config.onEndOfSession || function () {};
+    this.config.onEvent =
+      this.config.onEvent || function (e: any, data: any) {};
+    this.config.onError =
+      this.config.onError || function (e: any, data: any) {};
 
     this.paused = true;
 
     var audioSourceConstraints = {};
-    this.config.onEvent(this.MSG_WAITING_MICROPHONE, "Waiting for approval to access your microphone ...");
+    this.config.onEvent(
+      this.MSG_WAITING_MICROPHONE,
+      'Waiting for approval to access your microphone ...'
+    );
 
     try {
       this.audioContext = new AudioContext();
 
       navigator.mediaDevices
-      .getUserMedia({ audio: true })
-      .then(this.startUserMedia.bind(this))
-      .catch((error) => {
-        this.config.onError(this.ERR_CLIENT, "No live audio input in this browser: " + error);
-      });
-    } catch (e:any) {
+        .getUserMedia({ audio: true })
+        .then(this.startUserMedia.bind(this))
+        .catch((error) => {
+          this.config.onError(
+            this.ERR_CLIENT,
+            'No live audio input in this browser: ' + error
+          );
+        });
+    } catch (e: any) {
       // Firefox 24: TypeError: AudioContext is not a constructor
       // Set media.webaudio.enabled = true (in about:this.config) to fix this.
-      this.config.onError(this.ERR_CLIENT, "Error initializing Web Audio browser: " + e + " " + e.stack);
+      this.config.onError(
+        this.ERR_CLIENT,
+        'Error initializing Web Audio browser: ' + e + ' ' + e.stack
+      );
     }
 
     try {
       this.createWebSocket();
-    } catch (e:any) {
-      this.config.onError(this.ERR_CLIENT, "No web socket support in this browser!" + e + " " + e.stack);
+    } catch (e: any) {
+      this.config.onError(
+        this.ERR_CLIENT,
+        'No web socket support in this browser!' + e + ' ' + e.stack
+      );
     }
   }
 
@@ -125,19 +134,18 @@ export class DictateService {
     this.config.onEvent(this.MSG_MEDIA_STREAM_CREATED, 'Media stream created');
     //Firefox loses the audio input stream every five seconds
     // To fix added the input to window.source
-    (<any> window).source = input;
+    (<any>window).source = input;
 
     // make the analyser available in window context
-    (<any> window).userSpeechAnalyser = this.audioContext.createAnalyser();
-    input.connect((<any> window).userSpeechAnalyser);
+    (<any>window).userSpeechAnalyser = this.audioContext.createAnalyser();
+    input.connect((<any>window).userSpeechAnalyser);
 
     this.initWorker(input);
     this.config.onEvent(this.MSG_INIT_RECORDER, 'Recorder initialized');
   }
 
   private socketSend(blob: any) {
-    if (this.paused)
-      return;
+    if (this.paused) return;
     if (this.ws) {
       var state = this.ws.readyState;
       if (state == 1) {
@@ -145,9 +153,15 @@ export class DictateService {
         if (blob instanceof Blob) {
           if (blob.size > 0) {
             this.ws.send(blob);
-            this.config.onEvent(this.MSG_SEND, 'Send: blob: ' + blob.type + ', ' + blob.size);
+            this.config.onEvent(
+              this.MSG_SEND,
+              'Send: blob: ' + blob.type + ', ' + blob.size
+            );
           } else {
-            this.config.onEvent(this.MSG_SEND_EMPTY, 'Send: blob: ' + blob.type + ', EMPTY');
+            this.config.onEvent(
+              this.MSG_SEND_EMPTY,
+              'Send: blob: ' + blob.type + ', EMPTY'
+            );
           }
           // Otherwise it's the EOS tag (string)
         } else {
@@ -155,10 +169,16 @@ export class DictateService {
           this.config.onEvent(this.MSG_SEND_EOS, 'Send tag: ' + blob);
         }
       } else {
-        this.config.onError(this.ERR_NETWORK, 'WebSocket: readyState!=1: ' + state + ": failed to send: " + blob);
+        this.config.onError(
+          this.ERR_NETWORK,
+          'WebSocket: readyState!=1: ' + state + ': failed to send: ' + blob
+        );
       }
     } else {
-      this.config.onError(this.ERR_CLIENT, 'No web socket connection: failed to send: ' + blob);
+      this.config.onError(
+        this.ERR_CLIENT,
+        'No web socket connection: failed to send: ' + blob
+      );
     }
   }
 
@@ -169,7 +189,10 @@ export class DictateService {
       var data = e.data;
       this.config.onEvent(this.MSG_WEB_SOCKET, data);
       if (data instanceof Object && !(data instanceof Blob)) {
-        this.config.onError(this.ERR_SERVER, 'WebSocket: onEvent: got Object that is not a Blob');
+        this.config.onError(
+          this.ERR_SERVER,
+          'WebSocket: onEvent: got Object that is not a Blob'
+        );
       } else if (data instanceof Blob) {
         this.config.onError(this.ERR_SERVER, 'WebSocket: got Blob');
       } else {
@@ -193,7 +216,10 @@ export class DictateService {
       // Start recording
       this.resume();
       this.config.onReadyForSpeech();
-      this.config.onEvent(this.MSG_WEB_SOCKET_OPEN, "Opened the socket successfully");
+      this.config.onEvent(
+        this.MSG_WEB_SOCKET_OPEN,
+        'Opened the socket successfully'
+      );
     };
 
     // This can happen if the blob was too big
@@ -209,7 +235,10 @@ export class DictateService {
       // The server closes the connection (only?)
       // when its endpointer triggers.
       this.config.onEndOfSession();
-      this.config.onEvent(this.MSG_WEB_SOCKET_CLOSE, e.code + "/" + e.reason + "/" + e.wasClean);
+      this.config.onEvent(
+        this.MSG_WEB_SOCKET_CLOSE,
+        e.code + '/' + e.reason + '/' + e.wasClean
+      );
     };
 
     this.ws.onerror = (e: any) => {
@@ -234,21 +263,19 @@ export class DictateService {
 
       this.worker.postMessage({
         command: 'record',
-        buffer: [
-          e.inputBuffer.getChannelData(0)
-        ]
+        buffer: [e.inputBuffer.getChannelData(0)],
       });
     };
 
     this.worker.postMessage({
       command: 'init',
       config: {
-        sampleRate: source.context.sampleRate
-      }
+        sampleRate: source.context.sampleRate,
+      },
     });
 
     source.connect(node);
-    node.connect(source.context.destination);    //TODO: this should not be necessary (try to remove it)
+    node.connect(source.context.destination); //TODO: this should not be necessary (try to remove it)
   }
 
   private clearWorker() {
@@ -258,5 +285,4 @@ export class DictateService {
   private exportWorkerData() {
     this.worker.postMessage({ command: 'exportData' });
   }
-
 }
