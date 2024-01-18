@@ -10,3 +10,7 @@ openssl req -nodes -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 
 openssl req -nodes -x509 -newkey rsa:4096 -keyout star_xx_com.key -out star_xx_com.crt -sha256 -days 3650 -nodes -subj "/C=CO/ST=Bogota/L=Bogota/O=PoliceVR/OU=DIEPO/CN=policevr.com"
 
 cat star_xx_com.crt star_xx_com.key > star_xx_com.pem
+
+sudo /etc/hosts
+
+127.0.0.1  policevr.com

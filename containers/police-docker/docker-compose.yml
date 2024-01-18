@@ -102,15 +102,38 @@ services:
       - ${HOME}${FOLDER_NGINX}/cert/star_xx_com.crt:/etc/nginx/cert/star_xx_com.crt
     restart: always
     depends_on:
-      - police_nodejs
+      - image_node_server
     links:
-      - police_nodejs
+      - image_node_server
     networks:
       mysql-phpmyadmin:
         aliases:
           - nginx
 
+  image_node_server:
+    image: gcr.io/ejfexperiments/policiavr:v1.91
+    container_name: image_node_server
+    environment:
+      USE_CACHE_FILES: "0"
+      PMA_HOST: ${PMA_HOST}
+      PMA_PORT: ${PMA_PORT}
+      PORT: ${PORT}
+      ENV: ${ENV}
+      MYSQL_ROOT_USER: ${MYSQL_ROOT_USER}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - 8081:3000
+    networks:
+      mysql-phpmyadmin:
+        aliases:
+          - police_phpmyadmin
+
   police_nodejs:
+    profiles:
+      - donotstart
     build:
       context: .
       dockerfile: Dockerfile
