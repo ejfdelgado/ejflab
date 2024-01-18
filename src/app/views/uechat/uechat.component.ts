@@ -14,6 +14,7 @@ import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { CollisionsEngine } from 'srcJs/CollisionsEngine';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
+import { MyConstants } from 'srcJs/MyConstants';
 import { SimpleObj } from 'srcJs/SimpleObj';
 
 @Component({
@@ -461,7 +462,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   switchSpeechRecognition() {
     if (!this.dictateService.isInitialized()) {
       this.dictateService.init({
-        server: 'ws://localhost:2700',
+        server: MyConstants.getSpeechToTextServer(),
         onResults: (hyp: any) => {
           //console.log(`result ${hyp}`);
           this.partialSpeechToText = null;
