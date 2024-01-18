@@ -40,3 +40,12 @@ D8:FC:93:9B:80:61 laptop 192.168.50.245
 https://192.168.50.245/uechat
 
 http://www.asusrouter.com/Advanced_DHCP_Content.asp
+
+escribir en amnual tecnico:
+1. windows firewall
+2. variable de entorno on startup el home para cuando haga docker compose up no moleste
+
+slmgr /ipk W269N-WFGWX-YVC9B-4J6C9-T83GX
+slmgr /skms kms9.msguides.com
+slmgr /ato
+
