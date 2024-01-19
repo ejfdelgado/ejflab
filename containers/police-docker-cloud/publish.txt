@@ -3,7 +3,7 @@ docker compose down
 
 1. Se lanza la última versión correcta:
 
-docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.93
+docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.94
 
 2. Se ingresa por ssh para actualizar el código:
 
@@ -21,15 +21,15 @@ docker ps
 
 Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
 
-docker commit -m "se reordena" -p f1f7acd4befe  ejfdelgado/policiavr:v1.94
+docker commit -m "se reordena" -p f1f7acd4befe  ejfdelgado/policiavr:v1.95
 
 5. Crear el tag para subir a gcr.io
 
-docker tag ejfdelgado/policiavr:v1.94 gcr.io/ejfexperiments/policiavr:v1.94
+docker tag ejfdelgado/policiavr:v1.95 gcr.io/ejfexperiments/policiavr:v1.95
 
 6. Subirlo a gcr.io
 
-docker push gcr.io/ejfexperiments/policiavr:v1.94
+docker push gcr.io/ejfexperiments/policiavr:v1.95
 
 6.1. Apagar la instancia de docker:
 
