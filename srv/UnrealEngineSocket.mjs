@@ -359,9 +359,9 @@ export class UnrealEngineSocket {
             };
 
             const echoCommand = (command, content) => {
-                const logMessage = `${command} ${JSON.stringify(content)}`;
+                const logMessage = `ECHO ${command} ${JSON.stringify(content)}`;
                 console.log(logMessage);
-                io.to(socket.id).emit('ECHO personalChat', logMessage);
+                io.to(socket.id).emit('personalChat', logMessage);
             };
 
             const moveState = async () => {
