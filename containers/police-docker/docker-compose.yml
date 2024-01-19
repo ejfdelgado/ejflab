@@ -2,6 +2,7 @@ version: "3"
 # $ENV:HOME = 'c:/Users/MT DIAMOND'
 # echo $ENV:HOME
 # docker compose up -d
+# docker compose up -d police_speech_to_text
 # docker compose down
 # docker-compose logs -f police_nodejs
 # docker-compose logs -f image_node_server
@@ -122,8 +123,6 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    ports:
-      - 8081:3000
     networks:
       mysql-phpmyadmin:
         aliases:

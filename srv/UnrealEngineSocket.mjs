@@ -175,6 +175,7 @@ export class UnrealEngineSocket {
             };
             const buscarParticipantesEventHandler = async (inicial) => {
                 try {
+                    echoCommand("buscarParticipantes", payload);
                     const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                     const response = await databaseClient.getAllParticipantsByLastNameLetter(inicial);
                     io.to(socket.id).emit('buscarParticipantesResponse', JSON.stringify(response));
@@ -185,6 +186,7 @@ export class UnrealEngineSocket {
 
             const createScoreEventHandler = async (payload) => {
                 try {
+                    echoCommand("createScore", payload);
                     const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                     // Debe existir primero el escenario seleccionado
                     if (!(this.state.estado?.scene?.id)) {
@@ -216,6 +218,7 @@ export class UnrealEngineSocket {
 
             const updateScoreEventHandler = async (payload) => {
                 try {
+                    echoCommand("updateScore", payload);
                     const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                     await databaseClient.updateScore(payload.id, payload.column, payload.value);
                     const changed = await databaseClient.readScore(payload.id);
@@ -227,6 +230,7 @@ export class UnrealEngineSocket {
 
             const selectScenarioEventHandler = async (payload) => {
                 try {
+                    echoCommand("selectScenario", payload);
                     const modelo = await this.state.loadState(payload.name);
 
                     await UnrealEngineSocket.reloadVoiceHelpers(modelo?.scene?.homologacion_voz || "homologacion_voz.json", modelo?.scene?.sinonimos_voz || "caso1_sinonimos_voz.json");
@@ -352,6 +356,12 @@ export class UnrealEngineSocket {
                 };
                 io.emit(completo.command, JSON.stringify(completo.content));
                 io.emit('personalChat', JSON.stringify(completo));
+            };
+
+            const echoCommand = (command, content) => {
+                const logMessage = `${command} ${JSON.stringify(content)}`;
+                console.log(logMessage);
+                io.to(socket.id).emit('ECHO personalChat', logMessage);
             };
 
             const moveState = async () => {
@@ -767,6 +777,7 @@ export class UnrealEngineSocket {
 
             const startGameEventHandler = async (payload) => {
                 try {
+                    echoCommand("startGame", payload);
                     // Se debe validar si ya hay escenario
 
                     if (!(this.state.estado?.scene?.id)) {
@@ -792,6 +803,7 @@ export class UnrealEngineSocket {
 
             const endGameEventHandler = async (payload) => {
                 try {
+                    echoCommand("endGame", payload);
                     const currentState = this.state.readKey("st.current");
                     if (currentState == null) {
                         throw "El entrenamiento ya está terminado";
@@ -822,6 +834,7 @@ export class UnrealEngineSocket {
 
             const voiceEventHandler = async (payload) => {
                 try {
+                    echoCommand("voice", payload);
                     let voiceHistory = this.state.readKey("st.voice");
 
                     if (!(voiceHistory instanceof Array)) {
@@ -869,12 +882,12 @@ export class UnrealEngineSocket {
 
             const touchEventHandler = async (payload) => {
                 try {
-                    // console.log(`Touch ${payload}`);
+                    echoCommand("touch", payload);
                     let memory = this.state.readKey("st.touch");
                     if (!memory) {
                         memory = {};
                     }
-                    const partes = payload.split(":");
+                    const partes = payload.split(/\W/);
                     const key = partes[0];
                     const objectKey = partes[1];
                     const changed = UnrealEngineSocket.collisionEngine.collide(memory, key, objectKey);
@@ -889,12 +902,12 @@ export class UnrealEngineSocket {
 
             const untouchEventHandler = async (payload) => {
                 try {
-                    // console.log(`Untouch ${payload}`);
+                    echoCommand("untouch", payload);
                     let memory = this.state.readKey("st.touch");
                     if (!memory) {
                         memory = {};
                     }
-                    const partes = payload.split(":");
+                    const partes = payload.split(/\W/);
                     const key = partes[0];
                     const objectKey = partes[1];
                     const changed = UnrealEngineSocket.collisionEngine.uncollide(memory, key, objectKey);
@@ -909,6 +922,7 @@ export class UnrealEngineSocket {
 
             const popupchoiceEventHandler = async (payload) => {
                 try {
+                    echoCommand("popupchoice", payload);
                     //console.log(`PopUp Choice ${JSON.stringify(payload)}`);
                     const popupRef = this.state.readKey(payload.callback);
                     const mychoice = payload.choice;
