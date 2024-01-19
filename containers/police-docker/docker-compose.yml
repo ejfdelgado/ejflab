@@ -110,7 +110,7 @@ services:
           - nginx
 
   image_node_server:
-    image: gcr.io/ejfexperiments/policiavr:v1.94
+    image: gcr.io/ejfexperiments/policiavr:v1.95
     container_name: image_node_server
     environment:
       USE_CACHE_FILES: "0"
