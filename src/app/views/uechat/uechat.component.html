@@ -102,7 +102,7 @@
                 [actions]="view3dModelsActions">
             </app-scrollfiles>
     </div>
-    <div class="subtitles_container" [ngClass]="{shortView: selectedView == 'images'}">
+    <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">
         <div class="button_container">
             <button (click)="switchSpeechRecognition()" class="mat-menu-item manito">
                 <mat-icon>mic</mat-icon>

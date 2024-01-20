@@ -39,6 +39,12 @@ volumes:
       type: "none"
       o: "bind"
       device: "${HOME}${FOLDER_NODEAPP}"
+  assets:
+    driver: local
+    driver_opts:
+      type: "none"
+      o: "bind"
+      device: "${HOME}${FOLDER_ASSETS}"
   nginxwww:
     driver: local
     driver_opts:
@@ -123,6 +129,8 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - assets:/root/desarollo/ejflab/src/assets/police
     networks:
       mysql-phpmyadmin:
         aliases:
