@@ -55,7 +55,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   currentImage = '';
   transcriptSpeechToText = '';
   view3d: any = {
-    models: []
+    models: {}
   };
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
@@ -250,6 +250,10 @@ export class UechatComponent implements OnInit, OnDestroy {
     if (this.selectedView == 'grafo') {
       this.graphHtml = this.getGraph();
       this.graphRecomputeBoundingBox();
+    }
+
+    if (viewName == "images") {
+      this.load3dModelLists();
     }
   }
 
@@ -510,6 +514,20 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.dictateService.pause();
       this.buttonText = 'On';
     }
+  }
+
+  async load3dModelLists() {
+    this.view3d.models = {};
+
+    const elem = {
+      url: "/path/to/file.fbx",
+      name: "FBX",
+      checked: false,
+      otherData: {}
+    };
+
+    this.view3d.models['1'] = elem;
+    
   }
 
   async open3dModel(oneFile: ElementPairItemData) {
