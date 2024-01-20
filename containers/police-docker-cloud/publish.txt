@@ -3,7 +3,7 @@ docker compose down
 
 1. Se lanza la última versión correcta:
 
-docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.95
+docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.96
 
 2. Se ingresa por ssh para actualizar el código:
 
@@ -21,19 +21,19 @@ docker ps
 
 Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
 
-docker commit -m "fix bug" -p 589fec845acc  ejfdelgado/policiavr:v1.96
+docker commit -m "fix bug" -p d756946c634b  ejfdelgado/policiavr:v1.97
 
 5. Crear el tag para subir a gcr.io
 
-docker tag ejfdelgado/policiavr:v1.96 gcr.io/ejfexperiments/policiavr:v1.96
+docker tag ejfdelgado/policiavr:v1.97 gcr.io/ejfexperiments/policiavr:v1.97
 
 6. Subirlo a gcr.io
 
-docker push gcr.io/ejfexperiments/policiavr:v1.96
+docker push gcr.io/ejfexperiments/policiavr:v1.97
 
 6.1. Apagar la instancia de docker:
 
-docker stop 589fec845acc
+docker stop d756946c634b
 
 7. Actualizar la versión en terraform en run.tf
 
@@ -58,3 +58,5 @@ https://console.cloud.google.com/gcr/images/ejfexperiments/global/policiavr?hl=e
 
 
 
+Borrar imagenes viejas:
+docker container ls
