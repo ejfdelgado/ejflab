@@ -61,3 +61,6 @@ https://console.cloud.google.com/gcr/images/ejfexperiments/global/policiavr?hl=e
 
 Borrar imagenes viejas:
 docker container ls
+docker image ls
+
+docker rmi cc7f404fd69c
