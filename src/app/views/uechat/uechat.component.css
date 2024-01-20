@@ -129,3 +129,21 @@
   text-align: center;
   line-height: 1em;
 }
+
+.view3d {
+  display: flex;
+  flex-direction: row;
+}
+
+.view3d app-threejs-gallery {
+  flex: 1;
+  position:relative;
+}
+
+.view3d app-scrollfiles {
+  width: 300px;
+}
+
+.subtitles_container.shortView {
+  right: 300px;
+}

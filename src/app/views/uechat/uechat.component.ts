@@ -7,6 +7,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ElementPairItemData } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
+import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { DictateService } from 'src/services/dictate-service';
 import { FileResponseData, FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
@@ -52,6 +54,10 @@ export class UechatComponent implements OnInit, OnDestroy {
   partialSpeechToText: null | string = '';
   currentImage = '';
   transcriptSpeechToText = '';
+  view3d: any = {
+    models: []
+  };
+  public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
   constructor(
     public socketService: UeSocketService,
@@ -59,8 +65,15 @@ export class UechatComponent implements OnInit, OnDestroy {
     private sanitizer: DomSanitizer,
     public fileService: FileService,
     private modalSrv: ModalService,
-    private dictateService: DictateService
-  ) {}
+    private dictateService: DictateService,
+    public modalService: ModalService,
+  ) {
+    this.view3dModelsActions.push({
+      callback: this.add3dModel.bind(this),
+      icon: 'add',
+      label: 'Agregar',
+    });
+  }
 
   ngOnInit(): void {
     this.bindDragEventsThis = this.bindDragEvents.bind(this);
@@ -497,5 +510,23 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.dictateService.pause();
       this.buttonText = 'On';
     }
+  }
+
+  async open3dModel(oneFile: ElementPairItemData) {
+    console.log(JSON.stringify(oneFile));
+  }
+
+  async delete3DModel(pair: ElementPairItemData) {
+    const response = await this.modalService.confirm({
+      title: `¿Seguro que desea borrar ${pair.value.name}?`,
+      txt: 'Esta acción no se puede deshacer.',
+    });
+    if (!response) {
+      return;
+    }
+  }
+
+  async add3dModel() {
+    console.log("add3dModel");
   }
 }

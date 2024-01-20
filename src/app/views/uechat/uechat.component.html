@@ -95,10 +95,14 @@
             </div>
         </div>
     </div>
-    <div class="content fill" *ngIf="selectedView == 'images'">
+    <div class="content fill view3d" *ngIf="selectedView == 'images'">
         <app-threejs-gallery></app-threejs-gallery>
+        <app-scrollfiles [archivos]="view3d.models"
+                (openFile)="open3dModel($event)" (deleteFile)="delete3DModel($event)"
+                [actions]="view3dModelsActions">
+            </app-scrollfiles>
     </div>
-    <div class="subtitles_container">
+    <div class="subtitles_container" [ngClass]="{shortView: selectedView == 'images'}">
         <div class="button_container">
             <button (click)="switchSpeechRecognition()" class="mat-menu-item manito">
                 <mat-icon>mic</mat-icon>
