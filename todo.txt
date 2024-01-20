@@ -47,6 +47,7 @@ ng generate pipe mycommon/pipes/sortByName
 ng generate component mycommon/components/threejs-projection
 ng generate component views/projection/components/license
 ng generate component views/decisiontree/components/whenthen
+ng generate component libs/threejs/threejs-gallery
 
 ng generate component mycommon/components/onShow
 

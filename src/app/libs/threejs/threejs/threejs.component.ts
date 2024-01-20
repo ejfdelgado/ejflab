@@ -56,5 +56,9 @@ export class ThreejsComponent implements OnInit, AfterViewInit {
     this.bounds = scrollEl.getBoundingClientRect();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    setTimeout(() => {
+      this.onResize({});
+    }, 0);
+  }
 }
