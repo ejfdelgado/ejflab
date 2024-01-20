@@ -22,7 +22,7 @@ docker ps
 
 Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
 
-docker commit -m "fix bug" -p d756946c634b  ejfdelgado/policiavr:v1.98
+docker commit -m "use virtual folder" -p bbf48349e2e0  ejfdelgado/policiavr:v1.98
 
 5. Crear el tag para subir a gcr.io
 
@@ -34,9 +34,9 @@ docker push gcr.io/ejfexperiments/policiavr:v1.98
 
 6.1. Apagar la instancia de docker:
 
-docker stop d756946c634b
+docker stop bbf48349e2e0
 
-7. Actualizar la versión en terraform en run.tf
+7. Actualizar la versión en terraform en run.tf y docker-compose.yml
 
 8. Agregar credenciales de google:
 
