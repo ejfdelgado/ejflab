@@ -28,6 +28,7 @@ const untouchEvent = "untouch";
 const popupchoiceEvent = "popupchoice";
 
 export class UnrealEngineSocket {
+    static ROOT_FOLDER = "./src/assets/police/scripts/";
     static GAME_INTERVAL = 2000;
     static clients = [];	//track connected clients
     static databaseClient = null;
@@ -62,8 +63,8 @@ export class UnrealEngineSocket {
     //UnrealEngineSocket.reloadVoiceHelpers("homologacion_voz.json", "caso1_sinonimos_voz.json");
     static async reloadVoiceHelpers(homologacionFile, sinonimosFile) {
         console.log(`Loading voice helpers ${homologacionFile} ${sinonimosFile}...`);
-        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile(`./src/assets/police/scripts/${homologacionFile}`));
-        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile(`./src/assets/police/scripts/${sinonimosFile}`)));
+        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile(`${UnrealEngineSocket.ROOT_FOLDER}${homologacionFile}`));
+        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile(`${UnrealEngineSocket.ROOT_FOLDER}${sinonimosFile}`)));
         console.log("Voice helpers ok!");
     }
 
@@ -231,7 +232,7 @@ export class UnrealEngineSocket {
             const selectScenarioEventHandler = async (payload) => {
                 try {
                     echoCommand("selectScenario", payload);
-                    const modelo = await this.state.loadState(payload.name);
+                    const modelo = await this.state.loadState(payload.name, UnrealEngineSocket.ROOT_FOLDER);
 
                     await UnrealEngineSocket.reloadVoiceHelpers(modelo?.scene?.homologacion_voz || "homologacion_voz.json", modelo?.scene?.sinonimos_voz || "caso1_sinonimos_voz.json");
                     // Se envia la raíz del estado para ser reemplazado.
@@ -825,7 +826,7 @@ export class UnrealEngineSocket {
 
             const synchronizeFileEventHandler = async (payload) => {
                 try {
-                    this.state.saveInMemoryTextFile(`./src/assets/police/scripts/${payload.fileName}`, payload.base64);
+                    this.state.saveInMemoryTextFile(`${UnrealEngineSocket.ROOT_FOLDER}${payload.fileName}`, payload.base64);
                     io.to(socket.id).emit('personalChat', "Ok");
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
