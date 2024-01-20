@@ -56,9 +56,9 @@ export class UnrealEngineState {
     }
 
     async loadState(id) {
-        const data = await this.proxyReadFile(`./data/ue/scenes/${id}.json`);
+        const data = await this.proxyReadFile(`./src/assets/police/scripts/${id}.json`);
         this.estado = JSON.parse(data);
-        const xmlFlowText = await this.proxyReadFile(`./data/ue/scenes/${this.estado.scene.flowchart}`);
+        const xmlFlowText = await this.proxyReadFile(`./src/assets/police/scripts/${this.estado.scene.flowchart}`);
         const options = {
             ignoreAttributes: false,
         };
