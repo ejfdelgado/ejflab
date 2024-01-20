@@ -62,8 +62,8 @@ export class UnrealEngineSocket {
     //UnrealEngineSocket.reloadVoiceHelpers("homologacion_voz.json", "caso1_sinonimos_voz.json");
     static async reloadVoiceHelpers(homologacionFile, sinonimosFile) {
         console.log(`Loading voice helpers ${homologacionFile} ${sinonimosFile}...`);
-        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile(`./data/ue/scenes/${homologacionFile}`));
-        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile(`./data/ue/scenes/${sinonimosFile}`)));
+        UnrealEngineSocket.HOMOLOGACION_VOZ = JSON.parse(await this.state.proxyReadFile(`./src/assets/police/scripts/${homologacionFile}`));
+        UnrealEngineSocket.SINONIMOS_VOZ = UnrealEngineSocket.preprocessSinonimosVoz(JSON.parse(await this.state.proxyReadFile(`./src/assets/police/scripts/${sinonimosFile}`)));
         console.log("Voice helpers ok!");
     }
 
@@ -825,7 +825,7 @@ export class UnrealEngineSocket {
 
             const synchronizeFileEventHandler = async (payload) => {
                 try {
-                    this.state.saveInMemoryTextFile(`./data/ue/scenes/${payload.fileName}`, payload.base64);
+                    this.state.saveInMemoryTextFile(`./src/assets/police/scripts/${payload.fileName}`, payload.base64);
                     io.to(socket.id).emit('personalChat', "Ok");
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
