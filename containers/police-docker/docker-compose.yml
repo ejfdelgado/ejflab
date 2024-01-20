@@ -129,8 +129,10 @@ services:
       MYSQL_DATABASE: ${MYSQL_DATABASE}
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "2222:22"
     volumes:
-      - assets:/root/desarollo/ejflab/src/assets/police
+      - assets:/root/desarrollo/ejflab/src/assets/police
     networks:
       mysql-phpmyadmin:
         aliases:
