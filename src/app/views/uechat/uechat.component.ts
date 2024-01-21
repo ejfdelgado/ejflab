@@ -18,6 +18,7 @@ import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { MyConstants } from 'srcJs/MyConstants';
 import { SimpleObj } from 'srcJs/SimpleObj';
+import sortify from 'srcJs/sortify';
 
 @Component({
   selector: 'app-uechat',
@@ -55,7 +56,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   currentImage = '';
   transcriptSpeechToText = '';
   view3d: any = {
-    models: {}
+    models: {},
   };
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
@@ -66,7 +67,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     public fileService: FileService,
     private modalSrv: ModalService,
     private dictateService: DictateService,
-    public modalService: ModalService,
+    public modalService: ModalService
   ) {
     this.view3dModelsActions.push({
       callback: this.add3dModel.bind(this),
@@ -252,7 +253,7 @@ export class UechatComponent implements OnInit, OnDestroy {
       this.graphRecomputeBoundingBox();
     }
 
-    if (viewName == "images") {
+    if (viewName == 'images') {
       this.load3dModelLists();
     }
   }
@@ -361,7 +362,11 @@ export class UechatComponent implements OnInit, OnDestroy {
 
   static beatyfull(texto: string) {
     try {
-      return JSON.stringify(JSON.parse(texto), null, 4);
+      if (typeof texto == 'string') {
+        return sortify(JSON.parse(texto));
+      } else {
+        return sortify(texto);
+      }
     } catch (err) {
       return texto;
     }
@@ -520,14 +525,13 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.view3d.models = {};
 
     const elem = {
-      url: "/path/to/file.fbx",
-      name: "FBX",
+      url: '/path/to/file.fbx',
+      name: 'FBX',
       checked: false,
-      otherData: {}
+      otherData: {},
     };
 
     this.view3d.models['1'] = elem;
-    
   }
 
   async open3dModel(oneFile: ElementPairItemData) {
@@ -545,6 +549,6 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   async add3dModel() {
-    console.log("add3dModel");
+    console.log('add3dModel');
   }
 }

@@ -12,8 +12,8 @@
     "build_local": "ng build --output-hashing=bundles && npm run bip",
     "watch_local": "ng build --watch --configuration development",
     "test": "ng test",
-    "start": "node app.mjs",
-    "start_live": "npx nodemon app.mjs",
+    "start_no_reload": "node app.mjs",
+    "start": "npx nodemon app.mjs",
     "deployflex": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml && npm run bip",
     "deploy": "npm run build_local && gcloud app deploy --verbosity=debug --quiet appstd.yaml && npm run bip"
   },

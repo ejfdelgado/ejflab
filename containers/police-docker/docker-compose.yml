@@ -2,7 +2,7 @@ version: "3"
 # $ENV:HOME = 'c:/Users/MT DIAMOND'
 # echo $ENV:HOME
 # docker compose up -d
-# docker compose up -d police_speech_to_text
+# docker compose up -d police_speech_to_text police_mysql
 # docker compose down
 # docker-compose logs -f police_nodejs
 # docker-compose logs -f image_node_server

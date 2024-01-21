@@ -122,7 +122,7 @@ export class UeSocketService {
 
   static selectScenarioSample(): SelectScenarioData {
     return {
-      name: 'caso1-cooperante',
+      name: 'caso1-cooperante-si',
     };
   }
 

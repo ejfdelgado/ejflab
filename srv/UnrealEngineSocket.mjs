@@ -176,7 +176,7 @@ export class UnrealEngineSocket {
             };
             const buscarParticipantesEventHandler = async (inicial) => {
                 try {
-                    echoCommand("buscarParticipantes", payload);
+                    echoCommand("buscarParticipantes", inicial);
                     const databaseClient = await UnrealEngineSocket.getDataBaseClient();
                     const response = await databaseClient.getAllParticipantsByLastNameLetter(inicial);
                     io.to(socket.id).emit('buscarParticipantesResponse', JSON.stringify(response));
@@ -362,7 +362,7 @@ export class UnrealEngineSocket {
             const echoCommand = (command, content) => {
                 const logMessage = `ECHO ${command} ${JSON.stringify(content)}`;
                 console.log(logMessage);
-                io.to(socket.id).emit('personalChat', JSON.stringify(logMessage));
+                io.to(socket.id).emit('personalChat', logMessage);
             };
 
             const moveState = async () => {
