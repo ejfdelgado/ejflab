@@ -9,10 +9,15 @@ import {
 } from '@angular/core';
 import { BasicScene } from './BasicScene';
 
+export interface ItemModelRef {
+  url: string;
+  name: string;
+}
+
 @Component({
   selector: 'app-threejs-gallery',
   templateUrl: './threejs-gallery.component.html',
-  styleUrls: ['./threejs-gallery.component.css']
+  styleUrls: ['./threejs-gallery.component.css'],
 })
 export class ThreejsGalleryComponent implements OnInit, AfterViewInit {
   @ViewChild('mycanvas') canvasRef: ElementRef;
@@ -20,7 +25,7 @@ export class ThreejsGalleryComponent implements OnInit, AfterViewInit {
   scene: BasicScene | null = null;
   bounds: DOMRect | null = null;
 
-  constructor(public cdr: ChangeDetectorRef,) {}
+  constructor(public cdr: ChangeDetectorRef) {}
 
   @HostListener('window:resize', ['$event'])
   public onResize(event: any) {
@@ -61,5 +66,9 @@ export class ThreejsGalleryComponent implements OnInit, AfterViewInit {
     setTimeout(() => {
       this.onResize({});
     }, 0);
+  }
+
+  async addFBXModel(item: ItemModelRef): Promise<void> {
+    console.log(JSON.stringify(item));
   }
 }

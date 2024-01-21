@@ -7,6 +7,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
+import { ThreejsGalleryComponent } from 'src/app/libs/threejs/threejs-gallery/threejs-gallery.component';
 import { ElementPairItemData } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
 import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { DictateService } from 'src/services/dictate-service';
@@ -29,6 +30,7 @@ import sortify from 'srcJs/sortify';
 export class UechatComponent implements OnInit, OnDestroy {
   IMAGES_ROOT = '/assets/word-game/';
   SOUNDS_ROOT = '/assets/police/sounds';
+  @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
   @ViewChild('mySvg') mySvgRef: ElementRef;
   @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
   bindDragEventsThis: any;
@@ -540,7 +542,9 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   async open3dModel(oneFile: ElementPairItemData) {
-    console.log(JSON.stringify(oneFile));
+    const url = oneFile.value.url;
+    const name = oneFile.value.name;
+    this.galleryComponent.addFBXModel({ url, name });
   }
 
   async delete3DModel(pair: ElementPairItemData) {
