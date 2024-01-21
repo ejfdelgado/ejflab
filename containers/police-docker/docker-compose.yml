@@ -13,11 +13,10 @@ version: "3"
 # docker port police_nodejs
 # docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' police_nodejs
 # docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mysql
-# https://127.0.0.1/uechat
-# wss://127.0.0.1/ws
-# NodeServer: http://127.0.0.1:8081/uechat
-# MySqlDatabase: http://localhost:8083/
-# Server speech to text: http://localhost:2700/
+# NodeServer: https://127.0.0.1/uechat
+# MySqlDatabase: https://127.0.0.1/mysql/
+# Node Real Time Server wss://127.0.0.1
+# Server speech to text: http://localhost:2700/ws
 # ssh root@<your_IP_address>
 
 networks:
@@ -87,8 +86,7 @@ services:
     environment:
       PMA_HOST: ${PMA_HOST}
       PMA_PORT: ${PMA_PORT}
-    ports:
-      - 8083:80
+      PMA_ABSOLUTE_URI: https://127.0.0.1/mysql/
     networks:
       mysql-phpmyadmin:
         aliases:
