@@ -13,6 +13,7 @@
     "watch_local": "ng build --watch --configuration development",
     "test": "ng test",
     "start_no_reload": "node app.mjs",
+    "set_env": "export BIN_DIR=bin-local",
     "start": "npx nodemon app.mjs",
     "deployflex": "gcloud app deploy --verbosity=debug --quiet -v v1 app.yaml && npm run bip",
     "deploy": "npm run build_local && gcloud app deploy --verbosity=debug --quiet appstd.yaml && npm run bip"
