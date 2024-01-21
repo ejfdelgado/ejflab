@@ -182,4 +182,13 @@ export class FileService {
     );
     return response;
   }
+
+  async listLocalFiles(path: string) {
+    const URL = `srv/local/ls`;
+    const options: HttpOptionsData = {
+      showIndicator: true,
+    };
+    const response: any = await this.httpSrv.post(URL, { path }, options);
+    return response;
+  }
 }

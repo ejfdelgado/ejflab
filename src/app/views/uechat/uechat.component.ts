@@ -524,14 +524,19 @@ export class UechatComponent implements OnInit, OnDestroy {
   async load3dModelLists() {
     this.view3d.models = {};
 
-    const elem = {
-      url: '/path/to/file.fbx',
-      name: 'FBX',
-      checked: false,
-      otherData: {},
-    };
+    const response = await this.fileService.listLocalFiles('/police/models/');
 
-    this.view3d.models['1'] = elem;
+    const list = response.data;
+
+    for (let i = 0; i < list.length; i++) {
+      const element = list[i];
+      this.view3d.models[`${i}`] = {
+        url: element.path,
+        name: element.name,
+        checked: false,
+        otherData: {},
+      };
+    }
   }
 
   async open3dModel(oneFile: ElementPairItemData) {

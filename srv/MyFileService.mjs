@@ -1,3 +1,5 @@
+import path from "path";
+import fs from "fs";
 import axios from "axios";
 import sharp from "sharp";
 import { Buffer } from 'buffer';
@@ -7,6 +9,7 @@ import { MyConstants } from "../srcJs/MyConstants.js";
 import { General } from "./common/General.mjs";
 import { PassThrough } from "stream";
 import { Gif } from "../srcJs/gif/index.mjs";
+import { ParametrosIncompletosException } from "./MyError.mjs";
 
 const storage = new Storage();
 
@@ -376,5 +379,19 @@ export class MyFileService {
         res.locals.uri = uri;
 
         next();
+    }
+
+    static async listLocalFiles(req, res, next) {
+        const localPath = General.readParam(req, "path");
+        if (localPath == null) {
+            throw new ParametrosIncompletosException("Falta path");
+        }
+        //passsing directoryPath and callback function
+        const fileObjs = fs.readdirSync(`./src/assets${localPath}`, { withFileTypes: true });
+        const response = [];
+        fileObjs.forEach(function (file) {
+            response.push({ name: file.name, path: `/assets${localPath}/${file.name}` });
+        });
+        res.status(200).send({ data: response });
     }
 }

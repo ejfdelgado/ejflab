@@ -68,6 +68,8 @@ app.post('/srv/:pageId/auth', [commonHeaders, checkAuthenticatedSilent, Authoriz
 app.post('/srv/:pageId/file', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.uploadFile), MyFileService.uploadFileResponse]);
 app.post('/srv/:pageId/makefilepub', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.setFilePublicSrv)]);
 app.post('/srv/:pageId/makegif', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(MyFileService.makegif)]);
+app.post('/srv/local/ls', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileService.listLocalFiles)]);
+
 app.use("/", handleErrorsDecorator(MainHandler.handle));// Esto solo funciona sin el npm run angular
 io.on('connection', UnrealEngineSocket.handle(io));
 
