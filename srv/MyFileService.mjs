@@ -382,10 +382,14 @@ export class MyFileService {
     }
 
     static async listLocalFiles(req, res, next) {
-        const localPath = General.readParam(req, "path");
+        let localPath = General.readParam(req, "path");
         if (localPath == null) {
             throw new ParametrosIncompletosException("Falta path");
         }
+        // Use only slashes
+        localPath = localPath.replace(/\\/g, "/");
+        // Avoid end with slash
+        localPath = localPath.replace(/\/\s*$/g, "");
         //passsing directoryPath and callback function
         const fileObjs = fs.readdirSync(`./src/assets${localPath}`, { withFileTypes: true });
         const response = [];
