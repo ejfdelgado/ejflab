@@ -4,7 +4,7 @@ docker compose down
 
 1. Se lanza la última versión correcta:
 
-docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.97
+docker run -p 2222:22 -p 8081:8081 --rm -it ejfdelgado/policiavr:v1.91
 
 2. Se ingresa por ssh para actualizar el código:
 
@@ -13,7 +13,7 @@ root123
 
 3. Se actualiza el código y se compila
 
-cd ~/desarrollo/ejflab && git pull && npm install && npm run build_local
+cd ~/desarrollo/ejflab && git pull && npm install && npm run build_local && rm -rf .angular/cache && rm -rf .git
 
 4. Se sale de ssh y se hace commit de la versión docker:
 
@@ -22,19 +22,19 @@ docker ps
 
 Se debe tomar el id del proceso para reemplazarlo en el siguiente comando después de -p e incrementar la version al final
 
-docker commit -m "use virtual folder" -p bbf48349e2e0  ejfdelgado/policiavr:v1.98
+docker commit -m "fix bug" -p ba0b83c7380d  ejfdelgado/policiavr:v1.100
 
 5. Crear el tag para subir a gcr.io
 
-docker tag ejfdelgado/policiavr:v1.98 gcr.io/ejfexperiments/policiavr:v1.98
+docker tag ejfdelgado/policiavr:v1.100 gcr.io/ejfexperiments/policiavr:v1.100
 
 6. Subirlo a gcr.io
 
-docker push gcr.io/ejfexperiments/policiavr:v1.98
+docker push gcr.io/ejfexperiments/policiavr:v1.100
 
 6.1. Apagar la instancia de docker:
 
-docker stop bbf48349e2e0
+docker stop ba0b83c7380d
 
 7. Actualizar la versión en terraform en run.tf y docker-compose.yml
 
@@ -61,6 +61,6 @@ https://console.cloud.google.com/gcr/images/ejfexperiments/global/policiavr?hl=e
 
 Borrar imagenes viejas:
 docker container ls
-docker image ls
+clear && docker image ls
 
-docker rmi cc7f404fd69c
+docker rmi --force 5d1956ed7319
