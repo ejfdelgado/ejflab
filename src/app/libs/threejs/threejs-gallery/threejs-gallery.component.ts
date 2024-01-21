@@ -7,12 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { BasicScene } from './BasicScene';
-
-export interface ItemModelRef {
-  url: string;
-  name: string;
-}
+import { BasicScene, ItemModelRef } from './BasicScene';
 
 @Component({
   selector: 'app-threejs-gallery',
@@ -69,6 +64,8 @@ export class ThreejsGalleryComponent implements OnInit, AfterViewInit {
   }
 
   async addFBXModel(item: ItemModelRef): Promise<void> {
-    console.log(JSON.stringify(item));
+    if (this.scene != null) {
+      await this.scene.addFBXModel(item);
+    }
   }
 }

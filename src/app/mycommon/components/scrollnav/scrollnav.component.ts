@@ -11,7 +11,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MyColor } from 'srcJs/MyColor.js';
+import { MyColor } from 'srcJs/MyColor';
 
 export interface ScrollNavData {
   testName: string;

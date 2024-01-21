@@ -1,10 +1,13 @@
 import * as THREE from 'three';
 //import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-/**
- * A class to set up some basic scene elements to minimize code in the
- * main execution file.
- */
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+
+export interface ItemModelRef {
+  url: string;
+  name: string;
+}
+
 export class BasicScene extends THREE.Scene {
   // A dat.gui class debugger that is added by default
   //debugger: GUI = null;
@@ -22,6 +25,9 @@ export class BasicScene extends THREE.Scene {
   lightDistance: number = 3;
   // Get some basic params
   bounds: DOMRect;
+  // FBX loader
+  fbxLoader = new FBXLoader();
+  lastObject: any = null;
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -51,39 +57,12 @@ export class BasicScene extends THREE.Scene {
     this.renderer.setSize(this.bounds.width, this.bounds.height);
     // sets up the camera's orbital controls
     this.orbitals = new OrbitControls(this.camera, this.renderer.domElement);
-    // Adds an origin-centered grid for visual reference
-    if (addGridHelper) {
-      // Adds a grid
-      this.add(new THREE.GridHelper(10, 10, 'red'));
-      // Adds an axis-helper
-      this.add(new THREE.AxesHelper(3));
-    }
+    this.add(new THREE.AxesHelper(3));
     // set the background color
     this.background = new THREE.Color(0xefefef);
-    // create the lights
-    for (let i = 0; i < this.lightCount; i++) {
-      // Positions evenly in a circle pointed at the origin
-      const light = new THREE.PointLight(0xffffff, 1);
-      let lightX =
-        this.lightDistance * Math.sin(((Math.PI * 2) / this.lightCount) * i);
-      let lightZ =
-        this.lightDistance * Math.cos(((Math.PI * 2) / this.lightCount) * i);
-      // Create a light
-      light.position.set(lightX, this.lightDistance, lightZ);
-      light.lookAt(0, 0, 0);
-      this.add(light);
-      this.lights.push(light);
-      // Visual helpers to indicate light positions
-      this.add(new THREE.PointLightHelper(light, 0.5, 0xff9900));
-    }
-    // Creates the geometry + materials
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshPhongMaterial({ color: 0xff9900 });
-    let cube = new THREE.Mesh(geometry, material);
-    cube.position.y = 0.5;
-    // add to scene
-    this.add(cube);
-    // setup Debugger
+
+    const light = new THREE.AmbientLight(0xffffff);
+    this.add(light);
   }
   /**
    * Given a ThreeJS camera and renderer, resizes the scene if the
@@ -99,5 +78,28 @@ export class BasicScene extends THREE.Scene {
     this.camera.aspect = this.bounds.width / this.bounds.height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.bounds.width, this.bounds.height);
+  }
+
+  async addFBXModel(item: ItemModelRef): Promise<void> {
+    // Remove previous model
+    if (this.lastObject != null) {
+      this.remove(this.lastObject);
+    }
+    return new Promise((resolve, reject) => {
+      this.fbxLoader.load(
+        item.url,
+        (object) => {
+          this.lastObject = object;
+          this.add(object);
+          resolve();
+        },
+        (xhr) => {
+          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
   }
 }
