@@ -62,3 +62,5 @@ gsutil cors set cors.json gs://labs-pro-public
 gcloud storage buckets update gs://labs-pro-public --cors-file=cors.json
 
 gcloud storage buckets describe gs://labs-pro-public --format="default(cors)"
+
+ssh-keygen -t ed25519 -C "edgar.jose.fernando.delgado@gmail.com"
