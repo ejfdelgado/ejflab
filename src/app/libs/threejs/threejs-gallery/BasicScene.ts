@@ -61,8 +61,13 @@ export class BasicScene extends THREE.Scene {
     // set the background color
     this.background = new THREE.Color(0xefefef);
 
-    const light = new THREE.AmbientLight(0xffffff);
+    const light = new THREE.AmbientLight(0xefefef, 2);
+    const hemiLight = new THREE.HemisphereLight( 0xefefef, 0xefefef, 2 ); 
+    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.2 );
+
+    this.add( directionalLight );
     this.add(light);
+    //this.add(hemiLight);
   }
   /**
    * Given a ThreeJS camera and renderer, resizes the scene if the
@@ -122,6 +127,14 @@ export class BasicScene extends THREE.Scene {
     controls.update();
   }
 
+  disableBackFaceCullingDoubleSide(model: any) {
+    model.traverse(function (node: any) {
+      if (node.isMesh) {
+        node.material.side = THREE.DoubleSide;
+      }
+    });
+  }
+
   async addFBXModel(item: ItemModelRef): Promise<void> {
     // Remove previous model
     if (this.lastObject != null) {
@@ -132,6 +145,7 @@ export class BasicScene extends THREE.Scene {
         item.url,
         (object) => {
           this.lastObject = object;
+          this.disableBackFaceCullingDoubleSide(object);
           this.add(object);
           this.fitCameraToSelection(this.camera, this.orbitals, [object]);
           resolve();
