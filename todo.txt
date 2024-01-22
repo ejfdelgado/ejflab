@@ -4,9 +4,8 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 - desarrollar arbol completo de guiones
 
+- agregar tensorflow con mano
 - desarrollar ejecución de animación a un npc especifico desde servidor node
-- cull face double en galeria
-- iluminacion adecuada para ver modelos ok
 
 - crear virtual "me" and "other"
 

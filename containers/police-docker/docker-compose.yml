@@ -2,6 +2,7 @@ version: "3"
 # $ENV:HOME = 'c:/Users/MT DIAMOND'
 # echo $ENV:HOME
 # docker compose up -d
+# docker compose up -d nginx image_node_server
 # docker compose up -d police_speech_to_text police_mysql
 # docker compose down
 # docker-compose logs -f police_nodejs
@@ -114,7 +115,7 @@ services:
           - nginx
 
   image_node_server:
-    image: gcr.io/ejfexperiments/policiavr:v1.101
+    image: gcr.io/ejfexperiments/policiavr:v1.102
     container_name: image_node_server
     environment:
       USE_CACHE_FILES: "0"
