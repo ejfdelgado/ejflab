@@ -5,7 +5,8 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 - desarrollar arbol completo de guiones
 
 - desarrollar ejecución de animación a un npc especifico desde servidor node
-- agregar la galería de fbx
+- cull face double en galeria
+- iluminacion adecuada para ver modelos ok
 
 - crear virtual "me" and "other"
 
