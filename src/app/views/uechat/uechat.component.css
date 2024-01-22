@@ -137,7 +137,7 @@
 
 .view3d app-threejs-gallery {
   flex: 1;
-  position:relative;
+  position: relative;
 }
 
 .view3d app-scrollfiles {
@@ -146,4 +146,20 @@
 
 .subtitles_container.shortView {
   right: 300px;
+}
+
+.backgrounds.blanco {
+  background-color: #FFFFFF;
+}
+
+.backgrounds.negro {
+  background-color: #000000;
+}
+
+.backgrounds.rojo {
+  background-color: #FF0000;
+}
+
+.backgrounds.azul {
+  background-color: #0000FF;
 }

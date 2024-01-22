@@ -29,6 +29,8 @@ import sortify from 'srcJs/sortify';
   providers: [DictateService],
 })
 export class UechatComponent implements OnInit, OnDestroy {
+  //DEFAULT_SCENARIO = 'caso1-cooperante-si';
+  DEFAULT_SCENARIO = 'color';
   IMAGES_ROOT = 'assets/word-game/';
   SOUNDS_ROOT = 'assets/police/sounds';
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
@@ -60,6 +62,9 @@ export class UechatComponent implements OnInit, OnDestroy {
   transcriptSpeechToText = '';
   view3d: any = {
     models: {},
+  };
+  colorGame: any = {
+    color: 'negro',
   };
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
@@ -482,7 +487,7 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.emit(
       'selectScenario',
       JSON.stringify({
-        name: 'caso1-cooperante-si',
+        name: this.DEFAULT_SCENARIO,
       })
     );
   }

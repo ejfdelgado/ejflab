@@ -1,4 +1,4 @@
-<div class="full_screen">
+<div class="full_screen backgrounds" [ngClass]="modelState.color">
     <div class="menu">
         <button (click)="selectView('grafo')" class="mat-menu-item manito"
             [ngClass]="{'highlight': selectedView == 'grafo'}">
@@ -14,6 +14,10 @@
             [ngClass]="{'highlight': selectedView == 'chat'}">
             <mat-icon>chat</mat-icon>
             <span>Consola de control & log</span>
+        </button>
+        <button (click)="selectView('vr')" class="mat-menu-item manito" [ngClass]="{'highlight': selectedView == 'vr'}">
+            <mat-icon>chat</mat-icon>
+            <span>VR</span>
         </button>
     </div>
     <div *ngIf="selectedView == 'grafo'">
@@ -100,6 +104,9 @@
         <app-scrollfiles [archivos]="view3d.models" (openFile)="open3dModel($event)"
             (deleteFile)="delete3DModel($event)" [actions]="view3dModelsActions">
         </app-scrollfiles>
+    </div>
+    <div class="content fill view3d" *ngIf="selectedView == 'vr'">
+
     </div>
     <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">
         <div class="button_container">
