@@ -18,6 +18,7 @@ import { CollisionsEngine } from 'srcJs/CollisionsEngine';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { MyConstants } from 'srcJs/MyConstants';
+import { MyDates } from 'srcJs/MyDates';
 import { SimpleObj } from 'srcJs/SimpleObj';
 import sortify from 'srcJs/sortify';
 
@@ -358,8 +359,18 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   receiveChatMessage(key: string, message: any) {
-    console.log(`[${key}]`);
-    this.messages.push(`[${key}] ` + UechatComponent.beatyfull(message));
+    //console.log(`[${key}]`);
+    // Put it on top
+    const ahora = new Date();
+    ahora.setHours(ahora.getHours() - 5);
+    const fecha = MyDates.getDayAsContinuosNumberHmmSS(ahora);
+    this.messages.unshift(
+      `${fecha} [${key}] ` + UechatComponent.beatyfull(message)
+    );
+    const MAX_LENGTH = 500;
+    if (this.messages.length > MAX_LENGTH) {
+      this.messages.splice(MAX_LENGTH, this.messages.length - MAX_LENGTH);
+    }
   }
 
   static beatyfull(texto: string) {
