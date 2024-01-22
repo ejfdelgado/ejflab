@@ -1,3 +1,4 @@
+import { MyConstants } from 'srcJs/MyConstants';
 import * as THREE from 'three';
 //import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
@@ -62,10 +63,10 @@ export class BasicScene extends THREE.Scene {
     this.background = new THREE.Color(0xefefef);
 
     const light = new THREE.AmbientLight(0xefefef, 2);
-    const hemiLight = new THREE.HemisphereLight( 0xefefef, 0xefefef, 2 ); 
-    const directionalLight = new THREE.DirectionalLight( 0xffffff, 0.2 );
+    const hemiLight = new THREE.HemisphereLight(0xefefef, 0xefefef, 2);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.2);
 
-    this.add( directionalLight );
+    this.add(directionalLight);
     this.add(light);
     //this.add(hemiLight);
   }
@@ -141,8 +142,9 @@ export class BasicScene extends THREE.Scene {
       this.remove(this.lastObject);
     }
     return new Promise((resolve, reject) => {
+      const url = `${MyConstants.SRV_ROOT}${item.url.replace(/^\//g, '')}`;
       this.fbxLoader.load(
-        item.url,
+        url,
         (object) => {
           this.lastObject = object;
           this.disableBackFaceCullingDoubleSide(object);

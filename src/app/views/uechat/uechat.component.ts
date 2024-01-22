@@ -29,8 +29,8 @@ import sortify from 'srcJs/sortify';
   providers: [DictateService],
 })
 export class UechatComponent implements OnInit, OnDestroy {
-  IMAGES_ROOT = '/assets/word-game/';
-  SOUNDS_ROOT = '/assets/police/sounds';
+  IMAGES_ROOT = 'assets/word-game/';
+  SOUNDS_ROOT = 'assets/police/sounds';
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
   @ViewChild('mySvg') mySvgRef: ElementRef;
   @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
@@ -82,11 +82,6 @@ export class UechatComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.bindDragEventsThis = this.bindDragEvents.bind(this);
 
-    ModuloSonido.preload([
-      `${this.SOUNDS_ROOT}/end.mp3`,
-      `${this.SOUNDS_ROOT}/finish.mp3`,
-      `${this.SOUNDS_ROOT}/mario-coin.mp3`,
-    ]);
     this.socketService.on('chatMessage', (content: string) => {
       this.receiveChatMessage('chatMessage', content);
     });
@@ -102,10 +97,12 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('sound', (content: string) => {
       const argumento = JSON.parse(content);
       if (typeof argumento == 'string') {
-        ModuloSonido.play(`${this.SOUNDS_ROOT}/${argumento}`);
+        ModuloSonido.play(
+          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento}`
+        );
       } else if (argumento instanceof Array) {
         ModuloSonido.play(
-          `${this.SOUNDS_ROOT}/${argumento[0]}`,
+          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento[0]}`,
           argumento[1] == 'loop'
         );
       }
@@ -116,9 +113,13 @@ export class UechatComponent implements OnInit, OnDestroy {
     this.socketService.on('mute', (content: string) => {
       const argumento = JSON.parse(content);
       if (typeof argumento == 'string') {
-        ModuloSonido.stop(`${this.SOUNDS_ROOT}/${argumento}`);
+        ModuloSonido.stop(
+          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento}`
+        );
       } else if (argumento instanceof Array) {
-        ModuloSonido.stop(`${this.SOUNDS_ROOT}/${argumento[0]}`);
+        ModuloSonido.stop(
+          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento[0]}`
+        );
       }
     });
     this.socketService.on('popupopen', async (content: string) => {
