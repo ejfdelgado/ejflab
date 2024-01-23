@@ -270,7 +270,9 @@ export class HttpService {
     try {
       const respuesta = await new Promise<Type | null>((resolve, reject) => {
         this.http
-          .post<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload)
+          .post<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload, {headers: {
+            "x-avoid-token": options?.avoidToken === true ? "yes" : "no"
+          }})
           .pipe(
             catchError((error) => {
               if (!options || options.showError !== false) {
