@@ -106,7 +106,7 @@
         </app-scrollfiles>
     </div>
     <div class="content fill view3d" *ngIf="selectedView == 'vr'">
-
+        <app-threejs-vr #vr></app-threejs-vr>
     </div>
     <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">
         <div class="button_container">

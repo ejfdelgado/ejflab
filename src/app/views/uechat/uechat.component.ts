@@ -2,12 +2,14 @@ import {
   ChangeDetectorRef,
   Component,
   ElementRef,
+  HostListener,
   OnDestroy,
   OnInit,
   ViewChild,
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ThreejsGalleryComponent } from 'src/app/libs/threejs/threejs-gallery/threejs-gallery.component';
+import { ThreejsVrComponent } from 'src/app/libs/threejs/threejs-vr/threejs-vr.component';
 import { ElementPairItemData } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
 import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { DictateService } from 'src/services/dictate-service';
@@ -34,6 +36,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   IMAGES_ROOT = 'assets/word-game/';
   SOUNDS_ROOT = 'assets/police/sounds';
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
+  @ViewChild('vr') vr: ThreejsVrComponent;
   @ViewChild('mySvg') mySvgRef: ElementRef;
   @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
   bindDragEventsThis: any;
@@ -575,6 +578,17 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   async add3dModel() {
+    // Este es el botón grande que agrega un modelo que no está en la librería
     console.log('add3dModel');
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    // Get my socket id
+    const socketId = this.socketService.socketId;
+    if (socketId == null) {
+      return;
+    }
+    this.vr.keyBoardEvent(socketId, event.key);
   }
 }

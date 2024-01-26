@@ -100,11 +100,16 @@ interface ClientToServerEvents {
   providedIn: 'root',
 })
 export class UeSocketService {
+  socketId: string | null = null;
   socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(
     MyConstants.SRV_ROOT
   );
 
-  constructor() {}
+  constructor() {
+    this.socket.on('connect', () => {
+      this.socketId = this.socket.id;
+    });
+  }
 
   static createScoreSample(): CreateScoreData {
     return {

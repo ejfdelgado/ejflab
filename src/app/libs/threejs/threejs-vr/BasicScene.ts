@@ -1,6 +1,8 @@
+import { MyConstants } from 'srcJs/MyConstants';
 import * as THREE from 'three';
 //import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
 /**
  * A class to set up some basic scene elements to minimize code in the
  * main execution file.
@@ -22,6 +24,7 @@ export class BasicScene extends THREE.Scene {
   lightDistance: number = 3;
   // Get some basic params
   bounds: DOMRect;
+  fbxLoader = new FBXLoader();
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -73,24 +76,83 @@ export class BasicScene extends THREE.Scene {
       light.lookAt(0, 0, 0);
       this.add(light);
       this.lights.push(light);
-      // Visual helpers to indicate light positions
-      this.add(new THREE.PointLightHelper(light, 0.5, 0xff9900));
     }
-    // Creates the geometry + materials
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshPhongMaterial({ color: 0xff9900 });
-    let cube = new THREE.Mesh(geometry, material);
-    cube.position.y = 0.5;
-    // add to scene
-    this.add(cube);
-    // setup Debugger
   }
-  /**
-   * Given a ThreeJS camera and renderer, resizes the scene if the
-   * browser window is resized.
-   * @param camera - a ThreeJS PerspectiveCamera object.
-   * @param renderer - a subclass of a ThreeJS Renderer object.
-   */
+
+  getColorFromId(id: string) {
+    // TODO
+    return 0xff9900;
+  }
+
+  async addFBXModel(): Promise<any> {
+    // Remove previous model
+    return new Promise((resolve, reject) => {
+      const url = `${MyConstants.SRV_ROOT}assets/3d/character/simple.fbx`;
+      this.fbxLoader.load(
+        url,
+        (object: any) => {
+          resolve(object);
+        },
+        (xhr: any) => {
+          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+        },
+        (error: any) => {
+          reject(error);
+        }
+      );
+    });
+  }
+
+  setMaterial(object: THREE.Object3D, material: THREE.MeshBasicMaterial) {
+    for (let i = 0; i < object.children.length; i++) {
+      const child = object.children[i];
+      if ((child as THREE.Mesh).isMesh) {
+        const mesh = child as THREE.Mesh;
+        mesh.material = material;
+      }
+    }
+  }
+
+  async createCubeWithId(id: string): Promise<THREE.Object3D<THREE.Event>> {
+    //Assign a color for the given id hash
+    const material = new THREE.MeshPhongMaterial({
+      color: this.getColorFromId(id),
+    });
+    let cube = await this.addFBXModel();
+    cube.name = id;
+    this.setMaterial(cube, material);
+    //cube.position.y = 0.5;
+    this.add(cube);
+    return cube;
+  }
+
+  async getCubeById(id: string): Promise<THREE.Object3D<THREE.Event>> {
+    // Check if the entity exists
+    let cube = this.getObjectByName(id);
+    if (!cube) {
+      cube = await this.createCubeWithId(id);
+    }
+    return cube;
+  }
+
+  async getEntityValue(id: string, key: string): Promise<any> {
+    const cube = await this.getCubeById(id);
+    if (key == 'position') {
+      return Object.assign({}, cube.position);
+    } else if (key == 'rotation') {
+      return Object.assign({}, cube.rotation);
+    }
+  }
+
+  async setEntityValue(id: string, key: string, value: any) {
+    const cube = await this.getCubeById(id);
+    if (key == 'position') {
+      Object.assign(cube.position, value);
+    } else if (key == 'rotation') {
+      Object.assign(cube.rotation, value);
+    }
+  }
+
   setBounds(bounds: DOMRect) {
     this.bounds = bounds;
     if (this.camera == null || this.renderer == null) {
