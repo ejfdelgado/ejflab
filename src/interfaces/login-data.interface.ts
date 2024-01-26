@@ -25,6 +25,7 @@ export interface HttpOptionsData {
   rawString?: boolean;
   isBlob?: boolean;
   useCache?: boolean;
+  avoidToken?: boolean;
 }
 
 export interface BaseComponentData {

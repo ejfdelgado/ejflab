@@ -31,8 +31,8 @@ import sortify from 'srcJs/sortify';
   providers: [DictateService],
 })
 export class UechatComponent implements OnInit, OnDestroy {
-  //DEFAULT_SCENARIO = 'caso1-cooperante-si';
-  DEFAULT_SCENARIO = 'color';
+  DEFAULT_SCENARIO = 'caso1-cooperante-si';
+  //DEFAULT_SCENARIO = 'color';
   IMAGES_ROOT = 'assets/word-game/';
   SOUNDS_ROOT = 'assets/police/sounds';
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;

@@ -20,7 +20,12 @@ export class JwtInterceptor implements HttpInterceptor {
     request: HttpRequest<any>,
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
-    return from(this.auth.getIdToken()).pipe(
+    const avoidToken = request.headers.get("x-avoid-token");
+    let promesaToken : Promise<string | null> = Promise.resolve(null);
+    if (avoidToken == "no") {
+      promesaToken = this.auth.getIdToken();
+    }
+    return from(promesaToken).pipe(
       switchMap((token) => {
         if (token == null) {
           const headers = request.headers.append('HTTP_REFERER', location.href);

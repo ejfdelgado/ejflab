@@ -187,6 +187,7 @@ export class FileService {
     const URL = `srv/local/ls`;
     const options: HttpOptionsData = {
       showIndicator: true,
+      avoidToken: true
     };
     const response: any = await this.httpSrv.post(URL, { path }, options);
     return response;
