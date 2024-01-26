@@ -122,8 +122,13 @@ export class BasicScene extends THREE.Scene {
     cube.name = id;
     this.setMaterial(cube, material);
     //cube.position.y = 0.5;
-    this.add(cube);
-    return cube;
+    const check = this.getObjectByName(id);
+    if (!check) {
+      this.add(cube);
+      return cube;
+    } else {
+      return check;
+    }
   }
 
   async getCubeById(id: string): Promise<THREE.Object3D<THREE.Event>> {

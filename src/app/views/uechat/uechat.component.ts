@@ -351,7 +351,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.setPath();
 
     if (parsed.key.startsWith('avatar.')) {
-      this.listenAvatarChanges(parsed.key, parsed.val);
+      this.listenAvatarChanges(parsed.avatar, parsed.prop, parsed.val);
       return;
     }
 
@@ -603,10 +603,26 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
 
   async getEntityValue(id: string, key: string): Promise<any> {
     // Read the local model
-    return Promise.resolve(
-      SimpleObj.getValue(this.modelState, `avatar.${id}.${key}`)
-    );
+    const defaultValues: any = {
+      rotation: { _x: 0, _y: 0, _z: 0, x: 0, y: 0, z: 0 },
+      position: { x: 0, y: 0, z: 0 },
+    };
+    let actual = SimpleObj.getValue(this.modelState, `avatar.${id}.${key}`);
+    if (!actual) {
+      // Initialize it
+      this.socketService.emit(
+        'stateWrite',
+        JSON.stringify({
+          key: `avatar.${id}.${key}`,
+          val: defaultValues[key],
+          mine: false,
+        })
+      );
+      actual = SimpleObj.getValue(defaultValues, `${key}`);
+    }
+    return actual;
   }
+
   async setEntityValue(id: string, key: string, value: any): Promise<void> {
     // emit the changes to socket
     this.socketService.emit(
@@ -619,13 +635,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     );
   }
 
-  listenAvatarChanges(keyPath: string, val: any) {
-    // avatar.jbf6eOlZKM0Yf-Q3AAAF.rotation
-    const partes = /^avatar\.([^.]+)\.(.+)$/.exec(keyPath);
-    if (partes != null) {
-      const id = partes[1];
-      const key = partes[2];
-      this.vr.setEntityValue(id, key, val);
-    }
+  listenAvatarChanges(avatar: string, prop: string, val: any) {
+    this.vr?.setEntityValue(avatar, prop, val);
   }
 }

@@ -2,12 +2,15 @@
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-- desarrollar arbol completo de guiones
+- extraer del proyecto lo del container
 
+Teach:
+["stateWrite",{"key":"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation","val":{"_x":0,"_y":0,"_z":0,"x":0,"y":0,"z":0},"mine":false}]
+["stateChanged","{\"key\":\"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation\",\"val\":{\"_x\":0,\"_y\":-0.06981317007977318,\"_z\":0,\"x\":0,\"y\":-0.06981317007977318,\"z\":0},\"avatar\":\"ZaBm-JUfOFUhAWRqAAAV\",\"prop\":\"rotation\"}"]
+
+- desarrollar arbol completo de guiones
 - agregar tensorflow con mano
 - desarrollar ejecución de animación a un npc especifico desde servidor node
-
-- crear virtual "me" and "other"
 
 Bugs:
   - permitir configurar el Live de st.voice o st.touch o points

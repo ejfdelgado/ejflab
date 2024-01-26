@@ -40,10 +40,7 @@ export class UnrealEngineSocket {
     static ONE_TIME_ARROWS = {};
     static GLOBAL_ONE_TIME_ARROWS = {};
     static collisionEngine = new CollisionsEngine();
-    static INITIAL_AVATAR_VALUE = {
-        rotation: { _x: 0, _y: 0, _z: 0, x: 0, y: 0, z: 0 },
-        position: { x: 0, y: 0, z: 0 }
-    };
+    static INITIAL_AVATAR_VALUE = {};
 
     static preprocessSinonimosVoz = (sinonimos) => {
         const result = {};
@@ -144,7 +141,13 @@ export class UnrealEngineSocket {
                     key: keyWrited,
                     val: val,
                 };
-                this.state.writeKey(keyWrited, val)
+                this.state.writeKey(keyWrited, val);
+                // ease for UE client
+                const partes = /^avatar\.([^.]+)\.(.+)$/.exec(keyWrited);
+                if (partes != null) {
+                    valWrited.avatar = partes[1];
+                    valWrited.prop = partes[2];
+                }
                 io.emit('stateChanged', JSON.stringify(valWrited));
             };
 
