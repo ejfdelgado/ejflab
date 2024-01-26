@@ -9,7 +9,10 @@ import {
 } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ThreejsGalleryComponent } from 'src/app/libs/threejs/threejs-gallery/threejs-gallery.component';
-import { ThreejsVrComponent } from 'src/app/libs/threejs/threejs-vr/threejs-vr.component';
+import {
+  EntityValueHolder,
+  ThreejsVrComponent,
+} from 'src/app/libs/threejs/threejs-vr/threejs-vr.component';
 import { ElementPairItemData } from 'src/app/mycommon/components/scrollfile/scrollfile.component';
 import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { DictateService } from 'src/services/dictate-service';
@@ -30,7 +33,7 @@ import sortify from 'srcJs/sortify';
   styleUrls: ['./uechat.component.css'],
   providers: [DictateService],
 })
-export class UechatComponent implements OnInit, OnDestroy {
+export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   DEFAULT_SCENARIO = 'caso1-cooperante-si';
   //DEFAULT_SCENARIO = 'color';
   IMAGES_ROOT = 'assets/word-game/';
@@ -331,7 +334,7 @@ export class UechatComponent implements OnInit, OnDestroy {
   }
 
   receiveStateChanged(key: string, content: string) {
-    console.log(`[${key}]`);
+    //console.log(`[${key}]`);
     const parsed = JSON.parse(content);
     if (parsed.key == '') {
       this.modelState = parsed.val;
@@ -346,6 +349,11 @@ export class UechatComponent implements OnInit, OnDestroy {
       }
     }
     this.setPath();
+
+    if (parsed.key.startsWith('avatar.')) {
+      this.listenAvatarChanges(parsed.key, parsed.val);
+      return;
+    }
 
     this.graphHtml = this.getGraph();
     this.graphRecomputeBoundingBox();
@@ -589,6 +597,35 @@ export class UechatComponent implements OnInit, OnDestroy {
     if (socketId == null) {
       return;
     }
-    this.vr.keyBoardEvent(socketId, event.key);
+    const entityHolder: EntityValueHolder = this;
+    this.vr.keyBoardEvent(socketId, event.key, entityHolder);
+  }
+
+  async getEntityValue(id: string, key: string): Promise<any> {
+    // Read the local model
+    return Promise.resolve(
+      SimpleObj.getValue(this.modelState, `avatar.${id}.${key}`)
+    );
+  }
+  async setEntityValue(id: string, key: string, value: any): Promise<void> {
+    // emit the changes to socket
+    this.socketService.emit(
+      'stateWrite',
+      JSON.stringify({
+        key: `avatar.${id}.${key}`,
+        val: value,
+        mine: false,
+      })
+    );
+  }
+
+  listenAvatarChanges(keyPath: string, val: any) {
+    // avatar.jbf6eOlZKM0Yf-Q3AAAF.rotation
+    const partes = /^avatar\.([^.]+)\.(.+)$/.exec(keyPath);
+    if (partes != null) {
+      const id = partes[1];
+      const key = partes[2];
+      this.vr.setEntityValue(id, key, val);
+    }
   }
 }

@@ -10,6 +10,7 @@ import { MyUtilities } from "../srcJs/MyUtilities.js";
 import mm from 'music-metadata';
 import { CsvFormatterFilters } from "../srcJs/CsvFormatterFilters.js";
 import { CollisionsEngine } from "../srcJs/CollisionsEngine.js";
+import { SimpleObj } from "../srcJs/SimpleObj.js";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -39,6 +40,10 @@ export class UnrealEngineSocket {
     static ONE_TIME_ARROWS = {};
     static GLOBAL_ONE_TIME_ARROWS = {};
     static collisionEngine = new CollisionsEngine();
+    static INITIAL_AVATAR_VALUE = {
+        rotation: { _x: 0, _y: 0, _z: 0, x: 0, y: 0, z: 0 },
+        position: { x: 0, y: 0, z: 0 }
+    };
 
     static preprocessSinonimosVoz = (sinonimos) => {
         const result = {};
@@ -143,6 +148,9 @@ export class UnrealEngineSocket {
                 io.emit('stateChanged', JSON.stringify(valWrited));
             };
 
+            // Sends initialization for avatar
+            affectModel(`avatar.${socket.id}`, JSON.parse(JSON.stringify(UnrealEngineSocket.INITIAL_AVATAR_VALUE)));
+
             const disconnectHandler = () => {
                 clients.pop(socket.id);
                 const clientDisconnectedMsg = 'User disconnected ' + (socket.id) + ', total: ' + clients.length;
@@ -236,6 +244,11 @@ export class UnrealEngineSocket {
 
                     await UnrealEngineSocket.reloadVoiceHelpers(modelo?.scene?.homologacion_voz || "homologacion_voz.json", modelo?.scene?.sinonimos_voz || "caso1_sinonimos_voz.json");
                     // Se envia la raíz del estado para ser reemplazado.
+                    // Se recrea el estado inicial de cada avatar
+                    for (let i = 0; i < clients.length; i++) {
+                        const clientSocketId = clients[i];
+                        SimpleObj.recreate(modelo, `avatar.${clientSocketId}`, JSON.parse(JSON.stringify(UnrealEngineSocket.INITIAL_AVATAR_VALUE)), false);
+                    }
                     io.emit('stateChanged', JSON.stringify({
                         key: "",
                         val: modelo

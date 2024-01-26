@@ -8,12 +8,19 @@ import {
 } from '@angular/core';
 import { BasicScene } from './BasicScene';
 
+export interface EntityValueHolder {
+  getEntityValue(id: string, key: string): Promise<any>;
+  setEntityValue(id: string, key: string, value: any): Promise<void>;
+}
+
 @Component({
   selector: 'app-threejs-vr',
   templateUrl: './threejs-vr.component.html',
   styleUrls: ['./threejs-vr.component.css'],
 })
-export class ThreejsVrComponent implements OnInit, AfterViewInit {
+export class ThreejsVrComponent
+  implements OnInit, AfterViewInit, EntityValueHolder
+{
   @ViewChild('mycanvas') canvasRef: ElementRef;
   @ViewChild('myparent') prentRef: ElementRef;
   scene: BasicScene | null = null;
@@ -76,43 +83,49 @@ export class ThreejsVrComponent implements OnInit, AfterViewInit {
     }
   }
 
-  async keyBoardEvent(id: string, keyAction: string) {
+  async keyBoardEvent(
+    id: string,
+    keyAction: string,
+    entityHolder: EntityValueHolder
+  ) {
     const ROTATION_SPEED = 4;
     const POSITION_SPEED = 0.1;
     if (keyAction == 'ArrowUp') {
       //Go forward
-      const rotation = await this.getEntityValue(id, 'rotation');
-      const position = await this.getEntityValue(id, 'position');
+      const rotation = await entityHolder.getEntityValue(id, 'rotation');
+      const position = await entityHolder.getEntityValue(id, 'position');
       // compute vector front
       const dx = Math.cos(rotation._y);
       const dz = Math.sin(rotation._y);
       position.x = position.x - dx * POSITION_SPEED;
       position.z = position.z + dz * POSITION_SPEED;
-      await this.setEntityValue(id, 'position', position);
+      await entityHolder.setEntityValue(id, 'position', position);
     } else if (keyAction == 'ArrowRight') {
       // Turn right
-      const rotation = await this.getEntityValue(id, 'rotation');
+      const rotation = await entityHolder.getEntityValue(id, 'rotation');
       //console.log(`rotation = ${JSON.stringify(rotation)}`);
       const actualY = rotation._y;
       rotation.y = actualY - (ROTATION_SPEED * Math.PI) / 180;
-      await this.setEntityValue(id, 'rotation', rotation);
+      rotation._y = rotation.y;
+      await entityHolder.setEntityValue(id, 'rotation', rotation);
     } else if (keyAction == 'ArrowLeft') {
       //Turn left
-      const rotation = await this.getEntityValue(id, 'rotation');
+      const rotation = await entityHolder.getEntityValue(id, 'rotation');
       //console.log(`rotation = ${JSON.stringify(rotation)}`);
       const actualY = rotation._y;
       rotation.y = actualY + (ROTATION_SPEED * Math.PI) / 180;
-      await this.setEntityValue(id, 'rotation', rotation);
+      rotation._y = rotation.y;
+      await entityHolder.setEntityValue(id, 'rotation', rotation);
     } else if (keyAction == 'ArrowDown') {
       //Go backwards
-      const rotation = await this.getEntityValue(id, 'rotation');
-      const position = await this.getEntityValue(id, 'position');
+      const rotation = await entityHolder.getEntityValue(id, 'rotation');
+      const position = await entityHolder.getEntityValue(id, 'position');
       // compute vector front
       const dx = Math.cos(rotation._y);
       const dz = Math.sin(rotation._y);
       position.x = position.x + dx * POSITION_SPEED;
       position.z = position.z - dz * POSITION_SPEED;
-      await this.setEntityValue(id, 'position', position);
+      await entityHolder.setEntityValue(id, 'position', position);
     }
   }
 }
