@@ -4,8 +4,10 @@ import {
   ElementRef,
   HostListener,
   OnInit,
+  Renderer2,
   ViewChild,
 } from '@angular/core';
+import * as THREE from 'three';
 import { BasicScene } from './BasicScene';
 
 export interface EntityValueHolder {
@@ -26,7 +28,7 @@ export class ThreejsVrComponent
   scene: BasicScene | null = null;
   bounds: DOMRect | null = null;
 
-  constructor() {}
+  constructor(private renderer: Renderer2) {}
 
   @HostListener('window:resize', ['$event'])
   public onResize(event: any) {
@@ -44,17 +46,34 @@ export class ThreejsVrComponent
     const theCanvas = this.canvasRef.nativeElement;
     this.scene = new BasicScene(theCanvas, this.bounds);
     this.scene.initialize();
+    const vrButton = this.scene.vrButton;
+    if (vrButton != null) {
+      this.renderer.appendChild(this.prentRef.nativeElement, vrButton);
+    }
     this.loop();
   }
 
   loop() {
     if (this.scene != null && this.scene.camera) {
+      const scene: BasicScene = this.scene;
+      const camera: THREE.PerspectiveCamera = this.scene.camera;
+      // This is used for non VR
+      /*
       this.scene.camera?.updateProjectionMatrix();
       this.scene.renderer?.render(this.scene, this.scene.camera);
       this.scene.orbitals?.update();
       requestAnimationFrame(() => {
         this.loop();
       });
+      */
+
+      // This is used for VR
+      if (scene.renderer) {
+        const renderer: THREE.WebGLRenderer = scene.renderer;
+        renderer.setAnimationLoop(() => {
+          renderer.render(scene, camera);
+        });
+      }
     }
   }
 

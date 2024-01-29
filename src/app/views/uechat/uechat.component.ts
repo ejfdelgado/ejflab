@@ -597,8 +597,10 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     if (socketId == null) {
       return;
     }
-    const entityHolder: EntityValueHolder = this;
-    this.vr.keyBoardEvent(socketId, event.key, entityHolder);
+    if (this.vr) {
+      const entityHolder: EntityValueHolder = this;
+      this.vr.keyBoardEvent(socketId, event.key, entityHolder);
+    }
   }
 
   async getEntityValue(id: string, key: string): Promise<any> {

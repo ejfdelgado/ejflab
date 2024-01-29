@@ -3,6 +3,9 @@ import * as THREE from 'three';
 //import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { VRButton } from 'three/examples/jsm/webxr/VRButton';
+import { XRControllerModelFactory } from 'three/examples/jsm/webxr/XRControllerModelFactory';
+import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory';
 /**
  * A class to set up some basic scene elements to minimize code in the
  * main execution file.
@@ -13,7 +16,7 @@ export class BasicScene extends THREE.Scene {
   // Setups a scene camera
   camera: THREE.PerspectiveCamera | null = null;
   // setup renderer
-  renderer: THREE.Renderer | null = null;
+  renderer: THREE.WebGLRenderer | null = null;
   // setup Orbitals
   orbitals: OrbitControls | null = null;
   // Holds the lights for easy reference
@@ -24,7 +27,16 @@ export class BasicScene extends THREE.Scene {
   lightDistance: number = 3;
   // Get some basic params
   bounds: DOMRect;
+  // VR Button
+  vrButton: HTMLElement | null = null;
   fbxLoader = new FBXLoader();
+
+  controller1: THREE.XRTargetRaySpace | null;
+  controller2: THREE.XRTargetRaySpace | null;
+  controllerGrip1: THREE.XRGripSpace | null;
+  controllerGrip2: THREE.XRGripSpace | null;
+  hand1: THREE.XRHandSpace | null;
+  hand2: THREE.XRHandSpace | null;
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -47,13 +59,21 @@ export class BasicScene extends THREE.Scene {
     this.camera.position.y = 12;
     this.camera.position.x = 12;
     // setup renderer
-    this.renderer = new THREE.WebGLRenderer({
+    const renderer: THREE.WebGLRenderer = new THREE.WebGLRenderer({
       canvas: this.canvasRef,
       alpha: true,
+      antialias: true,
     });
-    this.renderer.setSize(this.bounds.width, this.bounds.height);
+    this.renderer = renderer;
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    renderer.xr.enabled = true; // Enable VR
+    renderer.setSize(this.bounds.width, this.bounds.height);
+
+    this.vrButton = VRButton.createButton(renderer);
+
     // sets up the camera's orbital controls
-    this.orbitals = new OrbitControls(this.camera, this.renderer.domElement);
+    this.orbitals = new OrbitControls(this.camera, renderer.domElement);
     // Adds an origin-centered grid for visual reference
     if (addGridHelper) {
       // Adds a grid
@@ -77,6 +97,36 @@ export class BasicScene extends THREE.Scene {
       this.add(light);
       this.lights.push(light);
     }
+
+    //Controllers
+    this.controller1 = renderer.xr.getController(0);
+    this.add(this.controller1);
+    this.controller2 = renderer.xr.getController(1);
+    this.add(this.controller2);
+
+    const controllerModelFactory = new XRControllerModelFactory();
+    const handModelFactory = new XRHandModelFactory();
+
+    // Hand 1
+    this.controllerGrip1 = renderer.xr.getControllerGrip(0);
+    this.controllerGrip1.add(
+      controllerModelFactory.createControllerModel(this.controllerGrip1)
+    );
+    this.add(this.controllerGrip1);
+    this.hand1 = renderer.xr.getHand(0);
+    this.hand1.add(handModelFactory.createHandModel(this.hand1));
+
+    this.add(this.hand1);
+
+    // Hand 2
+    this.controllerGrip2 = renderer.xr.getControllerGrip(1);
+    this.controllerGrip2.add(
+      controllerModelFactory.createControllerModel(this.controllerGrip2)
+    );
+    this.add(this.controllerGrip2);
+    this.hand2 = renderer.xr.getHand(1);
+    this.hand2.add(handModelFactory.createHandModel(this.hand2));
+    this.add(this.hand2);
   }
 
   getColorFromId(id: string) {
