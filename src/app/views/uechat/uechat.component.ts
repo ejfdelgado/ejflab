@@ -648,4 +648,20 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     }
     this.setEntityValue(socketId, 'position', event);
   }
+
+  vrRotationChanged(event: any) {
+    const socketId = this.socketService.socketId;
+    if (socketId == null) {
+      return;
+    }
+    event.x = 0;//alrededor de un eje x o z cuando digo "no"
+    event.y = 0;// alrededor del eje vertical cuando digo "si"
+    //event.z = 0;//alrededor de un eje x o z cuando meneo la cabeza
+
+    event._x = event.x;
+    event._y = event.y;
+    event._z = event.z;
+
+    this.setEntityValue(socketId, 'rotation', event);
+  }
 }

@@ -49,9 +49,13 @@ export class ThreejsVrComponent
   @Output()
   vrPosition: EventEmitter<THREE.Vector3> = new EventEmitter();
   vrPositionLowPressure: LowPressure;
+  @Output()
+  vrRotation: EventEmitter<THREE.Vector3> = new EventEmitter();
+  vrRotationLowPressure: LowPressure;
 
   constructor(private renderer: Renderer2) {
-    this.vrPositionLowPressure = new LowPressure(1000, this.vrPosition);
+    this.vrPositionLowPressure = new LowPressure(200, this.vrPosition);
+    this.vrRotationLowPressure = new LowPressure(200, this.vrRotation);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -96,9 +100,14 @@ export class ThreejsVrComponent
         const renderer: THREE.WebGLRenderer = scene.renderer;
         renderer.setAnimationLoop(() => {
           renderer.render(scene, camera);
+          // Emmit position
           const position = new THREE.Vector3();
           position.setFromMatrixPosition(camera.matrixWorld);
           this.vrPositionLowPressure.emit(position);
+          // Emmit rotation
+          const rotation = new THREE.Vector3();
+          camera.getWorldDirection(rotation);
+          this.vrRotationLowPressure.emit(rotation);
         });
       }
     }
