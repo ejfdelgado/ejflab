@@ -47,15 +47,11 @@ export class ThreejsVrComponent
   scene: BasicScene | null = null;
   bounds: DOMRect | null = null;
   @Output()
-  vrPosition: EventEmitter<THREE.Vector3> = new EventEmitter();
-  vrPositionLowPressure: LowPressure;
-  @Output()
-  vrRotation: EventEmitter<THREE.Vector3> = new EventEmitter();
-  vrRotationLowPressure: LowPressure;
+  vrHeadset: EventEmitter<THREE.Vector3> = new EventEmitter();
+  vrHeadsetLowPressure: LowPressure;
 
   constructor(private renderer: Renderer2) {
-    this.vrPositionLowPressure = new LowPressure(200, this.vrPosition);
-    this.vrRotationLowPressure = new LowPressure(200, this.vrRotation);
+    this.vrHeadsetLowPressure = new LowPressure(100, this.vrHeadset);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -103,11 +99,13 @@ export class ThreejsVrComponent
           // Emmit position
           const position = new THREE.Vector3();
           position.setFromMatrixPosition(camera.matrixWorld);
-          this.vrPositionLowPressure.emit(position);
           // Emmit rotation
           const quaternion = new THREE.Quaternion();
           camera.getWorldQuaternion(quaternion);
-          this.vrRotationLowPressure.emit(quaternion);
+          this.vrHeadsetLowPressure.emit({
+            rotation: quaternion,
+            position,
+          });
         });
       }
     }

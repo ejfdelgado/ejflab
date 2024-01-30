@@ -205,8 +205,11 @@ export class BasicScene extends THREE.Scene {
     if (key == 'position') {
       Object.assign(cube.position, value);
     } else if (key == 'rotation') {
+      Object.assign(cube.rotation, value);
+    } else if (key == 'headset') {
+      Object.assign(cube.position, value.position);
       cube.setRotationFromQuaternion(
-        new THREE.Quaternion().fromArray(value, 0)
+        new THREE.Quaternion().fromArray(value.rotation, 0)
       );
     }
   }

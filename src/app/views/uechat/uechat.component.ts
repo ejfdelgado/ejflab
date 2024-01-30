@@ -641,19 +641,11 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.vr?.setEntityValue(avatar, prop, val);
   }
 
-  vrPositionChanged(event: any) {
+  vrHeadsetChanged(event: any) {
     const socketId = this.socketService.socketId;
     if (socketId == null) {
       return;
     }
-    this.setEntityValue(socketId, 'position', event);
-  }
-
-  vrRotationChanged(event: any) {
-    const socketId = this.socketService.socketId;
-    if (socketId == null) {
-      return;
-    }
-    this.setEntityValue(socketId, 'rotation', event);
+    this.setEntityValue(socketId, 'headset', event);
   }
 }
