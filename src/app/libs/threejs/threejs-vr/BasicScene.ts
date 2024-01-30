@@ -11,6 +11,7 @@ import { XRHandModelFactory } from 'three/examples/jsm/webxr/XRHandModelFactory'
  * main execution file.
  */
 export class BasicScene extends THREE.Scene {
+  AXIS_Y = new THREE.Vector3(0, 1, 0);
   // A dat.gui class debugger that is added by default
   //debugger: GUI = null;
   // Setups a scene camera
@@ -204,7 +205,9 @@ export class BasicScene extends THREE.Scene {
     if (key == 'position') {
       Object.assign(cube.position, value);
     } else if (key == 'rotation') {
-      Object.assign(cube.rotation, value);
+      cube.setRotationFromQuaternion(
+        new THREE.Quaternion().fromArray(value, 0)
+      );
     }
   }
 

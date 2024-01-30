@@ -105,9 +105,9 @@ export class ThreejsVrComponent
           position.setFromMatrixPosition(camera.matrixWorld);
           this.vrPositionLowPressure.emit(position);
           // Emmit rotation
-          const rotation = new THREE.Vector3();
-          camera.getWorldDirection(rotation);
-          this.vrRotationLowPressure.emit(rotation);
+          const quaternion = new THREE.Quaternion();
+          camera.getWorldQuaternion(quaternion);
+          this.vrRotationLowPressure.emit(quaternion);
         });
       }
     }
