@@ -71,9 +71,9 @@ app.post('/srv/:pageId/makefilepub', [commonHeaders, checkAuthenticatedSilent, A
 app.post('/srv/:pageId/makegif', [commonHeaders, checkAuthenticatedSilent, AuthorizationSrv.hasPagePermisions([["fil_w"]]), express.json(), handleErrorsDecorator(MyFileService.uploadFile), handleErrorsDecorator(MyFileService.makegif)]);
 
 app.post('/srv/local/ls', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileServiceLocal.listFiles)]);
-app.post('/srv/local/file', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileServiceLocal.uploadFile)]);
-app.delete('/srv/local/file', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.deleteFile)]);
-app.get('/srv/local/file/*', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.readFile)]);
+app.post('/srv/:pageId/localfile', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileServiceLocal.uploadFile)]);
+app.delete('/srv/:pageId/localfile', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.deleteFile)]);
+app.get('/srv/:pageId/localfile/*', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.readFile)]);
 
 app.use("/", handleErrorsDecorator(MainHandler.handle));// Esto solo funciona sin el npm run angular
 io.on('connection', UnrealEngineSocket.handle(io));

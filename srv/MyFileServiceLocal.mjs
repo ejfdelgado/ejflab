@@ -1,6 +1,7 @@
 import fs from "fs";
 import { General } from "./common/General.mjs";
 import { ParametrosIncompletosException } from "./MyError.mjs";
+import { guessMimeType } from "./common/MimeTypeMap.mjs";
 
 const FOLDER_LOCALS = "assets/";
 const PATH_LOCALS = `./src/${FOLDER_LOCALS}`;
@@ -12,7 +13,6 @@ export class MyFileServiceLocal {
     }
 
     static async readFile(req, res, next) {
-        console.log("1");
         const downloadFlag = req.query ? req.query.download : false;
         const encoding = req.query ? req.query.encoding : null;
         const rta = await MyFileServiceLocal.read(req.originalUrl, encoding);
@@ -34,12 +34,14 @@ export class MyFileServiceLocal {
     }
 
     static async readBinary(filePath) {
+        //console.log(`readBinary ${filePath}`);
         filePath = filePath.replace(/^[/]/, "");
         const contents = fs.readFileSync(`${PATH_LOCALS}${filePath}`);
         return contents;
     }
 
     static async readString(filePath, encoding = "utf8") {
+        //console.log(`readString ${encoding} ${filePath}`);
         const respuesta = await MyFileServiceLocal.readBinary(filePath);
         if (respuesta != null) {
             return respuesta.toString(encoding);
@@ -48,6 +50,7 @@ export class MyFileServiceLocal {
     }
 
     static async read(originalUrl, encoding = null) {
+        //console.log(`read ${encoding} ${originalUrl}`);
         const filePath = decodeURIComponent(originalUrl.replace(/^\//, "").replace(/\?.*$/, ""));
         const fileName = /[^/]+$/.exec(filePath)[0];
 
@@ -72,6 +75,9 @@ export class MyFileServiceLocal {
                     const metadata = respuesta[0];
                     metadata.filename = fileName;
                     metadata.fullPath = originalUrl;
+                    if (!metadata.contentType) {
+                        metadata.contentType = guessMimeType(fileName);
+                    }
                     const content = respuesta[1];
                     resolve({
                         metadata: metadata,
