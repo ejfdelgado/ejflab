@@ -13,7 +13,7 @@ import { Subscription } from 'rxjs';
 import { PageData } from 'src/interfaces/login-data.interface';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
-import { FileSaveData, FileService } from 'src/services/file.service';
+import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import {
   TupleData,
@@ -28,6 +28,7 @@ import {
 import { IdGen } from 'srcJs/IdGen';
 import { MyConstants } from 'srcJs/MyConstants';
 import { MyDatesFront } from 'srcJs/MyDatesFront';
+import { FileSaveData } from 'src/services/fileInterface';
 
 export interface FileBase64Data {
   base64?: string;

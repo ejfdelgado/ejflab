@@ -4,6 +4,12 @@ import { catchError, of, Subscription } from 'rxjs';
 import { HttpOptionsData } from 'src/interfaces/login-data.interface';
 import { MyConstants } from 'srcJs/MyConstants';
 import { MyRoutes } from 'srcJs/MyRoutes';
+import {
+  FileRequestData,
+  FileSaveData,
+  FileSaveResponseData,
+  FileServiceI,
+} from './fileInterface';
 import { HttpService } from './http.service';
 
 export interface frameVideoDetailRequestData {
@@ -21,35 +27,16 @@ export interface frameVideoRequestData {
   download?: boolean;
 }
 
-export interface FileRequestData {
-  type: string; // file, fileimage, photo, fileimage-photo, fileaudio
-  mimeType?: string;
-  defaultFileName?: string | null;
-}
-
 export interface FileResponseData {
   canceled?: boolean;
   base64: string;
   fileName: string;
 }
 
-export interface FileSaveData {
-  base64: string;
-  fileName: string;
-  erasefile?: string | null;
-  isPublic?: boolean;
-}
-
-export interface FileSaveResponseData {
-  uri: string;
-  key: string;
-  bucket: string;
-}
-
 @Injectable({
   providedIn: 'root',
 })
-export class FileService {
+export class FileService implements FileServiceI {
   evento: EventEmitter<FileRequestData>;
   eventResponse: EventEmitter<FileResponseData>;
   callback: Function | null = null;
@@ -97,7 +84,7 @@ export class FileService {
     return theUrl;
   }
 
-  async readPlainText(url: string) {
+  async readPlainText(url: string): Promise<string> {
     const theUrl = FileService.getCompleteUrl(url);
     if (theUrl == null) {
       throw new Error('Can not read null url');
@@ -187,7 +174,7 @@ export class FileService {
     const URL = `srv/local/ls`;
     const options: HttpOptionsData = {
       showIndicator: true,
-      avoidToken: true
+      avoidToken: true,
     };
     const response: any = await this.httpSrv.post(URL, { path }, options);
     return response;

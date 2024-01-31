@@ -12,11 +12,8 @@ import {
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 import RecordRTC from 'recordrtc';
 import { Observable, map, Subscription } from 'rxjs';
-import {
-  FileResponseData,
-  FileSaveData,
-  FileService,
-} from 'src/services/file.service';
+import { FileResponseData, FileService } from 'src/services/file.service';
+import { FileSaveData } from 'src/services/fileInterface';
 import { ModalService } from 'src/services/modal.service';
 import { MyAudioService } from 'src/services/myaudio.service';
 import Wavesurfer from 'wavesurfer.js';

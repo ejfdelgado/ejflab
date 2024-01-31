@@ -1,10 +1,7 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import {
-  FileRequestData,
-  FileResponseData,
-  FileService,
-} from 'src/services/file.service';
+import { FileResponseData, FileService } from 'src/services/file.service';
+import { FileRequestData } from 'src/services/fileInterface';
 import { WebcamService } from 'src/services/webcam.service';
 import { IdGen } from 'srcJs/IdGen';
 

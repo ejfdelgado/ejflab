@@ -1,9 +1,10 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { FileRequestData, FileService } from 'src/services/file.service';
+import { FileService } from 'src/services/file.service';
 import { WebcamService } from 'src/services/webcam.service';
 import { FileordevicepopupComponent } from '../fileordevicepopup/fileordevicepopup.component';
 import { IdGen } from 'srcJs/IdGen';
+import { FileRequestData } from 'src/services/fileInterface';
 
 @Component({
   selector: 'app-filepicker',

@@ -10,7 +10,8 @@ import {
   ViewChild,
 } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
-import { FileRequestData, FileService } from 'src/services/file.service';
+import { FileService } from 'src/services/file.service';
+import { FileRequestData } from 'src/services/fileInterface';
 import { IndicatorService } from 'src/services/indicator.service';
 import { ModalService } from 'src/services/modal.service';
 

@@ -7,8 +7,8 @@ import { IndicatorService, Wait } from './indicator.service';
 import { ModalService } from './modal.service';
 import { AuthService } from 'src/services/auth.service';
 import { Buffer } from 'buffer';
-import { FileSaveResponseData } from './file.service';
 import { MyDatesFront } from 'srcJs/MyDatesFront';
+import { FileSaveResponseData } from './fileInterface';
 
 const DEFAULT_PAGE_SIZE = 30;
 

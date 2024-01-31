@@ -16,8 +16,12 @@
             <span>Consola de control & log</span>
         </button>
         <button (click)="selectView('vr')" class="mat-menu-item manito" [ngClass]="{'highlight': selectedView == 'vr'}">
-            <mat-icon>chat</mat-icon>
+            <mat-icon>visibility</mat-icon>
             <span>VR</span>
+        </button>
+        <button (click)="selectView('ai')" class="mat-menu-item manito" [ngClass]="{'highlight': selectedView == 'ai'}">
+            <mat-icon>psychology</mat-icon>
+            <span>AI</span>
         </button>
     </div>
     <div *ngIf="selectedView == 'grafo'">
@@ -108,6 +112,9 @@
     <div class="content fill view3d" *ngIf="selectedView == 'vr'">
         <app-threejs-vr #vr (vrHeadset)="vrHeadsetChanged($event)">
         </app-threejs-vr>
+    </div>
+    <div class="content fill view3d" *ngIf="selectedView == 'ai'">
+
     </div>
     <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">
         <div class="button_container">

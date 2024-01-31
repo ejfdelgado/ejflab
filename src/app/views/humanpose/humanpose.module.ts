@@ -22,5 +22,8 @@ import { TensorflowModule } from 'src/app/libs/tensorflow/tensorflow.module';
     ThreejsModule,
     TensorflowModule,
   ],
+  exports: [
+    HumanposeComponent
+  ]
 })
 export class HumanposeModule {}

@@ -19,11 +19,10 @@ import {
 } from 'rxjs';
 import { FileBase64Data } from 'src/app/components/base/base.component';
 import {
-  FileRequestData,
   FileResponseData,
-  FileSaveData,
   FileService,
 } from 'src/services/file.service';
+import { FileRequestData, FileSaveData } from 'src/services/fileInterface';
 import { ModalService } from 'src/services/modal.service';
 import { MyConstants } from 'srcJs/MyConstants';
 

@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { AuthService } from 'src/services/auth.service';
 import { BackendPageService } from 'src/services/backendPage.service';
-import { FileSaveResponseData, FileService } from 'src/services/file.service';
+import { FileService } from 'src/services/file.service';
 import { ModalService } from 'src/services/modal.service';
 import { TupleService } from 'src/services/tuple.service';
 import { WebcamService } from 'src/services/webcam.service';
@@ -15,6 +15,7 @@ import { AudioOptionsData } from 'src/app/libs/wavesurfer/audioeditor/audioedito
 import { BlobOptionsData } from 'src/app/mycommon/components/blobeditor/blobeditor.component';
 import { ImagepickerOptionsData } from 'src/app/mycommon/components/imagepicker/imagepicker.component';
 import { TxtOptionsData } from 'src/app/mycommon/components/txtfileeditor/txtfileeditor.component';
+import { FileSaveResponseData } from 'src/services/fileInterface';
 
 @Component({
   selector: 'app-cv',

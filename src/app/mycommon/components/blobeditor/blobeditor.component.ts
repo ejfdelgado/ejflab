@@ -5,11 +5,8 @@ import { ModalService } from 'src/services/modal.service';
 import { faEllipsisVertical } from '@fortawesome/free-solid-svg-icons';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { FileBase64Data } from 'src/app/components/base/base.component';
-import {
-  FileResponseData,
-  FileSaveData,
-  FileService,
-} from 'src/services/file.service';
+import { FileResponseData, FileService } from 'src/services/file.service';
+import { FileSaveData } from 'src/services/fileInterface';
 
 export interface BlobOptionsData {
   useRoot?: string;

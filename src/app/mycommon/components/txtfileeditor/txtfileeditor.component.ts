@@ -15,7 +15,8 @@ import { catchError, of } from 'rxjs';
 import { Clipboard } from '@angular/cdk/clipboard';
 import { ModalService } from 'src/services/modal.service';
 import { FileBase64Data } from 'src/app/components/base/base.component';
-import { FileSaveData, FileService } from 'src/services/file.service';
+import { FileService } from 'src/services/file.service';
+import { FileSaveData } from 'src/services/fileInterface';
 
 export interface TxtOptionsData {
   encoding?: string;

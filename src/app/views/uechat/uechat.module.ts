@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MycommonModule } from 'src/app/mycommon/mycommon.module';
 import { ThreejsModule } from 'src/app/libs/threejs/threejs.module';
+import { HumanposeModule } from '../humanpose/humanpose.module';
 
 @NgModule({
   declarations: [UechatComponent],
@@ -17,6 +18,7 @@ import { ThreejsModule } from 'src/app/libs/threejs/threejs.module';
     UechatRoutingModule,
     MycommonModule,
     ThreejsModule,
+    HumanposeModule,
   ],
 })
 export class UechatModule {}
