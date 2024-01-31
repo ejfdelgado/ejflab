@@ -351,7 +351,13 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.setPath();
 
     if (parsed.key.startsWith('avatar.')) {
-      this.listenAvatarChanges(parsed.avatar, parsed.prop, parsed.val);
+      const socketId = this.socketService.socketId;
+      this.listenAvatarChanges(
+        parsed.avatar,
+        parsed.prop,
+        parsed.val,
+        parsed.avatar == socketId
+      );
       return;
     }
 
@@ -625,7 +631,12 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     return actual;
   }
 
-  async setEntityValue(id: string, key: string, value: any): Promise<void> {
+  async setEntityValue(
+    id: string,
+    key: string,
+    value: any,
+    isMe: boolean
+  ): Promise<void> {
     // emit the changes to socket
     this.socketService.emit(
       'stateWrite',
@@ -637,8 +648,8 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     );
   }
 
-  listenAvatarChanges(avatar: string, prop: string, val: any) {
-    this.vr?.setEntityValue(avatar, prop, val);
+  listenAvatarChanges(avatar: string, prop: string, val: any, isMe: boolean) {
+    this.vr?.setEntityValue(avatar, prop, val, isMe);
   }
 
   vrHeadsetChanged(event: any) {
@@ -646,6 +657,6 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     if (socketId == null) {
       return;
     }
-    this.setEntityValue(socketId, 'headset', event);
+    this.setEntityValue(socketId, 'headset', event, true);
   }
 }

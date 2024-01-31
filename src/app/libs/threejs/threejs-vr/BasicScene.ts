@@ -87,7 +87,7 @@ export class BasicScene extends THREE.Scene {
     // create the lights
     for (let i = 0; i < this.lightCount; i++) {
       // Positions evenly in a circle pointed at the origin
-      const light = new THREE.PointLight(0xffffff, 1);
+      const light = new THREE.PointLight(0xffffff, 10);
       let lightX =
         this.lightDistance * Math.sin(((Math.PI * 2) / this.lightCount) * i);
       let lightZ =
@@ -171,7 +171,7 @@ export class BasicScene extends THREE.Scene {
     });
     let cube = await this.addFBXModel();
     cube.name = id;
-    this.setMaterial(cube, material);
+    //this.setMaterial(cube, material);
     //cube.position.y = 0.5;
     const check = this.getObjectByName(id);
     if (!check) {
@@ -200,7 +200,7 @@ export class BasicScene extends THREE.Scene {
     }
   }
 
-  async setEntityValue(id: string, key: string, value: any) {
+  async setEntityValue(id: string, key: string, value: any, isMe: boolean) {
     const cube = await this.getCubeById(id);
     if (key == 'position') {
       Object.assign(cube.position, value);
@@ -211,6 +211,27 @@ export class BasicScene extends THREE.Scene {
       cube.setRotationFromQuaternion(
         new THREE.Quaternion().fromArray(value.rotation, 0)
       );
+      // Place hands
+      if (!isMe) {
+        this.placeHandInSpace(id, 'hand1', value);
+        this.placeHandInSpace(id, 'hand2', value);
+      }
+    }
+  }
+
+  placeHandInSpace(id: string, key: string, value: any) {
+    if (value[key] instanceof Array) {
+      let oneJoin = this.getObjectByName(`${id}.${key}.0`);
+      if (!oneJoin) {
+        this.createHandPoints(id, key);
+      }
+      for (let i = 0; i < value[key].length; i++) {
+        const jointValue = value[key][i];
+        oneJoin = this.getObjectByName(`${id}.${key}.${i}`);
+        if (oneJoin) {
+          Object.assign(oneJoin.position, jointValue);
+        }
+      }
     }
   }
 
@@ -222,5 +243,16 @@ export class BasicScene extends THREE.Scene {
     this.camera.aspect = this.bounds.width / this.bounds.height;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(this.bounds.width, this.bounds.height);
+  }
+
+  createHandPoints(avatarId: string, handId: string) {
+    const side = 0.01;
+    for (let i = 0; i < 25; i++) {
+      const geometry = new THREE.SphereGeometry(side, 4, 4);
+      const material = new THREE.MeshPhongMaterial({ color: 0x0000aa });
+      let object = new THREE.Mesh(geometry, material);
+      object.name = `${avatarId}.${handId}.${i}`;
+      this.add(object);
+    }
   }
 }

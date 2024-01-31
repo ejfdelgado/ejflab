@@ -14,7 +14,12 @@ import { BasicScene } from './BasicScene';
 
 export interface EntityValueHolder {
   getEntityValue(id: string, key: string): Promise<any>;
-  setEntityValue(id: string, key: string, value: any): Promise<void>;
+  setEntityValue(
+    id: string,
+    key: string,
+    value: any,
+    isMe: boolean
+  ): Promise<void>;
 }
 
 export class LowPressure {
@@ -51,7 +56,7 @@ export class ThreejsVrComponent
   vrHeadsetLowPressure: LowPressure;
 
   constructor(private renderer: Renderer2) {
-    this.vrHeadsetLowPressure = new LowPressure(100, this.vrHeadset);
+    this.vrHeadsetLowPressure = new LowPressure(150, this.vrHeadset);
   }
 
   @HostListener('window:resize', ['$event'])
@@ -96,19 +101,37 @@ export class ThreejsVrComponent
         const renderer: THREE.WebGLRenderer = scene.renderer;
         renderer.setAnimationLoop(() => {
           renderer.render(scene, camera);
-          // Emmit position
-          const position = new THREE.Vector3();
-          position.setFromMatrixPosition(camera.matrixWorld);
-          // Emmit rotation
-          const quaternion = new THREE.Quaternion();
-          camera.getWorldQuaternion(quaternion);
-          this.vrHeadsetLowPressure.emit({
-            rotation: quaternion,
-            position,
-          });
+          const fullState: any = {};
+          // Read position
+          fullState.position = new THREE.Vector3();
+          fullState.position.setFromMatrixPosition(camera.matrixWorld);
+          // Read rotation
+          fullState.rotation = new THREE.Quaternion();
+          camera.getWorldQuaternion(fullState.rotation);
+          // Read hands
+          fullState.hand1 = this.getHandJoints('hand1', scene);
+          fullState.hand2 = this.getHandJoints('hand2', scene);
+          this.vrHeadsetLowPressure.emit(fullState);
         });
       }
     }
+  }
+
+  public getHandJoints(key: string, scene: any) {
+    const points: any = [];
+    if (scene[key]) {
+      const children: any = scene[key].children;
+      // From 1 to 25
+      for (let i = 1; i <= 25; i++) {
+        const child: THREE.Object3D = children[i];
+        if (child) {
+          const pos = new THREE.Vector3();
+          child.getWorldPosition(pos);
+          points.push(pos);
+        }
+      }
+    }
+    return points;
   }
 
   public computeDimensions() {
@@ -130,9 +153,9 @@ export class ThreejsVrComponent
     }
   }
 
-  async setEntityValue(id: string, key: string, value: any) {
+  async setEntityValue(id: string, key: string, value: any, isMe: boolean) {
     if (this.scene) {
-      await this.scene.setEntityValue(id, key, value);
+      await this.scene.setEntityValue(id, key, value, isMe);
     }
   }
 
@@ -153,7 +176,7 @@ export class ThreejsVrComponent
       position.x = position.x - dx * POSITION_SPEED;
       position.z = position.z + dz * POSITION_SPEED;
       //this.vrPositionLowPressure.emit(position);
-      await entityHolder.setEntityValue(id, 'position', position);
+      await entityHolder.setEntityValue(id, 'position', position, true);
     } else if (keyAction == 'ArrowRight') {
       // Turn right
       const rotation = await entityHolder.getEntityValue(id, 'rotation');
@@ -161,7 +184,7 @@ export class ThreejsVrComponent
       const actualY = rotation._y;
       rotation.y = actualY - (ROTATION_SPEED * Math.PI) / 180;
       rotation._y = rotation.y;
-      await entityHolder.setEntityValue(id, 'rotation', rotation);
+      await entityHolder.setEntityValue(id, 'rotation', rotation, true);
     } else if (keyAction == 'ArrowLeft') {
       //Turn left
       const rotation = await entityHolder.getEntityValue(id, 'rotation');
@@ -169,7 +192,7 @@ export class ThreejsVrComponent
       const actualY = rotation._y;
       rotation.y = actualY + (ROTATION_SPEED * Math.PI) / 180;
       rotation._y = rotation.y;
-      await entityHolder.setEntityValue(id, 'rotation', rotation);
+      await entityHolder.setEntityValue(id, 'rotation', rotation, true);
     } else if (keyAction == 'ArrowDown') {
       //Go backwards
       const rotation = await entityHolder.getEntityValue(id, 'rotation');
@@ -180,7 +203,7 @@ export class ThreejsVrComponent
       position.x = position.x + dx * POSITION_SPEED;
       position.z = position.z - dz * POSITION_SPEED;
       //this.vrPositionLowPressure.emit(position);
-      await entityHolder.setEntityValue(id, 'position', position);
+      await entityHolder.setEntityValue(id, 'position', position, true);
     }
   }
 }
