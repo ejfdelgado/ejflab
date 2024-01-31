@@ -1,5 +1,3 @@
-import path from "path";
-import fs from "fs";
 import axios from "axios";
 import sharp from "sharp";
 import { Buffer } from 'buffer';
@@ -9,7 +7,6 @@ import { MyConstants } from "../srcJs/MyConstants.js";
 import { General } from "./common/General.mjs";
 import { PassThrough } from "stream";
 import { Gif } from "../srcJs/gif/index.mjs";
-import { ParametrosIncompletosException } from "./MyError.mjs";
 
 const storage = new Storage();
 
@@ -381,21 +378,7 @@ export class MyFileService {
         next();
     }
 
-    static async listLocalFiles(req, res, next) {
-        let localPath = General.readParam(req, "path");
-        if (localPath == null) {
-            throw new ParametrosIncompletosException("Falta path");
-        }
-        // Use only slashes
-        localPath = localPath.replace(/\\/g, "/");
-        // Avoid end with slash
-        localPath = localPath.replace(/\/\s*$/g, "");
-        //passsing directoryPath and callback function
-        const fileObjs = fs.readdirSync(`./src/assets${localPath}`, { withFileTypes: true });
-        const response = [];
-        fileObjs.forEach(function (file) {
-            response.push({ name: file.name, path: `/assets${localPath}/${file.name}` });
-        });
-        res.status(200).send({ data: response });
+    static async listFiles(req, res, next) {
+        res.status(200).send({ data: [] });
     }
 }
