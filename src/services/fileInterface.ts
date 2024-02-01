@@ -18,8 +18,6 @@ export interface FileSaveResponseData {
 }
 
 export interface FileServiceI {
-  // Ask for a file and process then
-  sendRequest(request: FileRequestData, callback: Function): void;
   // Delete a file with a path
   delete(url: string): Promise<void>;
   // Reads a file

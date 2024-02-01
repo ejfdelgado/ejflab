@@ -127,6 +127,32 @@
                 <mat-icon>file_upload</mat-icon>
                 <span>deleteLocalFile()</span>
             </button>
+
+            <button (click)="readLocalPage()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>readLocalPage()</span>
+            </button>
+            <button (click)="writeLocalPage()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>writeLocalPage()</span>
+            </button>
+            <button (click)="deleteLocalPage()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>deleteLocalPage()</span>
+            </button>
+
+            <button (click)="readLocalTuple()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>readLocalTuple()</span>
+            </button>
+            <button (click)="writeLocalTuple()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>writeLocalTuple()</span>
+            </button>
+            <button (click)="deleteLocalTuple()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>deleteLocalTuple()</span>
+            </button>
         </div>
     </div>
     <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">

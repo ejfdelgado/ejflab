@@ -28,6 +28,8 @@ import { MyConstants } from 'srcJs/MyConstants';
 import { MyDates } from 'srcJs/MyDates';
 import { SimpleObj } from 'srcJs/SimpleObj';
 import sortify from 'srcJs/sortify';
+import { LocalPageService } from 'src/services/localpage.service';
+import { LocalTupleService } from 'src/services/localtuple.service';
 
 @Component({
   selector: 'app-uechat',
@@ -84,7 +86,9 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     private modalSrv: ModalService,
     private dictateService: DictateService,
     public modalService: ModalService,
-    public localFileService: LocalFileService
+    public localFileService: LocalFileService,
+    public localPageService: LocalPageService,
+    public localTupleService: LocalTupleService
   ) {
     this.view3dModelsActions.push({
       callback: this.add3dModel.bind(this),
@@ -677,5 +681,31 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
 
   async deleteLocalFile() {
     await this.localFileService.delete('test.txt');
+  }
+
+  async readLocalPage() {
+    const response = await this.localPageService.read();
+    console.log(response);
+  }
+
+  async writeLocalPage() {
+    await this.localPageService.save({ type: 'page' });
+  }
+
+  async deleteLocalPage() {
+    await this.localPageService.delete();
+  }
+
+  async readLocalTuple() {
+    const response = await this.localTupleService.read();
+    console.log(response);
+  }
+
+  async writeLocalTuple() {
+    await this.localTupleService.save({ type: 'page' });
+  }
+
+  async deleteLocalTuple() {
+    await this.localTupleService.delete();
   }
 }

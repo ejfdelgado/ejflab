@@ -1,5 +1,6 @@
 import { EventEmitter, Injectable } from '@angular/core';
 import { MyConstants } from 'srcJs/MyConstants';
+import { MyRoutes } from 'srcJs/MyRoutes';
 import {
   FileRequestData,
   FileSaveData,
@@ -15,10 +16,10 @@ export class LocalFileService implements FileServiceI {
   constructor(private httpSrv: HttpService) {}
   getRelativePath() {
     // Later here can access pageid to be relative to the current page Id
-    return 'srv/pageid/localfile';
-  }
-  sendRequest(request: FileRequestData, callback: Function): void {
-    throw new Error('Method not implemented.');
+    const partes = MyRoutes.splitPageData(location.pathname);
+    const pageType = partes.pageType;
+    const pageId = '0';
+    return `srv${pageType}/${pageId}/localfile`;
   }
   async delete(url: string): Promise<void> {
     const path = this.getRelativePath();

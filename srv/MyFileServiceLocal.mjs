@@ -1,6 +1,6 @@
 import fs from "fs";
 import { General } from "./common/General.mjs";
-import { ParametrosIncompletosException } from "./MyError.mjs";
+import { NoExisteException, ParametrosIncompletosException } from "./MyError.mjs";
 import { guessMimeType } from "./common/MimeTypeMap.mjs";
 
 const FOLDER_LOCALS = "assets/";
@@ -61,8 +61,16 @@ export class MyFileServiceLocal {
     static async readBinary(filePath) {
         //console.log(`readBinary ${filePath}`);
         filePath = filePath.replace(/^[/]/, "");
-        const contents = fs.readFileSync(`${PATH_LOCALS}${filePath}`);
-        return contents;
+        try {
+            const contents = fs.readFileSync(`${PATH_LOCALS}${filePath}`);
+            return contents;
+        } catch (err) {
+            if (err.code === 'ENOENT') {
+                throw new NoExisteException(`Does not exists ${filePath}`);
+            } else {
+                throw err;
+            }
+        }
     }
 
     static async readString(filePath, encoding = "utf8") {
