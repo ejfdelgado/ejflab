@@ -65,12 +65,20 @@ class MyConstants {
         }
         return [];
     }
-    static getSpeechToTextServer() {
-        let SPEECH_TO_TEXT_SERVER = `wss://${location?.hostname}/ws`;
-        if (location.hostname == "localhost") {
-            SPEECH_TO_TEXT_SERVER = "ws://localhost:2700";
+    static getSpeechToTextServer(language) {
+        if (language == "en") {
+            let SPEECH_TO_TEXT_SERVER = `wss://${location?.hostname}/ws_en`;
+            if (location.hostname == "localhost") {
+                SPEECH_TO_TEXT_SERVER = "ws://localhost:2701";
+            }
+            return SPEECH_TO_TEXT_SERVER;
+        } else {
+            let SPEECH_TO_TEXT_SERVER = `wss://${location?.hostname}/ws`;
+            if (location.hostname == "localhost") {
+                SPEECH_TO_TEXT_SERVER = "ws://localhost:2700";
+            }
+            return SPEECH_TO_TEXT_SERVER;
         }
-        return SPEECH_TO_TEXT_SERVER;
     }
     static resolveDomain(path) {
         if (/https?:\/\//.test(path)) {

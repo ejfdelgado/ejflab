@@ -79,6 +79,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     color: 'negro',
   };
   showJsonModelValue: string = 'real_time';
+  language: string = 'es';
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
   constructor(
@@ -540,7 +541,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   switchSpeechRecognition() {
     if (!this.dictateService.isInitialized()) {
       this.dictateService.init({
-        server: MyConstants.getSpeechToTextServer(),
+        server: MyConstants.getSpeechToTextServer(this.language),
         onResults: (hyp: any) => {
           //console.log(`result ${hyp}`);
           this.partialSpeechToText = null;
@@ -678,6 +679,10 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
       return;
     }
     this.setEntityValue(socketId, 'headset', event, true);
+  }
+
+  setLanguage(value: string) {
+    this.language = value;
   }
 
   showJsonModel(value: string) {
