@@ -69,26 +69,8 @@ export class FileService implements FileServiceI {
     this.evento.emit(request);
   }
 
-  // FileService.getCompleteUrl
-  static getCompleteUrl(url: string | null) {
-    if (url == null) {
-      return null;
-    }
-    let theUrl = url;
-    if (typeof MyConstants.SRV_ROOT == 'string') {
-      theUrl = MyConstants.SRV_ROOT + url.replace(/^\/+/, '');
-    }
-    if (theUrl.startsWith('/')) {
-      theUrl = `${location.origin}${theUrl}`;
-    }
-    return theUrl;
-  }
-
   async readPlainText(url: string): Promise<string> {
-    const theUrl = FileService.getCompleteUrl(url);
-    if (theUrl == null) {
-      throw new Error('Can not read null url');
-    }
+    const theUrl = MyConstants.getCompleteUrl(url);
     const respuesta = await new Promise<string>((resolve, reject) => {
       this.httpClient
         .get(theUrl, { responseType: 'text' })

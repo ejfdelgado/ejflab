@@ -1,3 +1,4 @@
+import { Buffer } from 'buffer';
 import {
   ChangeDetectorRef,
   Component,
@@ -17,6 +18,7 @@ import { ElementPairItemData } from 'src/app/mycommon/components/scrollfile/scro
 import { ScrollFilesActionData } from 'src/app/mycommon/components/scrollfiles/scrollfiles.component';
 import { DictateService } from 'src/services/dictate-service';
 import { FileResponseData, FileService } from 'src/services/file.service';
+import { LocalFileService } from 'src/services/localfile.service';
 import { ModalService } from 'src/services/modal.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { CollisionsEngine } from 'srcJs/CollisionsEngine';
@@ -81,7 +83,8 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     public fileService: FileService,
     private modalSrv: ModalService,
     private dictateService: DictateService,
-    public modalService: ModalService
+    public modalService: ModalService,
+    public localFileService: LocalFileService
   ) {
     this.view3dModelsActions.push({
       callback: this.add3dModel.bind(this),
@@ -658,5 +661,23 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
       return;
     }
     this.setEntityValue(socketId, 'headset', event, true);
+  }
+
+  async readLocalFile() {
+    const response = await this.localFileService.readPlainText(
+      'test.txt'
+    );
+    console.log(response);
+  }
+
+  async writeLocalFile() {
+    await this.localFileService.save({
+      base64: Buffer.from('Estoy muy bien!', 'utf8').toString('base64'),
+      fileName: 'otro.txt',
+    });
+  }
+
+  async deleteLocalFile() {
+    await this.localFileService.delete('otro.txt');
   }
 }

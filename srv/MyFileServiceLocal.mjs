@@ -9,7 +9,32 @@ const PATH_LOCALS = `./src/${FOLDER_LOCALS}`;
 export class MyFileServiceLocal {
 
     static async uploadFile(req, res, next) {
-
+        const base64 = General.readParam(req, "base64");
+        const fileName = General.readParam(req, "fileName");
+        const buffer = Buffer.from(base64, 'base64');
+        // Write buffer down to local file
+        const filePath = decodeURIComponent(fileName.replace(/^\//, "").replace(/\?.*$/, ""));
+        await new Promise((resolve, reject) => {
+            fs.open(`${PATH_LOCALS}${filePath}`, 'w', function (err, fd) {
+                if (err) {
+                    reject(err);
+                }
+                fs.write(fd, buffer, 0, buffer.length, null, function (err) {
+                    if (err) {
+                        reject(err);
+                    }
+                    fs.close(fd, function () {
+                        resolve();
+                    });
+                });
+            });
+        });
+        const response = {
+            uri: fileName,
+            key: fileName,
+            bucket: '',
+        };
+        res.status(200).send({ data: response });
     }
 
     static async readFile(req, res, next) {
@@ -102,7 +127,7 @@ export class MyFileServiceLocal {
     }
 
     static async deleteFile(req, res, next) {
-
+        //
     }
 
     static async listFiles(req, res, next) {

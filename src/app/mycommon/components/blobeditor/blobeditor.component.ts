@@ -7,6 +7,7 @@ import { Clipboard } from '@angular/cdk/clipboard';
 import { FileBase64Data } from 'src/app/components/base/base.component';
 import { FileResponseData, FileService } from 'src/services/file.service';
 import { FileSaveData } from 'src/services/fileInterface';
+import { MyConstants } from 'srcJs/MyConstants';
 
 export interface BlobOptionsData {
   useRoot?: string;
@@ -42,14 +43,14 @@ export class BlobeditorComponent implements OnInit {
   }
 
   async download() {
-    const theUrl = FileService.getCompleteUrl(this.url + '&download=1');
+    const theUrl = MyConstants.getCompleteUrl(this.url + '&download=1');
     if (theUrl) {
       window.open(theUrl, '_blank');
     }
   }
 
   async share() {
-    const theUrl = FileService.getCompleteUrl(this.url);
+    const theUrl = MyConstants.getCompleteUrl(this.url);
     if (theUrl) {
       this.clipboard.copy(theUrl);
       this.modalSrv.alert({ title: 'Ok!', txt: 'Enlace copiado' });

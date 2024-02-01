@@ -17,6 +17,7 @@ import { ModalService } from 'src/services/modal.service';
 import { FileBase64Data } from 'src/app/components/base/base.component';
 import { FileService } from 'src/services/file.service';
 import { FileSaveData } from 'src/services/fileInterface';
+import { MyConstants } from 'srcJs/MyConstants';
 
 export interface TxtOptionsData {
   encoding?: string;
@@ -125,14 +126,14 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   async download() {
-    const theUrl = FileService.getCompleteUrl(this.url + '&download=1');
+    const theUrl = MyConstants.getCompleteUrl(this.url + '&download=1');
     if (theUrl != null) {
       window.open(theUrl, '_blank');
     }
   }
 
   async share() {
-    const theUrl = FileService.getCompleteUrl(this.url);
+    const theUrl = MyConstants.getCompleteUrl(this.url);
     if (theUrl != null) {
       this.clipboard.copy(theUrl);
       this.modalSrv.alert({ title: 'Ok!', txt: 'Enlace copiado' });
@@ -173,7 +174,7 @@ export class TxtfileeditorComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   async leer(url: string) {
-    const theUrl = FileService.getCompleteUrl(url);
+    const theUrl = MyConstants.getCompleteUrl(url);
     if (theUrl == null) {
       throw new Error('No puede leer una url nula');
     }

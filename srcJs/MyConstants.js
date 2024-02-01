@@ -96,6 +96,20 @@ class MyConstants {
             return `${MyConstants.BUCKET.URL_BASE}/${MyConstants.BUCKET.PUBLIC}/${keyName}`;
         }
     }
+
+    static getCompleteUrl(url) {
+        if (url == null) {
+            throw new Error('Can not read null url');
+        }
+        let theUrl = url;
+        if (typeof MyConstants.SRV_ROOT == 'string') {
+            theUrl = MyConstants.SRV_ROOT + url.replace(/^\/+/, '');
+        }
+        if (theUrl.startsWith('/')) {
+            theUrl = `${location.origin}${theUrl}`;
+        }
+        return theUrl;
+    }
 }
 
 try {

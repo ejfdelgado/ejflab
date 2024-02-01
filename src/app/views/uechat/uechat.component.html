@@ -114,7 +114,20 @@
         </app-threejs-vr>
     </div>
     <div class="content fill view3d" *ngIf="selectedView == 'ai'">
-
+        <div>
+            <button (click)="readLocalFile()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>readLocalFile()</span>
+            </button>
+            <button (click)="writeLocalFile()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>writeLocalFile()</span>
+            </button>
+            <button (click)="deleteLocalFile()" class="mat-menu-item manito">
+                <mat-icon>file_upload</mat-icon>
+                <span>deleteLocalFile()</span>
+            </button>
+        </div>
     </div>
     <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">
         <div class="button_container">
