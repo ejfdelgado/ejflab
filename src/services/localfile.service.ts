@@ -21,7 +21,10 @@ export class LocalFileService implements FileServiceI {
     throw new Error('Method not implemented.');
   }
   async delete(url: string): Promise<void> {
-    throw new Error('Method not implemented.');
+    const path = this.getRelativePath();
+    await this.httpSrv.delete(`${path}/${url.replace(/^[/]+/, '')}`, {
+      avoidToken: true,
+    });
   }
   async readPlainText(url: string): Promise<string> {
     const respuesta = await this.httpSrv.get(
@@ -35,13 +38,9 @@ export class LocalFileService implements FileServiceI {
   }
   async save(payload: FileSaveData): Promise<FileSaveResponseData> {
     const path = this.getRelativePath();
-    payload.fileName = `${this.getRelativePath()}/${payload.fileName.replace(
-      /^[/]+/,
-      ''
-    )}`;
+    payload.fileName = `${path}/${payload.fileName.replace(/^[/]+/, '')}`;
     const response = await this.httpSrv.post(path, payload, {
       avoidToken: true,
-      rawString: true,
     });
     return response as FileSaveResponseData;
   }

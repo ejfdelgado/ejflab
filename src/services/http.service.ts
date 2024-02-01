@@ -270,9 +270,11 @@ export class HttpService {
     try {
       const respuesta = await new Promise<Type | null>((resolve, reject) => {
         this.http
-          .post<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload, {headers: {
-            "x-avoid-token": options?.avoidToken === true ? "yes" : "no"
-          }})
+          .post<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload, {
+            headers: {
+              'x-avoid-token': options?.avoidToken === true ? 'yes' : 'no',
+            },
+          })
           .pipe(
             catchError((error) => {
               if (!options || options.showError !== false) {
@@ -301,7 +303,6 @@ export class HttpService {
   }
   async delete<Type>(
     path: string,
-    payload: any,
     options?: HttpOptionsData
   ): Promise<Type | null> {
     let wait = null;
@@ -311,7 +312,7 @@ export class HttpService {
     try {
       const respuesta = await new Promise<Type | null>((resolve, reject) => {
         this.http
-          .delete<Type>(`${MyConstants.resolveDomain(path)}${path}`, payload)
+          .delete<Type>(`${MyConstants.resolveDomain(path)}${path}`, {})
           .pipe(
             catchError((error) => {
               if (!options || options.showError !== false) {

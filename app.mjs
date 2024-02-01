@@ -72,7 +72,7 @@ app.post('/srv/:pageId/makegif', [commonHeaders, checkAuthenticatedSilent, Autho
 
 app.post('/srv/local/ls', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileServiceLocal.listFiles)]);
 app.post('/srv/:pageId/localfile', [commonHeaders, checkAuthenticatedSilent, express.json(), handleErrorsDecorator(MyFileServiceLocal.uploadFile)]);
-app.delete('/srv/:pageId/localfile', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.deleteFile)]);
+app.delete('/srv/:pageId/localfile/*', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.deleteFile)]);
 app.get('/srv/:pageId/localfile/*', [commonHeaders, checkAuthenticatedSilent, handleErrorsDecorator(MyFileServiceLocal.readFile)]);
 
 app.use("/", handleErrorsDecorator(MainHandler.handle));// Esto solo funciona sin el npm run angular

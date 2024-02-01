@@ -93,7 +93,7 @@ export class FileService implements FileServiceI {
     };
     const isFakeUrl = url.startsWith('blob:');
     if (!isFakeUrl) {
-      await this.httpSrv.delete(url, {}, options);
+      await this.httpSrv.delete(url, options);
     }
   }
 

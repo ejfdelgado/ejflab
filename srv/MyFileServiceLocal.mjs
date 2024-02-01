@@ -127,7 +127,23 @@ export class MyFileServiceLocal {
     }
 
     static async deleteFile(req, res, next) {
-        //
+        const filePath = decodeURIComponent(req.originalUrl.replace(/^\//, "").replace(/\?.*$/, ""));
+        const fullPath = `${PATH_LOCALS}${filePath}`;
+        await new Promise((resolve, reject) => {
+            fs.stat(fullPath, function (err, stats) {
+                if (err) {
+                    reject(err);
+                }
+                fs.unlink(fullPath, function (err) {
+                    if (err) {
+                        reject(err);
+                        return;
+                    }
+                    resolve();
+                });
+            });
+        });
+        res.status(204).send();
     }
 
     static async listFiles(req, res, next) {
