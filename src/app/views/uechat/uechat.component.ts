@@ -161,11 +161,34 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
         this.currentImage = argumento[0];
       }
     });
-    this.socketService.on('training', (content: string) => {
-      const argumento = JSON.parse(content);
+    this.socketService.on('training', async (content: string) => {
+      const argumentos = JSON.parse(content);
       // ["train","left_hand","1"]
       // ["capture","hand_hand","0"]
-      console.log(JSON.stringify(argumento));
+      const action = argumentos[0];
+      const bodyPart = argumentos[1];
+      const targetModel = argumentos[2];
+      const filePath = `targets/${bodyPart}_${targetModel}.json`;
+      if (action == 'capture') {
+        // Read model bodyPart
+        const model = {
+          t: new Date().getTime(),
+        };
+        //and store in targetModel file
+        const response = await this.writeFile(filePath, model);
+        const uri = response.uri;
+        SimpleObj.recreate(
+          this.modelDocument,
+          `targets.${bodyPart}.model_${targetModel}`,
+          { uri },
+          true
+        );
+        this.saveDocument();
+      } else if (action == 'train') {
+        // Loads model from bodyPart
+        const model = await this.readFile(filePath);
+        console.log(JSON.stringify(model));
+      }
     });
   }
 
@@ -703,9 +726,9 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     return response;
   }
 
-  async writeFile(path: string, content: string) {
-    await this.localFileService.save({
-      base64: Buffer.from(content, 'utf8').toString('base64'),
+  async writeFile(path: string, content: any) {
+    return await this.localFileService.save({
+      base64: Buffer.from(JSON.stringify(content), 'utf8').toString('base64'),
       fileName: path,
     });
   }

@@ -18,6 +18,7 @@ export class MyFileServiceLocal {
             fs.open(`${PATH_LOCALS}${filePath}`, 'w', function (err, fd) {
                 if (err) {
                     reject(err);
+                    return;
                 }
                 fs.write(fd, buffer, 0, buffer.length, null, function (err) {
                     if (err) {
@@ -34,7 +35,7 @@ export class MyFileServiceLocal {
             key: fileName,
             bucket: '',
         };
-        res.status(200).send({ data: response });
+        res.status(200).send(response);
     }
 
     static async readFile(req, res, next) {

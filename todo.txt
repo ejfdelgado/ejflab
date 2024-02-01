@@ -6,6 +6,8 @@ Teach:
 ["stateWrite",{"key":"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation","val":{"_x":0,"_y":0,"_z":0,"x":0,"y":0,"z":0},"mine":false}]
 ["stateChanged","{\"key\":\"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation\",\"val\":{\"_x\":0,\"_y\":-0.06981317007977318,\"_z\":0,\"x\":0,\"y\":-0.06981317007977318,\"z\":0},\"avatar\":\"ZaBm-JUfOFUhAWRqAAAV\",\"prop\":\"rotation\"}"]
 
+create cleanvoice()
+
 const controller1 = renderer.xr.getController(0);
 controller1.addEventListener('selectstart', onSelectStart);
 controller1.addEventListener('selectend', onSelectEnd);
