@@ -79,6 +79,10 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   showJsonModelValue: string = 'real_time';
   language: string = 'es';
   selectedScenario: string = 'capture-pose';
+  listenMode = {
+    preview: true,
+    complete: true,
+  };
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
   constructor(
@@ -161,6 +165,17 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
         this.currentImage = argumento[0];
       }
     });
+    this.socketService.on('listenmode', async (content: string) => {
+      const argumentos = JSON.parse(content);
+      if (argumentos instanceof Array) {
+        if (argumentos.length > 0) {
+          this.listenMode.preview = argumentos[0] === true;
+        }
+        if (argumentos.length > 1) {
+          this.listenMode.complete = argumentos[1] === true;
+        }
+      }
+    });
     this.socketService.on('training', async (content: string) => {
       const argumentos = JSON.parse(content);
       // ["train","left_hand","1"]
@@ -173,6 +188,8 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
         // Read model bodyPart
         const model = {
           t: new Date().getTime(),
+          bodyPart,
+          targetModel,
         };
         //and store in targetModel file
         const response = await this.writeFile(filePath, model);
@@ -576,10 +593,16 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
         server: MyConstants.getSpeechToTextServer(this.language),
         onResults: (hyp: any) => {
           //console.log(`result ${hyp}`);
+          if (this.listenMode.complete !== true) {
+            return;
+          }
           this.partialSpeechToText = null;
           this.socketService.emit('voice', JSON.stringify(hyp));
         },
         onPartialResults: (hyp: string) => {
+          if (this.listenMode.preview !== true) {
+            return;
+          }
           let nuevo = '';
           if (this.partialSpeechToText == null) {
             nuevo = hyp;

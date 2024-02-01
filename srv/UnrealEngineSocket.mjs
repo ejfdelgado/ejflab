@@ -702,6 +702,12 @@ export class UnrealEngineSocket {
                                             esNodoDeFinalizacion = true;
                                             continue;
                                         }
+                                        // Se valida si es clean voice
+                                        if (/^\s*cleanvoice\(\)\s*$/.exec(command) != null) {
+                                            // Force delete voice and notify
+                                            affectModel("st.voice", []);
+                                            continue;
+                                        }
                                         // Si es un comando para las flechas...
                                         if (/^\s*choose\(([^)]+)\)/ig.exec(command) != null) {
                                             //console.log(`Next choose only some arrows`);
