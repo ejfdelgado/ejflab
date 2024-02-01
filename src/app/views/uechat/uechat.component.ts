@@ -161,6 +161,12 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
         this.currentImage = argumento[0];
       }
     });
+    this.socketService.on('training', (content: string) => {
+      const argumento = JSON.parse(content);
+      // ["train","left_hand","1"]
+      // ["capture","hand_hand","0"]
+      console.log(JSON.stringify(argumento));
+    });
   }
 
   bindDragEvents(): void {

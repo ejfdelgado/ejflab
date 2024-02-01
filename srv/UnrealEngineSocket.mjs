@@ -303,6 +303,7 @@ export class UnrealEngineSocket {
             };
 
             const goToStartingPoint = () => {
+                //console.log(`goToStartingPoint`);
                 UnrealEngineSocket.collisionEngine = new CollisionsEngine();
                 const currentState = this.state.readKey("st.current");
                 let interval = this.state.readKey("scene.interval");
@@ -313,6 +314,7 @@ export class UnrealEngineSocket {
                     throw `El entrenamiento ya está iniciado y está corriendo`;
                 }
                 const nodeIds = this.state.getIdNodeWithText("inicio");
+                //console.log(`nodeIds = ${JSON.stringify(nodeIds)}`);
                 const history = nodeIds.map((node) => {
                     return { id: node, t: 0 }
                 });
@@ -798,7 +800,7 @@ export class UnrealEngineSocket {
                     // Se debe validar si ya hay escenario
 
                     if (!(this.state.estado?.scene?.id)) {
-                        throw "Debe seleccionar primero el escenario";
+                        throw "Debe seleccionar primero el escenario o el escenario no tiene scene.id!";
                     }
                     /*
                     if (!(this.state.estado?.players)) {
