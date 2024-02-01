@@ -664,20 +664,18 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   }
 
   async readLocalFile() {
-    const response = await this.localFileService.readPlainText(
-      'test.txt'
-    );
+    const response = await this.localFileService.readPlainText('test.txt');
     console.log(response);
   }
 
   async writeLocalFile() {
     await this.localFileService.save({
       base64: Buffer.from('Estoy muy bien!', 'utf8').toString('base64'),
-      fileName: 'otro.txt',
+      fileName: 'test.txt',
     });
   }
 
   async deleteLocalFile() {
-    await this.localFileService.delete('otro.txt');
+    await this.localFileService.delete('test.txt');
   }
 }
