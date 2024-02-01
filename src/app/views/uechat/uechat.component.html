@@ -96,10 +96,23 @@
             <svg #mySvg class="graph_class noselect" [ngInit]="bindDragEventsThis" [innerHtml]="graphHtml"></svg>
         </div>
         <div class="all_scroll_right">
+            <div class="show_json_model_container">
+                <button (click)="showJsonModel('real_time')" class="mat-menu-item manito">
+                    <mat-icon>sports_kabaddi</mat-icon>
+                    <span>Real Time</span>
+                </button>
+                <button (click)="showJsonModel('document')" class="mat-menu-item manito">
+                    <mat-icon>content_paste_search</mat-icon>
+                    <span>Document</span>
+                </button>
+            </div>
             <input type="text" class="voice_recognition" placeholder="key path ..." [(ngModel)]="mypath"
                 (keyup.enter)="setPath()" />
-            <div class="content_pre">
+            <div class="content_pre" *ngIf="showJsonModelValue == 'real_time'">
                 <pre [innerHtml]="modelStatePath | jsonColor"></pre>
+            </div>
+            <div class="content_pre" *ngIf="showJsonModelValue == 'document'">
+                <pre [innerHtml]="modelDocumentPath | jsonColor"></pre>
             </div>
         </div>
     </div>
@@ -115,44 +128,7 @@
     </div>
     <div class="content fill view3d" *ngIf="selectedView == 'ai'">
         <div>
-            <button (click)="readLocalFile()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>readLocalFile()</span>
-            </button>
-            <button (click)="writeLocalFile()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>writeLocalFile()</span>
-            </button>
-            <button (click)="deleteLocalFile()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>deleteLocalFile()</span>
-            </button>
-
-            <button (click)="readLocalPage()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>readLocalPage()</span>
-            </button>
-            <button (click)="writeLocalPage()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>writeLocalPage()</span>
-            </button>
-            <button (click)="deleteLocalPage()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>deleteLocalPage()</span>
-            </button>
-
-            <button (click)="readLocalTuple()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>readLocalTuple()</span>
-            </button>
-            <button (click)="writeLocalTuple()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>writeLocalTuple()</span>
-            </button>
-            <button (click)="deleteLocalTuple()" class="mat-menu-item manito">
-                <mat-icon>file_upload</mat-icon>
-                <span>deleteLocalTuple()</span>
-            </button>
+            
         </div>
     </div>
     <div class="subtitles_container no_mouse noselect" [ngClass]="{shortView: selectedView == 'images'}">

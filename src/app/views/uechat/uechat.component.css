@@ -149,7 +149,7 @@
 }
 
 .backgrounds.blanco {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
 }
 
 .backgrounds.negro {
@@ -157,9 +157,18 @@
 }
 
 .backgrounds.rojo {
-  background-color: #FF0000;
+  background-color: #ff0000;
 }
 
 .backgrounds.azul {
-  background-color: #0000FF;
+  background-color: #0000ff;
+}
+
+.show_json_model_container {
+  display: flex;
+  flex-direction: row;
+}
+
+.show_json_model_container > * {
+  flex: 1;
 }

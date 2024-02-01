@@ -50,6 +50,8 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   graphHtml: string = '';
   modelState: any = {};
   modelStatePath: any = null;
+  modelDocument: any = {};
+  modelDocumentPath: any = null;
   selectedView: string = 'grafo';
   mymessage: string = '';
   myvoice: string = '';
@@ -76,6 +78,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   colorGame: any = {
     color: 'negro',
   };
+  showJsonModelValue: string = 'real_time';
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
   constructor(
@@ -98,6 +101,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   }
 
   ngOnInit(): void {
+    this.readLocalTuple();
     this.bindDragEventsThis = this.bindDragEvents.bind(this);
 
     this.socketService.on('chatMessage', (content: string) => {
@@ -283,16 +287,25 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   setPath() {
     if (this.mypath.trim() == '') {
       this.modelStatePath = this.modelState;
+      this.modelDocumentPath = this.modelDocument;
     } else {
       this.modelStatePath = SimpleObj.getValue(
         this.modelState,
+        this.mypath.trim()
+      );
+      this.modelDocumentPath = SimpleObj.getValue(
+        this.modelDocument,
         this.mypath.trim()
       );
     }
     if (this.modelStatePath == undefined) {
       this.modelStatePath = null;
     }
+    if (this.modelDocumentPath == undefined) {
+      this.modelDocumentPath = null;
+    }
     this.modelStatePath = Object.assign({}, this.modelStatePath);
+    this.modelDocumentPath = Object.assign({}, this.modelDocumentPath);
   }
 
   getGraph(): any {
@@ -667,45 +680,32 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.setEntityValue(socketId, 'headset', event, true);
   }
 
-  async readLocalFile() {
-    const response = await this.localFileService.readPlainText('test.txt');
-    console.log(response);
+  showJsonModel(value: string) {
+    this.showJsonModelValue = value;
   }
 
-  async writeLocalFile() {
+  async readFile(path: string): Promise<string> {
+    const response = await this.localFileService.readPlainText(path);
+    return response;
+  }
+
+  async writeFile(path: string, content: string) {
     await this.localFileService.save({
-      base64: Buffer.from('Estoy muy bien!', 'utf8').toString('base64'),
-      fileName: 'test.txt',
+      base64: Buffer.from(content, 'utf8').toString('base64'),
+      fileName: path,
     });
   }
 
-  async deleteLocalFile() {
-    await this.localFileService.delete('test.txt');
-  }
-
-  async readLocalPage() {
-    const response = await this.localPageService.read();
-    console.log(response);
-  }
-
-  async writeLocalPage() {
-    await this.localPageService.save({ type: 'page' });
-  }
-
-  async deleteLocalPage() {
-    await this.localPageService.delete();
+  async deleteLocalFile(path: string) {
+    await this.localFileService.delete(path);
   }
 
   async readLocalTuple() {
-    const response = await this.localTupleService.read();
-    console.log(response);
+    this.modelDocument = await this.localTupleService.read();
+    this.setPath();
   }
 
-  async writeLocalTuple() {
-    await this.localTupleService.save({ type: 'page' });
-  }
-
-  async deleteLocalTuple() {
-    await this.localTupleService.delete();
+  async saveDocument() {
+    await this.localTupleService.save(this.modelDocument);
   }
 }
