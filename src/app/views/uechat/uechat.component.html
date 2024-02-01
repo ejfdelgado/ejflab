@@ -28,6 +28,12 @@
         <div style="width: 100%; display: flex; flex-direction: row; gap: 30px; margin: 10px 0px;">
             <div style="flex: 1; display: flex;">
                 <div>
+                    <select class="bigselect2 select_action" [(ngModel)]="selectedScenario"
+                        (change)="updateSelectedScenario($event)">
+                        <option value="caso1-cooperante-si">LGBTI - cooperante</option>
+                        <option value="caso1-cooperante-no">LGBTI - NO cooperante</option>
+                        <option value="capture-pose">Captura de Posición</option>
+                    </select>
                     <button (click)="reloadScenario()" style="height: 100%;" class="mat-menu-item manito">
                         <mat-icon>refresh</mat-icon>
                         <span>Reload</span>

@@ -38,8 +38,6 @@ import { LocalTupleService } from 'src/services/localtuple.service';
   providers: [DictateService],
 })
 export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
-  DEFAULT_SCENARIO = 'caso1-cooperante-si';
-  //DEFAULT_SCENARIO = 'color';
   IMAGES_ROOT = 'assets/word-game/';
   SOUNDS_ROOT = 'assets/police/sounds';
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
@@ -80,6 +78,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   };
   showJsonModelValue: string = 'real_time';
   language: string = 'es';
+  selectedScenario: string = 'capture-pose';
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
   constructor(
@@ -525,9 +524,13 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.socketService.emit(
       'selectScenario',
       JSON.stringify({
-        name: this.DEFAULT_SCENARIO,
+        name: this.selectedScenario,
       })
     );
+  }
+
+  updateSelectedScenario(valor: any) {
+    this.selectedScenario = valor.target.value;
   }
 
   playScenario(): void {

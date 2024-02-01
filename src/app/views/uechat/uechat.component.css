@@ -49,6 +49,14 @@
   width: 100%;
 }
 
+.bigselect2 {
+  font-size: 18px;
+  padding: 10px 10px 10px 0;
+  cursor: pointer;
+  position: relative;
+  top: -4px;
+}
+
 .voice_recognition {
   background-color: lightyellow;
   cursor: unset;
