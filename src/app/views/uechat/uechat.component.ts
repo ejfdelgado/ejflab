@@ -654,7 +654,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   async open3dModel(oneFile: ElementPairItemData) {
     const url = oneFile.value.url;
     const name = oneFile.value.name;
-    this.galleryComponent.addFBXModel({ url, name });
+    this.galleryComponent.addModel({ url, name }, this.localFileService);
   }
 
   async delete3DModel(pair: ElementPairItemData) {

@@ -1,8 +1,16 @@
 import { MyConstants } from 'srcJs/MyConstants';
 import * as THREE from 'three';
+import { Bone } from 'three';
 //import { GUI } from 'dat.gui';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { FBXLoader } from 'three/examples/jsm/loaders/FBXLoader';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {
+  CCDIKSolver,
+  IKS,
+  CCDIKHelper,
+} from 'three/examples/jsm/animation/CCDIKSolver.js';
+import { LocalFileService } from 'src/services/localfile.service';
 
 export interface ItemModelRef {
   url: string;
@@ -28,7 +36,9 @@ export class BasicScene extends THREE.Scene {
   bounds: DOMRect;
   // FBX loader
   fbxLoader = new FBXLoader();
+  gltfLoader = new GLTFLoader();
   lastObject: any = null;
+  ikSolver: CCDIKSolver | null = null;
 
   canvasRef: HTMLCanvasElement;
   constructor(canvasRef: any, bounds: DOMRect) {
@@ -136,29 +146,165 @@ export class BasicScene extends THREE.Scene {
     });
   }
 
-  async addFBXModel(item: ItemModelRef): Promise<void> {
+  positionBones(object: any) {
+    const bone23_24: Bone = object.getObjectByName('bone-23-24');
+    bone23_24.position.z = 1.5; //arriba
+    bone23_24.position.y = 5; //frente
+  }
+
+  async configureIK(
+    skinnedMesh: THREE.SkinnedMesh,
+    fileName: string,
+    localFileService: LocalFileService,
+    showHelper: boolean
+  ): Promise<void> {
+    const partes = /([^/]+)\.[^.]+$/.exec(fileName);
+    if (partes == null) {
+      return;
+    }
+    const readed = await localFileService.readPlainText(
+      `iks/${partes[1]}.json`
+    );
+    if (!(typeof readed == 'string')) {
+      return;
+    }
+    const ikModel = JSON.parse(readed);
+    // https://threejs.org/docs/#examples/en/animations/CCDIKSolver
+    const bonesIdMap: { [key: string]: number } = {};
+    // Map the bones
+    const originalBones = skinnedMesh.skeleton.bones;
+    if (originalBones) {
+      for (let i = 0; i < originalBones.length; i++) {
+        const oneBone = originalBones[i];
+        bonesIdMap[oneBone.name] = i;
+      }
+    }
+
+    const iteration = 5;
+    const minAngle = 0;
+    const maxAngle = 90;
+
+    // Load the ik json if exists
+
+    for (let i = 0; i < ikModel.length; i++) {
+      const ikElement: any = ikModel[i];
+      ikElement.iteration = iteration;
+      ikElement.minAngle = minAngle;
+      ikElement.maxAngle = maxAngle;
+      ikElement.target = bonesIdMap[ikElement.target];
+      ikElement.effector = bonesIdMap[ikElement.effector];
+      const links = ikElement.links;
+      for (let j = 0; j < links.length; j++) {
+        const link = links[j];
+        link.index = bonesIdMap[link.index];
+      }
+    }
+    const iks: IKS[] = ikModel;
+    this.ikSolver = new CCDIKSolver(skinnedMesh, iks);
+    if (showHelper) {
+      const helper2: CCDIKHelper = this.ikSolver.createHelper();
+      helper2.name = 'CCDIKHelper';
+      const oldHelper2 = this.getObjectByName('CCDIKHelper');
+      if (oldHelper2) {
+        this.remove(oldHelper2);
+      }
+      this.add(helper2);
+    }
+  }
+
+  async configurePosition(
+    object: any,
+    filePath: string,
+    localFileService: LocalFileService
+  ) {
+    const readed = await localFileService.readPlainText(filePath);
+    if (!(typeof readed == 'string')) {
+      return;
+    }
+    const positions = JSON.parse(readed);
+    for (let i = 0; i < positions.length; i++) {
+      const element = positions[i];
+      const bone: Bone = object.getObjectByName(element.name);
+      if (element.position) {
+        Object.assign(bone.position, element.position);
+      }
+    }
+  }
+
+  async addModel(
+    item: ItemModelRef,
+    localFileService: LocalFileService
+  ): Promise<void> {
     // Remove previous model
     if (this.lastObject != null) {
       this.remove(this.lastObject);
     }
     return new Promise((resolve, reject) => {
       const url = `${MyConstants.SRV_ROOT}${item.url.replace(/^\//g, '')}`;
-      this.fbxLoader.load(
-        url,
-        (object) => {
-          this.lastObject = object;
-          this.disableBackFaceCullingDoubleSide(object);
-          this.add(object);
-          this.fitCameraToSelection(this.camera, this.orbitals, [object]);
-          resolve();
-        },
-        (xhr) => {
-          console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
-        },
-        (error) => {
-          reject(error);
+      const partes = /([^.]+)$/.exec(item.url.toLocaleLowerCase());
+      // gets extension
+      if (partes != null) {
+        const MAPEO_LOADERS: { [key: string]: any } = {
+          fbx: this.fbxLoader,
+          glb: this.gltfLoader,
+          gltf: this.gltfLoader,
+        };
+        const loader: any = MAPEO_LOADERS[partes[1]];
+        if (loader) {
+          loader.load(
+            url,
+            async (response: any) => {
+              let object = null;
+
+              if (loader == this.gltfLoader) {
+                object = response.scene.children[0];
+              } else {
+                object = response;
+              }
+              if (object != null) {
+                this.lastObject = object;
+                this.disableBackFaceCullingDoubleSide(object);
+                this.add(object);
+                this.fitCameraToSelection(this.camera, this.orbitals, [object]);
+              }
+
+              const temp: THREE.Object3D = object;
+              const children = temp.children;
+              let skinnedMesh: THREE.SkinnedMesh | null = null;
+
+              // Find the SkinnedMesh
+              for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                if (child.type == 'SkinnedMesh') {
+                  skinnedMesh = child as THREE.SkinnedMesh;
+                }
+              }
+              if (skinnedMesh) {
+                await this.configureIK(
+                  skinnedMesh,
+                  item.url,
+                  localFileService,
+                  true
+                );
+                await this.configurePosition(
+                  object,
+                  'poses/hand/example.json',
+                  localFileService
+                );
+              }
+              resolve();
+            },
+            (xhr: any) => {
+              console.log((xhr.loaded / xhr.total) * 100 + '% loaded');
+            },
+            (error: any) => {
+              reject(error);
+            }
+          );
+        } else {
+          alert(`No loader for ${item.url}`);
         }
-      );
+      }
     });
   }
 }

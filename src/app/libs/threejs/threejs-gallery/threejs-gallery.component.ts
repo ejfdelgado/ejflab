@@ -7,6 +7,7 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
+import { LocalFileService } from 'src/services/localfile.service';
 import { BasicScene, ItemModelRef } from './BasicScene';
 
 @Component({
@@ -46,6 +47,7 @@ export class ThreejsGalleryComponent implements OnInit, AfterViewInit {
       this.scene.camera?.updateProjectionMatrix();
       this.scene.renderer?.render(this.scene, this.scene.camera);
       this.scene.orbitals?.update();
+      this.scene.ikSolver?.update();
       requestAnimationFrame(() => {
         this.loop();
       });
@@ -63,9 +65,12 @@ export class ThreejsGalleryComponent implements OnInit, AfterViewInit {
     }, 0);
   }
 
-  async addFBXModel(item: ItemModelRef): Promise<void> {
+  async addModel(
+    item: ItemModelRef,
+    localFileService: LocalFileService
+  ): Promise<void> {
     if (this.scene != null) {
-      await this.scene.addFBXModel(item);
+      await this.scene.addModel(item, localFileService);
     }
   }
 }
