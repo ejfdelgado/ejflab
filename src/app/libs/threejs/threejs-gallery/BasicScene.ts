@@ -284,7 +284,7 @@ export class BasicScene extends THREE.Scene {
                   skinnedMesh,
                   item.url,
                   localFileService,
-                  true
+                  false
                 );
                 await this.configurePosition(
                   object,
