@@ -27,9 +27,13 @@ import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { MyConstants } from 'srcJs/MyConstants';
 import { MyDates } from 'srcJs/MyDates';
 import { SimpleObj } from 'srcJs/SimpleObj';
-import sortify from 'srcJs/sortify';
 import { LocalPageService } from 'src/services/localpage.service';
 import { LocalTupleService } from 'src/services/localtuple.service';
+import { CommandSound } from './commands/CommandSound';
+import { CommandMute } from './commands/CommandMute';
+import { CommandContext } from './commands/CommandGeneric';
+import { CommandListenMode } from './commands/CommandListenMode';
+import { CommandPopUpOpen } from './commands/CommandPopUpOpen';
 
 @Component({
   selector: 'app-uechat',
@@ -37,16 +41,15 @@ import { LocalTupleService } from 'src/services/localtuple.service';
   styleUrls: ['./uechat.component.css'],
   providers: [DictateService],
 })
-export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
-  IMAGES_ROOT = 'assets/word-game/';
-  SOUNDS_ROOT = 'assets/police/sounds';
+export class UechatComponent
+  extends CommandContext
+  implements OnInit, OnDestroy, EntityValueHolder
+{
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
   @ViewChild('vr') vr: ThreejsVrComponent;
   @ViewChild('mySvg') mySvgRef: ElementRef;
   @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
   bindDragEventsThis: any;
-  graphHtml: string = '';
-  modelState: any = {};
   modelStatePath: any = null;
   modelDocument: any = {};
   modelDocumentPath: any = null;
@@ -55,8 +58,6 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   myvoice: string = '';
   mypath: string = '';
   selectedAction: SocketActions | null = null;
-  messages: Array<String> = [];
-  isActive: boolean = false;
   isDragging: boolean = false;
   firstDragX: number = 0;
   firstDragY: number = 0;
@@ -79,10 +80,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   showJsonModelValue: string = 'real_time';
   language: string = 'es';
   selectedScenario: string = 'capture-pose';
-  listenMode = {
-    preview: true,
-    complete: true,
-  };
+
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
   constructor(
@@ -97,11 +95,25 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     public localPageService: LocalPageService,
     public localTupleService: LocalTupleService
   ) {
+    super();
     this.view3dModelsActions.push({
       callback: this.add3dModel.bind(this),
       icon: 'add',
       label: 'Agregar',
     });
+  }
+
+  getSocketId(): string | null {
+    return this.socketService.socketId;
+  }
+
+  emit(key: string, content: string) {
+    this.socketService.emit(key, content);
+  }
+
+  popUpOpen(argumento: any): Promise<any> {
+    const response = this.modalSrv.generic(argumento);
+    return response;
   }
 
   ngOnInit(): void {
@@ -117,43 +129,24 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.socketService.on('buscarParticipantesResponse', (content: string) => {
       this.receiveChatMessage('chatMessage', content);
     });
-    this.socketService.on('stateChanged', (content: string) => {
-      this.receiveStateChanged('stateChanged', content);
+    this.socketService.on('stateChanged', async (content: string) => {
+      await this.receiveStateChanged('stateChanged', content);
+      //Updates the sub model view depending of its path
+      this.setPath();
+      //Updates the graph view
+      this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
     });
     this.socketService.on('sound', (content: string) => {
-      const argumento = JSON.parse(content);
-      if (typeof argumento == 'string') {
-        ModuloSonido.play(
-          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento}`
-        );
-      } else if (argumento instanceof Array) {
-        ModuloSonido.play(
-          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento[0]}`,
-          argumento[1] == 'loop'
-        );
-      }
+      new CommandSound(this).execute(content);
     });
     this.socketService.on('animate', (content: string) => {
       console.log(`animate ${JSON.stringify(content)}`);
     });
     this.socketService.on('mute', (content: string) => {
-      const argumento = JSON.parse(content);
-      if (typeof argumento == 'string') {
-        ModuloSonido.stop(
-          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento}`
-        );
-      } else if (argumento instanceof Array) {
-        ModuloSonido.stop(
-          `${MyConstants.SRV_ROOT}${this.SOUNDS_ROOT}/${argumento[0]}`
-        );
-      }
+      new CommandMute(this).execute(content);
     });
     this.socketService.on('popupopen', async (content: string) => {
-      const argumento = JSON.parse(content);
-      //console.log(`popupopen ${content}`);
-      const response = await this.modalSrv.generic(argumento);
-      // console.log(JSON.stringify(response));
-      this.socketService.emit('popupchoice', JSON.stringify(response));
+      new CommandPopUpOpen(this).execute(content);
     });
     this.socketService.on('popupclose', (content: string) => {
       const argumento = JSON.parse(content);
@@ -166,15 +159,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
       }
     });
     this.socketService.on('listenmode', async (content: string) => {
-      const argumentos = JSON.parse(content);
-      if (argumentos instanceof Array) {
-        if (argumentos.length > 0) {
-          this.listenMode.preview = argumentos[0] === true;
-        }
-        if (argumentos.length > 1) {
-          this.listenMode.complete = argumentos[1] === true;
-        }
-      }
+      new CommandListenMode(this).execute(content);
     });
     this.socketService.on('training', async (content: string) => {
       const argumentos = JSON.parse(content);
@@ -190,9 +175,11 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
           t: new Date().getTime(),
           bodyPart,
           targetModel,
+          pose: [],
         };
         //and store in targetModel file
         const response = await this.writeFile(filePath, model);
+        /*
         const uri = response.uri;
         SimpleObj.recreate(
           this.modelDocument,
@@ -201,6 +188,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
           true
         );
         this.saveDocument();
+        */
       } else if (action == 'train') {
         // Loads model from bodyPart
         const model = await this.readFile(filePath);
@@ -321,8 +309,7 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
   selectView(viewName: string) {
     this.selectedView = viewName;
     if (this.selectedView == 'grafo') {
-      this.graphHtml = this.getGraph();
-      this.graphRecomputeBoundingBox();
+      this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
     }
 
     if (viewName == 'images') {
@@ -354,27 +341,6 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.modelDocumentPath = Object.assign({}, this.modelDocumentPath);
   }
 
-  getGraph(): any {
-    let grafo = SimpleObj.getValue(this.modelState, 'zflowchart');
-    if (!grafo) {
-      grafo = {};
-    }
-    let currentNodes = SimpleObj.getValue(this.modelState, 'st.current');
-    if (!currentNodes) {
-      currentNodes = [];
-    }
-    let history = SimpleObj.getValue(this.modelState, 'st.history');
-    if (!history) {
-      history = [];
-    }
-    const svgContent = FlowChartDiagram.computeGraph(
-      grafo,
-      currentNodes,
-      history
-    );
-    return this.sanitizer.bypassSecurityTrustHtml(svgContent);
-  }
-
   getSpeechToText() {
     let speech = SimpleObj.getValue(this.modelState, 'st.voice');
     let transcript = '';
@@ -386,92 +352,11 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
     this.transcriptSpeechToText = transcript;
   }
 
-  graphRecomputeBoundingBox() {
-    setTimeout(() => {
-      if (this.mySvgRef) {
-        const svg = this.mySvgRef.nativeElement;
-        var bbox = svg.getBBox();
-        // Update the width and height using the size of the contents
-        svg.setAttribute('width', bbox.x + bbox.width + bbox.x);
-        svg.setAttribute('height', bbox.y + bbox.height + bbox.y);
-      }
-    });
-    return true;
-  }
-
-  receiveStateChanged(key: string, content: string) {
-    //console.log(`[${key}]`);
-    const parsed = JSON.parse(content);
-    if (parsed.key == '') {
-      this.modelState = parsed.val;
-    } else {
-      // Se escribe solo el punto que dice key
-      this.modelState = Object.assign(
-        {},
-        SimpleObj.recreate(this.modelState, parsed.key, parsed.val, true)
-      );
-      if (parsed.key.startsWith('st.voice')) {
-        this.getSpeechToText();
-      }
-    }
-    this.setPath();
-
-    if (parsed.key.startsWith('avatar.')) {
-      const socketId = this.socketService.socketId;
-      this.listenAvatarChanges(
-        parsed.avatar,
-        parsed.prop,
-        parsed.val,
-        parsed.avatar == socketId
-      );
-      return;
-    }
-
-    this.graphHtml = this.getGraph();
-    this.graphRecomputeBoundingBox();
-    if (this.modelState.st) {
-      if (this.modelState.st.current == null && this.isActive) {
-        this.callStopGame();
-        this.isActive = false;
-      } else if (this.modelState.st.current !== null && !this.isActive) {
-        this.callStartGame();
-        this.isActive = true;
-      }
-    }
-  }
-
   async callStartGame() {
     console.log('Starting game');
   }
   async callStopGame() {
     ModuloSonido.stopAll();
-  }
-
-  receiveChatMessage(key: string, message: any) {
-    //console.log(`[${key}]`);
-    // Put it on top
-    const ahora = new Date();
-    ahora.setHours(ahora.getHours() - 5);
-    const fecha = MyDates.getDayAsContinuosNumberHmmSS(ahora);
-    this.messages.unshift(
-      `${fecha} [${key}] ` + UechatComponent.beatyfull(message)
-    );
-    const MAX_LENGTH = 500;
-    if (this.messages.length > MAX_LENGTH) {
-      this.messages.splice(MAX_LENGTH, this.messages.length - MAX_LENGTH);
-    }
-  }
-
-  static beatyfull(texto: string) {
-    try {
-      if (typeof texto == 'string') {
-        return sortify(JSON.parse(texto));
-      } else {
-        return sortify(texto);
-      }
-    } catch (err) {
-      return texto;
-    }
   }
 
   updateSample(valor: any): void {
@@ -751,7 +636,9 @@ export class UechatComponent implements OnInit, OnDestroy, EntityValueHolder {
 
   async writeFile(path: string, content: any) {
     return await this.localFileService.save({
-      base64: Buffer.from(JSON.stringify(content), 'utf8').toString('base64'),
+      base64: Buffer.from(JSON.stringify(content, null, 4), 'utf8').toString(
+        'base64'
+      ),
       fileName: path,
     });
   }
