@@ -9,6 +9,10 @@ import { SimpleObj } from "../srcJs/SimpleObj.js";
 import { CommandStartGame } from "./commands/CommandStartGame.mjs";
 import { CommandEndGame } from "./commands/CommandEndGame.mjs";
 import { CommandStep } from "./commands/CommandStep.mjs";
+import { CommandTouch } from "./commands/CommandTouch.mjs";
+import { CommandUntouch } from "./commands/CommandUntouch.mjs";
+import { CommandSelectChoicePopUp } from "./commands/CommandSelectChoicePopUp.mjs";
+import { CommandCreateScore } from "./commands/CommandCreateScore.mjs";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -81,6 +85,81 @@ export class UnrealEngineSocket {
     static async moveState(io, socket) {
         await new CommandStep(this, io, socket).execute();
     }
+
+    static computeMineKey(payload, socket) {
+        let key = payload.key.trim();
+        if (payload.mine === true) {
+            const currentKey = this.getCurrentPlayerKey(socket);
+            if (currentKey == null) {
+                throw "Primero debe Crear Score";
+            }
+            if (key != "") {
+                key = currentKey + "." + key;
+            } else {
+                key = currentKey;
+            }
+        }
+        return key;
+    };
+
+    static replaceUserId(text, socket) {
+        return text.replace(/\$\s*\{\s*userid\s*\}/ig, socket.id);
+    };
+
+    static replaceUserPath(text, socket) {
+        const path = this.getCurrentPlayerKey(socket);
+        let nextValue = text;
+        let founds = false;
+        nextValue = nextValue.replace(/\$\s*\{\s*userpath\s*\}/ig, () => {
+            founds = true;
+            if (path === null) {
+                return "";
+            }
+            return path;
+        });
+        if (founds && path === null) {
+            throw `Debe seleccionar primero un participante`;
+        }
+        //console.log(`nextValue = ${nextValue}`);
+        return nextValue;
+    };
+
+    static getCurrentPlayerKey(socket) {
+        const players = this.state.estado.players;
+        if (players != undefined) {
+            const playerKeys = Object.keys(players);
+            for (let i = 0; i < playerKeys.length; i++) {
+                const playerKey = playerKeys[i];
+                const player = players[playerKey];
+                if (player.db?.socketId == socket.id) {
+                    return `players.${playerKey}`;
+                }
+            }
+        }
+        return null;
+    };
+
+    static replaceUserVars(text, socket) {
+        return this.replaceUserId(this.replaceUserPath(text.trim(), socket), socket);
+    };
+
+    static increaseAmount(io, socket, key, amount = 1) {
+        try {
+            const increaseKey = this.replaceUserVars(key, socket);
+            //console.log(`increaseKey = ${increaseKey}`);
+            let currentValue = this.state.readKey(increaseKey);
+            if (!(typeof currentValue == "number")) {
+                currentValue = 0;
+            }
+            currentValue += amount;
+            //console.log(`writing = ${increaseKey} with ${currentValue}`);
+            //this.state.writeKey(increaseKey, currentValue);//Not live
+            this.affectModel(increaseKey, currentValue, io);//Live
+        } catch (err) {
+            console.log(err);
+            io.emit(chatEvent, err);
+        }
+    };
 
     static affectModel = (keyWrited, val, io) => {
         const valWrited = {
@@ -190,47 +269,6 @@ export class UnrealEngineSocket {
             console.log(clientConnectedMsg);
             io.emit(chatEvent, clientConnectedMsg);
 
-            const replaceUserId = (text) => {
-                return text.replace(/\$\s*\{\s*userid\s*\}/ig, socket.id);
-            };
-
-            const replaceUserPath = (text) => {
-                const path = getCurrentPlayerKey();
-                let nextValue = text;
-                let founds = false;
-                nextValue = nextValue.replace(/\$\s*\{\s*userpath\s*\}/ig, () => {
-                    founds = true;
-                    if (path === null) {
-                        return "";
-                    }
-                    return path;
-                });
-                if (founds && path === null) {
-                    throw `Debe seleccionar primero un participante`;
-                }
-                //console.log(`nextValue = ${nextValue}`);
-                return nextValue;
-            };
-
-            const replaceUserVars = (text) => {
-                return replaceUserId(replaceUserPath(text.trim()));
-            };
-
-            const getCurrentPlayerKey = () => {
-                const players = this.state.estado.players;
-                if (players != undefined) {
-                    const playerKeys = Object.keys(players);
-                    for (let i = 0; i < playerKeys.length; i++) {
-                        const playerKey = playerKeys[i];
-                        const player = players[playerKey];
-                        if (player.db?.socketId == socket.id) {
-                            return `players.${playerKey}`;
-                        }
-                    }
-                }
-                return null;
-            };
-
             // Sends initialization for avatar
             this.affectModel(`avatar.${socket.id}`, JSON.parse(JSON.stringify(UnrealEngineSocket.INITIAL_AVATAR_VALUE)), io);
 
@@ -278,31 +316,7 @@ export class UnrealEngineSocket {
 
             const createScoreEventHandler = async (payload) => {
                 try {
-                    echoCommand("createScore", payload);
-                    const databaseClient = await UnrealEngineSocket.getDataBaseClient();
-                    // Debe existir primero el escenario seleccionado
-                    if (!(this.state.estado?.scene?.id)) {
-                        throw "Debe seleccionar primero el escenario";
-                    }
-
-                    // Se verifica si ya existe uno anterior...
-                    const currentKey = getCurrentPlayerKey();
-                    if (currentKey != null) {
-                        this.affectModel(currentKey, undefined, io);
-                    }
-
-                    const insertedId = await databaseClient.createScore(payload.personId, this.state.estado.scene?.id);
-                    const created = await databaseClient.readScore(insertedId);
-                    const participant = await databaseClient.readParticipant(payload.personId);
-
-                    // Escribir en el estado
-                    // el modelo
-                    participant.scoreId = insertedId;
-                    participant.socketId = socket.id;
-
-                    //console.log(JSON.stringify(participant, null, 4));
-                    const keyWrited = `players.player_${insertedId}`;
-                    this.affectModel(keyWrited, { db: participant }, io);
+                    new CommandCreateScore(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', serializeError(err));
                 }
@@ -341,26 +355,10 @@ export class UnrealEngineSocket {
                 }
             };
 
-            const computeMineKey = (payload) => {
-                let key = payload.key.trim();
-                if (payload.mine === true) {
-                    const currentKey = getCurrentPlayerKey();
-                    if (currentKey == null) {
-                        throw "Primero debe Crear Score";
-                    }
-                    if (key != "") {
-                        key = currentKey + "." + key;
-                    } else {
-                        key = currentKey;
-                    }
-                }
-                return key;
-            };
-
             const stateWriteEventHandler = async (payload) => {
                 try {
                     // Se publica a todos
-                    const key = computeMineKey(payload);
+                    const key = this.computeMineKey(payload, socket);
                     this.affectModel(key, payload.val, io);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
@@ -370,7 +368,7 @@ export class UnrealEngineSocket {
             const stateReadEventHandler = async (payload) => {
                 try {
                     // Se lee
-                    const key = computeMineKey(payload);
+                    const key = this.computeMineKey(payload, socket);
                     const valor = this.state.readKey(key);
                     // Se publica solo a quien lo solicitó
                     io.to(socket.id).emit('stateChanged', JSON.stringify({
@@ -379,22 +377,6 @@ export class UnrealEngineSocket {
                     }));
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            };
-
-            const increaseAmount = (key, amount = 1) => {
-                try {
-                    const increaseKey = replaceUserVars(key);
-                    // console.log(`increaseKey = ${increaseKey}`);
-                    let currentValue = this.state.readKey(increaseKey);
-                    if (!(typeof currentValue == "number")) {
-                        currentValue = 0;
-                    }
-                    currentValue += amount;
-                    //this.state.writeKey(increaseKey, currentValue);//Not live
-                    this.affectModel(increaseKey, currentValue, io);//Live
-                } catch (err) {
-                    io.emit(chatEvent, err);
                 }
             };
 
@@ -489,19 +471,7 @@ export class UnrealEngineSocket {
 
             const touchEventHandler = async (payload) => {
                 try {
-                    echoCommand("touch", payload);
-                    let memory = this.state.readKey("st.touch");
-                    if (!memory) {
-                        memory = {};
-                    }
-                    const partes = payload.split(/\W/);
-                    const key = partes[0];
-                    const objectKey = partes[1];
-                    const changed = UnrealEngineSocket.collisionEngine.collide(memory, key, objectKey);
-                    if (changed) {
-                        //this.state.writeKey("st.touch", memory);//Not live
-                        this.affectModel("st.touch", memory, io);//Live
-                    }
+                    await new CommandTouch(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -509,19 +479,7 @@ export class UnrealEngineSocket {
 
             const untouchEventHandler = async (payload) => {
                 try {
-                    echoCommand("untouch", payload);
-                    let memory = this.state.readKey("st.touch");
-                    if (!memory) {
-                        memory = {};
-                    }
-                    const partes = payload.split(/\W/);
-                    const key = partes[0];
-                    const objectKey = partes[1];
-                    const changed = UnrealEngineSocket.collisionEngine.uncollide(memory, key, objectKey);
-                    if (changed) {
-                        //this.state.writeKey("st.touch", memory);//Not live
-                        this.affectModel("st.touch", memory, io);//Live
-                    }
+                    await new CommandUntouch(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -529,43 +487,7 @@ export class UnrealEngineSocket {
 
             const popupchoiceEventHandler = async (payload) => {
                 try {
-                    echoCommand("popupchoice", payload);
-                    //console.log(`PopUp Choice ${JSON.stringify(payload)}`);
-                    const popupRef = this.state.readKey(payload.callback);
-                    const mychoice = payload.choice;
-                    if (popupRef.type == "info") {
-                        // Ignore
-                    } else if (popupRef.type == "knowledge") {
-                        // Check correct answer
-                        let points = 0;
-                        popupRef.choices.forEach((choice) => {
-                            if (choice.val == mychoice) {
-                                if (typeof choice.points == "number") {
-                                    points += choice.points;
-                                }
-                            }
-                        });
-                        if (points > 0) {
-                            const destination = popupRef.destination;
-                            if (destination instanceof Array) {
-                                for (let i = 0; i < destination.length; i++) {
-                                    const keyPath = destination[i];
-                                    increaseAmount(keyPath, points);
-                                }
-                            }
-                        }
-                    } else if (popupRef.type == "assignment") {
-                        const destination = popupRef.destination;
-                        if (destination instanceof Array) {
-                            for (let i = 0; i < destination.length; i++) {
-                                let keyPath = destination[i];
-                                keyPath = replaceUserVars(keyPath);
-                                //console.log(`keyPath = ${keyPath} mychoice = ${mychoice}`);
-                                //this.state.writeKey(keyPath, mychoice);//Not live
-                                this.affectModel(keyPath, mychoice, io);//Live
-                            }
-                        }
-                    }
+                    await new CommandSelectChoicePopUp(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }

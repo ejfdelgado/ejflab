@@ -391,7 +391,7 @@ export class CommandStep extends CommandGeneric {
                                     // se valida si es increase(...)
                                     const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
                                     if (tokensIncrease != null) {
-                                        increaseAmount(tokensIncrease[1], 1)
+                                        this.context.increaseAmount(this.io, this.socket, tokensIncrease[1], 1);
                                         continue;
                                     }
                                     const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
