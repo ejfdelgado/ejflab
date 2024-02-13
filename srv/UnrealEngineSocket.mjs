@@ -82,42 +82,6 @@ export class UnrealEngineSocket {
         await new CommandStep(this, io, socket).execute();
     }
 
-    static goToStartingPoint(io, socket) {
-        //console.log(`goToStartingPoint`);
-        UnrealEngineSocket.collisionEngine = new CollisionsEngine();
-        const currentState = this.state.readKey("st.current");
-        let interval = this.state.readKey("scene.interval");
-        if (!(typeof interval == "number")) {
-            interval = CommandStep.GAME_INTERVAL;
-        }
-        if (currentState != null) {
-            throw `El entrenamiento ya está iniciado y está corriendo`;
-        }
-        const nodeIds = this.state.getIdNodeWithText("inicio");
-        //console.log(`nodeIds = ${JSON.stringify(nodeIds)}`);
-        const history = nodeIds.map((node) => {
-            return { id: node, t: 0 }
-        });
-        const nuevosSt = {
-            current: nodeIds,
-            startedAt: new Date().getTime(),
-            duration: 0,
-            voice: undefined,
-            lastvoice: undefined,
-            touch: undefined,
-            history: history,
-        };
-        // Buscar inicio
-        this.state.writeKey("timer", {});
-        this.state.writeKey("silences", {});
-        CommandStep.reset();
-        // Inicialización
-        this.affectModel("st", nuevosSt, io);
-        setTimeout(() => {
-            this.moveState(io, socket);
-        }, interval);
-    }
-
     static affectModel = (keyWrited, val, io) => {
         const valWrited = {
             key: keyWrited,

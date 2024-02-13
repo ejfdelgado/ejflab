@@ -40,6 +40,8 @@ export class CommandStep extends CommandGeneric {
     static reset() {
         CommandStep.ONE_TIME_ARROWS = {};
         CommandStep.GLOBAL_ONE_TIME_ARROWS = {};
+        CommandStep.collisionEngine = new CollisionsEngine();
+        CommandStep.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
     }
 
     async execute() {

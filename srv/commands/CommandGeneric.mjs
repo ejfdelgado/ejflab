@@ -21,7 +21,7 @@ export class CommandContext {
 
 export class CommandGeneric {
     constructor(context, io, socket) {
-        checkHasMethods(context, ["goToStartingPoint", "echoCommand", "affectModel", "sendCommand", "filterVoiceGap", "readVoice", "voiceDetection"]);
+        checkHasMethods(context, ["echoCommand", "affectModel", "sendCommand", "filterVoiceGap", "readVoice", "voiceDetection"]);
         //checkHasMethods(this, ["execute"]);
         this.context = context;
         this.io = io;
