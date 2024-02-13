@@ -302,7 +302,7 @@ export class UnrealEngineSocket {
                                 } catch (err5) {
                                     // Muere silenciosamente
                                 }
-                                if (voiceDetection(searchedText)) {
+                                if (this.voiceDetection(searchedText)) {
                                     return "true";
                                 } else {
                                     return "false";
@@ -950,7 +950,7 @@ export class UnrealEngineSocket {
                         }
                     }
                     // Se filtran los que tienen X tiempo de antiguedad
-                    let { changes, voiceHistoryFiltered } = filterVoiceGap(voiceHistory);
+                    let { changes, voiceHistoryFiltered } = this.filterVoiceGap(voiceHistory);
                     if (changes) {
                         voiceHistory = voiceHistoryFiltered;
                     }
