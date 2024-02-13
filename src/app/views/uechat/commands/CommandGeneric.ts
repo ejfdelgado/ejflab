@@ -1,8 +1,11 @@
+import { Buffer } from 'buffer';
+import { LocalFileService } from 'src/services/localfile.service';
 import { MyDates } from 'srcJs/MyDates';
 import sortify from 'srcJs/sortify';
+import { HasFiles } from '../dataaccess/HasFiles';
 import { GraphManager } from '../models/GraphManager';
 
-export abstract class CommandContext extends GraphManager {
+export abstract class CommandContext extends GraphManager implements HasFiles {
   static MAX_MESSAGE_LENGTH = 500;
   IMAGES_ROOT = 'assets/word-game/';
   SOUNDS_ROOT = 'assets/police/sounds';
@@ -11,6 +14,12 @@ export abstract class CommandContext extends GraphManager {
     preview: true,
     complete: true,
   };
+  localFileService: LocalFileService;
+
+  constructor(localFileService: LocalFileService) {
+    super();
+    this.localFileService = localFileService;
+  }
 
   // Open a pop up
   abstract popUpOpen(param: any): Promise<any>;
@@ -49,6 +58,20 @@ export abstract class CommandContext extends GraphManager {
         this.messages.length - CommandContext.MAX_MESSAGE_LENGTH
       );
     }
+  }
+
+  async readFile(path: string): Promise<string> {
+    const response = await this.localFileService.readPlainText(path);
+    return response;
+  }
+
+  async writeFile(path: string, content: any) {
+    return await this.localFileService.save({
+      base64: Buffer.from(JSON.stringify(content, null, 4), 'utf8').toString(
+        'base64'
+      ),
+      fileName: path,
+    });
   }
 }
 

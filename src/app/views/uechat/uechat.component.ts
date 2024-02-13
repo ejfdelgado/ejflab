@@ -1,4 +1,3 @@
-import { Buffer } from 'buffer';
 import {
   ChangeDetectorRef,
   Component,
@@ -22,10 +21,8 @@ import { LocalFileService } from 'src/services/localfile.service';
 import { ModalService } from 'src/services/modal.service';
 import { SocketActions, UeSocketService } from 'src/services/uesocket.service';
 import { CollisionsEngine } from 'srcJs/CollisionsEngine';
-import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { ModuloSonido } from 'srcJs/ModuloSonido';
 import { MyConstants } from 'srcJs/MyConstants';
-import { MyDates } from 'srcJs/MyDates';
 import { SimpleObj } from 'srcJs/SimpleObj';
 import { LocalPageService } from 'src/services/localpage.service';
 import { LocalTupleService } from 'src/services/localtuple.service';
@@ -34,6 +31,8 @@ import { CommandMute } from './commands/CommandMute';
 import { CommandContext } from './commands/CommandGeneric';
 import { CommandListenMode } from './commands/CommandListenMode';
 import { CommandPopUpOpen } from './commands/CommandPopUpOpen';
+import { HasFiles } from './dataaccess/HasFiles';
+import { CommandTraining } from './commands/CommandTraining';
 
 @Component({
   selector: 'app-uechat',
@@ -91,11 +90,11 @@ export class UechatComponent
     private modalSrv: ModalService,
     private dictateService: DictateService,
     public modalService: ModalService,
-    public localFileService: LocalFileService,
+    public override localFileService: LocalFileService,
     public localPageService: LocalPageService,
     public localTupleService: LocalTupleService
   ) {
-    super();
+    super(localFileService);
     this.view3dModelsActions.push({
       callback: this.add3dModel.bind(this),
       icon: 'add',
@@ -162,38 +161,7 @@ export class UechatComponent
       new CommandListenMode(this).execute(content);
     });
     this.socketService.on('training', async (content: string) => {
-      const argumentos = JSON.parse(content);
-      // ["train","left_hand","1"]
-      // ["capture","hand_hand","0"]
-      const action = argumentos[0];
-      const bodyPart = argumentos[1];
-      const targetModel = argumentos[2];
-      const filePath = `targets/${bodyPart}_${targetModel}.json`;
-      if (action == 'capture') {
-        // Read model bodyPart
-        const model = {
-          t: new Date().getTime(),
-          bodyPart,
-          targetModel,
-          pose: [],
-        };
-        //and store in targetModel file
-        const response = await this.writeFile(filePath, model);
-        /*
-        const uri = response.uri;
-        SimpleObj.recreate(
-          this.modelDocument,
-          `targets.${bodyPart}.model_${targetModel}`,
-          { uri },
-          true
-        );
-        this.saveDocument();
-        */
-      } else if (action == 'train') {
-        // Loads model from bodyPart
-        const model = await this.readFile(filePath);
-        console.log(JSON.stringify(model));
-      }
+      new CommandTraining(this).execute(content);
     });
   }
 
@@ -627,20 +595,6 @@ export class UechatComponent
 
   showJsonModel(value: string) {
     this.showJsonModelValue = value;
-  }
-
-  async readFile(path: string): Promise<string> {
-    const response = await this.localFileService.readPlainText(path);
-    return response;
-  }
-
-  async writeFile(path: string, content: any) {
-    return await this.localFileService.save({
-      base64: Buffer.from(JSON.stringify(content, null, 4), 'utf8').toString(
-        'base64'
-      ),
-      fileName: path,
-    });
   }
 
   async deleteLocalFile(path: string) {
