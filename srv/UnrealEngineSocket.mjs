@@ -11,6 +11,8 @@ import mm from 'music-metadata';
 import { CsvFormatterFilters } from "../srcJs/CsvFormatterFilters.js";
 import { CollisionsEngine } from "../srcJs/CollisionsEngine.js";
 import { SimpleObj } from "../srcJs/SimpleObj.js";
+import { CommandStartGame } from "./commands/CommandStartGame.mjs";
+import { CommandEndGame } from "./commands/CommandEndGame.mjs";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -27,6 +29,19 @@ const voiceEvent = "voice";
 const touchEvent = "touch";
 const untouchEvent = "untouch";
 const popupchoiceEvent = "popupchoice";
+
+const filterSourceArrowsFromSource = (arrows, srcId) => {
+    return arrows.filter((arrow) => arrow.src == srcId);
+}
+
+const findNodeById = (nodes, id) => {
+    const temp = nodes.filter((node) => node.id == id);
+    if (temp.length > 0) {
+        return temp[0];
+    } else {
+        return null;
+    }
+};
 
 export class UnrealEngineSocket {
     static ROOT_FOLDER = "./src/assets/police/scripts/";
@@ -78,6 +93,562 @@ export class UnrealEngineSocket {
             await UnrealEngineSocket.databaseClient.checkConnection();
         }
         return UnrealEngineSocket.databaseClient;
+    }
+
+    static sendCommand(command, content, io) {
+        const completo = {
+            command,
+            content,
+        };
+        io.emit(completo.command, JSON.stringify(completo.content));
+        io.emit('personalChat', JSON.stringify(completo));
+    };
+
+    static async moveState(io, socket) {
+        const history = this.state.readKey("st.history");
+        const currentState = this.state.readKey("st.current");
+        const startedAt = this.state.readKey("st.startedAt");
+        let interval = this.state.readKey("scene.interval");
+        let collisionMemory = this.state.readKey("st.touch");
+        const collisionEngine = UnrealEngineSocket.collisionEngine;
+        collisionEngine.startSession();
+        if (!collisionMemory) {
+            collisionMemory = {};
+        }
+
+        if (!(typeof interval == "number")) {
+            interval = UnrealEngineSocket.GAME_INTERVAL;
+        }
+        if (currentState == null) {
+            // El juego ya terminó
+            collisionEngine.endSession();
+            return;
+        }
+        const graph = this.state.readKey("zflowchart");
+        const arrows = graph.arrows;
+        const shapes = graph.shapes;
+        //console.log(`Evaluating next steps from ${JSON.stringify(currentState)}`);
+
+        // Validar las flechas y tomar todas las que sean verdaderas
+        const outputPositiveGlobal = {};
+        const outputArrowsReset = [];
+        const currentTime = this.state.readKey("st.duration");
+        for (let i = 0; i < currentState.length; i++) {
+            const srcId = currentState[i];
+            const outputArrows = filterSourceArrowsFromSource(arrows, srcId);
+            if (outputArrows.length > 0) {
+                const silenceArrowKeys = [];
+                const timerArrowKeys = [];
+                const arrowChooseGroups = {};
+                const temporalArrowsPositive = {};
+                let atLeastOneOutput = false;
+                let arrowsReset = false;
+                // Este nodo se debe validar si cumple al menos una salida
+                for (let j = 0; j < outputArrows.length; j++) {
+                    const outputArrow = outputArrows[j];
+                    const srcNode = findNodeById(shapes, outputArrow.src);
+                    const hasChoose = /choose\((\d+)\)/ig.exec(srcNode.txt);
+                    const arrowId = outputArrow.id;
+                    if (hasChoose) {
+                        if (!(arrowChooseGroups[srcNode.id])) {
+                            arrowChooseGroups[srcNode.id] = {
+                                n: parseInt(hasChoose[1]),
+                                list: [],
+                            };
+                        }
+                        arrowChooseGroups[srcNode.id].list.push(arrowId);
+                    }
+                    let isOneTimeArrow = false;
+                    let isGlobalOneTimeArrow = false;
+                    try {
+                        let evaluated = true;
+                        if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
+                            // Se valida si es una flecha de una sola vez con el asterisco
+                            let textoIf = outputArrow.txt.replace(/\n/ig, ' ');
+                            const tokensAsterisk = /^\s*([*]{1,2})/.exec(textoIf);
+                            if (tokensAsterisk != null) {
+                                //console.log(JSON.stringify(tokensAsterisk));
+                                textoIf = textoIf.replace(/^\s*[*]{1,2}/, "");
+                                isOneTimeArrow = true;
+                                if (tokensAsterisk[1] == "**") {
+                                    isGlobalOneTimeArrow = true;
+                                    // Globalmente se debe usar solo una vez esta flecha
+                                    if (typeof UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] == "number") {
+                                        textoIf = "false";
+                                    }
+                                } else if (typeof UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] == "number") {
+                                    textoIf = "false";
+                                }
+                            }
+                            // Se valida si la flecha tiene arrowsreset()
+                            textoIf = textoIf.replace(/arrowsreset\s*\(\s*\)/ig, () => {
+                                arrowsReset = true;
+                                return "true";
+                            });
+
+                            // Se hace manejo de touched() istouched() isnottouched() untouched()
+                            textoIf = textoIf.replace(/(touched|istouched|isnottouched|untouched)\(([^)]+)\)/ig, (wholeMatch, command, content) => {
+                                // console.log(`command = ${command} content = ${content}`);
+                                const partes = content.split(":");
+                                const key = partes[0].trim();
+                                const objectKey = partes[1].trim();
+                                let response = false;
+                                if (command == "touched") {
+                                    response = collisionEngine.hadCollision(key, objectKey);
+                                } else if (command == "istouched") {
+                                    response = collisionEngine.hasCollision(collisionMemory, key, objectKey);
+                                } else if (command == "isnottouched") {
+                                    response = collisionEngine.hasNotCollision(collisionMemory, key, objectKey);
+                                } else if (command == "untouched") {
+                                    response = collisionEngine.hadUncollision(key, objectKey);
+                                }
+                                if (response === false) {
+                                    return "false";
+                                } else {
+                                    return "true";
+                                }
+                            });
+                            // Se hace manejo de call(sound,...,...)
+                            textoIf = await MyUtilities.replaceAsync(textoIf, /call\s*\(([^)]+)\)/ig, async (command) => {
+                                const callArgs = MyTemplate.readCall(command, this.state.estado);
+                                let replaceValue = "true";
+                                if (callArgs.action != null) {
+                                    let callSkip = false;
+                                    // Si es un call de sound:
+                                    if (callArgs.action == "sound") {
+                                        // sin loop, se reemplaza por el timer
+                                        if (callArgs.arguments.length >= 2 && callArgs.arguments[1] !== "loop") {
+                                            let filename = callArgs.arguments[0];
+                                            if (/\.(wav|mp3)$/i.test(filename)) {
+                                                // Si es wav, se lee el archivo y se pregunta por:
+                                                // frame rate & number of frames
+                                                const filePath = `./src/assets/police/sounds/${filename}`;
+                                                let metadata = null;
+                                                try {
+                                                    metadata = await mm.parseFile(filePath);
+                                                } catch (err) {
+                                                    console.log(err);
+                                                }
+                                                if (metadata != null) {
+                                                    const durationMillis = metadata.format.duration * 1000;
+                                                    const name = `,${filename}`;
+                                                    const arrowIdTimer = `${arrowId}_${md5(name)}`;
+                                                    const timerKey = `timer.${arrowIdTimer}`;
+                                                    const oldTimer = this.state.readKey(timerKey);
+                                                    if (typeof oldTimer == "number") {
+                                                        // El timer ya fue asignado y no se debe hacer skip a la acción
+                                                        callSkip = true;
+                                                    }
+                                                    replaceValue = `sleep(${Math.ceil(durationMillis)}${name})`;
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    if (!callSkip) {
+                                        if (callArgs.length == 0) {
+                                            this.sendCommand(callArgs.action, "", io);
+                                        } else if (callArgs.arguments.length == 1) {
+                                            this.sendCommand(callArgs.action, callArgs.arguments[0], io);
+                                        } else {
+                                            this.sendCommand(callArgs.action, callArgs.arguments, io);
+                                        }
+                                    }
+                                }
+                                return replaceValue;
+                            });
+                            // Se hace manejo de sleep(###)
+                            if (/sleep\(([^),]*)([^)]*)\)/ig.exec(textoIf) != null) {
+                                textoIf = textoIf.replace(/sleep\(([^),]*)([^)]*)\)/ig, (match, tiempo, name) => {
+                                    let arrowIdTimer = arrowId;
+                                    if (typeof name == "string" && name.length > 0) {
+                                        arrowIdTimer += "_" + md5(name);
+                                    }
+                                    const timerKey = `timer.${arrowIdTimer}`;
+                                    timerArrowKeys.push(arrowIdTimer);
+                                    const oldTimer = this.state.readKey(timerKey);
+
+                                    if (!(typeof oldTimer == "number")) {
+                                        this.state.writeKey(timerKey, currentTime);
+                                    }
+                                    try {
+                                        const renderedTime = this.conditionalEngine.computeIf(tiempo, this.state.estado);
+                                        //console.log(`renderedTime = ${renderedTime}`);
+                                        return "${st.duration} - ${timer." + arrowIdTimer + "} > " + renderedTime;
+                                    } catch (err1) {
+                                        io.to(socket.id).emit('personalChat', sortify(serializeError(err1)));
+                                        return "false";
+                                    }
+                                });
+                            }
+                            // Se hace manejo de silence()
+                            if (/silence\(\s*\)/ig.exec(textoIf) != null) {
+                                textoIf = textoIf.replace(/silence\(\s*\)/ig, "${st.duration} - ${st.lastvoice} > ${scene.voz_segundos_buffer}*1000");
+                                const silencesKey = `silences.${arrowId}`;
+                                silenceArrowKeys.push(arrowId);
+                                const oldSilenceValue = this.state.readKey(silencesKey);
+                                if (!(typeof oldSilenceValue == "number")) {
+                                    this.state.writeKey(silencesKey, currentTime);
+                                    this.state.writeKey("st.lastvoice", currentTime);
+                                }
+                            }
+                            // Se hace manejo de voice(...)
+
+                            textoIf = textoIf.replace(/voice\(([^)]*)\)/ig, (wholeMatch, searchedText) => {
+                                // Se debe validar si este texto existe en el record de voz
+                                // La voz puede requerir interpolación
+                                try {
+                                    searchedText = this.conditionalEngine.computeIf(searchedText, this.state.estado);
+                                } catch (err5) {
+                                    // Muere silenciosamente
+                                }
+                                if (voiceDetection(searchedText)) {
+                                    return "true";
+                                } else {
+                                    return "false";
+                                }
+                            });
+                            evaluated = UnrealEngineSocket.conditionalEngine.computeIf(textoIf, this.state.estado);
+                        }
+                        if (evaluated) {
+                            temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
+                        }
+                    } catch (err) {
+                        io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                    }
+                }
+
+
+
+                // Acá se podría filtrar
+                const llavesOutputArrows = Object.keys(temporalArrowsPositive);
+                const llavesArrowGroups = Object.keys(arrowChooseGroups);
+                const removedList = [];
+                for (let z = 0; z < llavesArrowGroups.length; z++) {
+                    const llave = llavesArrowGroups[z];
+                    const arrowGroup = arrowChooseGroups[llave];
+                    const { n, list } = arrowGroup;
+                    // 1. Hago la intersección entre list y llavesOutputArrows
+                    const intersecion = llavesOutputArrows.filter((actual) => {
+                        return list.indexOf(actual) >= 0;
+                    });
+                    // 2. Debo asegurar que la intersección tiene solo n elementos y además aleatorios
+                    while (intersecion.length > n) {
+                        const removed = intersecion.splice(Math.floor(Math.random() * intersecion.length), 1);
+                        if (removed.length == 1) {
+                            removedList.push(removed[0]);
+                        }
+                    }
+                }
+
+                for (let z = 0; z < llavesOutputArrows.length; z++) {
+                    const arrowId = llavesOutputArrows[z];
+                    if (removedList.indexOf(arrowId) >= 0) {
+                        continue;
+                    }
+                    const { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow } = temporalArrowsPositive[arrowId];
+                    atLeastOneOutput = true;
+                    history.push({ id: arrowId, t: currentTime, type: "arrow", txt: outputArrow.txt });
+                    if (!(srcId in outputPositiveGlobal)) {
+                        outputPositiveGlobal[srcId] = [];
+                    }
+                    outputPositiveGlobal[srcId].push(outputArrow.tar);
+                    if (arrowsReset) {
+                        outputArrowsReset.push(outputArrow.tar);
+                    }
+                    if (isOneTimeArrow) {
+                        UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] = currentTime;
+                        if (isGlobalOneTimeArrow) {
+                            UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] = currentTime;
+                        }
+                    }
+                }
+
+                if (atLeastOneOutput) {
+                    // Se limpian las marcas temporales de salida
+                    for (let k = 0; k < silenceArrowKeys.length; k++) {
+                        const arrowId = silenceArrowKeys[k];
+                        const silencesKey = `silences.${arrowId}`;
+                        this.state.writeKey(silencesKey, null);
+                    }
+                    for (let k = 0; k < timerArrowKeys.length; k++) {
+                        const arrowId = timerArrowKeys[k];
+                        const silencesKey = `timer.${arrowId}`;
+                        this.state.writeKey(silencesKey, null);
+                    }
+
+                }
+            }
+        }
+
+        // Ejecución de los nodos donde llega
+        // Se hace el cambio
+        let forceFinish = false;
+        const flechasHabilitadas = Object.keys(outputPositiveGlobal);
+        // Esto asegura que no se ejecute un nodo de llegada dos veces
+        const executedNodesIds = [];
+        for (let i = 0; i < flechasHabilitadas.length; i++) {
+            const srcId = flechasHabilitadas[i];
+            const nodosLlegada = outputPositiveGlobal[srcId];
+            // Ejecutar las acciones que existan en los nodos de llegada
+
+            const indiceViejo = currentState.indexOf(srcId);
+            if (indiceViejo >= 0) {
+                //console.log(`Sacando nodo ${srcId} del estado actual en índice ${indiceViejo}`);
+                currentState.splice(indiceViejo, 1);
+            }
+            for (let j = 0; j < nodosLlegada.length; j++) {
+                const nodoLlegada = nodosLlegada[j];
+                const theNode = findNodeById(shapes, nodoLlegada);
+                if (executedNodesIds.indexOf(nodoLlegada) < 0) {
+                    // Esto asegura que no se ejecute un nodo de llegada dos veces
+                    executedNodesIds.push(nodoLlegada);
+                    let esNodoDeFinalizacion = false;
+                    if (["box", "ellipse", "rhombus"].indexOf(theNode.type) >= 0) {
+                        const textNode = theNode.txt;
+                        if (typeof textNode == "string") {
+                            if (textNode == "fin") {
+                                forceFinish = true;
+                                continue;
+                            }
+                            const commands = textNode.split(/\n/ig);
+                            for (let m = 0; m < commands.length; m++) {
+                                const command = commands[m];
+                                // Si es un comentario continúa
+                                if (/^\s*[/]{2,}/.exec(command) != null) {
+                                    console.log(`Skiping ${command}`);
+                                    continue;
+                                }
+                                if (/^\s*ok\s*$/.exec(command) != null) {
+                                    esNodoDeFinalizacion = true;
+                                    continue;
+                                }
+                                // Se valida si es clean voice
+                                if (/^\s*cleanvoice\(\)\s*$/.exec(command) != null) {
+                                    // Force delete voice and notify
+                                    this.affectModel("st.voice", [], io);
+                                    continue;
+                                }
+                                // Si es un comando para las flechas...
+                                if (/^\s*choose\(([^)]+)\)/ig.exec(command) != null) {
+                                    //console.log(`Next choose only some arrows`);
+                                    continue;
+                                }
+                                // Se valida si es un comando call{sound, param, param}
+                                const callArgs = MyTemplate.readCall(command, this.state.estado);
+                                if (callArgs.action != null) {
+                                    // Se ejecuta la acción
+                                    //console.log(`call ${callArgs.action}`);
+                                    if (callArgs.length == 0) {
+                                        this.sendCommand(callArgs.action, "", io);
+                                    } else if (callArgs.arguments.length == 1) {
+                                        this.sendCommand(callArgs.action, callArgs.arguments[0], io);
+                                    } else {
+                                        this.sendCommand(callArgs.action, callArgs.arguments, io);
+                                    }
+                                } else {
+                                    // se valida si es increase(...)
+                                    const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
+                                    if (tokensIncrease != null) {
+                                        increaseAmount(tokensIncrease[1], 1)
+                                        continue;
+                                    }
+                                    const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
+                                    if (tokensPopUp != null) {
+                                        const popupKey = tokensPopUp[1].trim();
+                                        const currentValue = this.state.readKey(popupKey);
+                                        if (!currentValue) {
+                                            console.log(`Error leyendo popup de ${popupKey}`);
+                                            continue;
+                                        }
+                                        // Asigno la ruta como cllbackid
+                                        currentValue.callback = popupKey;
+                                        this.sendCommand('popupopen', currentValue, io);
+                                        continue;
+                                    }
+                                    // Default way to resolve node actions
+                                    const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
+                                    if (tokensCommand != null) {
+                                        const destinationVar = tokensCommand[1];
+                                        const preProcesedValue = tokensCommand[2];
+                                        try {
+                                            const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
+                                            //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
+                                            this.affectModel(destinationVar, value, io);
+                                        } catch (err1) {
+                                            io.to(socket.id).emit('personalChat', sortify(serializeError(err1)));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (!esNodoDeFinalizacion) {
+                        currentState.push(nodoLlegada);
+                    }
+                }
+
+                //console.log(`vamos en ${JSON.stringify(currentState)}`);
+                history.push({ id: theNode.id, t: currentTime, type: "node", txt: theNode.txt });
+                // Se valida si llegó a este nodo por medio de una flecha con arrowsreset()
+                if (outputArrowsReset.indexOf(nodoLlegada) >= 0) {
+                    // Se deben borrar los ids de las flechas de salida de este nodo
+                    const outputArrowsNext = filterSourceArrowsFromSource(arrows, nodoLlegada);
+                    for (let k = 0; k < outputArrowsNext.length; k++) {
+                        const outputArrow = outputArrowsNext[k];
+                        const arrowId = outputArrow.id;
+                        delete UnrealEngineSocket.ONE_TIME_ARROWS[arrowId];
+                    }
+                }
+            }
+        }
+        const nuevosSt = {
+            duration: new Date().getTime() - startedAt,
+        };
+        if (flechasHabilitadas.length > 0) {
+            nuevosSt.history = history;
+            nuevosSt.current = currentState;
+        }
+        if (forceFinish) {
+            nuevosSt.current = null;
+        }
+        //console.log(`Escribiendo ${JSON.stringify(nuevosSt)}`);
+        this.affectModel("st", nuevosSt, io);
+        collisionEngine.endSession();
+
+        setTimeout(() => {
+            this.moveState(io, socket);
+        }, interval);
+    }
+
+    static goToStartingPoint(io, socket) {
+        //console.log(`goToStartingPoint`);
+        UnrealEngineSocket.collisionEngine = new CollisionsEngine();
+        const currentState = this.state.readKey("st.current");
+        let interval = this.state.readKey("scene.interval");
+        if (!(typeof interval == "number")) {
+            interval = UnrealEngineSocket.GAME_INTERVAL;
+        }
+        if (currentState != null) {
+            throw `El entrenamiento ya está iniciado y está corriendo`;
+        }
+        const nodeIds = this.state.getIdNodeWithText("inicio");
+        //console.log(`nodeIds = ${JSON.stringify(nodeIds)}`);
+        const history = nodeIds.map((node) => {
+            return { id: node, t: 0 }
+        });
+        const nuevosSt = {
+            current: nodeIds,
+            startedAt: new Date().getTime(),
+            duration: 0,
+            voice: undefined,
+            lastvoice: undefined,
+            touch: undefined,
+            history: history,
+        };
+        // Buscar inicio
+        this.state.writeKey("timer", {});
+        this.state.writeKey("silences", {});
+        UnrealEngineSocket.ONE_TIME_ARROWS = {};
+        UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS = {};
+        // Inicialización
+        this.affectModel("st", nuevosSt, io);
+        setTimeout(() => {
+            this.moveState(io, socket);
+        }, interval);
+    }
+
+    static affectModel = (keyWrited, val, io) => {
+        const valWrited = {
+            key: keyWrited,
+            val: val,
+        };
+        this.state.writeKey(keyWrited, val);
+        // ease for UE client
+        const partes = /^avatar\.([^.]+)\.(.+)$/.exec(keyWrited);
+        if (partes != null) {
+            valWrited.avatar = partes[1];
+            valWrited.prop = partes[2];
+        }
+        io.emit('stateChanged', JSON.stringify(valWrited));
+    };
+
+    static voiceDetection(llave) {
+        const redaccion = this.readVoice();
+        //console.log(`detection ${llave} en ${redaccion}`);
+        if (redaccion == null) {
+            return false;
+        }
+        if (llave === undefined || llave.trim().length == 0) {
+            // Si era vacío lo que tenía que buscar y hay algo de redacción, entonces es true
+            return true;
+        }
+        //console.log(`redaccion = ${redaccion} vs ${llave}`);
+        const homologacion = UnrealEngineSocket.HOMOLOGACION_VOZ;
+        if (redaccion.indexOf(llave) >= 0) {
+            return true;
+        }
+        const alternativas = homologacion[llave];
+        if (alternativas instanceof Array) {
+            for (let i = 0; i < alternativas.length; i++) {
+                const alternativa = alternativas[i];
+                //console.log(`redaccion = ${redaccion} vs ${alternativa}`);
+                if (redaccion.indexOf(alternativa) >= 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    static readVoice(show = false) {
+        let voiceHistory = this.state.readKey("st.voice");
+        // Si no es arreglo
+        if (!(voiceHistory instanceof Array)) {
+            return null;
+        }
+        // Si está vacio
+        if (voiceHistory.length == 0) {
+            return null;
+        }
+
+        // De lo contrario lo filtra
+        let { changes, voiceHistoryFiltered } = this.filterVoiceGap(voiceHistory);
+        // Si está vacio el gap
+        if (voiceHistoryFiltered.length == 0) {
+            return null;
+        }
+        if (changes) {
+            voiceHistory = voiceHistoryFiltered;
+        }
+        // Si cambio lo reescribe sin notificar
+        // Arma el texto con espacios .join(' ');
+        const texto = voiceHistory.reduce((previousValue, currentValue, currentIndex, array) => {
+            return previousValue + " " + currentValue.d;
+        }, "");
+        if (show) {
+            this.affectModel("st.voicegap", texto, io);
+        }
+        return texto;
+    }
+
+    static filterVoiceGap(voiceHistory) {
+        const ahora = this.state.readKey("st.duration");
+        let VOZ_MILLIS_BUFFER = this.state.readKey("scene.voz_segundos_buffer");
+        if (!(typeof VOZ_MILLIS_BUFFER == "number")) {
+            VOZ_MILLIS_BUFFER = 5;
+        }
+        VOZ_MILLIS_BUFFER *= 1000;
+        let changes = false;
+        voiceHistory = voiceHistory.filter((elem) => {
+            if (ahora - elem.t > VOZ_MILLIS_BUFFER) {
+                changes = true;
+                return false;
+            }
+            return true;
+        });
+
+        return { changes, voiceHistoryFiltered: voiceHistory };
     }
 
     static handle(io) {
@@ -136,23 +707,8 @@ export class UnrealEngineSocket {
                 return null;
             };
 
-            const affectModel = (keyWrited, val) => {
-                const valWrited = {
-                    key: keyWrited,
-                    val: val,
-                };
-                this.state.writeKey(keyWrited, val);
-                // ease for UE client
-                const partes = /^avatar\.([^.]+)\.(.+)$/.exec(keyWrited);
-                if (partes != null) {
-                    valWrited.avatar = partes[1];
-                    valWrited.prop = partes[2];
-                }
-                io.emit('stateChanged', JSON.stringify(valWrited));
-            };
-
             // Sends initialization for avatar
-            affectModel(`avatar.${socket.id}`, JSON.parse(JSON.stringify(UnrealEngineSocket.INITIAL_AVATAR_VALUE)));
+            this.affectModel(`avatar.${socket.id}`, JSON.parse(JSON.stringify(UnrealEngineSocket.INITIAL_AVATAR_VALUE)), io);
 
             const disconnectHandler = () => {
                 clients.pop(socket.id);
@@ -208,7 +764,7 @@ export class UnrealEngineSocket {
                     // Se verifica si ya existe uno anterior...
                     const currentKey = getCurrentPlayerKey();
                     if (currentKey != null) {
-                        affectModel(currentKey, undefined);
+                        this.affectModel(currentKey, undefined, io);
                     }
 
                     const insertedId = await databaseClient.createScore(payload.personId, this.state.estado.scene?.id);
@@ -222,7 +778,7 @@ export class UnrealEngineSocket {
 
                     //console.log(JSON.stringify(participant, null, 4));
                     const keyWrited = `players.player_${insertedId}`;
-                    affectModel(keyWrited, { db: participant });
+                    this.affectModel(keyWrited, { db: participant }, io);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', serializeError(err));
                 }
@@ -281,7 +837,7 @@ export class UnrealEngineSocket {
                 try {
                     // Se publica a todos
                     const key = computeMineKey(payload);
-                    affectModel(key, payload.val);
+                    this.affectModel(key, payload.val, io);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -302,56 +858,6 @@ export class UnrealEngineSocket {
                 }
             };
 
-            const goToStartingPoint = () => {
-                //console.log(`goToStartingPoint`);
-                UnrealEngineSocket.collisionEngine = new CollisionsEngine();
-                const currentState = this.state.readKey("st.current");
-                let interval = this.state.readKey("scene.interval");
-                if (!(typeof interval == "number")) {
-                    interval = UnrealEngineSocket.GAME_INTERVAL;
-                }
-                if (currentState != null) {
-                    throw `El entrenamiento ya está iniciado y está corriendo`;
-                }
-                const nodeIds = this.state.getIdNodeWithText("inicio");
-                //console.log(`nodeIds = ${JSON.stringify(nodeIds)}`);
-                const history = nodeIds.map((node) => {
-                    return { id: node, t: 0 }
-                });
-                const nuevosSt = {
-                    current: nodeIds,
-                    startedAt: new Date().getTime(),
-                    duration: 0,
-                    voice: undefined,
-                    lastvoice: undefined,
-                    touch: undefined,
-                    history: history,
-                };
-                // Buscar inicio
-                this.state.writeKey("timer", {});
-                this.state.writeKey("silences", {});
-                UnrealEngineSocket.ONE_TIME_ARROWS = {};
-                UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS = {};
-                // Inicialización
-                affectModel("st", nuevosSt);
-                setTimeout(() => {
-                    moveState();
-                }, interval);
-            }
-
-            const filterSourceArrowsFromSource = (arrows, srcId) => {
-                return arrows.filter((arrow) => arrow.src == srcId);
-            }
-
-            const findNodeById = (nodes, id) => {
-                const temp = nodes.filter((node) => node.id == id);
-                if (temp.length > 0) {
-                    return temp[0];
-                } else {
-                    return null;
-                }
-            };
-
             const increaseAmount = (key, amount = 1) => {
                 try {
                     const increaseKey = replaceUserVars(key);
@@ -362,19 +868,10 @@ export class UnrealEngineSocket {
                     }
                     currentValue += amount;
                     //this.state.writeKey(increaseKey, currentValue);//Not live
-                    affectModel(increaseKey, currentValue);//Live
+                    this.affectModel(increaseKey, currentValue, io);//Live
                 } catch (err) {
                     io.emit(chatEvent, err);
                 }
-            };
-
-            const sendCommand = (command, content) => {
-                const completo = {
-                    command,
-                    content,
-                };
-                io.emit(completo.command, JSON.stringify(completo.content));
-                io.emit('personalChat', JSON.stringify(completo));
             };
 
             const echoCommand = (command, content) => {
@@ -382,445 +879,11 @@ export class UnrealEngineSocket {
                 console.log(logMessage);
                 io.to(socket.id).emit('personalChat', logMessage);
             };
-
-            const moveState = async () => {
-                const history = this.state.readKey("st.history");
-                const currentState = this.state.readKey("st.current");
-                const startedAt = this.state.readKey("st.startedAt");
-                let interval = this.state.readKey("scene.interval");
-                let collisionMemory = this.state.readKey("st.touch");
-                const collisionEngine = UnrealEngineSocket.collisionEngine;
-                collisionEngine.startSession();
-                if (!collisionMemory) {
-                    collisionMemory = {};
-                }
-
-                if (!(typeof interval == "number")) {
-                    interval = UnrealEngineSocket.GAME_INTERVAL;
-                }
-                if (currentState == null) {
-                    // El juego ya terminó
-                    collisionEngine.endSession();
-                    return;
-                }
-                const graph = this.state.readKey("zflowchart");
-                const arrows = graph.arrows;
-                const shapes = graph.shapes;
-                //console.log(`Evaluating next steps from ${JSON.stringify(currentState)}`);
-
-                // Validar las flechas y tomar todas las que sean verdaderas
-                const outputPositiveGlobal = {};
-                const outputArrowsReset = [];
-                const currentTime = this.state.readKey("st.duration");
-                for (let i = 0; i < currentState.length; i++) {
-                    const srcId = currentState[i];
-                    const outputArrows = filterSourceArrowsFromSource(arrows, srcId);
-                    if (outputArrows.length > 0) {
-                        const silenceArrowKeys = [];
-                        const timerArrowKeys = [];
-                        const arrowChooseGroups = {};
-                        const temporalArrowsPositive = {};
-                        let atLeastOneOutput = false;
-                        let arrowsReset = false;
-                        // Este nodo se debe validar si cumple al menos una salida
-                        for (let j = 0; j < outputArrows.length; j++) {
-                            const outputArrow = outputArrows[j];
-                            const srcNode = findNodeById(shapes, outputArrow.src);
-                            const hasChoose = /choose\((\d+)\)/ig.exec(srcNode.txt);
-                            const arrowId = outputArrow.id;
-                            if (hasChoose) {
-                                if (!(arrowChooseGroups[srcNode.id])) {
-                                    arrowChooseGroups[srcNode.id] = {
-                                        n: parseInt(hasChoose[1]),
-                                        list: [],
-                                    };
-                                }
-                                arrowChooseGroups[srcNode.id].list.push(arrowId);
-                            }
-                            let isOneTimeArrow = false;
-                            let isGlobalOneTimeArrow = false;
-                            try {
-                                let evaluated = true;
-                                if (typeof outputArrow.txt == "string" && outputArrow.txt.trim() != "") {
-                                    // Se valida si es una flecha de una sola vez con el asterisco
-                                    let textoIf = outputArrow.txt.replace(/\n/ig, ' ');
-                                    const tokensAsterisk = /^\s*([*]{1,2})/.exec(textoIf);
-                                    if (tokensAsterisk != null) {
-                                        //console.log(JSON.stringify(tokensAsterisk));
-                                        textoIf = textoIf.replace(/^\s*[*]{1,2}/, "");
-                                        isOneTimeArrow = true;
-                                        if (tokensAsterisk[1] == "**") {
-                                            isGlobalOneTimeArrow = true;
-                                            // Globalmente se debe usar solo una vez esta flecha
-                                            if (typeof UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] == "number") {
-                                                textoIf = "false";
-                                            }
-                                        } else if (typeof UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] == "number") {
-                                            textoIf = "false";
-                                        }
-                                    }
-                                    // Se valida si la flecha tiene arrowsreset()
-                                    textoIf = textoIf.replace(/arrowsreset\s*\(\s*\)/ig, () => {
-                                        arrowsReset = true;
-                                        return "true";
-                                    });
-
-                                    // Se hace manejo de touched() istouched() isnottouched() untouched()
-                                    textoIf = textoIf.replace(/(touched|istouched|isnottouched|untouched)\(([^)]+)\)/ig, (wholeMatch, command, content) => {
-                                        // console.log(`command = ${command} content = ${content}`);
-                                        const partes = content.split(":");
-                                        const key = partes[0].trim();
-                                        const objectKey = partes[1].trim();
-                                        let response = false;
-                                        if (command == "touched") {
-                                            response = collisionEngine.hadCollision(key, objectKey);
-                                        } else if (command == "istouched") {
-                                            response = collisionEngine.hasCollision(collisionMemory, key, objectKey);
-                                        } else if (command == "isnottouched") {
-                                            response = collisionEngine.hasNotCollision(collisionMemory, key, objectKey);
-                                        } else if (command == "untouched") {
-                                            response = collisionEngine.hadUncollision(key, objectKey);
-                                        }
-                                        if (response === false) {
-                                            return "false";
-                                        } else {
-                                            return "true";
-                                        }
-                                    });
-                                    // Se hace manejo de call(sound,...,...)
-                                    textoIf = await MyUtilities.replaceAsync(textoIf, /call\s*\(([^)]+)\)/ig, async (command) => {
-                                        const callArgs = MyTemplate.readCall(command, this.state.estado);
-                                        let replaceValue = "true";
-                                        if (callArgs.action != null) {
-                                            let callSkip = false;
-                                            // Si es un call de sound:
-                                            if (callArgs.action == "sound") {
-                                                // sin loop, se reemplaza por el timer
-                                                if (callArgs.arguments.length >= 2 && callArgs.arguments[1] !== "loop") {
-                                                    let filename = callArgs.arguments[0];
-                                                    if (/\.(wav|mp3)$/i.test(filename)) {
-                                                        // Si es wav, se lee el archivo y se pregunta por:
-                                                        // frame rate & number of frames
-                                                        const filePath = `./src/assets/police/sounds/${filename}`;
-                                                        let metadata = null;
-                                                        try {
-                                                            metadata = await mm.parseFile(filePath);
-                                                        } catch (err) {
-                                                            console.log(err);
-                                                        }
-                                                        if (metadata != null) {
-                                                            const durationMillis = metadata.format.duration * 1000;
-                                                            const name = `,${filename}`;
-                                                            const arrowIdTimer = `${arrowId}_${md5(name)}`;
-                                                            const timerKey = `timer.${arrowIdTimer}`;
-                                                            const oldTimer = this.state.readKey(timerKey);
-                                                            if (typeof oldTimer == "number") {
-                                                                // El timer ya fue asignado y no se debe hacer skip a la acción
-                                                                callSkip = true;
-                                                            }
-                                                            replaceValue = `sleep(${Math.ceil(durationMillis)}${name})`;
-                                                        }
-                                                    }
-                                                }
-                                            }
-
-                                            if (!callSkip) {
-                                                if (callArgs.length == 0) {
-                                                    sendCommand(callArgs.action, "");
-                                                } else if (callArgs.arguments.length == 1) {
-                                                    sendCommand(callArgs.action, callArgs.arguments[0]);
-                                                } else {
-                                                    sendCommand(callArgs.action, callArgs.arguments);
-                                                }
-                                            }
-                                        }
-                                        return replaceValue;
-                                    });
-                                    // Se hace manejo de sleep(###)
-                                    if (/sleep\(([^),]*)([^)]*)\)/ig.exec(textoIf) != null) {
-                                        textoIf = textoIf.replace(/sleep\(([^),]*)([^)]*)\)/ig, (match, tiempo, name) => {
-                                            let arrowIdTimer = arrowId;
-                                            if (typeof name == "string" && name.length > 0) {
-                                                arrowIdTimer += "_" + md5(name);
-                                            }
-                                            const timerKey = `timer.${arrowIdTimer}`;
-                                            timerArrowKeys.push(arrowIdTimer);
-                                            const oldTimer = this.state.readKey(timerKey);
-
-                                            if (!(typeof oldTimer == "number")) {
-                                                this.state.writeKey(timerKey, currentTime);
-                                            }
-                                            try {
-                                                const renderedTime = this.conditionalEngine.computeIf(tiempo, this.state.estado);
-                                                //console.log(`renderedTime = ${renderedTime}`);
-                                                return "${st.duration} - ${timer." + arrowIdTimer + "} > " + renderedTime;
-                                            } catch (err1) {
-                                                io.to(socket.id).emit('personalChat', sortify(serializeError(err1)));
-                                                return "false";
-                                            }
-                                        });
-                                    }
-                                    // Se hace manejo de silence()
-                                    if (/silence\(\s*\)/ig.exec(textoIf) != null) {
-                                        textoIf = textoIf.replace(/silence\(\s*\)/ig, "${st.duration} - ${st.lastvoice} > ${scene.voz_segundos_buffer}*1000");
-                                        const silencesKey = `silences.${arrowId}`;
-                                        silenceArrowKeys.push(arrowId);
-                                        const oldSilenceValue = this.state.readKey(silencesKey);
-                                        if (!(typeof oldSilenceValue == "number")) {
-                                            this.state.writeKey(silencesKey, currentTime);
-                                            this.state.writeKey("st.lastvoice", currentTime);
-                                        }
-                                    }
-                                    // Se hace manejo de voice(...)
-
-                                    textoIf = textoIf.replace(/voice\(([^)]*)\)/ig, (wholeMatch, searchedText) => {
-                                        // Se debe validar si este texto existe en el record de voz
-                                        // La voz puede requerir interpolación
-                                        try {
-                                            searchedText = this.conditionalEngine.computeIf(searchedText, this.state.estado);
-                                        } catch (err5) {
-                                            // Muere silenciosamente
-                                        }
-                                        if (voiceDetection(searchedText)) {
-                                            return "true";
-                                        } else {
-                                            return "false";
-                                        }
-                                    });
-                                    evaluated = UnrealEngineSocket.conditionalEngine.computeIf(textoIf, this.state.estado);
-                                }
-                                if (evaluated) {
-                                    temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
-                                }
-                            } catch (err) {
-                                io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                            }
-                        }
-
-
-
-                        // Acá se podría filtrar
-                        const llavesOutputArrows = Object.keys(temporalArrowsPositive);
-                        const llavesArrowGroups = Object.keys(arrowChooseGroups);
-                        const removedList = [];
-                        for (let z = 0; z < llavesArrowGroups.length; z++) {
-                            const llave = llavesArrowGroups[z];
-                            const arrowGroup = arrowChooseGroups[llave];
-                            const { n, list } = arrowGroup;
-                            // 1. Hago la intersección entre list y llavesOutputArrows
-                            const intersecion = llavesOutputArrows.filter((actual) => {
-                                return list.indexOf(actual) >= 0;
-                            });
-                            // 2. Debo asegurar que la intersección tiene solo n elementos y además aleatorios
-                            while (intersecion.length > n) {
-                                const removed = intersecion.splice(Math.floor(Math.random() * intersecion.length), 1);
-                                if (removed.length == 1) {
-                                    removedList.push(removed[0]);
-                                }
-                            }
-                        }
-
-                        for (let z = 0; z < llavesOutputArrows.length; z++) {
-                            const arrowId = llavesOutputArrows[z];
-                            if (removedList.indexOf(arrowId) >= 0) {
-                                continue;
-                            }
-                            const { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow } = temporalArrowsPositive[arrowId];
-                            atLeastOneOutput = true;
-                            history.push({ id: arrowId, t: currentTime, type: "arrow", txt: outputArrow.txt });
-                            if (!(srcId in outputPositiveGlobal)) {
-                                outputPositiveGlobal[srcId] = [];
-                            }
-                            outputPositiveGlobal[srcId].push(outputArrow.tar);
-                            if (arrowsReset) {
-                                outputArrowsReset.push(outputArrow.tar);
-                            }
-                            if (isOneTimeArrow) {
-                                UnrealEngineSocket.ONE_TIME_ARROWS[arrowId] = currentTime;
-                                if (isGlobalOneTimeArrow) {
-                                    UnrealEngineSocket.GLOBAL_ONE_TIME_ARROWS[arrowId] = currentTime;
-                                }
-                            }
-                        }
-
-                        if (atLeastOneOutput) {
-                            // Se limpian las marcas temporales de salida
-                            for (let k = 0; k < silenceArrowKeys.length; k++) {
-                                const arrowId = silenceArrowKeys[k];
-                                const silencesKey = `silences.${arrowId}`;
-                                this.state.writeKey(silencesKey, null);
-                            }
-                            for (let k = 0; k < timerArrowKeys.length; k++) {
-                                const arrowId = timerArrowKeys[k];
-                                const silencesKey = `timer.${arrowId}`;
-                                this.state.writeKey(silencesKey, null);
-                            }
-
-                        }
-                    }
-                }
-
-                // Ejecución de los nodos donde llega
-                // Se hace el cambio
-                let forceFinish = false;
-                const flechasHabilitadas = Object.keys(outputPositiveGlobal);
-                // Esto asegura que no se ejecute un nodo de llegada dos veces
-                const executedNodesIds = [];
-                for (let i = 0; i < flechasHabilitadas.length; i++) {
-                    const srcId = flechasHabilitadas[i];
-                    const nodosLlegada = outputPositiveGlobal[srcId];
-                    // Ejecutar las acciones que existan en los nodos de llegada
-
-                    const indiceViejo = currentState.indexOf(srcId);
-                    if (indiceViejo >= 0) {
-                        //console.log(`Sacando nodo ${srcId} del estado actual en índice ${indiceViejo}`);
-                        currentState.splice(indiceViejo, 1);
-                    }
-                    for (let j = 0; j < nodosLlegada.length; j++) {
-                        const nodoLlegada = nodosLlegada[j];
-                        const theNode = findNodeById(shapes, nodoLlegada);
-                        if (executedNodesIds.indexOf(nodoLlegada) < 0) {
-                            // Esto asegura que no se ejecute un nodo de llegada dos veces
-                            executedNodesIds.push(nodoLlegada);
-                            let esNodoDeFinalizacion = false;
-                            if (["box", "ellipse", "rhombus"].indexOf(theNode.type) >= 0) {
-                                const textNode = theNode.txt;
-                                if (typeof textNode == "string") {
-                                    if (textNode == "fin") {
-                                        forceFinish = true;
-                                        continue;
-                                    }
-                                    const commands = textNode.split(/\n/ig);
-                                    for (let m = 0; m < commands.length; m++) {
-                                        const command = commands[m];
-                                        // Si es un comentario continúa
-                                        if (/^\s*[/]{2,}/.exec(command) != null) {
-                                            console.log(`Skiping ${command}`);
-                                            continue;
-                                        }
-                                        if (/^\s*ok\s*$/.exec(command) != null) {
-                                            esNodoDeFinalizacion = true;
-                                            continue;
-                                        }
-                                        // Se valida si es clean voice
-                                        if (/^\s*cleanvoice\(\)\s*$/.exec(command) != null) {
-                                            // Force delete voice and notify
-                                            affectModel("st.voice", []);
-                                            continue;
-                                        }
-                                        // Si es un comando para las flechas...
-                                        if (/^\s*choose\(([^)]+)\)/ig.exec(command) != null) {
-                                            //console.log(`Next choose only some arrows`);
-                                            continue;
-                                        }
-                                        // Se valida si es un comando call{sound, param, param}
-                                        const callArgs = MyTemplate.readCall(command, this.state.estado);
-                                        if (callArgs.action != null) {
-                                            // Se ejecuta la acción
-                                            //console.log(`call ${callArgs.action}`);
-                                            if (callArgs.length == 0) {
-                                                sendCommand(callArgs.action, "");
-                                            } else if (callArgs.arguments.length == 1) {
-                                                sendCommand(callArgs.action, callArgs.arguments[0]);
-                                            } else {
-                                                sendCommand(callArgs.action, callArgs.arguments);
-                                            }
-                                        } else {
-                                            // se valida si es increase(...)
-                                            const tokensIncrease = /^\s*increase\s*\(([^)]+)\)$/.exec(command);
-                                            if (tokensIncrease != null) {
-                                                increaseAmount(tokensIncrease[1], 1)
-                                                continue;
-                                            }
-                                            const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
-                                            if (tokensPopUp != null) {
-                                                const popupKey = tokensPopUp[1].trim();
-                                                const currentValue = this.state.readKey(popupKey);
-                                                if (!currentValue) {
-                                                    console.log(`Error leyendo popup de ${popupKey}`);
-                                                    continue;
-                                                }
-                                                // Asigno la ruta como cllbackid
-                                                currentValue.callback = popupKey;
-                                                sendCommand('popupopen', currentValue);
-                                                continue;
-                                            }
-                                            // Default way to resolve node actions
-                                            const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
-                                            if (tokensCommand != null) {
-                                                const destinationVar = tokensCommand[1];
-                                                const preProcesedValue = tokensCommand[2];
-                                                try {
-                                                    const value = this.conditionalEngine.computeIf(preProcesedValue, this.state.estado);
-                                                    //console.log(`destinationVar = ${destinationVar} preProcesedValue = ${preProcesedValue} value = ${value}`);
-                                                    affectModel(destinationVar, value);
-                                                } catch (err1) {
-                                                    io.to(socket.id).emit('personalChat', sortify(serializeError(err1)));
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            if (!esNodoDeFinalizacion) {
-                                currentState.push(nodoLlegada);
-                            }
-                        }
-
-                        //console.log(`vamos en ${JSON.stringify(currentState)}`);
-                        history.push({ id: theNode.id, t: currentTime, type: "node", txt: theNode.txt });
-                        // Se valida si llegó a este nodo por medio de una flecha con arrowsreset()
-                        if (outputArrowsReset.indexOf(nodoLlegada) >= 0) {
-                            // Se deben borrar los ids de las flechas de salida de este nodo
-                            const outputArrowsNext = filterSourceArrowsFromSource(arrows, nodoLlegada);
-                            for (let k = 0; k < outputArrowsNext.length; k++) {
-                                const outputArrow = outputArrowsNext[k];
-                                const arrowId = outputArrow.id;
-                                delete UnrealEngineSocket.ONE_TIME_ARROWS[arrowId];
-                            }
-                        }
-                    }
-                }
-                const nuevosSt = {
-                    duration: new Date().getTime() - startedAt,
-                };
-                if (flechasHabilitadas.length > 0) {
-                    nuevosSt.history = history;
-                    nuevosSt.current = currentState;
-                }
-                if (forceFinish) {
-                    nuevosSt.current = null;
-                }
-                //console.log(`Escribiendo ${JSON.stringify(nuevosSt)}`);
-                affectModel("st", nuevosSt);
-                collisionEngine.endSession();
-
-                setTimeout(() => {
-                    moveState();
-                }, interval);
-            };
+            this.echoCommand = echoCommand;
 
             const startGameEventHandler = async (payload) => {
                 try {
-                    echoCommand("startGame", payload);
-                    // Se debe validar si ya hay escenario
-
-                    if (!(this.state.estado?.scene?.id)) {
-                        throw "Debe seleccionar primero el escenario o el escenario no tiene scene.id!";
-                    }
-                    /*
-                    if (!(this.state.estado?.players)) {
-                        throw "Debe seleccionar los participantes";
-                    }
-                    if (Object.keys(this.state.estado?.players).length < 2) {
-                        throw "Debe seleccionar al menos dos participantes";
-                    }
-                    */
-                    //console.log(JSON.stringify(UnrealEngineSocket.HOMOLOGACION_VOZ));
-                    console.log("Starting game...");
-
-                    goToStartingPoint();
-
+                    await new CommandStartGame(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -828,12 +891,7 @@ export class UnrealEngineSocket {
 
             const endGameEventHandler = async (payload) => {
                 try {
-                    echoCommand("endGame", payload);
-                    const currentState = this.state.readKey("st.current");
-                    if (currentState == null) {
-                        throw "El entrenamiento ya está terminado";
-                    }
-                    affectModel("st.current", null);
+                    await new CommandEndGame(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -899,7 +957,7 @@ export class UnrealEngineSocket {
                     this.state.writeKey("st.lastvoice", ahora);
 
                     //this.state.writeKey("st.voice", voiceHistory);//Not live
-                    affectModel("st.voice", voiceHistory);//Live
+                    this.affectModel("st.voice", voiceHistory, io);//Live
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
@@ -918,7 +976,7 @@ export class UnrealEngineSocket {
                     const changed = UnrealEngineSocket.collisionEngine.collide(memory, key, objectKey);
                     if (changed) {
                         //this.state.writeKey("st.touch", memory);//Not live
-                        affectModel("st.touch", memory);//Live
+                        this.affectModel("st.touch", memory, io);//Live
                     }
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
@@ -938,7 +996,7 @@ export class UnrealEngineSocket {
                     const changed = UnrealEngineSocket.collisionEngine.uncollide(memory, key, objectKey);
                     if (changed) {
                         //this.state.writeKey("st.touch", memory);//Not live
-                        affectModel("st.touch", memory);//Live
+                        this.affectModel("st.touch", memory, io);//Live
                     }
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
@@ -980,91 +1038,13 @@ export class UnrealEngineSocket {
                                 keyPath = replaceUserVars(keyPath);
                                 //console.log(`keyPath = ${keyPath} mychoice = ${mychoice}`);
                                 //this.state.writeKey(keyPath, mychoice);//Not live
-                                affectModel(keyPath, mychoice);//Live
+                                this.affectModel(keyPath, mychoice, io);//Live
                             }
                         }
                     }
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
-            }
-
-            const voiceDetection = (llave) => {
-                const redaccion = readVoice();
-                //console.log(`detection ${llave} en ${redaccion}`);
-                if (redaccion == null) {
-                    return false;
-                }
-                if (llave === undefined || llave.trim().length == 0) {
-                    // Si era vacío lo que tenía que buscar y hay algo de redacción, entonces es true
-                    return true;
-                }
-                //console.log(`redaccion = ${redaccion} vs ${llave}`);
-                const homologacion = UnrealEngineSocket.HOMOLOGACION_VOZ;
-                if (redaccion.indexOf(llave) >= 0) {
-                    return true;
-                }
-                const alternativas = homologacion[llave];
-                if (alternativas instanceof Array) {
-                    for (let i = 0; i < alternativas.length; i++) {
-                        const alternativa = alternativas[i];
-                        //console.log(`redaccion = ${redaccion} vs ${alternativa}`);
-                        if (redaccion.indexOf(alternativa) >= 0) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
-            }
-
-            const readVoice = (show = false) => {
-                let voiceHistory = this.state.readKey("st.voice");
-                // Si no es arreglo
-                if (!(voiceHistory instanceof Array)) {
-                    return null;
-                }
-                // Si está vacio
-                if (voiceHistory.length == 0) {
-                    return null;
-                }
-
-                // De lo contrario lo filtra
-                let { changes, voiceHistoryFiltered } = filterVoiceGap(voiceHistory);
-                // Si está vacio el gap
-                if (voiceHistoryFiltered.length == 0) {
-                    return null;
-                }
-                if (changes) {
-                    voiceHistory = voiceHistoryFiltered;
-                }
-                // Si cambio lo reescribe sin notificar
-                // Arma el texto con espacios .join(' ');
-                const texto = voiceHistory.reduce((previousValue, currentValue, currentIndex, array) => {
-                    return previousValue + " " + currentValue.d;
-                }, "");
-                if (show) {
-                    affectModel("st.voicegap", texto);
-                }
-                return texto;
-            }
-
-            const filterVoiceGap = (voiceHistory) => {
-                const ahora = this.state.readKey("st.duration");
-                let VOZ_MILLIS_BUFFER = this.state.readKey("scene.voz_segundos_buffer");
-                if (!(typeof VOZ_MILLIS_BUFFER == "number")) {
-                    VOZ_MILLIS_BUFFER = 5;
-                }
-                VOZ_MILLIS_BUFFER *= 1000;
-                let changes = false;
-                voiceHistory = voiceHistory.filter((elem) => {
-                    if (ahora - elem.t > VOZ_MILLIS_BUFFER) {
-                        changes = true;
-                        return false;
-                    }
-                    return true;
-                });
-
-                return { changes, voiceHistoryFiltered: voiceHistory };
             }
 
             socket.on(createScoreEvent, createScoreEventHandler);
