@@ -1,7 +1,5 @@
 import { Buffer } from 'buffer';
 import { LocalFileService } from 'src/services/localfile.service';
-import { MyDates } from 'srcJs/MyDates';
-import sortify from 'srcJs/sortify';
 import { HasFiles } from '../dataaccess/HasFiles';
 import { GraphManager } from '../models/GraphManager';
 
@@ -32,33 +30,6 @@ export abstract class CommandContext extends GraphManager implements HasFiles {
       this.listenMode.complete = complete;
     }
   }
-  static beatyfull(texto: string) {
-    try {
-      if (typeof texto == 'string') {
-        return sortify(JSON.parse(texto));
-      } else {
-        return sortify(texto);
-      }
-    } catch (err) {
-      return texto;
-    }
-  }
-  receiveChatMessage(key: string, message: any) {
-    //console.log(`[${key}]`);
-    // Put it on top
-    const ahora = new Date();
-    ahora.setHours(ahora.getHours() - 5);
-    const fecha = MyDates.getDayAsContinuosNumberHmmSS(ahora);
-    this.messages.unshift(
-      `${fecha} [${key}] ` + CommandContext.beatyfull(message)
-    );
-    if (this.messages.length > CommandContext.MAX_MESSAGE_LENGTH) {
-      this.messages.splice(
-        CommandContext.MAX_MESSAGE_LENGTH,
-        this.messages.length - CommandContext.MAX_MESSAGE_LENGTH
-      );
-    }
-  }
 
   async readFile(path: string): Promise<string> {
     const response = await this.localFileService.readPlainText(path);
@@ -72,6 +43,10 @@ export abstract class CommandContext extends GraphManager implements HasFiles {
       ),
       fileName: path,
     });
+  }
+
+  async deleteLocalFile(path: string) {
+    await this.localFileService.delete(path);
   }
 }
 

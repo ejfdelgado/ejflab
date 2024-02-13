@@ -33,6 +33,7 @@ import { CommandListenMode } from './commands/CommandListenMode';
 import { CommandPopUpOpen } from './commands/CommandPopUpOpen';
 import { HasFiles } from './dataaccess/HasFiles';
 import { CommandTraining } from './commands/CommandTraining';
+import { CommandChatMessage } from './commands/CommandChatMessage';
 
 @Component({
   selector: 'app-uechat',
@@ -78,7 +79,7 @@ export class UechatComponent
   };
   showJsonModelValue: string = 'real_time';
   language: string = 'es';
-  selectedScenario: string = 'capture-pose';
+  selectedScenario: string = '';
 
   public view3dModelsActions: Array<ScrollFilesActionData> = [];
 
@@ -87,7 +88,6 @@ export class UechatComponent
     public cdr: ChangeDetectorRef,
     private sanitizer: DomSanitizer,
     public fileService: FileService,
-    private modalSrv: ModalService,
     private dictateService: DictateService,
     public modalService: ModalService,
     public override localFileService: LocalFileService,
@@ -111,7 +111,7 @@ export class UechatComponent
   }
 
   popUpOpen(argumento: any): Promise<any> {
-    const response = this.modalSrv.generic(argumento);
+    const response = this.modalService.generic(argumento);
     return response;
   }
 
@@ -120,26 +120,29 @@ export class UechatComponent
     this.bindDragEventsThis = this.bindDragEvents.bind(this);
 
     this.socketService.on('chatMessage', (content: string) => {
-      this.receiveChatMessage('chatMessage', content);
+      new CommandChatMessage(this, 'chatMessage').execute(content);
     });
     this.socketService.on('personalChat', (content: string) => {
-      this.receiveChatMessage('chatMessage', content);
+      new CommandChatMessage(this, 'personalChat').execute(content);
     });
     this.socketService.on('buscarParticipantesResponse', (content: string) => {
-      this.receiveChatMessage('chatMessage', content);
+      new CommandChatMessage(this, 'buscarParticipantesResponse').execute(
+        content
+      );
     });
     this.socketService.on('stateChanged', async (content: string) => {
+      // Digest the received changes
       await this.receiveStateChanged('stateChanged', content);
-      //Updates the sub model view depending of its path
+      // Updates the sub model view depending of its path
       this.setPath();
-      //Updates the graph view
+      // Updates the graph view
       this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
     });
     this.socketService.on('sound', (content: string) => {
       new CommandSound(this).execute(content);
     });
     this.socketService.on('animate', (content: string) => {
-      console.log(`animate ${JSON.stringify(content)}`);
+      new CommandPopUpOpen(this).execute(content);
     });
     this.socketService.on('mute', (content: string) => {
       new CommandMute(this).execute(content);
@@ -277,7 +280,9 @@ export class UechatComponent
   selectView(viewName: string) {
     this.selectedView = viewName;
     if (this.selectedView == 'grafo') {
-      this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
+      setTimeout(() => {
+        this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
+      });
     }
 
     if (viewName == 'images') {
@@ -420,6 +425,10 @@ export class UechatComponent
   }
 
   reloadScenario(): void {
+    if (this.selectedScenario == '') {
+      this.modalService.error(new Error('Debe seleccionar una opción primero'));
+      return;
+    }
     this.socketService.emit(
       'selectScenario',
       JSON.stringify({
@@ -429,7 +438,12 @@ export class UechatComponent
   }
 
   updateSelectedScenario(valor: any) {
-    this.selectedScenario = valor.target.value;
+    if (
+      typeof valor.target.value == 'string' &&
+      valor.target.value.length > 0
+    ) {
+      this.selectedScenario = valor.target.value;
+    }
   }
 
   playScenario(): void {
@@ -595,10 +609,6 @@ export class UechatComponent
 
   showJsonModel(value: string) {
     this.showJsonModelValue = value;
-  }
-
-  async deleteLocalFile(path: string) {
-    await this.localFileService.delete(path);
   }
 
   async readLocalTuple() {

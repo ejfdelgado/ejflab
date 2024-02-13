@@ -27,15 +27,13 @@ export abstract class GraphManager extends ModelManager {
     return sanitizer.bypassSecurityTrustHtml(svgContent);
   }
   graphRecomputeBoundingBox(mySvgRef: ElementRef) {
-    setTimeout(() => {
-      if (mySvgRef) {
-        const svg = mySvgRef.nativeElement;
-        var bbox = svg.getBBox();
-        // Update the width and height using the size of the contents
-        svg.setAttribute('width', bbox.x + bbox.width + bbox.x);
-        svg.setAttribute('height', bbox.y + bbox.height + bbox.y);
-      }
-    });
+    if (mySvgRef) {
+      const svg = mySvgRef.nativeElement;
+      var bbox = svg.getBBox();
+      // Update the width and height using the size of the contents
+      svg.setAttribute('width', bbox.x + bbox.width + bbox.x);
+      svg.setAttribute('height', bbox.y + bbox.height + bbox.y);
+    }
     return true;
   }
   updateGraphFromModel(sanitizer: DomSanitizer, mySvgRef: ElementRef): void {
