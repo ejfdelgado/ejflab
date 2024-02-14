@@ -4,7 +4,6 @@ import { PoliciaVrMySql } from "./MySqlSrv.mjs";
 import { UnrealEngineState } from "./UnrealEngineState.mjs";
 import { serializeError } from 'serialize-error';
 import { MyShell } from "./MyShell.mjs";
-import { CollisionsEngine } from "../srcJs/CollisionsEngine.js";
 import { SimpleObj } from "../srcJs/SimpleObj.js";
 import { CommandStartGame } from "./commands/CommandStartGame.mjs";
 import { CommandEndGame } from "./commands/CommandEndGame.mjs";
@@ -13,6 +12,10 @@ import { CommandTouch } from "./commands/CommandTouch.mjs";
 import { CommandUntouch } from "./commands/CommandUntouch.mjs";
 import { CommandSelectChoicePopUp } from "./commands/CommandSelectChoicePopUp.mjs";
 import { CommandCreateScore } from "./commands/CommandCreateScore.mjs";
+import { CommandVoice } from "./commands/CommandVoice.mjs";
+import { CommandSearchUser } from "./commands/CommandSearchUser.mjs";
+import { CommandUpdateScore } from "./commands/CommandUpdateScore.mjs";
+import { CommandSelectScenario } from "./commands/CommandSelectScenario.mjs";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -254,6 +257,12 @@ export class UnrealEngineSocket {
         return { changes, voiceHistoryFiltered: voiceHistory };
     }
 
+    static echoCommand(command, content, io, socket) {
+        const logMessage = `ECHO ${command} ${JSON.stringify(content)}`;
+        console.log(logMessage);
+        io.to(socket.id).emit('personalChat', logMessage);
+    };
+
     static handle(io) {
         io.on("connection", async (socket) => {
             console.log(`Creating room for ${socket.id}`);
@@ -303,12 +312,9 @@ export class UnrealEngineSocket {
                 io.emit(chatEvent, combinedMsg);
                 //console.log('multicast: ' + combinedMsg);
             };
-            const buscarParticipantesEventHandler = async (inicial) => {
+            const buscarParticipantesEventHandler = async (payload) => {
                 try {
-                    echoCommand("buscarParticipantes", inicial);
-                    const databaseClient = await UnrealEngineSocket.getDataBaseClient();
-                    const response = await databaseClient.getAllParticipantsByLastNameLetter(inicial);
-                    io.to(socket.id).emit('buscarParticipantesResponse', JSON.stringify(response));
+                    await new CommandSearchUser(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', serializeError(err));
                 }
@@ -316,7 +322,7 @@ export class UnrealEngineSocket {
 
             const createScoreEventHandler = async (payload) => {
                 try {
-                    new CommandCreateScore(this, io, socket).execute(payload);
+                    await new CommandCreateScore(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', serializeError(err));
                 }
@@ -324,11 +330,7 @@ export class UnrealEngineSocket {
 
             const updateScoreEventHandler = async (payload) => {
                 try {
-                    echoCommand("updateScore", payload);
-                    const databaseClient = await UnrealEngineSocket.getDataBaseClient();
-                    await databaseClient.updateScore(payload.id, payload.column, payload.value);
-                    const changed = await databaseClient.readScore(payload.id);
-                    io.to(socket.id).emit('personalChat', JSON.stringify(changed));
+                    await new CommandUpdateScore(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', serializeError(err));
                 }
@@ -336,24 +338,61 @@ export class UnrealEngineSocket {
 
             const selectScenarioEventHandler = async (payload) => {
                 try {
-                    echoCommand("selectScenario", payload);
-                    const modelo = await this.state.loadState(payload.name, UnrealEngineSocket.ROOT_FOLDER);
-
-                    await UnrealEngineSocket.reloadVoiceHelpers(modelo?.scene?.homologacion_voz || "homologacion_voz.json", modelo?.scene?.sinonimos_voz || "caso1_sinonimos_voz.json");
-                    // Se envia la raíz del estado para ser reemplazado.
-                    // Se recrea el estado inicial de cada avatar
-                    for (let i = 0; i < clients.length; i++) {
-                        const clientSocketId = clients[i];
-                        SimpleObj.recreate(modelo, `avatar.${clientSocketId}`, JSON.parse(JSON.stringify(UnrealEngineSocket.INITIAL_AVATAR_VALUE)), false);
-                    }
-                    io.emit('stateChanged', JSON.stringify({
-                        key: "",
-                        val: modelo
-                    }));
+                    await new CommandSelectScenario(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
             };
+
+            const startGameEventHandler = async (payload) => {
+                try {
+                    await new CommandStartGame(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            const endGameEventHandler = async (payload) => {
+                try {
+                    await new CommandEndGame(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            const voiceEventHandler = async (payload) => {
+                try {
+                    await new CommandVoice(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            }
+
+            const touchEventHandler = async (payload) => {
+                try {
+                    await new CommandTouch(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            const untouchEventHandler = async (payload) => {
+                try {
+                    await new CommandUntouch(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            const popupchoiceEventHandler = async (payload) => {
+                try {
+                    await new CommandSelectChoicePopUp(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            };
+
+            //----------------------------------------------------------------------------------
 
             const stateWriteEventHandler = async (payload) => {
                 try {
@@ -380,29 +419,6 @@ export class UnrealEngineSocket {
                 }
             };
 
-            const echoCommand = (command, content) => {
-                const logMessage = `ECHO ${command} ${JSON.stringify(content)}`;
-                console.log(logMessage);
-                io.to(socket.id).emit('personalChat', logMessage);
-            };
-            this.echoCommand = echoCommand;
-
-            const startGameEventHandler = async (payload) => {
-                try {
-                    await new CommandStartGame(this, io, socket).execute(payload);
-                } catch (err) {
-                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            };
-
-            const endGameEventHandler = async (payload) => {
-                try {
-                    await new CommandEndGame(this, io, socket).execute(payload);
-                } catch (err) {
-                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            };
-
             const updateCodeEventHandler = async (payload) => {
                 try {
                     const dato = await MyShell.runLocal("git pull", null);
@@ -420,78 +436,6 @@ export class UnrealEngineSocket {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
             };
-
-            const voiceEventHandler = async (payload) => {
-                try {
-                    echoCommand("voice", payload);
-                    let voiceHistory = this.state.readKey("st.voice");
-
-                    if (!(voiceHistory instanceof Array)) {
-                        voiceHistory = [];
-                    }
-                    // reemplazar todo lo que no es texto con vacio
-                    let sanitized = payload.toLowerCase();
-                    sanitized = sanitized.replace("á", "a").replace("é", "e").replace("í", "i").replace("ó", "o").replace("ú", "u");
-                    sanitized = sanitized.replace(/[^a-zñ\s]/ig, '').replace(/\s{2,}/, " ");
-                    // partir en tokens
-                    const tokens = sanitized.split(/\s/);
-                    // crear objeto con fecha
-                    const ahora = this.state.readKey("st.duration");
-                    for (let i = 0; i < tokens.length; i++) {
-                        let token = tokens[i].trim();
-                        // Se homologa de lo feo a lo que tiene sentido
-                        if (token in UnrealEngineSocket.SINONIMOS_VOZ) {
-                            // console.log(`${token} => ${UnrealEngineSocket.SINONIMOS_VOZ[token]}`);
-                            token = UnrealEngineSocket.SINONIMOS_VOZ[token];
-                        }
-                        if (token.length > 0) {
-                            if (token.length == 1 && ["y", "o", "a"].indexOf(token) < 0) {
-                                // De una sola letra solo se acepta y/o/a
-                                continue;
-                            }
-                            voiceHistory.push({
-                                t: ahora,
-                                d: token,
-                            });
-                        }
-                    }
-                    // Se filtran los que tienen X tiempo de antiguedad
-                    let { changes, voiceHistoryFiltered } = this.filterVoiceGap(voiceHistory);
-                    if (changes) {
-                        voiceHistory = voiceHistoryFiltered;
-                    }
-                    this.state.writeKey("st.lastvoice", ahora);
-
-                    //this.state.writeKey("st.voice", voiceHistory);//Not live
-                    this.affectModel("st.voice", voiceHistory, io);//Live
-                } catch (err) {
-                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            }
-
-            const touchEventHandler = async (payload) => {
-                try {
-                    await new CommandTouch(this, io, socket).execute(payload);
-                } catch (err) {
-                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            }
-
-            const untouchEventHandler = async (payload) => {
-                try {
-                    await new CommandUntouch(this, io, socket).execute(payload);
-                } catch (err) {
-                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            }
-
-            const popupchoiceEventHandler = async (payload) => {
-                try {
-                    await new CommandSelectChoicePopUp(this, io, socket).execute(payload);
-                } catch (err) {
-                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
-                }
-            }
 
             socket.on(createScoreEvent, createScoreEventHandler);
             socket.on(updateScoreEvent, updateScoreEventHandler);

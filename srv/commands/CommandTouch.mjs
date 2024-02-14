@@ -7,7 +7,7 @@ export class CommandTouch extends CommandGeneric {
     }
 
     async execute(payload) {
-        this.context.echoCommand("touch", payload);
+        this.context.echoCommand("touch", payload, this.io, this.socket);
         let memory = this.context.state.readKey("st.touch");
         if (!memory) {
             memory = {};

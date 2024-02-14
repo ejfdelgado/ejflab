@@ -7,7 +7,7 @@ export class CommandStartGame extends CommandGeneric {
     }
 
     async execute(payload) {
-        this.context.echoCommand("startGame", payload);
+        this.context.echoCommand("startGame", payload, this.io, this.socket);
         // Se debe validar si ya hay escenario
 
         if (!(this.context.state.estado?.scene?.id)) {

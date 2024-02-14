@@ -7,7 +7,7 @@ export class CommandUntouch extends CommandGeneric {
     }
 
     async execute(payload) {
-        this.context.echoCommand("untouch", payload);
+        this.context.echoCommand("untouch", payload, this.io, this.socket);
         let memory = this.context.state.readKey("st.touch");
         if (!memory) {
             memory = {};

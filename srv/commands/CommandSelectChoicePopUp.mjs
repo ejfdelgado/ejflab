@@ -6,7 +6,7 @@ export class CommandSelectChoicePopUp extends CommandGeneric {
     }
 
     async execute(payload) {
-        this.context.echoCommand("popupchoice", payload);
+        this.context.echoCommand("popupchoice", payload, this.io, this.socket);
         //console.log(`PopUp Choice ${JSON.stringify(payload)}`);
         const popupRef = this.context.state.readKey(payload.callback);
         const mychoice = payload.choice;

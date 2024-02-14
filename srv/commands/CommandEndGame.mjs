@@ -6,7 +6,7 @@ export class CommandEndGame extends CommandGeneric {
     }
 
     async execute(payload) {
-        this.context.echoCommand("endGame", payload);
+        this.context.echoCommand("endGame", payload, this.io, this.socket);
         const currentState = this.context.state.readKey("st.current");
         if (currentState == null) {
             throw "El entrenamiento ya está terminado";

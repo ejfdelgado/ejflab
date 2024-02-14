@@ -6,7 +6,7 @@ export class CommandCreateScore extends CommandGeneric {
     }
 
     async execute(payload) {
-        this.context.echoCommand("createScore", payload);
+        this.context.echoCommand("createScore", payload, this.io, this.socket);
         const databaseClient = await this.context.getDataBaseClient();
         // Debe existir primero el escenario seleccionado
         if (!(this.context.state.estado?.scene?.id)) {
