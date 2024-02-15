@@ -1,3 +1,4 @@
+const { XMLParser } = require("fast-xml-parser");
 
 const DONE_BORDER_COLOR = "rgb(255,0,0)";
 const DONE_BORDER_WIDTH = "3";
@@ -258,6 +259,35 @@ class FlowChartDiagram {
         }
         return svgContent;
     }
+    static parseHTML(text) {
+        try {
+            let innerText = "";
+            const options = {
+                ignoreAttributes: true,
+                tagValueProcessor: (tagName, value) => {
+                    //console.log(`tagName = ${tagName} with ${value}`);
+                    innerText += value;
+                    if (["span"].indexOf(tagName) >= 0) {
+                        innerText += "\n";
+                    } else {
+                        innerText += " ";
+                    }
+                    return "";
+                }
+            };
+            const parser = new XMLParser(options);
+            parser.parse(text);
+            if (innerText.trim().length == 0) {
+                return text;
+            } else {
+                // If it really gets some content...
+                //
+                return innerText.replace(/\n$/g, "");
+            }
+        } catch (err) {
+            return text;
+        }
+    }
     static processFlowChart(nodos, he = null) {
         const simple = {
             shapes: [],
@@ -286,7 +316,7 @@ class FlowChartDiagram {
                 const txt = nodo["@_value"];
                 let texto = '';
                 if (typeof txt == "string") {
-                    texto = txt;
+                    texto = this.parseHTML(txt);
                     if (he != null) {
                         texto = he.decode(texto);
                     }
