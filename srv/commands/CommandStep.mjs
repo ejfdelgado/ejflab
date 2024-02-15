@@ -367,7 +367,7 @@ export class CommandStep extends CommandGeneric {
                                 // Se valida si es clean voice
                                 if (/^\s*cleanvoice\(\)\s*$/.exec(command) != null) {
                                     // Force delete voice and notify
-                                    this.context.affectModel("st.voice", [], io);
+                                    this.context.affectModel("st.voice", [], this.io);
                                     continue;
                                 }
                                 // Si es un comando para las flechas...

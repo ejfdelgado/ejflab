@@ -280,9 +280,7 @@ export class UechatComponent
   selectView(viewName: string) {
     this.selectedView = viewName;
     if (this.selectedView == 'grafo') {
-      setTimeout(() => {
-        this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
-      });
+      this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
     }
 
     if (viewName == 'images') {

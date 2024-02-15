@@ -38,6 +38,8 @@ export abstract class GraphManager extends ModelManager {
   }
   updateGraphFromModel(sanitizer: DomSanitizer, mySvgRef: ElementRef): void {
     this.graphHtml = this.getGraph(sanitizer);
-    this.graphRecomputeBoundingBox(mySvgRef);
+    setTimeout(() => {
+      this.graphRecomputeBoundingBox(mySvgRef);
+    });
   }
 }

@@ -2,6 +2,9 @@
 
 La versión gcr.io/ejfexperiments/mainapp:v1.8 queda congelada
 
+levantar docker-compose con el php my admin
+permitir refresco de el diagrama de estado
+
 Para mandar a Cloud Run de Google
 npm run build_local
 sudo docker build --platform linux/x86_64 -t gcr.io/ejfexperiments/mainapp:v1.10 .
