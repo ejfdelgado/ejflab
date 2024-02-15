@@ -288,6 +288,25 @@ class FlowChartDiagram {
             return text;
         }
     }
+    static computeStyle(style) {
+        const response = {
+            fontColor: "#ffffff",
+            fillColor: "#AAAAAA",
+            strokeColor: "#AAAAAA"
+        };
+        if (typeof style == "string") {
+            const tokens = style.split(";");
+            for (let i = 0; i < tokens.length; i++) {
+                const token = tokens[i];
+                const partes = token.split("=");
+                if (partes.length >= 2) {
+                    response[partes[0]] = partes[1];
+                }
+            }
+        }
+        //console.log(`style ${style} to ${JSON.stringify(response)}`);
+        return response;
+    }
     static processFlowChart(nodos, he = null) {
         const simple = {
             shapes: [],
@@ -305,7 +324,7 @@ class FlowChartDiagram {
                     mapaFlechas[id] = { original: nodo };
                 }
             }
-            // Se procesan los nodos
+            // Se procesan los nodos y flechas
             for (let i = 0; i < nodos.length; i++) {
                 const nodo = nodos[i];
                 const id = nodo['@_id'];
@@ -323,6 +342,7 @@ class FlowChartDiagram {
                     texto = texto.replace(/<\/?br\/?>/ig, '\n');
                 }
                 const style = nodo['@_style'];
+                const computedStyle = this.computeStyle(style);
                 const details = nodo['mxGeometry'];
                 if (source && target) {
                     // Es una flecha
@@ -375,7 +395,8 @@ class FlowChartDiagram {
                             id,
                             pos,
                             txt: texto,
-                            type: shapeType
+                            type: shapeType,
+                            style: computedStyle,
                         });
                     }
                 }
