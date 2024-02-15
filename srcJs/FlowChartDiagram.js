@@ -1,11 +1,71 @@
 const { XMLParser } = require("fast-xml-parser");
 
-const DONE_BORDER_COLOR = "rgb(255,0,0)";
-const DONE_BORDER_WIDTH = "3";
+// For nodes
+const DEFAULT_FONT_COLOR = "#ffffff";
+const DEFAULT_FILL_COLOR = "#555555";
+const DEFAULT_STROKE_COLOR = "#000000";
+const DEFAULT_STROKE_WIDTH = "1";
+const CURRENT_NODE_FILL = "#990000";
+
+// For lines
 const PENDING_BORDER_COLOR = "rgb(0,0,0)";
 const PENDING_BORDER_WIDTH = "1";
-const NORMAL_STATES_COLOR = "rgb(255,255,255)";
-const CURRENT_STATES_COLOR = "rgb(255,255,129)";
+
+// For nodes and lines
+const DONE_BORDER_COLOR = "rgb(255,0,0)";
+const DONE_BORDER_WIDTH = "3";
+
+const computeStyle = function (incomming, done = false, current = false) {
+    const base = {
+        fillColor: DEFAULT_FILL_COLOR,
+        strokeColor: DEFAULT_STROKE_COLOR,
+        strokeWidth: DEFAULT_STROKE_WIDTH,
+        // for text
+        fontColor: DEFAULT_FONT_COLOR,
+    };
+    Object.assign(base, incomming);
+    if (done) {
+        //border red
+        base.strokeColor = DONE_BORDER_COLOR;
+        base.strokeWidth = DONE_BORDER_WIDTH;
+    };
+    if (current) {
+        //border red
+        base.strokeColor = DONE_BORDER_COLOR;
+        //strokeWidth 
+        base.strokeWidth = DONE_BORDER_WIDTH;
+        base.fillColor = CURRENT_NODE_FILL;
+    }
+    const translateShape = {
+        "fillColor": "fill",
+        "strokeColor": "stroke",
+        "strokeWidth": "stroke-width"
+    };
+    const translateText = {
+        fontColor: "fill",
+    };
+    const computedStyle = {
+        shape: [],
+        shapeText: '',
+        text: {}
+    };
+    const shapeKeys = Object.keys(translateShape);
+    for (let i = 0; i < shapeKeys.length; i++) {
+        const shapeKey = shapeKeys[i];
+        const shapeTranslated = translateShape[shapeKey];
+        computedStyle.shape.push(`${shapeTranslated}:${base[shapeKey]}`);
+    }
+    computedStyle.shapeText = computedStyle.shape.join(";");
+
+    // Compute text style
+    const textKeys = Object.keys(translateText);
+    for (let i = 0; i < textKeys.length; i++) {
+        const textKey = textKeys[i];
+        const textTranslated = translateText[textKey];
+        computedStyle.text[textTranslated] = base[textKey];
+    }
+    return computedStyle;
+};
 
 class FlowChartDiagram {
     static searchClosest(srcList, tarList) {
@@ -63,10 +123,6 @@ class FlowChartDiagram {
           </feMerge>\
         </filter>\
       </defs>';
-        const style = `fill:${NORMAL_STATES_COLOR}`;
-        const styleHighlight = `fill:${CURRENT_STATES_COLOR}`;
-        const borderPending = `;stroke-width:${PENDING_BORDER_WIDTH};stroke:${PENDING_BORDER_COLOR}`;
-        const borderDone = `;stroke-width:${DONE_BORDER_WIDTH};stroke:${DONE_BORDER_COLOR}`;
         const styleTar = 'fill:rgb(0,0,0);stroke-width:1;stroke:rgb(0,0,0)';
 
         if (grafo) {
@@ -197,20 +253,15 @@ class FlowChartDiagram {
                     const isDone = FlowChartDiagram.isIdInHistory(id, history);
                     const isHiglighted = currentNodes.indexOf(id) >= 0;
                     const pos = shape.pos;
-                    let localStyle = style;
-                    if (isHiglighted) {
-                        localStyle = styleHighlight;
-                    }
-                    if (isDone) {
-                        localStyle += borderDone;
-                    } else {
-                        localStyle += borderPending;
-                    }
+                    //console.log(this.computeStyle);
+                    const styledResponse = computeStyle(shape.style, isDone, isHiglighted);
+                    //console.log(JSON.stringify(styledResponse));
+                    // Se debe reemplazar el color de fondo y de texto
 
                     const isRectCorrect = [pos.x, pos.y, pos.width, pos.height].reduce((acum, current) => { return acum && (typeof current == "number"); }, true);
                     if (shape.type == 'box') {
                         if (isRectCorrect) {
-                            const tempRect = `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${localStyle}"></rect>`;
+                            const tempRect = `<rect rx="5" x="${pos.x}" y="${pos.y}" width="${pos.width}" height="${pos.height}" style="${styledResponse.shapeText}"></rect>`;
                             svgContent += tempRect;
                         } else {
                             error = `${shape.type} with id ${id} is malformed`;
@@ -219,7 +270,7 @@ class FlowChartDiagram {
                         if (isRectCorrect) {
                             svgContent += `<ellipse cx="${pos.x + pos.width * 0.5}" cy="${pos.y + pos.height * 0.5
                                 }" rx="${pos.width * 0.5}" ry="${pos.height * 0.5
-                                }" style="${localStyle}"></ellipse>`;
+                                }" style="${styledResponse.shapeText}"></ellipse>`;
                         } else {
                             error = `${shape.type} with id ${id} is malformed`;
                         }
@@ -233,7 +284,7 @@ class FlowChartDiagram {
                             svgContent += `${pos.x + pos.width * 0.5},${(
                                 pos.y + pos.height
                             ).toFixed(0)}" `;
-                            svgContent += `style="${localStyle}"/>`;
+                            svgContent += `style="${styledResponse.shapeText}"/>`;
                         } else {
                             error = `${shape.type} with id ${id} is malformed`;
                         }
@@ -248,7 +299,7 @@ class FlowChartDiagram {
                                 j * lineHeight -
                                 (lines.length - 1) * lineHeight * 0.5 +
                                 lineHeight * 0.25
-                                }" fill="black">${line}</text>`;
+                                }" fill="${styledResponse.text.fill}">${line}</text>`;
                         }
                     }
                 }
@@ -290,9 +341,9 @@ class FlowChartDiagram {
     }
     static computeStyle(style) {
         const response = {
-            fontColor: "#ffffff",
-            fillColor: "#AAAAAA",
-            strokeColor: "#AAAAAA"
+            fontColor: DEFAULT_FONT_COLOR,
+            fillColor: DEFAULT_FILL_COLOR,
+            strokeColor: DEFAULT_STROKE_COLOR,
         };
         if (typeof style == "string") {
             const tokens = style.split(";");
