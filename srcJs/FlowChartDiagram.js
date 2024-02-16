@@ -35,6 +35,7 @@ const computeStyle = function (incomming, done = false, current = false) {
         //strokeWidth 
         base.strokeWidth = DONE_BORDER_WIDTH;
         base.fillColor = CURRENT_NODE_FILL;
+        base.fontColor = DEFAULT_FONT_COLOR;
     }
     const translateShape = {
         "fillColor": "fill",
@@ -240,7 +241,7 @@ class FlowChartDiagram {
                                     xPos = points[median].x;
                                     yPos = points[median].y;
                                 }
-                                svgContent += `<text filter="url(#solid)" font-family="Helvetica" font-size="13px" text-anchor="middle" x="${xPos}" y="${yPos}" fill="black">${line}</text>`;
+                                svgContent += `<text filter="url(#solid)" font-family="Helvetica" font-size="14px" text-anchor="middle" x="${xPos}" y="${yPos}" fill="black">${line}</text>`;
                             }
                         }
                     }
@@ -293,7 +294,7 @@ class FlowChartDiagram {
                         const lines = shape.txt.split(/\n/g);
                         for (let j = 0; j < lines.length; j++) {
                             const line = lines[j];
-                            svgContent += `<text font-family="Helvetica" font-size="13px" text-anchor="middle" x="${pos.x + pos.width * 0.5
+                            svgContent += `<text font-family="Helvetica" font-size="14px" text-anchor="middle" x="${pos.x + pos.width * 0.5
                                 }" y="${pos.y +
                                 pos.height * 0.5 +
                                 j * lineHeight -
