@@ -238,8 +238,11 @@ class FlowChartDiagram {
                                 } else {
                                     // take intermediate point
                                     const median = Math.floor(points.length * 0.5);
-                                    xPos = points[median].x;
-                                    yPos = points[median].y;
+                                    xPos = parseInt(points[median].x);
+                                    yPos = parseInt(points[median].y) + j * lineHeight -
+                                        (lines.length - 1) * lineHeight * 0.5 +
+                                        lineHeight * 0.25;
+                                    //yPos = points[median].y;
                                 }
                                 svgContent += `<text filter="url(#solid)" font-family="Helvetica" font-size="14px" text-anchor="middle" x="${xPos}" y="${yPos}" fill="black">${line}</text>`;
                             }
@@ -391,6 +394,7 @@ class FlowChartDiagram {
                     if (he != null) {
                         texto = he.decode(texto);
                     }
+                    //texto = texto.replace(/&nbsp;/g, " ");
                     texto = texto.replace(/<\/?br\/?>/ig, '\n');
                 }
                 const style = nodo['@_style'];
