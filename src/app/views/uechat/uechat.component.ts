@@ -48,7 +48,7 @@ export class UechatComponent
   @ViewChild('gallery') galleryComponent: ThreejsGalleryComponent;
   @ViewChild('vr') vr: ThreejsVrComponent;
   @ViewChild('mySvg') mySvgRef: ElementRef;
-  @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef;
+  @ViewChild('mySvgContainer') mySvgContainerRef: ElementRef | null;
   bindDragEventsThis: any;
   modelStatePath: any = null;
   modelDocument: any = {};
@@ -189,7 +189,7 @@ export class UechatComponent
 
   private pressEventHandler = (e: MouseEvent | TouchEvent) => {
     e.preventDefault();
-    const mySvgContainerRef = this.mySvgContainerRef.nativeElement;
+    const mySvgContainerRef = this.mySvgContainerRef?.nativeElement;
     const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
     this.isDragging = true;
     this.firstDragX = mouseX;
@@ -201,7 +201,7 @@ export class UechatComponent
   private dragEventHandler = (e: MouseEvent | TouchEvent) => {
     e.preventDefault();
     if (this.isDragging) {
-      const mySvgContainerRef = this.mySvgContainerRef.nativeElement;
+      const mySvgContainerRef = this.mySvgContainerRef?.nativeElement;
       const { mouseX, mouseY } = this.getCoordinatesFromEvent(e);
       const differenceX = this.firstDragX - mouseX;
       const differenceY = this.firstDragY - mouseY;
@@ -280,7 +280,9 @@ export class UechatComponent
   selectView(viewName: string) {
     this.selectedView = viewName;
     if (this.selectedView == 'grafo') {
-      this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
+      setTimeout(() => {
+        this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
+      });
     }
 
     if (viewName == 'images') {
