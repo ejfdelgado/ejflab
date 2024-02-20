@@ -34,7 +34,7 @@ export class UnrealEngineState {
 
     async proxyReadFile(key) {
         const inmemoryDisk = UnrealEngineState.inmemoryDisk;
-        const USE_CACHE_FILES = process.env.USE_CACHE_FILES || "1";
+        const USE_CACHE_FILES = process.env.USE_CACHE_FILES || "0";
         if (USE_CACHE_FILES == "1") {
             if (key in inmemoryDisk) {
                 let base64 = inmemoryDisk[key];
@@ -68,6 +68,11 @@ export class UnrealEngineState {
         // Comment Uncomment
         //this.estado.flow = xmlFlow;
         this.estado.zflowchart = this.processFlowChart(xmlFlow);
+        // Se anexa popups si los hay
+        if (typeof this.estado.scene?.popups == "string") {
+            const popupsTxt = await this.proxyReadFile(`${rootFolder}${this.estado.scene.popups}`);
+            this.estado.popups = JSON.parse(popupsTxt);
+        }
         return this.estado;
     }
     writeKey(key, val) {
