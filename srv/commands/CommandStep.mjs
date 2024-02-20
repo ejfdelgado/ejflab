@@ -7,6 +7,7 @@ import { CollisionsEngine } from "../../srcJs/CollisionsEngine.js";
 import { MyUtilities } from "../../srcJs/MyUtilities.js";
 import { MyTemplate } from "../../srcJs/MyTemplate.js";
 import { CsvFormatterFilters } from "../../srcJs/CsvFormatterFilters.js";
+import { StepPopUpOpen } from "../steps/StepPopUpOpen.mjs";
 
 const filterSourceArrowsFromSource = (arrows, srcId) => {
     return arrows.filter((arrow) => arrow.src == srcId);
@@ -126,6 +127,9 @@ export class CommandStep extends CommandGeneric {
                                 arrowsReset = true;
                                 return "true";
                             });
+
+                            // Se hace manejo de popup en flechas
+                            textoIf = (await (new StepPopUpOpen(this.context, this.io, this.socket).handle(textoIf, CommandStep.conditionalEngine, "arrow")));
 
                             // Se hace manejo de touched() istouched() isnottouched() untouched()
                             textoIf = textoIf.replace(/(touched|istouched|isnottouched|untouched)\(([^)]+)\)/ig, (wholeMatch, command, content) => {
@@ -394,17 +398,7 @@ export class CommandStep extends CommandGeneric {
                                         this.context.increaseAmount(this.io, this.socket, tokensIncrease[1], 1);
                                         continue;
                                     }
-                                    const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
-                                    if (tokensPopUp != null) {
-                                        const popupKey = tokensPopUp[1].trim();
-                                        const currentValue = this.context.state.readKey(popupKey);
-                                        if (!currentValue) {
-                                            console.log(`Error leyendo popup de ${popupKey}`);
-                                            continue;
-                                        }
-                                        // Asigno la ruta como cllbackid
-                                        currentValue.callback = popupKey;
-                                        this.context.sendCommand('popupopen', currentValue, this.io);
+                                    if ((await (new StepPopUpOpen(this.context, this.io, this.socket).handle(command, CommandStep.conditionalEngine, "node")))) {
                                         continue;
                                     }
                                     // Default way to resolve node actions
