@@ -129,7 +129,10 @@ export class CommandStep extends CommandGeneric {
                             });
 
                             // Se hace manejo de popup en flechas
-                            textoIf = (await (new StepPopUpOpen(this.context, this.io, this.socket).handle(textoIf, CommandStep.conditionalEngine, "arrow")));
+                            const stepPopUpResponse = (await (new StepPopUpOpen(this.context, this.io, this.socket, arrowId).handle(textoIf, CommandStep.conditionalEngine)));
+                            if (typeof stepPopUpResponse == "string") {
+                                textoIf = stepPopUpResponse;
+                            }
 
                             // Se hace manejo de touched() istouched() isnottouched() untouched()
                             textoIf = textoIf.replace(/(touched|istouched|isnottouched|untouched)\(([^)]+)\)/ig, (wholeMatch, command, content) => {
@@ -398,7 +401,7 @@ export class CommandStep extends CommandGeneric {
                                         this.context.increaseAmount(this.io, this.socket, tokensIncrease[1], 1);
                                         continue;
                                     }
-                                    if ((await (new StepPopUpOpen(this.context, this.io, this.socket).handle(command, CommandStep.conditionalEngine, "node")))) {
+                                    if (typeof (await (new StepPopUpOpen(this.context, this.io, this.socket, theNode.id).handle(command, CommandStep.conditionalEngine))) == "string") {
                                         continue;
                                     }
                                     // Default way to resolve node actions

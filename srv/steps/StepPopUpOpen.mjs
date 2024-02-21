@@ -1,27 +1,26 @@
 import { StepGeneric } from "./StepGeneric.mjs";
 
 export class StepPopUpOpen extends StepGeneric {
-    constructor(context, io, socket) {
-        super(context, io, socket);
+    constructor(context, io, socket, nodeId) {
+        super(context, io, socket, nodeId);
     }
 
     replace(command, value) {
         return command.replace(/popup\s*\(([^)]+)\)$/g, value);
     }
 
-    async handle(command, conditionalEngine, nodeType) {
+    async handle(command, conditionalEngine) {
         const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
         if (tokensPopUp != null) {
-            console.log(`handle ${nodeType} ${command}`);
+            //console.log(`handle ${nodeType} ${command}`);
             const popupKey = tokensPopUp[1].trim();
+            // Esta llave deja el rastro de que se imprimió el popup
+            const keyWrited = `popupmemory.handled.${this.nodeId}.${popupKey}`;
+
             const currentValue = this.context.state.readKey(popupKey);
             if (!currentValue) {
-                console.log(`Error leyendo popup de ${popupKey}`);
-                if (nodeType == "node") {
-                    return true;
-                } else if (nodeType == "arrow") {
-                    return this.replace(command, "true");
-                }
+                console.log(`No existe popup con identificador ${popupKey}`);
+                return this.replace(command, "true");
             }
             // Verifico si realmente se debe mostrar
             const requirement = currentValue.requirement;
@@ -30,35 +29,31 @@ export class StepPopUpOpen extends StepGeneric {
                 const value = conditionalEngine.computeIf(requirement, this.context.state.estado);
                 if (value == false) {
                     // Si se resuelve que no lo debe mostrar, finaliza.
-                    if (nodeType == "node") {
-                        return true;
-                    } else if (nodeType == "arrow") {
-                        return this.replace(command, "true");
-                    }
+                    return this.replace(command, "true");
                 }
             }
             // Asigno la ruta como call back id para cuando el usuario seleccione una opción se pueda asociar a algo
             currentValue.callback = popupKey;
-            this.context.sendCommand('popupopen', currentValue, this.io);
+
 
             // Este step si fue el encargado
-            if (nodeType == "node") {
-                return true;
-            } else if (nodeType == "arrow") {
-                // Primero valida si tiene timeout, si sí, entonces se usa
-                if (typeof currentValue.timeout == "number") {
-                    return this.replace(command, `sleep(${currentValue.timeout})`);
-                } else {
-                    return this.replace(command, "true");
+            // Primero valida si tiene timeout, si sí, entonces se usa
+            
+            if (typeof currentValue.timeout == "number") {
+                // Solo envía el popup open la primera vez
+                const wasFiredInThisNode = this.context.state.readKey(keyWrited);
+                if (wasFiredInThisNode !== true) {
+                    this.context.state.writeKey(keyWrited, true);
+                    this.context.sendCommand('popupopen', currentValue, this.io);
                 }
+                return this.replace(command, `sleep(${currentValue.timeout})`);
+            } else {
+                this.context.state.writeKey(keyWrited, true);
+                this.context.sendCommand('popupopen', currentValue, this.io);
+                return this.replace(command, "true");
             }
         }
-
         // Este step no es el encargado de hacer nada
-        if (nodeType == "node") {
-            return false;
-        } else if (nodeType == "arrow") {
-            return command;
-        }
+        return false;
     }
 }
