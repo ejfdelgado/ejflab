@@ -6,8 +6,8 @@ Teach:
 ["stateWrite",{"key":"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation","val":{"_x":0,"_y":0,"_z":0,"x":0,"y":0,"z":0},"mine":false}]
 ["stateChanged","{\"key\":\"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation\",\"val\":{\"_x\":0,\"_y\":-0.06981317007977318,\"_z\":0,\"x\":0,\"y\":-0.06981317007977318,\"z\":0},\"avatar\":\"ZaBm-JUfOFUhAWRqAAAV\",\"prop\":\"rotation\"}"]
 
-2. agregar condicional que si da true se muestra, de lo contrario no.
-3. permitir usar los popups en flechas donde se convertirían en un sleep en caso de ser afirmativo o verificación del botón pulsado.
+1. Guardar en base de datos!
+2. Triangulación
 
 const controller1 = renderer.xr.getController(0);
 controller1.addEventListener('selectstart', onSelectStart);

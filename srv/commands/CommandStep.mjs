@@ -71,7 +71,8 @@ export class CommandStep extends CommandGeneric {
         const shapes = graph.shapes;
         //console.log(`Evaluating next steps from ${JSON.stringify(currentState)}`);
 
-        // Validar las flechas y tomar todas las que sean verdaderas
+        // FLECHAS !!! ------------------------------------------------------------------------------
+        // Validar las FLECHAS y tomar todas las que sean verdaderas
         const outputPositiveGlobal = {};
         const outputArrowsReset = [];
         const currentTime = this.context.state.readKey("st.duration");
@@ -260,13 +261,14 @@ export class CommandStep extends CommandGeneric {
                         }
                         if (evaluated) {
                             temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
+                            // Acciones que se hacen cuando una flecha ya dió positiva
+                            const keyCleaned = `popupmemory.handled.${this.nodeId}`;
+                            this.context.state.writeKey(keyCleaned, null);
                         }
                     } catch (err) {
                         this.io.to(this.socket.id).emit('personalChat', sortify(serializeError(err)));
                     }
                 }
-
-
 
                 // Acá se podría filtrar
                 const llavesOutputArrows = Object.keys(temporalArrowsPositive);
@@ -329,6 +331,7 @@ export class CommandStep extends CommandGeneric {
             }
         }
 
+        // NODOS ------------------------------------------------------------------------------------
         // Ejecución de los nodos donde llega
         // Se hace el cambio
         let forceFinish = false;
