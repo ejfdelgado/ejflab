@@ -16,6 +16,7 @@ import { CommandVoice } from "./commands/CommandVoice.mjs";
 import { CommandSearchUser } from "./commands/CommandSearchUser.mjs";
 import { CommandUpdateScore } from "./commands/CommandUpdateScore.mjs";
 import { CommandSelectScenario } from "./commands/CommandSelectScenario.mjs";
+import { CommandTriangulacion } from "./commands/CommandTriangulacion.mjs";
 
 const chatEvent = "chatMessage";
 const buscarParticipantesEvent = "buscarParticipantes";
@@ -32,6 +33,7 @@ const voiceEvent = "voice";
 const touchEvent = "touch";
 const untouchEvent = "untouch";
 const popupchoiceEvent = "popupchoice";
+const triangulacionEvent = "triangulacion";
 
 export class UnrealEngineSocket {
     static ROOT_FOLDER = "./src/assets/police/scripts/";
@@ -301,6 +303,7 @@ export class UnrealEngineSocket {
                 socket.removeListener(touchEvent, touchEventHandler);
                 socket.removeListener(untouchEvent, untouchEventHandler);
                 socket.removeListener(popupchoiceEvent, popupchoiceEventHandler);
+                socket.removeListener(triangulacionEvent, triangulacionEventHandler);
 
                 io.emit(chatEvent, clientDisconnectedMsg);
 
@@ -391,6 +394,14 @@ export class UnrealEngineSocket {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
                 }
             };
+
+            const triangulacionEventHandler = async (payload) => {
+                try {
+                    await new CommandTriangulacion(this, io, socket).execute(payload);
+                } catch (err) {
+                    io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
+                }
+            }
 
             //----------------------------------------------------------------------------------
 
