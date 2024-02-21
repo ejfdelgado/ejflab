@@ -348,6 +348,7 @@ export class UechatComponent
       startGame: JSON.stringify(UeSocketService.startGameSample(), null, 4),
       endGame: JSON.stringify(UeSocketService.endGameSample(), null, 4),
       updateCode: JSON.stringify(UeSocketService.updateCodeSample(), null, 4),
+      triangulacion: JSON.stringify(UeSocketService.triangulacionSample(), null, 4),
     };
     const key: string = valor.target.value;
     const sample = MAPEO_SAMPLES[key];

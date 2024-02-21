@@ -158,6 +158,10 @@ export class UeSocketService {
     return {};
   }
 
+  static triangulacionSample(): any {
+    return {};
+  }
+
   on(llave: any, fun: Function) {
     this.socket.on(llave, fun);
   }

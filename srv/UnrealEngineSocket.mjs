@@ -464,6 +464,7 @@ export class UnrealEngineSocket {
             socket.on(touchEvent, touchEventHandler);
             socket.on(untouchEvent, untouchEventHandler);
             socket.on(popupchoiceEvent, popupchoiceEventHandler);
+            socket.on(triangulacionEvent, triangulacionEventHandler);
 
             io.to(socket.id).emit('stateChanged', JSON.stringify({
                 key: "",
