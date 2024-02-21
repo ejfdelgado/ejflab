@@ -10,7 +10,7 @@ export class CommandSelectChoicePopUp extends CommandGeneric {
         //console.log(`PopUp Choice ${JSON.stringify(payload)}`);
         const popupRef = this.context.state.readKey(payload.callback);
         const mychoice = payload.choice;
-        if (popupRef.type == "info") {
+        if (["info", "feedback"].indexOf(popupRef.type) >= 0) {
             // Ignore
         } else if (popupRef.type == "knowledge") {
             // Check correct answer
