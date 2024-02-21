@@ -100,7 +100,7 @@
     </div>
     <div class="content fill" *ngIf="selectedView == 'grafo'">
         <div #mySvgContainer class="all_scroll_left">
-            <svg #mySvg class="graph_class noselect" [ngInit]="bindDragEventsThis" [innerHtml]="graphHtml"></svg>
+            <svg #mySvg class="graph_class noselect svg_zoom" [ngInit]="bindDragEventsThis" [innerHtml]="graphHtml"></svg>
         </div>
         <div class="all_scroll_right">
             <div class="show_json_model_container">

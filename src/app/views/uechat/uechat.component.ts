@@ -56,7 +56,7 @@ export class UechatComponent
   selectedView: string = 'grafo';
   mymessage: string = '';
   myvoice: string = '';
-  mypath: string = '';
+  mypath: string = 'points';
   selectedAction: SocketActions | null = null;
   isDragging: boolean = false;
   firstDragX: number = 0;
@@ -136,7 +136,7 @@ export class UechatComponent
       // Updates the sub model view depending of its path
       this.setPath();
       // Updates the graph view
-      this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
+      this.updateGraphFromModel(this.sanitizer, this.mySvgRef, false);
     });
     this.socketService.on('sound', (content: string) => {
       new CommandSound(this).execute(content);
@@ -281,7 +281,7 @@ export class UechatComponent
     this.selectedView = viewName;
     if (this.selectedView == 'grafo') {
       setTimeout(() => {
-        this.updateGraphFromModel(this.sanitizer, this.mySvgRef);
+        this.updateGraphFromModel(this.sanitizer, this.mySvgRef, true);
       });
     }
 

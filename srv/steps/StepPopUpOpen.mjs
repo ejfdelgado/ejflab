@@ -58,6 +58,7 @@ export class StepPopUpOpen extends StepGeneric {
             // Este step si fue el encargado
             // Primero valida si tiene timeout, si sí, entonces se usa
             let resolvedText = "true";
+            //console.log(`${popupKey} ${currentValue.timeout}`);
             if (typeof currentValue.timeout == "number") {
                 // Solo envía el popup open la primera vez
                 const wasFiredInThisNode = this.context.state.readKey(keyWrited);
@@ -67,11 +68,7 @@ export class StepPopUpOpen extends StepGeneric {
                         this.context.sendCommand('popupopen', currentValue, this.io);
                     }
                 }
-                if (showPopUp) {
-                    resolvedText = this.replace(command, `sleep(${currentValue.timeout})`);
-                } else {
-                    resolvedText = this.replace(command, "true");
-                }
+                resolvedText = this.replace(command, `sleep(${currentValue.timeout})`);
             } else {
                 this.context.state.writeKey(keyWrited, true);
                 if (showPopUp) {

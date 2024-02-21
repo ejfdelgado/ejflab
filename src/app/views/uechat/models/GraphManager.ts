@@ -2,23 +2,18 @@ import { ElementRef } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { FlowChartDiagram } from 'srcJs/FlowChartDiagram';
 import { SimpleObj } from 'srcJs/SimpleObj';
+import sortify from 'srcJs/sortify';
 import { ModelManager } from './ModelManager';
 
 export abstract class GraphManager extends ModelManager {
+  mementoCurrent: string = '';
   graphHtml: string = '';
-  getGraph(sanitizer: DomSanitizer): any {
-    let grafo = SimpleObj.getValue(this.modelState, 'zflowchart');
-    if (!grafo) {
-      grafo = {};
-    }
-    let currentNodes = SimpleObj.getValue(this.modelState, 'st.current');
-    if (!currentNodes) {
-      currentNodes = [];
-    }
-    let history = SimpleObj.getValue(this.modelState, 'st.history');
-    if (!history) {
-      history = [];
-    }
+  getGraph(
+    sanitizer: DomSanitizer,
+    grafo: any,
+    currentNodes: Array<any>,
+    history: Array<any>
+  ): any {
     const svgContent = FlowChartDiagram.computeGraph(
       grafo,
       currentNodes,
@@ -36,8 +31,44 @@ export abstract class GraphManager extends ModelManager {
     }
     return true;
   }
-  updateGraphFromModel(sanitizer: DomSanitizer, mySvgRef: ElementRef): void {
-    this.graphHtml = this.getGraph(sanitizer);
+  updateGraphFromModel(
+    sanitizer: DomSanitizer,
+    mySvgRef: ElementRef,
+    forceUpdate: boolean
+  ): void {
+    // Se valida si realmente algo ha cambiado
+    let grafo = SimpleObj.getValue(this.modelState, 'zflowchart');
+    if (!grafo) {
+      grafo = {};
+    }
+    let currentNodes = SimpleObj.getValue(this.modelState, 'st.current');
+    if (!currentNodes) {
+      currentNodes = [];
+    }
+    let history = SimpleObj.getValue(this.modelState, 'st.history');
+    if (!history) {
+      history = [];
+    }
+    const memento = {
+      currentNodes,
+      history,
+      grafo,
+    };
+    const actualMemento = sortify(memento);
+    if (forceUpdate) {
+      // Solo actualiza el memento
+      this.mementoCurrent = actualMemento;
+    } else {
+      // Verifica si realmente lo debe actualizar
+      if (this.mementoCurrent == actualMemento) {
+        // No ha cambiado nada
+        return;
+      } else {
+        //Se asigna el nuevo memento
+        this.mementoCurrent = actualMemento;
+      }
+    }
+    this.graphHtml = this.getGraph(sanitizer, grafo, currentNodes, history);
     setTimeout(() => {
       this.graphRecomputeBoundingBox(mySvgRef);
     });

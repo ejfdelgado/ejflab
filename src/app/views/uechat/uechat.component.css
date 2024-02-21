@@ -23,14 +23,14 @@
   position: absolute;
   top: 0;
   left: 0;
-  right: 34%;
+  right: 20%;
   bottom: 0;
 }
 
 .full_screen .fill .all_scroll_right {
   position: absolute;
   top: 0;
-  left: 66%;
+  left: 80%;
   right: 0;
   bottom: 0;
   display: flex;
@@ -192,4 +192,9 @@
 button.selected {
   background-color: #008f0c !important;
   color: white;
+}
+
+.svg_zoom {
+  transform-origin: 0% 0%;
+  transform: scale(0.75);
 }
