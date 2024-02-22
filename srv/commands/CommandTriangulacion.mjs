@@ -46,15 +46,26 @@ export class CommandTriangulacion extends CommandGeneric {
         if (typeof avatars == "object" && avatars != null) {
             const listOfAvatars = Object.keys(avatars);
             if (listOfAvatars.length >= 2) {
-                // Se puede calcular
-                console.log("Triangulación, se puede calcular!");
-                //console.log(JSON.stringify(avatars));
-            } else {
-                console.log("Triangulación, NO se puede calcular! [1]");
+                // Se filtran solo los que tienen val
+                const filtered = {};
+                const keysFiltered = [];
+                for (let i = 0; i < listOfAvatars.length; i++) {
+                    const avatarSocketId = listOfAvatars[i];
+                    const content = avatars[avatarSocketId];
+                    if (typeof content.val == "object" && content.val != null) {
+                        filtered[avatarSocketId] = content;
+                        keysFiltered.push(avatarSocketId);
+                    }
+                    if (keysFiltered.length >= 2) {
+                        console.log("Triangulación, se puede calcular!");
+                        // Se debe decidir quién es búsqueda y quién es seguridad
+                        
+                        return;
+                    }
+                }
             }
-        } else {
-            console.log("Triangulación, NO se puede calcular! [2]");
         }
+        console.log("Triangulación, NO se puede calcular! [2]");
     }
 
     async execute(payload) {
