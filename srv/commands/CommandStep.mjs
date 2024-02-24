@@ -180,6 +180,12 @@ export class CommandStep extends CommandGeneric {
                                                 }
                                                 if (metadata != null) {
                                                     const durationMillis = metadata.format.duration * 1000;
+                                                    // Se agrega duración del sonido
+                                                    if (callArgs.arguments.length == 2) {
+                                                        // Se agrega un destino por defecto
+                                                        callArgs.arguments.push("");
+                                                    }
+                                                    callArgs.arguments.push(parseInt(durationMillis));
                                                     const name = `,${filename}`;
                                                     const arrowIdTimer = `${arrowId}_${md5(name)}`;
                                                     const timerKey = `timer.${arrowIdTimer}`;
@@ -390,6 +396,12 @@ export class CommandStep extends CommandGeneric {
                                 if (callArgs.action != null) {
                                     // Se ejecuta la acción
                                     //console.log(`call ${callArgs.action}`);
+                                    if (callArgs.action == "sound") {
+                                        if (callArgs.arguments.length == 2) {
+                                            callArgs.arguments.push("");
+                                            callArgs.arguments.push(0);
+                                        }
+                                    }
                                     if (callArgs.length == 0) {
                                         this.context.sendCommand(callArgs.action, "", this.io);
                                     } else if (callArgs.arguments.length == 1) {
