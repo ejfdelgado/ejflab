@@ -5,7 +5,7 @@ const fs = require('fs');
 class TriangulacionGeometric {
     static TO_RADIANS = Math.PI / 180;
     static TO_DEGRES = 180 / Math.PI;
-    static ANGLE_STEP = 5;
+    static ANGLE_STEP = 10;
     static computeAngle(x, y) {
         let valor = Math.atan2(y, x) * TriangulacionGeometric.TO_DEGRES;
         if (valor < 0) {
@@ -29,8 +29,8 @@ class TriangulacionGeometric {
         const angleLookAt = TriangulacionGeometric.computeAngle(lookAt.x, lookAt.y);
         console.log(`angleLookAt = ${angleLookAt}`);
         // 2. compute min/max angle
-        const angleMin = angleLookAt - config.angles.min;
-        const angleMax = angleLookAt + config.angles.max;
+        const angleMin = angleLookAt + config.angles.min;
+        const angleMax = angleLookAt - config.angles.max;
         console.log(`angleMin = ${angleMin}`);
         console.log(`angleMax = ${angleMax}`);
         // Generate vectors from angles
@@ -39,26 +39,50 @@ class TriangulacionGeometric {
 
         const centerLocal = {
             x: (config.position.x - center.x) * globales.canvas.scale + globales.canvas.xCenter,
-            y: (config.position.y - center.y) * globales.canvas.scale + globales.canvas.yCenter
+            y: -1 * (config.position.y - center.y) * globales.canvas.scale + globales.canvas.yCenter
         };
 
         // Agrego de min angle, la distancia más corta
         coordinates.push(centerLocal.x + vectorMin.x * config.distance.min * globales.canvas.scale);
-        coordinates.push(centerLocal.y + vectorMin.y * config.distance.min * globales.canvas.scale);
+        coordinates.push(centerLocal.y + -1 * vectorMin.y * config.distance.min * globales.canvas.scale);
         // Agrego de min angle, la distancia más larga
         coordinates.push(centerLocal.x + vectorMin.x * config.distance.max * globales.canvas.scale);
-        coordinates.push(centerLocal.y + vectorMin.y * config.distance.max * globales.canvas.scale);
+        coordinates.push(centerLocal.y + -1 * vectorMin.y * config.distance.max * globales.canvas.scale);
 
         // Se crean los arcos
         const arcoPequenio = [];
+        let currentAngle = angleMin;
+        let stepAngle = TriangulacionGeometric.ANGLE_STEP;
+        if (angleMax < angleMin) {
+            stepAngle *= -1;
+        }
+        const iterations = Math.floor(Math.abs((angleMax - angleMin) / stepAngle));
+        console.log(`stepAngle = ${stepAngle} iterations = ${iterations}`);
 
+        for (let i = 0; i < iterations; i++) {
+            const vectorStep = TriangulacionGeometric.generateUnaryVector(currentAngle + i * stepAngle);
+            // Agrego de min angle, la distancia más larga
+            coordinates.push(centerLocal.x + vectorStep.x * config.distance.max * globales.canvas.scale);
+            coordinates.push(centerLocal.y + -1 * vectorStep.y * config.distance.max * globales.canvas.scale);
+        }
 
         // Agrego de max angle, la distancia más larga
         coordinates.push(centerLocal.x + vectorMax.x * config.distance.max * globales.canvas.scale);
-        coordinates.push(centerLocal.y + vectorMax.y * config.distance.max * globales.canvas.scale);
+        coordinates.push(centerLocal.y + -1 * vectorMax.y * config.distance.max * globales.canvas.scale);
         // Agrego de max angle, la distancia más corta
         coordinates.push(centerLocal.x + vectorMax.x * config.distance.min * globales.canvas.scale);
-        coordinates.push(centerLocal.y + vectorMax.y * config.distance.min * globales.canvas.scale);
+        coordinates.push(centerLocal.y + -1 * vectorMax.y * config.distance.min * globales.canvas.scale);
+
+        if (config.distance.min > 0) {
+            currentAngle = angleMax;
+            for (let i = 0; i < iterations; i++) {
+                const vectorStep = TriangulacionGeometric.generateUnaryVector(currentAngle - i * stepAngle);
+                // Agrego de min angle, la distancia más larga
+                coordinates.push(centerLocal.x + vectorStep.x * config.distance.min * globales.canvas.scale);
+                coordinates.push(centerLocal.y + -1 * vectorStep.y * config.distance.min * globales.canvas.scale);
+            }
+        }
+
 
         return coordinates;
     }
@@ -82,7 +106,7 @@ class TriangulacionGeometric {
                 textPoints += actual;
             }
         }
-        const polygonText = `<polygon points="${textPoints}" style="fill:${style.fill};stroke:${style.fill};stroke-width:1" />`;
+        const polygonText = `<polygon points="${textPoints}" style="opacity:${style.opacity};fill:${style.fill};stroke:${style.fill};stroke-width:1" />`;
         return polygonText;
     }
 
@@ -96,7 +120,7 @@ class TriangulacionGeometric {
             canvas: {
                 xCenter: 250,
                 yCenter: 250,
-                maxDistance: 300
+                maxDistance: 400
             }
         };
         const tests = [
@@ -104,11 +128,25 @@ class TriangulacionGeometric {
                 prove: { x: 40, y: 33 },
                 style: {
                     fill: "green",
+                    opacity: 0.5,
                     stroke: "black"
                 },
                 config: {
-                    position: { x: 10, y: 30 }, lookAt: { x: 0, y: 1 },
-                    angles: { min: 0, max: 45 }, distance: { min: 50, max: 300 }
+                    position: { x: 0, y: 30 }, lookAt: { x: 0, y: 1 },
+                    angles: { min: 45, max: 45 }, distance: { min: 125, max: 250 }
+                },
+                expectedIsInside: true,
+            },
+            {
+                prove: { x: 40, y: 33 },
+                style: {
+                    fill: "red",
+                    opacity: 0.5,
+                    stroke: "black"
+                },
+                config: {
+                    position: { x: 250, y: 30 }, lookAt: { x: -1, y: 0 },
+                    angles: { min: 45, max: 45 }, distance: { min: 125, max: 250 }
                 },
                 expectedIsInside: true,
             }
@@ -116,9 +154,10 @@ class TriangulacionGeometric {
 
         globales.canvas.scale = globales.canvas.xCenter / globales.canvas.maxDistance;
         let completeText = "";
+        const origin = tests[0].config.position;
         for (let i = 0; i < tests.length; i++) {
             const test = tests[i];
-            const svgPolygon = TriangulacionGeometric.createPolygon(test.config, test.config.position, globales, test.style);
+            const svgPolygon = TriangulacionGeometric.createPolygon(test.config, origin, globales, test.style);
             completeText += svgPolygon;
             const currentIsInside = TriangulacionGeometric.checkPointInside(test.config, test.prove);
             if (currentIsInside != test.expectedIsInside) {
