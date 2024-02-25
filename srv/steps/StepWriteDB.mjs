@@ -11,6 +11,7 @@ export class StepWriteDB extends StepGeneric {
     }
 
     async handle(command, conditionalEngine) {
+        const databaseClient = await this.context.getDataBaseClient();
         const tokensWriteDB = /^\s*writedb\s*\(([^)]+)\)$/.exec(command);
         if (tokensWriteDB != null) {
             const configFileText = tokensWriteDB[1];
@@ -29,12 +30,31 @@ export class StepWriteDB extends StepGeneric {
                 const playerKey = playersKeys[i];
                 const playerContet = players[playerKey];
                 const item = {};
-                item.puntaje_id = playerContet.db.scoreId
-                item.participante_id = playerContet.db.participante_id
+                item.puntaje_id = playerContet?.db?.scoreId
+                item.participante_id = playerContet?.db?.participante_id
+                item.socketId = playerContet?.db?.socketId;
                 arregloJugadores.push(item);
             }
+            // Se hace iteración cruzada
+            if (arregloJugadores.length > 0) {
+                if (arregloJugadores.length == 1) {
 
-            await databaseClient.updateScoreFromMap(insertedId, mapa);
+                    // Se guarda el participante #1 sin pareja
+                    await databaseClient.updateScoreFromMap(arregloJugadores[0].puntaje_id, mapa);
+                } else if (arregloJugadores.length >= 2) {
+                    const participante1 = arregloJugadores[0];
+                    const participante2 = arregloJugadores[1];
+
+                    // Se guarda el participante #1 con pareja el participante #2
+                    mapa.puntaje_pareja = participante2.participante_id;
+                    await databaseClient.updateScoreFromMap(participante1.puntaje_id, mapa);
+
+                    // Se guarda el participante #2 con pareja el participante #1
+                    mapa.puntaje_pareja = participante1.participante_id;
+                    await databaseClient.updateScoreFromMap(participante2.puntaje_id, mapa);
+                }
+            }
+
             return this.replace(command, "true");
         }
         // Este step no es el encargado de hacer nada
