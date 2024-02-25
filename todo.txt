@@ -2,8 +2,7 @@
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-1.1. Guardar seleccion de usuario, cargo, mulato, etc.
-1. Guardar en base de datos!
+1. Guardar en base de datos! wip
 2. Triangulación
 3. Permitir tener parámetros de los ángulos y distancias
 
