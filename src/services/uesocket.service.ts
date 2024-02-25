@@ -22,6 +22,11 @@ export enum SocketActions {
 
 export interface CreateScoreData {
   personId: string;
+  sexo: string;
+  grado: string;
+  biotipo: string;
+  etnia: string;
+  otro: string;
 }
 
 export interface UpdateScoreData {
@@ -114,6 +119,11 @@ export class UeSocketService {
   static createScoreSample(): CreateScoreData {
     return {
       personId: 'CC1010166710',
+      sexo: 'masculino',
+      grado: 'patrullero',
+      biotipo: 'ectomorfo',
+      etnia: 'mestizo',
+      otro: '',
     };
   }
 

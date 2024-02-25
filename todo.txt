@@ -2,16 +2,10 @@
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-Teach:
-["stateWrite",{"key":"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation","val":{"_x":0,"_y":0,"_z":0,"x":0,"y":0,"z":0},"mine":false}]
-["stateChanged","{\"key\":\"avatar.ZaBm-JUfOFUhAWRqAAAV.rotation\",\"val\":{\"_x\":0,\"_y\":-0.06981317007977318,\"_z\":0,\"x\":0,\"y\":-0.06981317007977318,\"z\":0},\"avatar\":\"ZaBm-JUfOFUhAWRqAAAV\",\"prop\":\"rotation\"}"]
-
+1.1. Guardar seleccion de usuario, cargo, mulato, etc.
 1. Guardar en base de datos!
 2. Triangulación
-
-const controller1 = renderer.xr.getController(0);
-controller1.addEventListener('selectstart', onSelectStart);
-controller1.addEventListener('selectend', onSelectEnd);
+3. Permitir tener parámetros de los ángulos y distancias
 
 - desarrollar arbol completo de guiones
 - agregar tensorflow con mano

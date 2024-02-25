@@ -77,6 +77,24 @@ export class PoliciaVrMySql extends MySqlSrv {
             return null;
         }
     }
+    async updateScoreFromMap(id, mapa) {
+        const llaves = Object.keys(mapa);
+        const SETTERS = [];
+        const VALUES = [];
+        for (let i = 0; i < llaves.length; i++) {
+            const llave = llaves[i];
+            const value = mapa[llave];
+            VALUES.push(value);
+            SETTERS.push(`${llave} = ?`);
+        }
+        VALUES.push(id);
+        const theQuery = `\
+        UPDATE puntaje \
+        SET ${SETTERS.join(",")} \
+        WHERE puntaje_id = ?\
+        `;
+        const [rows] = await this.connection.execute(theQuery, VALUES);
+    }
     async updateScore(id, column, value) {
         const theQuery = `\
         UPDATE puntaje \

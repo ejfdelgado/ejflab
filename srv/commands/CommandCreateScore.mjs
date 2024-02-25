@@ -20,7 +20,13 @@ export class CommandCreateScore extends CommandGeneric {
         }
 
         const insertedId = await databaseClient.createScore(payload.personId, this.context.state.estado.scene?.id);
-        const created = await databaseClient.readScore(insertedId);
+        // const created = await databaseClient.readScore(insertedId);
+        const mapa = {};
+        mapa['puntaje_sexo'] = payload.sexo ? payload.sexo : null;
+        mapa['puntaje_grado'] = payload.grado ? payload.grado : null;
+        mapa['puntaje_biotipo'] = payload.biotipo ? payload.biotipo : null;
+        mapa['puntaje_etnia'] = payload.etnia ? payload.etnia : null;
+        await databaseClient.updateScoreFromMap(insertedId, mapa);
         const participant = await databaseClient.readParticipant(payload.personId);
 
         // Escribir en el estado
