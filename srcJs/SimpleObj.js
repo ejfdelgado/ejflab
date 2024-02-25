@@ -10,6 +10,22 @@ class SimpleObj {
         }
         return response;
     }
+    static transFromModel(model, configList) {
+        const response = {};
+        for (let i = 0; i < configList.length; i++) {
+            const config = configList[i];
+            let { orig, dest, def } = config;
+            if (def === undefined) {
+                def = null;
+            }
+            let valor = SimpleObj.getValue(model, orig);
+            if ([null, undefined].indexOf(valor) >= 0) {
+                valor = def;
+            }
+            response[dest] = valor;
+        }
+        return response;
+    }
     static getValue(obj, key, myDefault = undefined) {
         let current = obj;
         const canIterate = (some) => {

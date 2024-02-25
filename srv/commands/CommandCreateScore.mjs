@@ -1,3 +1,4 @@
+import { SimpleObj } from "../../srcJs/SimpleObj.js";
 import { CommandGeneric } from "./CommandGeneric.mjs";
 
 export class CommandCreateScore extends CommandGeneric {
@@ -21,11 +22,13 @@ export class CommandCreateScore extends CommandGeneric {
 
         const insertedId = await databaseClient.createScore(payload.personId, this.context.state.estado.scene?.id);
         // const created = await databaseClient.readScore(insertedId);
-        const mapa = {};
-        mapa['puntaje_sexo'] = payload.sexo ? payload.sexo : null;
-        mapa['puntaje_grado'] = payload.grado ? payload.grado : null;
-        mapa['puntaje_biotipo'] = payload.biotipo ? payload.biotipo : null;
-        mapa['puntaje_etnia'] = payload.etnia ? payload.etnia : null;
+        const configTransform = [
+            { orig: "sexo", dest: "puntaje_sexo", def: null },
+            { orig: "grado", dest: "puntaje_grado", def: null },
+            { orig: "biotipo", dest: "puntaje_biotipo", def: null },
+            { orig: "etnia", dest: "puntaje_etnia", def: null },
+        ];
+        const mapa = SimpleObj.transFromModel(payload, configTransform);
         await databaseClient.updateScoreFromMap(insertedId, mapa);
         const participant = await databaseClient.readParticipant(payload.personId);
 
