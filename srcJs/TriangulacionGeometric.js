@@ -83,7 +83,7 @@ class TriangulacionGeometric {
             }
         }
 
-        return coordinates;
+        return { centerLocal, coordinates };
     }
 
     static checkPointInside(config, prove) {
@@ -92,12 +92,12 @@ class TriangulacionGeometric {
 
     static createPolygon(config, center, globales, style) {
         //console.log(JSON.stringify(config, null, 4));
-        const pointsList = TriangulacionGeometric.computePolygonCoordinates(config, center, globales);
+        const { centerLocal, coordinates } = TriangulacionGeometric.computePolygonCoordinates(config, center, globales);
         let textPoints = "";
-        if (pointsList.length > 0) {
-            textPoints = "" + pointsList[0];
-            for (let i = 1; i < pointsList.length; i++) {
-                const actual = pointsList[i];
+        if (coordinates.length > 0) {
+            textPoints = "" + coordinates[0];
+            for (let i = 1; i < coordinates.length; i++) {
+                const actual = coordinates[i];
                 if (i % 2 == 0) {
                     textPoints += ",";
                 } else {
@@ -107,7 +107,7 @@ class TriangulacionGeometric {
             }
         }
         const polygonText = `<polygon points="${textPoints}" style="opacity:${style.opacity};fill:${style.fill};stroke:${style.fill};stroke-width:1" />`;
-        return polygonText;
+        return { centerLocal, coordinates, polygonText };
     }
 
     static writePolygonsToFile(text, globales) {
@@ -138,21 +138,34 @@ class TriangulacionGeometric {
                 }
             }
         };
-        const viewGreen = TriangulacionGeometric.createPolygon({
-            position: { x: person.position.x, y: person.position.y },
-            lookAt: { x: person.lookAt.x, y: person.lookAt.y },
-            angles: { min: configLocal.green.angles, max: configLocal.green.angles },
-            distance: { min: configLocal.green.min, max: configLocal.green.max }
-        }, origin, globales, configLocal.green.style);
+        let center;
+        let viewGreen;
+        {
+            let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
+                position: { x: person.position.x, y: person.position.y },
+                lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+                angles: { min: configLocal.green.angles, max: configLocal.green.angles },
+                distance: { min: configLocal.green.min, max: configLocal.green.max }
+            }, origin, globales, configLocal.green.style);
+            viewGreen = polygonText;
+            center = centerLocal;
+        }
 
-        const viewYellow = TriangulacionGeometric.createPolygon({
-            position: { x: person.position.x, y: person.position.y },
-            lookAt: { x: person.lookAt.x, y: person.lookAt.y },
-            angles: { min: configLocal.yellow.angles, max: configLocal.yellow.angles },
-            distance: { min: configLocal.yellow.min, max: configLocal.yellow.max }
-        }, origin, globales, configLocal.yellow.style);
+        let viewYellow;
 
-        return viewGreen + viewYellow;
+        {
+            let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
+                position: { x: person.position.x, y: person.position.y },
+                lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+                angles: { min: configLocal.yellow.angles, max: configLocal.yellow.angles },
+                distance: { min: configLocal.yellow.min, max: configLocal.yellow.max }
+            }, origin, globales, configLocal.yellow.style);
+            viewYellow = polygonText;
+        }
+
+        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="${globales.canvas.xCenter / 20}" stroke="black" stroke-width="3" fill="none" />`;
+
+        return viewGreen + viewYellow + circlePoint;
     }
 
     static testComputePolygon() {
@@ -205,7 +218,7 @@ class TriangulacionGeometric {
             }
         ];
 
-        
+
 
         /*
         const origin = tests[0].config.position;
