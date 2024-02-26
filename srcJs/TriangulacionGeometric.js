@@ -115,25 +115,78 @@ class TriangulacionGeometric {
         fs.writeFileSync(`./test/svg/test.html`, svgText, { encoding: "utf8" });
     }
 
-    static crearSeguridad(person, origin, globales) {
+    static crearBusqueda(person, origin, globales) {
         const configLocal = {
             green: {
                 angles: 30,
-                min: 100,
-                max: 220,
+                min: globales.canvas.green.min,
+                max: globales.canvas.green.max,
                 style: {
-                    fill: "blue",
+                    fill: "green",
                     opacity: 0.5,
                     stroke: "black"
                 }
             },
             yellow: {
                 angles: 50,
-                min: 0,
-                max: 250,
+                min: globales.canvas.yellow.min,
+                max: globales.canvas.yellow.max,
                 style: {
-                    fill: "blue",
-                    opacity: 0.2,
+                    fill: "yellow",
+                    opacity: 0.35,
+                    stroke: "black"
+                }
+            }
+        };
+        let center;
+        let viewGreen;
+        {
+            let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
+                position: { x: person.position.x, y: person.position.y },
+                lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+                angles: { min: configLocal.green.angles, max: configLocal.green.angles },
+                distance: { min: configLocal.green.min, max: configLocal.green.max }
+            }, origin, globales, configLocal.green.style);
+            viewGreen = polygonText;
+            center = centerLocal;
+        }
+
+        let viewYellow;
+
+        {
+            let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
+                position: { x: person.position.x, y: person.position.y },
+                lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+                angles: { min: configLocal.yellow.angles, max: configLocal.yellow.angles },
+                distance: { min: configLocal.yellow.min, max: configLocal.yellow.max }
+            }, origin, globales, configLocal.yellow.style);
+            viewYellow = polygonText;
+        }
+
+        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="${globales.canvas.xCenter / 20}" stroke="black" stroke-width="3" fill="none" />`;
+
+        return viewGreen + viewYellow + circlePoint;
+    }
+
+    static crearSeguridad(person, origin, globales) {
+        const configLocal = {
+            green: {
+                angles: 30,
+                min: globales.canvas.green.min,
+                max: globales.canvas.green.max,
+                style: {
+                    fill: "green",
+                    opacity: 0.5,
+                    stroke: "black"
+                }
+            },
+            yellow: {
+                angles: 50,
+                min: globales.canvas.yellow.min,
+                max: globales.canvas.yellow.max,
+                style: {
+                    fill: "yellow",
+                    opacity: 0.35,
                     stroke: "black"
                 }
             }
@@ -173,7 +226,15 @@ class TriangulacionGeometric {
             canvas: {
                 xCenter: 250,
                 yCenter: 250,
-                maxDistance: 400
+                maxDistance: 400,
+                yellow: {
+                    max: 300,
+                    min: 0,
+                },
+                green: {
+                    max: 250,
+                    min: 50,
+                }
             },
             busqueda: {
                 position: { x: 0, y: 30 }, lookAt: { x: 0, y: 1 }
@@ -187,7 +248,8 @@ class TriangulacionGeometric {
 
         let completeText = "";
         const seguridadPolygons = TriangulacionGeometric.crearSeguridad(globales.seguridad, globales.busqueda.position, globales);
-        completeText += seguridadPolygons;
+        const busquedaPolygons = TriangulacionGeometric.crearSeguridad(globales.busqueda, globales.busqueda.position, globales);
+        completeText += seguridadPolygons + busquedaPolygons;
 
         const tests = [
             {
