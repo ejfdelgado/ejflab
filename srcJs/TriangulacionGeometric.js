@@ -118,7 +118,7 @@ class TriangulacionGeometric {
     static crearBusqueda(person, origin, globales) {
         const configLocal = {
             green: {
-                angles: 30,
+                angles: parseInt(globales.canvas.green.fov / 2),
                 min: globales.canvas.green.min,
                 max: globales.canvas.green.max,
                 style: {
@@ -128,7 +128,7 @@ class TriangulacionGeometric {
                 }
             },
             yellow: {
-                angles: 50,
+                angles: parseInt(globales.canvas.yellow.fov / 2),
                 min: globales.canvas.yellow.min,
                 max: globales.canvas.yellow.max,
                 style: {
@@ -171,7 +171,7 @@ class TriangulacionGeometric {
     static crearSeguridad(person, origin, globales) {
         const configLocal = {
             green: {
-                angles: 30,
+                angles: parseInt(globales.canvas.green.fov / 2),
                 min: globales.canvas.green.min,
                 max: globales.canvas.green.max,
                 style: {
@@ -181,7 +181,7 @@ class TriangulacionGeometric {
                 }
             },
             yellow: {
-                angles: 50,
+                angles: parseInt(globales.canvas.yellow.fov / 2),
                 min: globales.canvas.yellow.min,
                 max: globales.canvas.yellow.max,
                 style: {
@@ -216,7 +216,7 @@ class TriangulacionGeometric {
             viewYellow = polygonText;
         }
 
-        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="${globales.canvas.xCenter / 20}" stroke="black" stroke-width="3" fill="none" />`;
+        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="5" stroke="black" stroke-width="5" fill="none" />`;
 
         return viewGreen + viewYellow + circlePoint;
     }
@@ -224,15 +224,17 @@ class TriangulacionGeometric {
     static testComputePolygon() {
         const globales = {
             canvas: {
-                xCenter: 250,
-                yCenter: 250,
-                maxDistance: 400,
+                xCenter: 400,
+                yCenter: 400,
+                maxDistance: 800,
                 yellow: {
-                    max: 300,
+                    fov: 120,
+                    max: 350,
                     min: 0,
                 },
                 green: {
-                    max: 250,
+                    fov: 60,
+                    max: 300,
                     min: 50,
                 }
             },
