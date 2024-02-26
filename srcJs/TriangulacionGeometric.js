@@ -27,12 +27,12 @@ class TriangulacionGeometric {
         // 1. compute angle of current look at
         const lookAt = config.lookAt;
         const angleLookAt = TriangulacionGeometric.computeAngle(lookAt.x, lookAt.y);
-        console.log(`angleLookAt = ${angleLookAt}`);
+        //console.log(`angleLookAt = ${angleLookAt}`);
         // 2. compute min/max angle
         const angleMin = angleLookAt + config.angles.min;
         const angleMax = angleLookAt - config.angles.max;
-        console.log(`angleMin = ${angleMin}`);
-        console.log(`angleMax = ${angleMax}`);
+        //console.log(`angleMin = ${angleMin}`);
+        //console.log(`angleMax = ${angleMax}`);
         // Generate vectors from angles
         const vectorMin = TriangulacionGeometric.generateUnaryVector(angleMin);
         const vectorMax = TriangulacionGeometric.generateUnaryVector(angleMax);
@@ -57,7 +57,7 @@ class TriangulacionGeometric {
             stepAngle *= -1;
         }
         const iterations = Math.floor(Math.abs((angleMax - angleMin) / stepAngle));
-        console.log(`stepAngle = ${stepAngle} iterations = ${iterations}`);
+        //console.log(`stepAngle = ${stepAngle} iterations = ${iterations}`);
 
         for (let i = 0; i < iterations; i++) {
             const vectorStep = TriangulacionGeometric.generateUnaryVector(currentAngle + i * stepAngle);
@@ -83,7 +83,6 @@ class TriangulacionGeometric {
             }
         }
 
-
         return coordinates;
     }
 
@@ -92,6 +91,7 @@ class TriangulacionGeometric {
     }
 
     static createPolygon(config, center, globales, style) {
+        //console.log(JSON.stringify(config, null, 4));
         const pointsList = TriangulacionGeometric.computePolygonCoordinates(config, center, globales);
         let textPoints = "";
         if (pointsList.length > 0) {
@@ -111,8 +111,48 @@ class TriangulacionGeometric {
     }
 
     static writePolygonsToFile(text, globales) {
-        const svgText = `<!doctype html><html><body>\n<svg style="background-color:lightgrey" height="${globales.canvas.yCenter * 2}" width="${globales.canvas.xCenter * 2}" xmlns="http://www.w3.org/2000/svg">\n\t${text}\n</svg>\n</body></html>`;
+        const svgText = `<!doctype html><html><body>\n<svg style="background-color:#F8F8F8" height="${globales.canvas.yCenter * 2}" width="${globales.canvas.xCenter * 2}" xmlns="http://www.w3.org/2000/svg">\n\t${text}\n</svg>\n</body></html>`;
         fs.writeFileSync(`./test/svg/test.html`, svgText, { encoding: "utf8" });
+    }
+
+    static crearSeguridad(person, origin, globales) {
+        const configLocal = {
+            green: {
+                angles: 30,
+                min: 100,
+                max: 220,
+                style: {
+                    fill: "blue",
+                    opacity: 0.5,
+                    stroke: "black"
+                }
+            },
+            yellow: {
+                angles: 50,
+                min: 0,
+                max: 250,
+                style: {
+                    fill: "blue",
+                    opacity: 0.2,
+                    stroke: "black"
+                }
+            }
+        };
+        const viewGreen = TriangulacionGeometric.createPolygon({
+            position: { x: person.position.x, y: person.position.y },
+            lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+            angles: { min: configLocal.green.angles, max: configLocal.green.angles },
+            distance: { min: configLocal.green.min, max: configLocal.green.max }
+        }, origin, globales, configLocal.green.style);
+
+        const viewYellow = TriangulacionGeometric.createPolygon({
+            position: { x: person.position.x, y: person.position.y },
+            lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+            angles: { min: configLocal.yellow.angles, max: configLocal.yellow.angles },
+            distance: { min: configLocal.yellow.min, max: configLocal.yellow.max }
+        }, origin, globales, configLocal.yellow.style);
+
+        return viewGreen + viewYellow;
     }
 
     static testComputePolygon() {
@@ -121,8 +161,21 @@ class TriangulacionGeometric {
                 xCenter: 250,
                 yCenter: 250,
                 maxDistance: 400
+            },
+            busqueda: {
+                position: { x: 0, y: 30 }, lookAt: { x: 0, y: 1 }
+            },
+            seguridad: {
+                position: { x: 250, y: 30 }, lookAt: { x: -1, y: 0 }
             }
         };
+
+        globales.canvas.scale = globales.canvas.xCenter / globales.canvas.maxDistance;
+
+        let completeText = "";
+        const seguridadPolygons = TriangulacionGeometric.crearSeguridad(globales.seguridad, globales.busqueda.position, globales);
+        completeText += seguridadPolygons;
+
         const tests = [
             {
                 prove: { x: 40, y: 33 },
@@ -140,8 +193,8 @@ class TriangulacionGeometric {
             {
                 prove: { x: 40, y: 33 },
                 style: {
-                    fill: "red",
-                    opacity: 0.5,
+                    fill: "blue",
+                    opacity: 0.2,
                     stroke: "black"
                 },
                 config: {
@@ -152,18 +205,20 @@ class TriangulacionGeometric {
             }
         ];
 
-        globales.canvas.scale = globales.canvas.xCenter / globales.canvas.maxDistance;
-        let completeText = "";
+        
+
+        /*
         const origin = tests[0].config.position;
         for (let i = 0; i < tests.length; i++) {
             const test = tests[i];
             const svgPolygon = TriangulacionGeometric.createPolygon(test.config, origin, globales, test.style);
-            completeText += svgPolygon;
+
             const currentIsInside = TriangulacionGeometric.checkPointInside(test.config, test.prove);
             if (currentIsInside != test.expectedIsInside) {
                 throw new Error(`Test ${i + 1} failed`);
             }
         }
+        */
 
         TriangulacionGeometric.writePolygonsToFile(completeText, globales);
 
