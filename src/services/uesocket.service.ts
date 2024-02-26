@@ -143,8 +143,22 @@ export class UeSocketService {
 
   static stateWriteSample(): StateWriteData {
     return {
-      key: 'test',
-      val: true,
+      key: 'tri.config',
+      val: {
+        xCenter: 400,
+        yCenter: 400,
+        maxDistance: 800,
+        yellow: {
+          fov: 120,
+          max: 350,
+          min: 0,
+        },
+        green: {
+          fov: 60,
+          max: 300,
+          min: 50,
+        },
+      },
       mine: false,
     };
   }

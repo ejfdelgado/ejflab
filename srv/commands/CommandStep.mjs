@@ -9,6 +9,7 @@ import { MyTemplate } from "../../srcJs/MyTemplate.js";
 import { CsvFormatterFilters } from "../../srcJs/CsvFormatterFilters.js";
 import { StepPopUpOpen } from "../steps/StepPopUpOpen.mjs";
 import { StepWriteDB } from "../steps/StepWriteDB.mjs";
+import { StepTriangulacion } from "../steps/StepTriangulacion.mjs";
 
 const filterSourceArrowsFromSource = (arrows, srcId) => {
     return arrows.filter((arrow) => arrow.src == srcId);
@@ -140,6 +141,11 @@ export class CommandStep extends CommandGeneric {
                             const stepWriteDBResponse = (await (new StepWriteDB(this.context, this.io, this.socket, arrowId).handle(textoIf, CommandStep.conditionalEngine)));
                             if (typeof stepWriteDBResponse == "string") {
                                 textoIf = stepWriteDBResponse;
+                            }
+
+                            const stepTriResponse = (await (new StepTriangulacion(this.context, this.io, this.socket, arrowId).handle(textoIf, CommandStep.conditionalEngine)));
+                            if (typeof stepTriResponse == "string") {
+                                textoIf = stepTriResponse;
                             }
 
                             // Se hace manejo de touched() istouched() isnottouched() untouched()
@@ -427,6 +433,9 @@ export class CommandStep extends CommandGeneric {
                                         continue;
                                     }
                                     if (typeof (await (new StepWriteDB(this.context, this.io, this.socket, theNode.id).handle(command, CommandStep.conditionalEngine))) == "string") {
+                                        continue;
+                                    }
+                                    if (typeof (await (new StepTriangulacion(this.context, this.io, this.socket, theNode.id).handle(command, CommandStep.conditionalEngine))) == "string") {
                                         continue;
                                     }
                                     // Default way to resolve node actions

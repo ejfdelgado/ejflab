@@ -272,20 +272,19 @@ class TriangulacionGeometric {
                 }
             },
             busqueda: {
-                position: { x: 0, y: 30 }, lookAt: { x: 0, y: 1 }
+                position: { x: 0, y: 0 }, lookAt: { x: 0, y: 1 }
             },
             seguridad: {
-                position: { x: 250, y: 30 }, lookAt: { x: -1, y: 0 }
+                position: { x: 0, y: 0 }, lookAt: { x: 0, y: 1 }
             }
         };
-
         globales.canvas.scale = globales.canvas.xCenter / globales.canvas.maxDistance;
 
         let completeText = "";
         const seguridadPolygons = TriangulacionGeometric.crearSeguridad(globales.seguridad, globales.busqueda.position, globales);
         const busquedaPolygons = TriangulacionGeometric.crearBusqueda(globales.busqueda, globales.busqueda.position, globales);
         completeText += seguridadPolygons + busquedaPolygons;
-
+        /*
         const tests = [
             {
                 prove: { x: 40, y: 33 },
@@ -315,9 +314,6 @@ class TriangulacionGeometric {
             }
         ];
 
-
-
-        /*
         const origin = tests[0].config.position;
         for (let i = 0; i < tests.length; i++) {
             const test = tests[i];

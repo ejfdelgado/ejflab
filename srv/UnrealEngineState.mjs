@@ -73,6 +73,11 @@ export class UnrealEngineState {
             const popupsTxt = await this.proxyReadFile(`${rootFolder}${this.estado.scene.popups}`);
             this.estado.popups = JSON.parse(popupsTxt);
         }
+        //Se anexa triangulacion
+        if (typeof this.estado.scene?.triangulacion == "string") {
+            const triangulacionTxt = await this.proxyReadFile(`${rootFolder}${this.estado.scene.triangulacion}`);
+            this.estado.tri = { config: JSON.parse(triangulacionTxt) };
+        }
         return this.estado;
     }
     writeKey(key, val) {
