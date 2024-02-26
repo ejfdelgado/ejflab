@@ -122,7 +122,7 @@ class TriangulacionGeometric {
                 min: globales.canvas.green.min,
                 max: globales.canvas.green.max,
                 style: {
-                    fill: "green",
+                    fill: "#00FF00",
                     opacity: 0.5,
                     stroke: "black"
                 }
@@ -132,40 +132,73 @@ class TriangulacionGeometric {
                 min: globales.canvas.yellow.min,
                 max: globales.canvas.yellow.max,
                 style: {
-                    fill: "yellow",
+                    fill: "#99FF99",
                     opacity: 0.35,
                     stroke: "black"
                 }
             }
         };
+        const angleOffset = 90;
         let center;
-        let viewGreen;
+        // --------------
+        let viewGreen1;
         {
             let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
                 position: { x: person.position.x, y: person.position.y },
                 lookAt: { x: person.lookAt.x, y: person.lookAt.y },
-                angles: { min: configLocal.green.angles, max: configLocal.green.angles },
+                angles: {
+                    min: configLocal.green.angles - angleOffset,
+                    max: configLocal.green.angles + angleOffset
+                },
                 distance: { min: configLocal.green.min, max: configLocal.green.max }
             }, origin, globales, configLocal.green.style);
-            viewGreen = polygonText;
+            viewGreen1 = polygonText;
             center = centerLocal;
         }
-
-        let viewYellow;
-
+        let viewYellow1;
         {
             let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
                 position: { x: person.position.x, y: person.position.y },
                 lookAt: { x: person.lookAt.x, y: person.lookAt.y },
-                angles: { min: configLocal.yellow.angles, max: configLocal.yellow.angles },
+                angles: {
+                    min: configLocal.yellow.angles - angleOffset,
+                    max: configLocal.yellow.angles + angleOffset
+                },
                 distance: { min: configLocal.yellow.min, max: configLocal.yellow.max }
             }, origin, globales, configLocal.yellow.style);
-            viewYellow = polygonText;
+            viewYellow1 = polygonText;
+        }
+        let viewGreen2;
+        {
+            let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
+                position: { x: person.position.x, y: person.position.y },
+                lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+                angles: {
+                    min: configLocal.green.angles + angleOffset,
+                    max: configLocal.green.angles - angleOffset
+                },
+                distance: { min: configLocal.green.min, max: configLocal.green.max }
+            }, origin, globales, configLocal.green.style);
+            viewGreen2 = polygonText;
+            center = centerLocal;
+        }
+        let viewYellow2;
+        {
+            let { centerLocal, coordinates, polygonText } = TriangulacionGeometric.createPolygon({
+                position: { x: person.position.x, y: person.position.y },
+                lookAt: { x: person.lookAt.x, y: person.lookAt.y },
+                angles: {
+                    min: configLocal.yellow.angles + angleOffset,
+                    max: configLocal.yellow.angles - angleOffset
+                },
+                distance: { min: configLocal.yellow.min, max: configLocal.yellow.max }
+            }, origin, globales, configLocal.yellow.style);
+            viewYellow2 = polygonText;
         }
 
-        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="${globales.canvas.xCenter / 20}" stroke="black" stroke-width="3" fill="none" />`;
+        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="5" stroke="#00FF00" stroke-width="5" fill="none" />`;
 
-        return viewGreen + viewYellow + circlePoint;
+        return viewGreen1 + viewYellow1 + viewGreen2 + viewYellow2 + circlePoint;
     }
 
     static crearSeguridad(person, origin, globales) {
@@ -175,7 +208,7 @@ class TriangulacionGeometric {
                 min: globales.canvas.green.min,
                 max: globales.canvas.green.max,
                 style: {
-                    fill: "green",
+                    fill: "#0000FF",
                     opacity: 0.5,
                     stroke: "black"
                 }
@@ -185,7 +218,7 @@ class TriangulacionGeometric {
                 min: globales.canvas.yellow.min,
                 max: globales.canvas.yellow.max,
                 style: {
-                    fill: "yellow",
+                    fill: "#9999FF",
                     opacity: 0.35,
                     stroke: "black"
                 }
@@ -216,7 +249,7 @@ class TriangulacionGeometric {
             viewYellow = polygonText;
         }
 
-        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="5" stroke="black" stroke-width="5" fill="none" />`;
+        const circlePoint = `<circle cx="${center.x}" cy="${center.y}" r="5" stroke="blue" stroke-width="5" fill="none" />`;
 
         return viewGreen + viewYellow + circlePoint;
     }
@@ -250,7 +283,7 @@ class TriangulacionGeometric {
 
         let completeText = "";
         const seguridadPolygons = TriangulacionGeometric.crearSeguridad(globales.seguridad, globales.busqueda.position, globales);
-        const busquedaPolygons = TriangulacionGeometric.crearSeguridad(globales.busqueda, globales.busqueda.position, globales);
+        const busquedaPolygons = TriangulacionGeometric.crearBusqueda(globales.busqueda, globales.busqueda.position, globales);
         completeText += seguridadPolygons + busquedaPolygons;
 
         const tests = [

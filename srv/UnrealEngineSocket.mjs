@@ -341,6 +341,9 @@ export class UnrealEngineSocket {
 
             const selectScenarioEventHandler = async (payload) => {
                 try {
+                    if (typeof payload == "string") {
+                        payload = JSON.parse(payload);
+                    }
                     await new CommandSelectScenario(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
@@ -389,6 +392,9 @@ export class UnrealEngineSocket {
 
             const popupchoiceEventHandler = async (payload) => {
                 try {
+                    if (typeof payload == "string") {
+                        payload = JSON.parse(payload);
+                    }
                     await new CommandSelectChoicePopUp(this, io, socket).execute(payload);
                 } catch (err) {
                     io.to(socket.id).emit('personalChat', sortify(serializeError(err)));
