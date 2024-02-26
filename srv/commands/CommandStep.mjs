@@ -435,9 +435,11 @@ export class CommandStep extends CommandGeneric {
                                     if (typeof (await (new StepWriteDB(this.context, this.io, this.socket, theNode.id).handle(command, CommandStep.conditionalEngine))) == "string") {
                                         continue;
                                     }
+                                    /*
                                     if (typeof (await (new StepTriangulacion(this.context, this.io, this.socket, theNode.id).handle(command, CommandStep.conditionalEngine))) == "string") {
                                         continue;
                                     }
+                                    */
                                     // Default way to resolve node actions
                                     const tokensCommand = /^\s*[$]{\s*([^}]+)\s*[}]\s*=(.*)$/ig.exec(command);
                                     if (tokensCommand != null) {
