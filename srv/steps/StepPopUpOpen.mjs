@@ -45,10 +45,15 @@ export class StepPopUpOpen extends StepGeneric {
             if (!(typeof popupCount == "number")) {
                 popupCount = 0;
             }
-            if (currentValue.onetime !== false && popupCount > 0) {
-                // Debe ignorarse esta ejecución
-                showPopUp = false;
-            } else {
+            //console.log(JSON.stringify(currentValue, null, 4));
+            if (currentValue.onetime !== false) {
+                if (popupCount > 0) {
+                    // Debe ignorarse esta ejecución
+                    showPopUp = false;
+                }
+            }
+            //console.log(`showPopUp = ${showPopUp}`);
+            if (showPopUp) {
                 // Se incrementa y deja continuar
                 popupCount++;
                 this.context.state.writeKey(keyPrintCount, popupCount);
@@ -63,6 +68,7 @@ export class StepPopUpOpen extends StepGeneric {
                 // Solo envía el popup open la primera vez
                 const wasFiredInThisNode = this.context.state.readKey(keyWrited);
                 if (wasFiredInThisNode !== true) {
+                    //console.log(`Writing ${keyWrited} with true`);
                     this.context.state.writeKey(keyWrited, true);
                     if (showPopUp) {
                         this.context.sendCommand('popupopen', currentValue, this.io);
@@ -70,6 +76,7 @@ export class StepPopUpOpen extends StepGeneric {
                 }
                 resolvedText = this.replace(command, `sleep(${currentValue.timeout})`);
             } else {
+                //console.log(`Writing ${keyWrited} with true`);
                 this.context.state.writeKey(keyWrited, true);
                 if (showPopUp) {
                     this.context.sendCommand('popupopen', currentValue, this.io);

@@ -281,8 +281,12 @@ export class CommandStep extends CommandGeneric {
                         if (evaluated) {
                             temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
                             // Acciones que se hacen cuando una flecha ya dió positiva
-                            const keyCleaned = `popupmemory.handled.${this.nodeId}`;
-                            this.context.state.writeKey(keyCleaned, null);
+                            const keyCleaned = `popupmemory.handled.${srcNode.id}`;
+                            const old = this.context.state.readKey(keyCleaned);
+                            if ([undefined, null].indexOf(old) < 0) {
+                                //console.log(`Clean node ${keyCleaned}`);
+                                this.context.state.writeKey(keyCleaned, undefined);
+                            }
                         }
                     } catch (err) {
                         this.io.to(this.socket.id).emit('personalChat', sortify(serializeError(err)));
