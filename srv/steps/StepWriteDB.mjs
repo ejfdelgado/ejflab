@@ -7,12 +7,12 @@ export class StepWriteDB extends StepGeneric {
     }
 
     replace(command, value) {
-        return command.replace(/writedb\s*\(([^)]+)\)$/g, value);
+        return command.replace(/writedb\s*\(([^)]+)\)$/g, ` ${value} `);
     }
 
     async handle(command, conditionalEngine) {
         const databaseClient = await this.context.getDataBaseClient();
-        const tokensWriteDB = /^\s*writedb\s*\(([^)]+)\)$/.exec(command);
+        const tokensWriteDB = /\s*writedb\s*\(([^)]+)\)/.exec(command);
         if (tokensWriteDB != null) {
             const configFileText = tokensWriteDB[1];
             const path = `${this.context.ROOT_FOLDER}${configFileText}`;

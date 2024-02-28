@@ -10,6 +10,7 @@ import { CsvFormatterFilters } from "../../srcJs/CsvFormatterFilters.js";
 import { StepPopUpOpen } from "../steps/StepPopUpOpen.mjs";
 import { StepWriteDB } from "../steps/StepWriteDB.mjs";
 import { StepTriangulacion } from "../steps/StepTriangulacion.mjs";
+import { StepCleanVoice } from "../steps/StepCleanVoice.mjs";
 
 const filterSourceArrowsFromSource = (arrows, srcId) => {
     return arrows.filter((arrow) => arrow.src == srcId);
@@ -143,6 +144,12 @@ export class CommandStep extends CommandGeneric {
                                 textoIf = stepWriteDBResponse;
                             }
 
+                            // Se hace manejo de clean voice
+                            const stepCleanVoiceResponse = (await (new StepCleanVoice(this.context, this.io, this.socket, arrowId).handle(textoIf, CommandStep.conditionalEngine)));
+                            if (typeof stepCleanVoiceResponse == "string") {
+                                textoIf = stepCleanVoiceResponse;
+                            }
+
                             const stepTriResponse = (await (new StepTriangulacion(this.context, this.io, this.socket, arrowId).handle(textoIf, CommandStep.conditionalEngine)));
                             if (typeof stepTriResponse == "string") {
                                 textoIf = stepTriResponse;
@@ -171,6 +178,7 @@ export class CommandStep extends CommandGeneric {
                                 }
                             });
                             // Se hace manejo de call(sound,...,...)
+                            //console.log(textoIf);
                             textoIf = await MyUtilities.replaceAsync(textoIf, /call\s*\(([^)]+)\)/ig, async (command) => {
                                 const callArgs = MyTemplate.readCall(command, this.context.state.estado);
                                 let replaceValue = "true";
@@ -225,6 +233,7 @@ export class CommandStep extends CommandGeneric {
                                 }
                                 return replaceValue;
                             });
+                            //console.log(textoIf);
                             // Se hace manejo de sleep(###)
                             if (/sleep\(([^),]*)([^)]*)\)/ig.exec(textoIf) != null) {
                                 textoIf = textoIf.replace(/sleep\(([^),]*)([^)]*)\)/ig, (match, tiempo, name) => {
@@ -249,6 +258,7 @@ export class CommandStep extends CommandGeneric {
                                     }
                                 });
                             }
+                            //console.log(textoIf);
                             // Se hace manejo de silence()
                             if (/silence\(\s*\)/ig.exec(textoIf) != null) {
                                 textoIf = textoIf.replace(/silence\(\s*\)/ig, "${st.duration} - ${st.lastvoice} > ${scene.voz_segundos_buffer}*1000");
@@ -277,6 +287,7 @@ export class CommandStep extends CommandGeneric {
                                 }
                             });
                             evaluated = conditionalEngine.computeIf(textoIf, this.context.state.estado);
+                            //console.log(`${evaluated}=${textoIf}`);
                         }
                         if (evaluated) {
                             temporalArrowsPositive[arrowId] = { outputArrow, isOneTimeArrow, isGlobalOneTimeArrow };
@@ -398,9 +409,7 @@ export class CommandStep extends CommandGeneric {
                                     continue;
                                 }
                                 // Se valida si es clean voice
-                                if (/^\s*cleanvoice\(\)\s*$/.exec(command) != null) {
-                                    // Force delete voice and notify
-                                    this.context.affectModel("st.voice", [], this.io);
+                                if (typeof (await (new StepCleanVoice(this.context, this.io, this.socket, theNode.id).handle(command, CommandStep.conditionalEngine))) == "string") {
                                     continue;
                                 }
                                 // Si es un comando para las flechas...

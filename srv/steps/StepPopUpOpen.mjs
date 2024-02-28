@@ -6,11 +6,11 @@ export class StepPopUpOpen extends StepGeneric {
     }
 
     replace(command, value) {
-        return command.replace(/popup\s*\(([^)]+)\)$/g, value);
+        return command.replace(/popup\s*\(([^)]+)\)$/g, ` ${value} `);
     }
 
     async handle(command, conditionalEngine) {
-        const tokensPopUp = /^\s*popup\s*\(([^)]+)\)$/.exec(command);
+        const tokensPopUp = /\s*popup\s*\(([^)]+)\)/.exec(command);
         if (tokensPopUp != null) {
             //console.log(`handle ${nodeType} ${command}`);
             const popupKey = tokensPopUp[1].trim();

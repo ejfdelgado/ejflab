@@ -42,7 +42,7 @@ export class StepTriangulacion extends StepGeneric {
     }
 
     replace(command, value) {
-        return command.replace(/triangulacion\s*\(([^)]*)\)$/g, value);
+        return command.replace(/triangulacion\s*\(([^)]*)\)$/g, ` ${value} `);
     }
 
     translateVariables(content) {
@@ -110,7 +110,7 @@ export class StepTriangulacion extends StepGeneric {
     }
 
     async handle(command, conditionalEngine) {
-        const tokensTri = /^\s*triangulacion\s*\(([^)]*)\)$/.exec(command);
+        const tokensTri = /\s*triangulacion\s*\(([^)]*)\)/.exec(command);
         if (tokensTri != null) {
             const tokensWriteDB = /^\s*triangulacion\s*\(([^)]*)\)$/.exec(command);
             const computed = this.computeScore();
