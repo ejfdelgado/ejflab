@@ -2,7 +2,13 @@
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
-1. Guardar en base de datos! wip
+0. Partir los audios del caso 
+1. DEC en el grafo.
+2. touch de la requisa + puntajes
+3. touch de las herramientas de trabajo
+4. Limitar la cantidad de palabras de voice
+5. optimizar el cleanvoice haciendo una lectura antes.
+
 2. Triangulación
 3. Permitir tener parámetros de los ángulos y distancias
 
