@@ -11,10 +11,18 @@ export class StepCleanVoice extends StepGeneric {
     }
 
     async handle(command, conditionalEngine) {
+        const VOICE_PATH = "st.voice";
         const tokens = /\s*cleanvoice\(\)\s*/.exec(command);
         if (tokens != null) {
             // Se podría leer si es vacío o no
-            this.context.affectModel("st.voice", [], this.io);
+            const currentValue = this.context.state.readKey(VOICE_PATH);
+            if (currentValue instanceof Array) {
+                if (currentValue.length > 0) {
+                    this.context.affectModel(VOICE_PATH, [], this.io);
+                }
+            } else {
+                this.context.affectModel(VOICE_PATH, [], this.io);
+            }
             const replaced = this.replace(command, "true");
             return replaced;
         }
