@@ -3,7 +3,6 @@ https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</m
 https://fontawesome.com/icons?d=gallery FontAwesome
 
 1. DEC en el grafo.
-2. touch de la requisa + puntajes
 3. touch de las herramientas de trabajo
 
 5. optimizar el cleanvoice haciendo una lectura antes.
