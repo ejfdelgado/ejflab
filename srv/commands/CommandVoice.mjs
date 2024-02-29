@@ -1,5 +1,7 @@
 import { CommandGeneric } from "./CommandGeneric.mjs";
 
+const MAX_WORDS_IN_VOICE = 20;
+
 export class CommandVoice extends CommandGeneric {
     constructor(context, io, socket) {
         super(context, io, socket);
@@ -8,6 +10,11 @@ export class CommandVoice extends CommandGeneric {
     async execute(payload) {
         this.context.echoCommand("voice", payload, this.io, this.socket);
         let voiceHistory = this.context.state.readKey("st.voice");
+        let maxWordsBuffer = this.context.state.readKey("scene.voz_max_words_buffer");
+
+        if (!(typeof maxWordsBuffer == "number")) {
+            maxWordsBuffer = MAX_WORDS_IN_VOICE;
+        }
 
         if (!(voiceHistory instanceof Array)) {
             voiceHistory = [];
@@ -42,6 +49,10 @@ export class CommandVoice extends CommandGeneric {
         let { changes, voiceHistoryFiltered } = this.context.filterVoiceGap(voiceHistory);
         if (changes) {
             voiceHistory = voiceHistoryFiltered;
+        }
+        const currentLength = voiceHistory.length;
+        if (currentLength > maxWordsBuffer) {
+            voiceHistory.splice(0, currentLength - maxWordsBuffer);
         }
         this.context.state.writeKey("st.lastvoice", ahora);
 
