@@ -161,7 +161,11 @@ export class UnrealEngineSocket {
             //this.state.writeKey(increaseKey, currentValue);//Not live
             this.affectModel(increaseKey, currentValue, io);//Live
             // Send sound feedback
-            this.sendCommand("sound", ["common/point.mp3", "", "", 0], io);
+            if (amount > 0) {
+                this.sendCommand("sound", ["common/point.mp3", "", "", 0], io);
+            } else {
+                this.sendCommand("sound", ["common/error.mp3", "", "", 0], io);
+            }
         } catch (err) {
             console.log(err);
             io.emit(chatEvent, err);

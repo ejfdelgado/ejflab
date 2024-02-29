@@ -72,6 +72,7 @@ export class StepPopUpOpen extends StepGeneric {
                     this.context.state.writeKey(keyWrited, true);
                     if (showPopUp) {
                         this.context.sendCommand('popupopen', currentValue, this.io);
+                        this.context.sendCommand("sound", ["common/popup.mp3", "", "", 0], this.io);
                     }
                 }
                 resolvedText = this.replace(command, `sleep(${currentValue.timeout})`);
@@ -80,6 +81,7 @@ export class StepPopUpOpen extends StepGeneric {
                 this.context.state.writeKey(keyWrited, true);
                 if (showPopUp) {
                     this.context.sendCommand('popupopen', currentValue, this.io);
+                    this.context.sendCommand("sound", ["common/popup.mp3", "", "", 0], this.io);
                 }
                 resolvedText = this.replace(command, "true");
             }

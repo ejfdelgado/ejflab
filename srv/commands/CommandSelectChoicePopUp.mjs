@@ -31,6 +31,11 @@ export class CommandSelectChoicePopUp extends CommandGeneric {
                         this.context.increaseAmount(this.io, this.socket, keyPath, points);
                     }
                 }
+                // Feedback increase
+                this.context.sendCommand("sound", ["common/point.mp3", "", "", 0], this.io);
+            } else {
+                // Feedback error
+                this.context.sendCommand("sound", ["common/error.mp3", "", "", 0], this.io);
             }
         } else if (popupRef.type == "assignment") {
             const destination = popupRef.destination;
