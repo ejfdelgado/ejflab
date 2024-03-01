@@ -26,9 +26,24 @@ class CsvFormatterFilters {
         if (!(lista instanceof Array)) {
             return "";
         }
-        let myRandom = Math.floor(Math.random() * lista.length);
-        const choosed = "" + lista[myRandom];
+        const random = Math.random();
+        console.log(`random = ${random}`);
+        const myRandom = Math.floor(random * lista.length);
+        let choosed = "" + lista[myRandom];
+        if (/^\s*true\s*$/i.exec(choosed) !== null) {
+            choosed = true;
+        } else if (/^\s*false\s*$/i.exec(choosed) !== null) {
+            choosed = false;
+        } else if (/^\s*\d+\s*$/.exec(choosed) !== null) {
+            choosed = parseInt(choosed);
+        }
         return choosed;
+    }
+    static testRandom() {
+        const lista = ["a", "b"];
+        for (let i = 0; i < 10; i++) {
+            console.log(CsvFormatterFilters.rand(lista));
+        }
     }
     static map(myMap) {
         return (key) => {

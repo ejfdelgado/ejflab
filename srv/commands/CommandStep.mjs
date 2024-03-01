@@ -50,7 +50,7 @@ export class CommandStep extends CommandGeneric {
 
     async execute() {
         const history = this.context.state.readKey("st.history");
-        const currentState = this.context.state.readKey("st.current");
+        let currentState = this.context.state.readKey("st.current");
         const startedAt = this.context.state.readKey("st.startedAt");
         let interval = this.context.state.readKey("scene.interval");
         let collisionMemory = this.context.state.readKey("st.touch");
@@ -489,6 +489,10 @@ export class CommandStep extends CommandGeneric {
                 }
             }
         }
+        // Se debe eliminar duplicados
+        currentState = currentState.filter((value, index) => {
+            return currentState.indexOf(value) === index;
+        });
         const nuevosSt = {
             duration: new Date().getTime() - startedAt,
         };
