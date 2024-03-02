@@ -51,12 +51,26 @@ export class ModalService {
   async generic(payload: GenericData) {
     const dialogRef = this.dialog.open(GenericComponent, {
       data: payload,
-      disableClose: true,//Force pick a choice
+      disableClose: true, //Force pick a choice
     });
     return new Promise((resolve) => {
       dialogRef.afterClosed().subscribe((result) => {
         resolve(result);
       });
     });
+  }
+  genericComplete(payload: GenericData) {
+    const dialogRef = this.dialog.open(GenericComponent, {
+      data: payload,
+      disableClose: true, //Force pick a choice
+    });
+    return {
+      ref: dialogRef,
+      promise: new Promise((resolve) => {
+        dialogRef.afterClosed().subscribe((result) => {
+          resolve(result);
+        });
+      }),
+    };
   }
 }

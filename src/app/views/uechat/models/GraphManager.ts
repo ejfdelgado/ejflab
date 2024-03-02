@@ -73,4 +73,9 @@ export abstract class GraphManager extends ModelManager {
       this.graphRecomputeBoundingBox(mySvgRef);
     });
   }
+  override resetMe() {
+    super.resetMe();
+    console.log('Reset GraphManager');
+    this.mementoCurrent = '';
+  }
 }

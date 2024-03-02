@@ -110,8 +110,8 @@ export class UechatComponent
     this.socketService.emit(key, content);
   }
 
-  popUpOpen(argumento: any): Promise<any> {
-    const response = this.modalService.generic(argumento);
+  popUpOpen(argumento: any): any {
+    const response = this.modalService.genericComplete(argumento);
     return response;
   }
 
@@ -325,10 +325,17 @@ export class UechatComponent
     this.transcriptSpeechToText = transcript;
   }
 
+  override resetMe() {
+    console.log('Reset UechatComponent');
+    super.resetMe();
+  }
+
   async callStartGame() {
     console.log('Starting game');
+    this.resetMe();
   }
   async callStopGame() {
+    this.resetMe();
     ModuloSonido.stopAll();
   }
 
@@ -348,7 +355,11 @@ export class UechatComponent
       startGame: JSON.stringify(UeSocketService.startGameSample(), null, 4),
       endGame: JSON.stringify(UeSocketService.endGameSample(), null, 4),
       updateCode: JSON.stringify(UeSocketService.updateCodeSample(), null, 4),
-      triangulacion: JSON.stringify(UeSocketService.triangulacionSample(), null, 4),
+      triangulacion: JSON.stringify(
+        UeSocketService.triangulacionSample(),
+        null,
+        4
+      ),
     };
     const key: string = valor.target.value;
     const sample = MAPEO_SAMPLES[key];

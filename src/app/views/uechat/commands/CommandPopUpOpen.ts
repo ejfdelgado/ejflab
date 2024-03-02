@@ -8,8 +8,12 @@ export class CommandPopUpOpen extends CommandGeneric {
   async execute(content: string): Promise<void> {
     const argumento = JSON.parse(content);
     //console.log(`popupopen ${content}`);
-    const response = await this.context.popUpOpen(argumento);
-    // console.log(JSON.stringify(response));
+    const { ref, promise } = this.context.popUpOpen(argumento);
+
+    this.context.registerPopUp(argumento.callback, ref);
+    //console.log(CommandPopUpOpen.popupsMap);
+    const response = await promise;
+    //console.log(JSON.stringify(response));
     this.context.emit('popupchoice', JSON.stringify(response));
   }
 }

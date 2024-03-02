@@ -1,6 +1,7 @@
 import { SimpleObj } from 'srcJs/SimpleObj';
 
 export abstract class ModelManager {
+  popupsMap: any = {};
   modelState: any = {};
   isActive: boolean = false;
   abstract getSpeechToText(): void;
@@ -15,6 +16,23 @@ export abstract class ModelManager {
     isMe: boolean
   ): void;
 
+  registerPopUp(key: string, value: any) {
+    this.popupsMap[key] = value;
+  }
+  forceClose(callback: string) {
+    if (callback in this.popupsMap) {
+      try {
+        this.popupsMap[callback].close();
+      } catch (err) {}
+      delete this.popupsMap[callback];
+    }
+  }
+
+  resetMe() {
+    console.log('Reset ModelManager');
+    this.popupsMap = {};
+  }
+
   receiveStateChanged(key: string, content: string) {
     //console.log(`[${key}]`);
     const parsed = JSON.parse(content);
@@ -28,6 +46,12 @@ export abstract class ModelManager {
       );
       if (parsed.key.startsWith('st.voice')) {
         this.getSpeechToText();
+      }
+      if (parsed.key.startsWith('popupcheck')) {
+        const callback = /^popupcheck\.(.+)$/.exec(parsed.key);
+        if (callback != null) {
+          this.forceClose(callback[1]);
+        }
       }
     }
 

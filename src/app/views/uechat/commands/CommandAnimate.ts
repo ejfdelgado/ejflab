@@ -1,6 +1,6 @@
 import { CommandContext, CommandGeneric } from './CommandGeneric';
 
-export class CommandPopUpOpen extends CommandGeneric {
+export class CommandAnimate extends CommandGeneric {
   constructor(context: CommandContext) {
     super(context);
   }

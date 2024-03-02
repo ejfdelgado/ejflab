@@ -20,7 +20,7 @@ export abstract class CommandContext extends GraphManager implements HasFiles {
   }
 
   // Open a pop up
-  abstract popUpOpen(param: any): Promise<any>;
+  abstract popUpOpen(param: any): any;
   // Send message to the server
   abstract emit(key: string, content: string): void;
 
