@@ -12,6 +12,8 @@ export class CommandSelectChoicePopUp extends CommandGeneric {
         const mychoice = payload.choice;
         if (["info", "feedback"].indexOf(popupRef.type) >= 0) {
             // Ignore
+            const wildcard = "popupcheck." + payload.callback;
+            this.context.writeUniversal(wildcard, true, this.io, true);// it means "continue"
         } else if (popupRef.type == "knowledge") {
             // Check correct answer
             let points = 0;

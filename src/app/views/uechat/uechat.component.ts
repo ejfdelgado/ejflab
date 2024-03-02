@@ -142,7 +142,7 @@ export class UechatComponent
       new CommandSound(this).execute(content);
     });
     this.socketService.on('animate', (content: string) => {
-      console.log(JSON.stringify(content));
+      //console.log(JSON.stringify(content));
     });
     this.socketService.on('mute', (content: string) => {
       new CommandMute(this).execute(content);
