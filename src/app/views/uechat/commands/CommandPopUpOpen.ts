@@ -13,7 +13,10 @@ export class CommandPopUpOpen extends CommandGeneric {
     this.context.registerPopUp(argumento.callback, ref);
     //console.log(CommandPopUpOpen.popupsMap);
     const response = await promise;
-    //console.log(JSON.stringify(response));
-    this.context.emit('popupchoice', JSON.stringify(response));
+    if (response != undefined) {
+      this.context.emit('popupchoice', JSON.stringify(response));
+    } else {
+      console.log('PopUp Ignored!');
+    }
   }
 }

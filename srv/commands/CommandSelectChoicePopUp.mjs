@@ -24,7 +24,7 @@ export class CommandSelectChoicePopUp extends CommandGeneric {
                     }
                 }
             });
-            const wildcard = "${popupcheck." + payload.callback + "}";
+            const wildcard = "popupcheck." + payload.callback;
             this.context.writeUniversal(wildcard, true, this.io, true);// it means a choice was selected
             if (!emptySelect) {
                 if (points > 0) {

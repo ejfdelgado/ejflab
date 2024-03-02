@@ -63,7 +63,7 @@ export class StepPopUpOpen extends StepGeneric {
             // Este step si fue el encargado
             // Primero valida si tiene timeout, si sí, entonces se usa
             let resolvedText = "true";
-            const wildcard = "${popupcheck." + popupKey + "}";
+            const wildcard = "popupcheck." + popupKey;
             //console.log(`${popupKey} ${currentValue.timeout}`);
             if (typeof currentValue.timeout == "number") {
                 // Solo envía el popup open la primera vez

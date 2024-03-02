@@ -34,7 +34,6 @@ export abstract class ModelManager {
   }
 
   receiveStateChanged(key: string, content: string) {
-    //console.log(`[${key}]`);
     const parsed = JSON.parse(content);
     if (parsed.key == '') {
       this.modelState = parsed.val;
