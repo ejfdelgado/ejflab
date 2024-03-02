@@ -63,6 +63,7 @@ export class StepPopUpOpen extends StepGeneric {
             // Este step si fue el encargado
             // Primero valida si tiene timeout, si sí, entonces se usa
             let resolvedText = "true";
+            const wildcard = "${popupcheck." + popupKey + "}";
             //console.log(`${popupKey} ${currentValue.timeout}`);
             if (typeof currentValue.timeout == "number") {
                 // Solo envía el popup open la primera vez
@@ -71,15 +72,22 @@ export class StepPopUpOpen extends StepGeneric {
                     //console.log(`Writing ${keyWrited} with true`);
                     this.context.state.writeKey(keyWrited, true);
                     if (showPopUp) {
+                        this.context.writeUniversal(wildcard, false, this.io, true);
                         this.context.sendCommand('popupopen', currentValue, this.io);
                         this.context.sendCommand("sound", ["common/popup.mp3", "", "", 0], this.io);
                     }
                 }
-                resolvedText = this.replace(command, `sleep(${currentValue.timeout})`);
+                const wildcardValue = this.context.state.readKey(wildcard);
+                if (wildcardValue) {
+                    resolvedText = this.replace(command, "true");
+                } else {
+                    resolvedText = this.replace(command, `sleep(${currentValue.timeout})`);
+                }
             } else {
                 //console.log(`Writing ${keyWrited} with true`);
                 this.context.state.writeKey(keyWrited, true);
                 if (showPopUp) {
+                    this.context.writeUniversal(wildcard, false, this.io, true);
                     this.context.sendCommand('popupopen', currentValue, this.io);
                     this.context.sendCommand("sound", ["common/popup.mp3", "", "", 0], this.io);
                 }

@@ -2,6 +2,11 @@
 https://fonts.google.com/icons?icon.set=Material+Icons <mat-icon>help_outline</mat-icon>
 https://fontawesome.com/icons?d=gallery FontAwesome
 
+1. Interpretar los saltos de línea.
+2. Feedback de que seleccionó un botón.
+
+3. Quitar sonido de forcejeo.
+
 3. touch de las herramientas de trabajo
 
 2. Triangulación

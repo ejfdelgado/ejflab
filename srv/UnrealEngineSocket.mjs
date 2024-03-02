@@ -172,6 +172,14 @@ export class UnrealEngineSocket {
         }
     };
 
+    static writeUniversal(keyWrited, val, io, publish) {
+        if (publish === true) {
+            this.affectModel(keyWrited, val, io);
+        } else {
+            this.state.writeKey(keyWrited, val);
+        }
+    }
+
     static affectModel = (keyWrited, val, io) => {
         const valWrited = {
             key: keyWrited,
