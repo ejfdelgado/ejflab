@@ -217,9 +217,9 @@ class MyTemplate extends CsvWithFilters {
             const response = this.getColumnDescription(g1)[0];
             const valor = SimpleObj.getValue(data, response.id);
             if (!useStringify) {
-                return this.filterValue(valor, response);
+                return this.filterValue(valor, response, undefined, response.id);
             } else {
-                const temp = this.filterValue(valor, response);
+                const temp = this.filterValue(valor, response, undefined, response.id);
                 return JSON.stringify(temp);
             }
         });

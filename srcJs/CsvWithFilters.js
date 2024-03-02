@@ -23,7 +23,7 @@ class CsvWithFilters {
             //console.log(`registerFunction(${key}) OK`);
         }
     }
-    filterValue(valor, columna, dato) {
+    filterValue(valor, columna, dato, defaultBase) {
         if (columna.theclass && columna.theclass in this.filterRegistry.classes) {
             const oneclass = this.filterRegistry.classes[columna.theclass];
             if (columna.themethod) {
@@ -46,6 +46,11 @@ class CsvWithFilters {
                 myarguments.push(dato);
             } else {
                 myarguments.push(valor);
+            }
+            if (["rand"].indexOf(columna.themethod) >= 0) {
+                if (myarguments[0] === undefined) {
+                    myarguments[0] = defaultBase;
+                }
             }
             myarguments = myarguments.concat(columna.argumentos);
             valor = onemethod(...myarguments);

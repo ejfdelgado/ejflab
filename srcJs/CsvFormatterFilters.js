@@ -1,4 +1,9 @@
 class CsvFormatterFilters {
+    static randomMemory = {};
+    static formatRandomMemory() {
+        console.log("Formating random memory");
+        CsvFormatterFilters.randomMemory = {};
+    }
     static parseInt(valor, myDefault = NaN) {
         const temp = parseInt(valor);
         if (isNaN(temp)) {
@@ -19,17 +24,22 @@ class CsvFormatterFilters {
         return JSON.stringify(valor);
     }
     static rand(val, ...args) {
-        let lista = args;
-        if (lista.length == 0) {
-            lista = val;
-        }
-        if (!(lista instanceof Array)) {
+        let listaBase = args;
+        if (!(listaBase instanceof Array)) {
             return "";
         }
+        const keyMemory = val;
+        let lista = CsvFormatterFilters.randomMemory[keyMemory];
+        if (!(lista instanceof Array) || lista.length == 0) {
+            lista = [...listaBase];
+            CsvFormatterFilters.randomMemory[keyMemory] = lista;
+        }
         const random = Math.random();
-        console.log(`random = ${random}`);
+        //console.log(`random = ${random}`);
         const myRandom = Math.floor(random * lista.length);
         let choosed = "" + lista[myRandom];
+        // Se saca de la lista
+        lista.splice(myRandom, 1);
         if (/^\s*true\s*$/i.exec(choosed) !== null) {
             choosed = true;
         } else if (/^\s*false\s*$/i.exec(choosed) !== null) {

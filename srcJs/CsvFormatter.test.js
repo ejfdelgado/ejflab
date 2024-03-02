@@ -2,6 +2,7 @@ const fs = require('fs');
 const { CsvFormatter } = require("./CsvFormatter");
 const { CsvFormatterFilters } = require("./CsvFormatterFilters");
 const { MyDates } = require('./MyDates');
+const { MyTemplate } = require('./MyTemplate');
 
 const myTest = () => {
     const dataset1 = [
@@ -101,6 +102,18 @@ const testComunidad = () => {
     console.log(response);
 }
 
+const testRandom = () => {
+    const db = {};
+    const conditionalEngine = new MyTemplate();
+    const myParser = new CsvFormatter();
+    conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
+    for (let i = 0; i < 12; i++) {
+        const response = conditionalEngine.computeIf('"hola ${prueba1|rand:1:2:3:4:5:6}"', db);
+        console.log(response);
+    }
+};
+
 //myTest();
 //generateLongCsv(1000);
-testComunidad();
+//testComunidad();
+testRandom();

@@ -34,6 +34,7 @@ export class CommandStep extends CommandGeneric {
 
     static {
         CommandStep.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
+        CsvFormatterFilters.formatRandomMemory();
         // Se cargan las homologaciones de voz
     }
 
@@ -46,6 +47,7 @@ export class CommandStep extends CommandGeneric {
         CommandStep.GLOBAL_ONE_TIME_ARROWS = {};
         CommandStep.collisionEngine = new CollisionsEngine();
         CommandStep.conditionalEngine.registerFunction("rand", CsvFormatterFilters.rand);
+        CsvFormatterFilters.formatRandomMemory();
     }
 
     async execute() {
