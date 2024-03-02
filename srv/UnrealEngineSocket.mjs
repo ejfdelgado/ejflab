@@ -148,8 +148,15 @@ export class UnrealEngineSocket {
         return this.replaceUserId(this.replaceUserPath(text.trim(), socket), socket);
     };
 
-    static increaseAmount(io, socket, key, amount = 1) {
+    static increaseAmount(io, socket, keyIncoming, amount = 1) {
         try {
+            // Se mira si hay coma
+            const partes = keyIncoming.split(",");
+            const key = partes[0].trim();
+            let sound = "common/point.mp3";
+            if (partes.length > 1) {
+                sound = partes[1].trim();
+            }
             const increaseKey = this.replaceUserVars(key, socket);
             //console.log(`increaseKey = ${increaseKey}`);
             let currentValue = this.state.readKey(increaseKey);
@@ -162,7 +169,9 @@ export class UnrealEngineSocket {
             this.affectModel(increaseKey, currentValue, io);//Live
             // Send sound feedback
             if (amount > 0) {
-                this.sendCommand("sound", ["common/point.mp3", "", "", 0], io);
+                if (sound.length > 0 && ["no"].indexOf(sound) < 0) {
+                    this.sendCommand("sound", [sound, "", "", 0], io);
+                }
             } else {
                 this.sendCommand("sound", ["common/error.mp3", "", "", 0], io);
             }

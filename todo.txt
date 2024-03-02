@@ -5,7 +5,7 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 Edgar:
 Bug mute al final
-Random mejorado con id y reseteo.
+
 
 Alejo:
 1. Interpretar los saltos de línea.
