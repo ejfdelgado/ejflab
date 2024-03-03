@@ -4,11 +4,14 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 
 Edgar:
-Usar terminar entrenamiento como palabra clave
+Agregar animate para que el npc tenga las esposas
+Usar paciencia también en el borracho de la botella, similar al de la silla de ruedas.
+Usar terminar entrenamiento como palabra clave en los demas escenarios
 Incrementar columnas de tabla de puntaje
 Mapear puntajes faltantes
 Ajustar popups de: lotebaldio, plaza españa
 Invocar los mutes correctamente en lotebaldio, plaza españa
+Suffle array
 Bug, cuando el call sound solo tiene un parametro, no hace el sleep correctamente en la flecha sino que pasa derecho.
 Bug mute al final
 
