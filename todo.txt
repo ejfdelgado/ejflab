@@ -4,6 +4,8 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 
 Edgar:
+Incrementar columnas de tabla de puntaje
+Mapear puntajes faltantes
 Bug mute al final
 
 
