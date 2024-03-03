@@ -4,8 +4,12 @@ https://fontawesome.com/icons?d=gallery FontAwesome
 
 
 Edgar:
+Usar terminar entrenamiento como palabra clave
 Incrementar columnas de tabla de puntaje
 Mapear puntajes faltantes
+Ajustar popups de: lotebaldio, plaza españa
+Invocar los mutes correctamente en lotebaldio, plaza españa
+Bug, cuando el call sound solo tiene un parametro, no hace el sleep correctamente en la flecha sino que pasa derecho.
 Bug mute al final
 
 
