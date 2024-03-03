@@ -43,13 +43,14 @@ class ModuloSonido {
 	};
 
 
-	static async play(llave, loop = false) {
+	static async play(llave, loop = false, volume = 1) {
 		let ref = null;
 		if (llave in ModuloSonido.sonidos) {
 			ref = ModuloSonido.sonidos[llave];
 		} else {
 			ref = (await ModuloSonido.preload([llave]))[0];
 		}
+		ref.volume = volume;
 		let isPlaying = ref.currentTime > 0 && !ref.paused && !ref.ended
 			&& ref.readyState > 2;
 		if (!isPlaying) {

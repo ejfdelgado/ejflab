@@ -14,9 +14,19 @@ export class CommandSound extends CommandGeneric {
         `${MyConstants.SRV_ROOT}${this.context.SOUNDS_ROOT}/${argumento}`
       );
     } else if (argumento instanceof Array) {
+      let volume = 1;
+      if (argumento.length >= 5) {
+        volume = parseFloat(argumento[4]);
+        if (isNaN(volume)) {
+          volume = 1;
+        } else {
+          volume = volume / 100;
+        }
+      }
       ModuloSonido.play(
         `${MyConstants.SRV_ROOT}${this.context.SOUNDS_ROOT}/${argumento[0]}`,
-        argumento[1] == 'loop'
+        argumento[1] == 'loop',
+        volume
       );
     }
   }

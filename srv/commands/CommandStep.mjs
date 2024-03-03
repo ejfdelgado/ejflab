@@ -203,12 +203,29 @@ export class CommandStep extends CommandGeneric {
                                                 }
                                                 if (metadata != null) {
                                                     const durationMillis = metadata.format.duration * 1000;
-                                                    // Se agrega duración del sonido
-                                                    if (callArgs.arguments.length == 2) {
-                                                        // Se agrega un destino por defecto
-                                                        callArgs.arguments.push("");
+                                                    //1. archivo
+                                                    //2. loop o ""
+                                                    //3. quién
+                                                    //4. duration
+                                                    //5. volume
+                                                    const duration = parseInt(durationMillis);
+                                                    if (callArgs.arguments.length == 1) {
+                                                        callArgs.arguments.push("");//No loop
+                                                        callArgs.arguments.push("");//Nadie
+                                                        callArgs.arguments.push(duration);
+                                                        callArgs.arguments.push(100);
+                                                    } else if (callArgs.arguments.length == 2) {
+                                                        callArgs.arguments.push("");//Nadie
+                                                        callArgs.arguments.push(duration);
+                                                        callArgs.arguments.push(100);
+                                                    } else if (callArgs.arguments.length == 3) {
+                                                        callArgs.arguments.push(duration);
+                                                        callArgs.arguments.push(100);
+                                                    } else if (callArgs.arguments.length == 4) {
+                                                        const volume = callArgs.arguments[3];
+                                                        callArgs.arguments[3] = duration;
+                                                        callArgs.arguments.push(volume);
                                                     }
-                                                    callArgs.arguments.push(parseInt(durationMillis));
                                                     const name = `,${filename}`;
                                                     const arrowIdTimer = `${arrowId}_${md5(name)}`;
                                                     const timerKey = `timer.${arrowIdTimer}`;
