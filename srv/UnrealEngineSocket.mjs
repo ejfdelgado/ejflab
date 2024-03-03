@@ -223,8 +223,9 @@ export class UnrealEngineSocket {
         if (alternativas instanceof Array) {
             for (let i = 0; i < alternativas.length; i++) {
                 const alternativa = alternativas[i];
-                //console.log(`redaccion = ${redaccion} vs ${alternativa}`);
-                if (redaccion.indexOf(alternativa) >= 0) {
+                const re = new RegExp(`(^|\\s+)(${alternativa})($|\\s+)`, "i");
+                if (re.exec(redaccion) != null) {
+                    //console.log(`redaccion = ${JSON.stringify(redaccion)} vs ${JSON.stringify(alternativa)}`);
                     return true;
                 }
             }
